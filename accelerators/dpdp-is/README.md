@@ -82,12 +82,53 @@ step 5 — assign users to that role in the Console.
   HTTP 409 `INVALID_CONSENT_STATE`.
 
 - **Chrome and Safari on macOS reject the shipped certificate outright.** The
-  default Identity Server certificate is valid for 825 days, and since September
-  2020 Apple and Chrome refuse any TLS certificate whose validity exceeds 398
-  days. This produces `NET::ERR_CERT_INVALID` with no option to continue, and
-  the `thisisunsafe` bypass does not apply. Use a certificate with a validity of
-  398 days or less for any environment people browse to, or use Firefox, which
-  allows an explicit exception.
+  Identity Server's primary keystore holds a self-signed *CA* certificate
+  (`BasicConstraints: CA:TRUE`, with `Certificate Sign` key usage) and serves it
+  directly as the TLS server certificate. A CA certificate is not a valid
+  end-entity certificate, so Apple's verifier rejects it as malformed rather
+  than merely untrusted: `NET::ERR_CERT_INVALID`, with no "Proceed anyway" link,
+  and the `thisisunsafe` bypass does not work either — that bypass only covers
+  trust failures. Its 825-day validity separately exceeds the 398-day maximum
+  Apple and Chrome have enforced since September 2020. Firefox is unaffected
+  because it uses its own verifier.
+
+  Fix it with a dedicated TLS keystore holding a proper end-entity certificate,
+  which leaves the primary keystore (and therefore token signing) untouched:
+
+  ```
+  keytool -genkeypair -alias localhost -keyalg RSA -keysize 2048 \
+    -sigalg SHA256withRSA -validity 397 \
+    -dname "CN=localhost, OU=WSO2, O=WSO2, L=Santa Clara, ST=CA, C=US" \
+    -ext "SAN=DNS:localhost,IP:127.0.0.1" -ext "BC=ca:false" \
+    -ext "KU=digitalSignature,keyEncipherment" -ext "EKU=serverAuth,clientAuth" \
+    -keystore <IS_HOME>/repository/resources/security/tls.p12 \
+    -storetype PKCS12 -storepass wso2carbon -keypass wso2carbon
+  ```
+
+  Import that certificate into `client-truststore.p12` as well — the portal's
+  BFF calls the Identity Server over HTTPS and validates against that
+  truststore — then point the server at it in `deployment.toml`:
+
+  ```toml
+  [keystore.tls]
+  file_name = "tls.p12"
+  type = "PKCS12"
+  password = "wso2carbon"
+  alias = "localhost"
+  key_password = "wso2carbon"
+  ```
+
+  Browsers then show the ordinary self-signed warning
+  (`ERR_CERT_AUTHORITY_INVALID`), which can be clicked through. To remove the
+  warning entirely, trust the certificate on the machine — on macOS:
+
+  ```
+  security add-trusted-cert -r trustRoot \
+    -k ~/Library/Keychains/login.keychain-db /path/to/tls.crt
+  ```
+
+  Use a certificate from a real certificate authority for anything beyond a
+  local development machine.
 
 ## Features not available on Identity Server 7.3
 
