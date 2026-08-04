@@ -1,0 +1,244 @@
+### GET /me/consents
+{
+    "data": [
+        {
+            "id": "db1f6e7a-2107-438c-a4cf-b62588c50259",
+            "subjectId": "admin",
+            "serviceId": "dpdp-portal-spike",
+            "state": "REVOKED",
+            "language": "en",
+            "timestamp": 1785833979893,
+            "purposes": [
+                {
+                    "id": "690eb7ef-3a32-4439-b006-2d47f2fb6885",
+                    "name": "marketing-spike",
+                    "type": "CONSENT",
+                    "versionId": "cc689174-c91a-449d-ae85-05c33cab1721",
+                    "version": "1.0.0",
+                    "elements": [
+                        {
+                            "id": "415976b9-85b3-409c-b195-35a2733b0afb",
+                            "name": "email-spike",
+                            "displayName": "Email Address"
+                        }
+                    ],
+                    "properties": {}
+                }
+            ],
+            "authorizations": [
+                {
+                    "userId": "admin",
+                    "state": "REVOKED",
+                    "updatedTime": 1785833980189
+                }
+            ],
+            "properties": {}
+        },
+        {
+            "id": "b1e08f9b-aff3-4600-b832-5b28d744a626",
+            "subjectId": "admin",
+            "serviceId": "dpdp-portal",
+            "state": "REVOKED",
+            "language": "en",
+            "timestamp": 1785835605996,
+            "purposes": [
+                {
+                    "id": "690eb7ef-3a32-4439-b006-2d47f2fb6885",
+                    "name": "marketing-spike",
+                    "type": "CONSENT",
+                    "versionId": "cc689174-c91a-449d-ae85-05c33cab1721",
+                    "version": "1.0.0",
+                    "elements": [
+                        {
+                            "id": "415976b9-85b3-409c-b195-35a2733b0afb",
+                            "name": "email-spike",
+                            "displayName": "Email Address"
+                        }
+                    ],
+                    "properties": {}
+                }
+            ],
+            "authorizations": [
+                {
+                    "userId": "admin",
+                    "state": "APPROVED",
+                    "updatedTime": 1785835628157
+                }
+            ],
+            "properties": {}
+        }
+    ],
+    "metadata": {
+        "total": 3,
+        "offset": 0,
+        "count": 2,
+        "limit": 2
+    }
+}
+
+### GET /me/consents/{id}
+{
+    "id": "06168ee0-f82a-4b0f-87ea-2a37600ec3f2",
+    "subjectId": "admin",
+    "serviceId": "dpdp-portal",
+    "state": "REVOKED",
+    "language": "en",
+    "timestamp": 1785835726132,
+    "purposes": [
+        {
+            "id": "690eb7ef-3a32-4439-b006-2d47f2fb6885",
+            "name": "marketing-spike",
+            "type": "CONSENT",
+            "versionId": "cc689174-c91a-449d-ae85-05c33cab1721",
+            "version": "1.0.0",
+            "elements": [
+                {
+                    "id": "415976b9-85b3-409c-b195-35a2733b0afb",
+                    "name": "email-spike",
+                    "displayName": "Email Address"
+                }
+            ],
+            "properties": {}
+        }
+    ],
+    "authorizations": [
+        {
+            "userId": "admin",
+            "state": "REVOKED",
+            "updatedTime": 1785835726345
+        }
+    ],
+    "properties": {}
+}
+
+### GET /api/consents
+{
+    "totalResults": 2,
+    "links": [
+        {
+            "rel": "next",
+            "href": "https://localhost:9443/api/identity/consent-mgt/v2.0/consents?limit=2&after=Mg=="
+        }
+    ],
+    "Consents": [
+        {
+            "id": "db0759de-c098-4f44-b78d-6718226db8b2",
+            "subjectId": "b92a96e6-9f14-4f86-800f-4a0ccadc571b",
+            "serviceId": "dpdp-portal-spike",
+            "state": "PENDING",
+            "timestamp": 1785833928316
+        },
+        {
+            "id": "db1f6e7a-2107-438c-a4cf-b62588c50259",
+            "subjectId": "admin",
+            "serviceId": "dpdp-portal-spike",
+            "state": "REVOKED",
+            "timestamp": 1785833979893
+        }
+    ]
+}
+
+### GET /api/consents/{id}
+{
+    "timestamp": 1785835726132,
+    "id": "06168ee0-f82a-4b0f-87ea-2a37600ec3f2",
+    "language": "en",
+    "subjectId": "admin",
+    "serviceId": "dpdp-portal",
+    "state": "REVOKED",
+    "purposes": [
+        {
+            "name": "marketing-spike",
+            "id": "690eb7ef-3a32-4439-b006-2d47f2fb6885",
+            "type": "CONSENT",
+            "versionId": "cc689174-c91a-449d-ae85-05c33cab1721",
+            "version": "1.0.0",
+            "elements": [
+                {
+                    "id": "415976b9-85b3-409c-b195-35a2733b0afb",
+                    "name": "email-spike",
+                    "displayName": "Email Address"
+                }
+            ],
+            "properties": {}
+        }
+    ],
+    "authorizations": [
+        {
+            "userId": "admin",
+            "state": "REVOKED",
+            "updatedTime": 1785835726345
+        }
+    ],
+    "properties": {}
+}
+
+### GET /api/consent-purposes
+{
+    "totalResults": 1,
+    "links": [],
+    "Purposes": [
+        {
+            "id": "690eb7ef-3a32-4439-b006-2d47f2fb6885",
+            "name": "marketing-spike",
+            "description": "Marketing comms",
+            "type": "CONSENT",
+            "latestVersion": {
+                "id": "cc689174-c91a-449d-ae85-05c33cab1721",
+                "version": "1.0.0"
+            },
+            "tenantDomain": "carbon.super"
+        }
+    ]
+}
+
+### GET /api/consent-purposes/{id}
+{
+    "id": "690eb7ef-3a32-4439-b006-2d47f2fb6885",
+    "name": "marketing-spike",
+    "description": "Marketing comms",
+    "type": "CONSENT",
+    "latestVersion": {
+        "id": "cc689174-c91a-449d-ae85-05c33cab1721",
+        "version": "1.0.0"
+    },
+    "elements": [
+        {
+            "id": "415976b9-85b3-409c-b195-35a2733b0afb",
+            "name": "email-spike",
+            "displayName": "Email Address",
+            "description": "User email address",
+            "mandatory": true
+        }
+    ],
+    "properties": {},
+    "tenantDomain": "carbon.super"
+}
+
+### GET /api/consent-purposes/{id}/versions
+{
+    "totalResults": 1,
+    "links": [],
+    "Versions": [
+        {
+            "id": "cc689174-c91a-449d-ae85-05c33cab1721",
+            "version": "1.0.0",
+            "description": "Marketing comms"
+        }
+    ]
+}
+
+### GET /api/consent-elements
+{
+    "totalResults": 1,
+    "links": [],
+    "Elements": [
+        {
+            "id": "415976b9-85b3-409c-b195-35a2733b0afb",
+            "name": "email-spike",
+            "displayName": "Email Address",
+            "description": "User email address",
+            "tenantDomain": "carbon.super"
+        }
+    ]
+}

@@ -1,0 +1,777 @@
+openapi: 3.0.3
+info:
+  title: OpenFGC Portal Backend API
+  version: 0.3.0
+  description: >-
+    Stateless portal backend endpoints, including health checks, portal-facing
+    user routes, and explicit passthrough routes to Consent Management API v0.3.0.
+    For proxied endpoints in this spec, response payload shape is inherited from the
+    consent-management API.
+servers:
+  - url: http://localhost:8080
+security:
+  - PortalOAuthDocumentation: []
+    AccessTokenPart2: []
+tags:
+  - name: Health
+  - name: Authentication
+  - name: User
+  - name: Passthrough
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: Service health
+      security: []
+      responses:
+        '200': { description: Service healthy }
+  /health/liveness:
+    get:
+      tags: [Health]
+      summary: Liveness check
+      security: []
+      responses:
+        '200': { description: Service live }
+  /health/readiness:
+    get:
+      tags: [Health]
+      summary: Readiness check
+      security: []
+      responses:
+        '200': { description: Service ready }
+
+  /auth/login:
+    get:
+      tags: [Authentication]
+      summary: Start OIDC login
+      description: >-
+        Creates a short-lived, one-time login transaction in secure HttpOnly
+        cookies and redirects with OAuth state and an S256 PKCE challenge.
+      security: []
+      responses:
+        '302':
+          description: Redirect to the configured identity provider.
+  /auth/callback:
+    get:
+      tags: [Authentication]
+      summary: Complete OIDC authorization-code login
+      security: []
+      parameters:
+        - in: query
+          name: code
+          required: true
+          schema: { type: string }
+        - in: query
+          name: state
+          required: true
+          description: Must match the one-time state cookie issued by `/auth/login`.
+          schema: { type: string }
+      responses:
+        '302':
+          description: >-
+            Consumes the login transaction, exchanges the code with its PKCE
+            verifier, and redirects to the portal after success or with a generic
+            authentication error.
+  /auth/refresh:
+    post:
+      tags: [Authentication]
+      summary: Refresh the split-token session
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token:
+                  type: string
+                  description: JavaScript-readable first half of the refresh token.
+      responses:
+        '204': { description: Token cookies replaced successfully. }
+        '400': { $ref: '#/components/responses/AuthError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+  /auth/logout:
+    post:
+      tags: [Authentication]
+      summary: Clear the local session and obtain the logout URL
+      security:
+        - PortalOAuthDocumentation: []
+          AccessTokenPart2: []
+      responses:
+        '200':
+          description: Local cookies cleared.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/LogoutResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+
+  /me:
+    get:
+      tags: [User]
+      summary: Get the authenticated portal user
+      description: >-
+        Returns identity and canonical portal authorization scopes derived from
+        the locally validated access token. OIDC-only scopes are omitted.
+      security:
+        - PortalOAuthDocumentation: []
+          AccessTokenPart2: []
+      responses:
+        '200':
+          description: Authenticated portal user.
+          headers:
+            Cache-Control:
+              description: Prevents authenticated user data from being cached.
+              schema: { type: string, example: no-store }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CurrentUser' }
+        '401': { $ref: '#/components/responses/AuthError' }
+
+  /me/consents:
+    get:
+      tags: [User]
+      summary: List current-user consents
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:self]
+          AccessTokenPart2: []
+      description: >-
+        Proxies to `GET /api/v1/consents`, preserving supported search filters
+        while replacing any browser-supplied `userIds` with the trusted current
+        user and forcing `details=true` so purpose and element display details
+        are included.
+      parameters:
+        - in: query
+          name: consentStatuses
+          description: Comma-separated consent statuses.
+          schema: { type: string }
+        - in: query
+          name: consentTypes
+          description: Comma-separated consent types.
+          schema: { type: string }
+        - in: query
+          name: purposeName
+          description: Purpose name contained by the consent.
+          schema: { type: string }
+        - in: query
+          name: groupIds
+          description: Comma-separated group IDs.
+          schema: { type: string }
+        - in: query
+          name: elementName
+          description: Element name contained by the consent.
+          schema: { type: string }
+        - in: query
+          name: elementVersion
+          description: >-
+            Element version contained by the consent. Requires elementName.
+          schema: { type: string }
+        - in: query
+          name: sort
+          description: >-
+            Up to three comma-separated sort items in `{field}:{direction}` or
+            `{field}` form. Supported fields are `createdTime`, `updatedTime`,
+            `validityTime`, `status`, `groupId`, and `consentType`; directions
+            are `asc` and `desc`, with `desc` used when omitted. Defaults to
+            `createdTime:desc` when the parameter is omitted.
+          schema: { type: string }
+        - in: query
+          name: fromTime
+          description: Inclusive lower bound for updated time, in Unix milliseconds.
+          schema: { type: integer, format: int64 }
+        - in: query
+          name: toTime
+          description: Inclusive upper bound for updated time, in Unix milliseconds.
+          schema: { type: integer, format: int64 }
+        - in: query
+          name: limit
+          description: Maximum number of consents to return.
+          schema: { type: integer }
+        - in: query
+          name: offset
+          description: Zero-based result offset.
+          schema: { type: integer }
+      responses:
+        '200':
+          description: Consent search response
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentSearchResponse' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+        '503': { $ref: '#/components/responses/ProxyError' }
+  /me/consents/{consentId}:
+    get:
+      tags: [User]
+      summary: Get current-user consent details
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:self]
+          AccessTokenPart2: []
+      description: >-
+        Fetches one consent with `details=true` and returns its embedded purpose
+        and element display names and descriptions unchanged. Status audit
+        history is included by forcing `includeStatusHistory=true` upstream.
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200':
+          description: Detailed consent snapshot
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentDetail' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+        '503': { $ref: '#/components/responses/ProxyError' }
+  /me/consents/{consentId}/approve:
+    post:
+      tags: [User]
+      summary: Approve selected optional elements
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:self]
+          AccessTokenPart2: []
+      description: >-
+        Fetches the current consent with `details=true`, validates selected
+        optional elements against its embedded IDs and versions, and builds a
+        full `PUT /api/v1/consents/{consentId}` update. Mandatory and selected
+        elements are approved, existing approvals and consent fields are
+        preserved, and the trusted user's authorization is set to `APPROVED`.
+        The consent's immutable `groupId` is sent as the trusted upstream
+        `group-id` header, and the update response is returned unchanged.
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      requestBody:
+        required: false
+        description: |
+          Optional elements to approve. An omitted or empty array still causes
+          mandatory elements to be approved and updates the trusted user's
+          authorization.
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: '#/components/schemas/ConsentApprovalSelection' }
+      responses:
+        '200':
+          description: Consent server update response, returned unchanged.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentDetail' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '413': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+        '503': { $ref: '#/components/responses/ProxyError' }
+  /me/consents/{consentId}/reject:
+    post:
+      tags: [User]
+      summary: Reject a pending current-user consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:self]
+          AccessTokenPart2: []
+      description: >-
+        Fetches the current consent with `details=true`, verifies ownership and
+        that its status is `CREATED`, then builds a minimal
+        `PUT /api/v1/consents/{consentId}` update. Existing authorizations are
+        preserved and the trusted user's authorization status is changed to
+        `REJECTED`. Purpose and element approvals are not included in the
+        update. The consent's immutable `groupId` is sent as the trusted
+        upstream `group-id` header.
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      requestBody:
+        required: false
+        description: No request properties are currently supported.
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+      responses:
+        '200':
+          description: Consent server update response, returned unchanged.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentDetail' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '409': { $ref: '#/components/responses/ProxyError' }
+        '413': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+        '503': { $ref: '#/components/responses/ProxyError' }
+  /me/consents/{consentId}/revoke:
+    post:
+      tags: [User]
+      summary: Revoke current-user consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:self]
+          AccessTokenPart2: []
+      description: >-
+        Injects the trusted current user as `actionBy`, preserves an optional
+        `revocationReason`, and forwards the request to
+        `POST /api/v1/consents/{consentId}/revoke`. The upstream response is
+        returned unchanged.
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      requestBody:
+        required: false
+        description: Optional revocation details. `actionBy` is controlled by the BFF.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revocationReason: { type: string }
+      responses:
+        '200':
+          description: Consent server revocation response, returned unchanged.
+          content:
+            application/json:
+              schema:
+                type: object
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '413': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+        '503': { $ref: '#/components/responses/ProxyError' }
+
+  /api/consents:
+    get:
+      tags: [Passthrough]
+      summary: Search consents
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+    post:
+      tags: [Passthrough]
+      summary: Create consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:any]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/attributes:
+    get:
+      tags: [Passthrough]
+      summary: Search consent attributes
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/validate:
+    post:
+      tags: [Passthrough]
+      summary: Validate consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/{consentId}:
+    get:
+      tags: [Passthrough]
+      summary: Get consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200': { description: Upstream response }
+    put:
+      tags: [Passthrough]
+      summary: Update consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/{consentId}/history:
+    get:
+      tags: [Passthrough]
+      summary: Get consent history
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/{consentId}/revoke:
+    post:
+      tags: [Passthrough]
+      summary: Revoke consent
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/{consentId}/authorizations:
+    get:
+      tags: [Passthrough]
+      summary: List consent authorizations
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200': { description: Upstream response }
+    post:
+      tags: [Passthrough]
+      summary: Create consent authorization
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consents/{consentId}/authorizations/{authorizationId}:
+    get:
+      tags: [Passthrough]
+      summary: Get consent authorization
+      security:
+        - PortalOAuthDocumentation: [portal:consents:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+        - { in: path, name: authorizationId, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Upstream response }
+    put:
+      tags: [Passthrough]
+      summary: Update consent authorization
+      security:
+        - PortalOAuthDocumentation: [portal:consents:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ConsentID'
+        - { in: path, name: authorizationId, required: true, schema: { type: string } }
+      responses:
+        '200': { description: Upstream response }
+
+  /api/consent-elements:
+    get:
+      tags: [Passthrough]
+      summary: List consent elements
+      security:
+        - PortalOAuthDocumentation: [portal:elements:read]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+    post:
+      tags: [Passthrough]
+      summary: Create consent elements
+      security:
+        - PortalOAuthDocumentation: [portal:elements:write]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+  /api/consent-elements/{elementId}:
+    get:
+      tags: [Passthrough]
+      summary: Get latest consent element
+      security:
+        - PortalOAuthDocumentation: [portal:elements:read]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ElementID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consent-elements/{elementId}/versions:
+    get:
+      tags: [Passthrough]
+      summary: List consent element versions
+      security:
+        - PortalOAuthDocumentation: [portal:elements:read]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ElementID'
+      responses:
+        '200': { description: Upstream response }
+    post:
+      tags: [Passthrough]
+      summary: Create consent element version
+      security:
+        - PortalOAuthDocumentation: [portal:elements:write]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ElementID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consent-elements/{elementId}/versions/{version}:
+    get:
+      tags: [Passthrough]
+      summary: Get consent element version
+      security:
+        - PortalOAuthDocumentation: [portal:elements:read]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ElementID'
+        - $ref: '#/components/parameters/Version'
+      responses:
+        '200': { description: Upstream response }
+    delete:
+      tags: [Passthrough]
+      summary: Delete consent element version
+      security:
+        - PortalOAuthDocumentation: [portal:elements:write]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/ElementID'
+        - $ref: '#/components/parameters/Version'
+      responses:
+        '204': { description: Version deleted }
+
+  /api/consent-purposes:
+    get:
+      tags: [Passthrough]
+      summary: List consent purposes
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:read]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+    post:
+      tags: [Passthrough]
+      summary: Create consent purpose
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:write]
+          AccessTokenPart2: []
+      responses:
+        '200': { description: Upstream response }
+  /api/consent-purposes/{purposeId}:
+    get:
+      tags: [Passthrough]
+      summary: Get latest consent purpose
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:read]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PurposeID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consent-purposes/{purposeId}/versions:
+    get:
+      tags: [Passthrough]
+      summary: List consent purpose versions
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:read]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PurposeID'
+      responses:
+        '200': { description: Upstream response }
+    post:
+      tags: [Passthrough]
+      summary: Create consent purpose version
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:write]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PurposeID'
+      responses:
+        '200': { description: Upstream response }
+  /api/consent-purposes/{purposeId}/versions/{version}:
+    get:
+      tags: [Passthrough]
+      summary: Get consent purpose version
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:read]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PurposeID'
+        - $ref: '#/components/parameters/Version'
+      responses:
+        '200': { description: Upstream response }
+    delete:
+      tags: [Passthrough]
+      summary: Delete consent purpose version
+      security:
+        - PortalOAuthDocumentation: [portal:purposes:write]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PurposeID'
+        - $ref: '#/components/parameters/Version'
+      responses:
+        '204': { description: Version deleted }
+
+components:
+  securitySchemes:
+    PortalOAuthDocumentation:
+      type: oauth2
+      x-documentation-only: true
+      description: >-
+        Documentation model for the OAuth2 scopes enforced by the BFF. The URLs
+        are deployment-specific placeholders. Note that the Swagger UI cannot execute the
+        actual split-token flow. The Authorization header contains only the
+        JavaScript-readable first half of the access token, and the BFF combines
+        it with AccessTokenPart2 before validation.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://idp.example.com/oauth2/authorize
+          tokenUrl: https://idp.example.com/oauth2/token
+          scopes:
+            'portal:consents:read:self': Read the current user's consents.
+            'portal:consents:write:self': Approve or revoke the current user's consents.
+            'portal:consents:read:any': Read consents through passthrough APIs.
+            'portal:consents:write:any': Modify consents through passthrough APIs.
+            'portal:elements:read': Read consent elements.
+            'portal:elements:write': Modify consent elements.
+            'portal:purposes:read': Read consent purposes.
+            'portal:purposes:write': Modify consent purposes.
+    AccessTokenPart2:
+      type: apiKey
+      in: cookie
+      name: portal-at-p2
+      description: Configurable HttpOnly second-half access-token cookie.
+  parameters:
+    ConsentID: { in: path, name: consentId, required: true, schema: { type: string } }
+    PurposeID: { in: path, name: purposeId, required: true, schema: { type: string } }
+    ElementID: { in: path, name: elementId, required: true, schema: { type: string } }
+    Version: { in: path, name: version, required: true, schema: { type: string, pattern: '^v[1-9][0-9]*$' } }
+  schemas:
+    CurrentUser:
+      type: object
+      required: [userId, organizationId, scopes]
+      properties:
+        userId: { type: string }
+        organizationId: { type: string }
+        scopes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - portal:consents:read:self
+              - portal:consents:write:self
+              - portal:consents:read:any
+              - portal:consents:write:any
+              - portal:elements:read
+              - portal:elements:write
+              - portal:purposes:read
+              - portal:purposes:write
+    LogoutResponse:
+      type: object
+      required: [logoutUrl]
+      properties:
+        logoutUrl: { type: string, format: uri }
+    ConsentSearchResponse:
+      type: object
+      required: [data, metadata]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/ConsentDetail' }
+        metadata:
+          type: object
+          required: [total, offset, count, limit]
+          properties:
+            total: { type: integer }
+            offset: { type: integer }
+            count: { type: integer }
+            limit: { type: integer }
+    ConsentDetail:
+      type: object
+      required: [id, groupId, type, status, createdTime, updatedTime, purposes]
+      properties:
+        id: { type: string }
+        groupId: { type: string }
+        type: { type: string }
+        status: { type: string }
+        createdTime: { type: integer, format: int64 }
+        updatedTime: { type: integer, format: int64 }
+        expirationTime: { type: integer, format: int64 }
+        frequency: { type: integer }
+        recurringIndicator: { type: boolean }
+        dataAccessValidityDuration: { type: integer, format: int64 }
+        attributes:
+          type: object
+          additionalProperties: { type: string }
+        authorizations:
+          type: array
+          items: { $ref: '#/components/schemas/ConsentAuthorization' }
+        purposes:
+          type: array
+          items: { $ref: '#/components/schemas/ConsentPurpose' }
+        statusHistory:
+          type: array
+          items: { $ref: '#/components/schemas/ConsentStatusAuditItem' }
+    ConsentStatusAuditItem:
+      type: object
+      required: [statusAuditId, currentStatus, actionTime]
+      properties:
+        statusAuditId: { type: string }
+        previousStatus: { type: string }
+        currentStatus: { type: string }
+        actionTime: { type: integer, format: int64 }
+        actionBy: { type: string, nullable: true }
+        reason: { type: string, nullable: true }
+    ConsentPurpose:
+      type: object
+      required: [purposeId, name, version, elements]
+      properties:
+        purposeId: { type: string }
+        name: { type: string }
+        version: { type: string }
+        displayName: { type: string }
+        description: { type: string }
+        elements:
+          type: array
+          items: { $ref: '#/components/schemas/ConsentElement' }
+    ConsentElement:
+      type: object
+      required: [elementId, name, namespace, version, approved, mandatory]
+      properties:
+        elementId: { type: string }
+        name: { type: string }
+        namespace: { type: string }
+        version: { type: string }
+        displayName: { type: string }
+        approved: { type: boolean }
+        mandatory: { type: boolean }
+        description: { type: string }
+        value: {}
+    ConsentApprovalSelection:
+      type: object
+      required: [purposeId, purposeVersion, elementId, elementVersion]
+      properties:
+        purposeId: { type: string }
+        purposeVersion: { type: string }
+        elementId: { type: string }
+        elementVersion: { type: string }
+    ConsentAuthorization:
+      type: object
+      required: [id, type, status, updatedTime]
+      properties:
+        id: { type: string }
+        userId: { type: string }
+        type: { type: string }
+        status: { type: string }
+        updatedTime: { type: integer, format: int64 }
+        resources: {}
+    ProxyError:
+      type: object
+      required: [code, message]
+      properties:
+        code: { type: string, example: UPSTREAM_UNAVAILABLE }
+        message: { type: string, example: upstream unavailable }
+  responses:
+    AuthError:
+      description: Authentication request rejected.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ProxyError' }
+    ProxyError:
+      description: BFF or upstream proxy error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ProxyError' }
