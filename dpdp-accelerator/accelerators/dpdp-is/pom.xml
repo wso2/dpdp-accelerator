@@ -20,9 +20,9 @@
 
     <parent>
         <groupId>org.wso2.dpdp.accelerator</groupId>
-        <artifactId>dpdp-accelerator</artifactId>
+        <artifactId>dpdp-accelerator-modules</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../../pom.xml</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>wso2-dpdp-is-accelerator</artifactId>

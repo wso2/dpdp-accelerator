@@ -8,6 +8,9 @@
 hs_err_pid*
 replay_pid*
 
+# Working documents, not part of the deliverable
+GAP-ANALYSIS.md
+
 # Maven
 target/
 release.properties
@@ -15,12 +18,12 @@ pom.xml.releaseBackup
 
 # Node
 **/node_modules/
-react-apps/*/frontend/dist/
-react-apps/*/frontend/npm/
+**/frontend/dist/
+**/frontend/npm/
 npm-debug.log*
 
 # Accelerator overlay: the exploded webapp is generated at package time.
-accelerators/*/carbon-home/repository/deployment/server/webapps/
+**/carbon-home/repository/deployment/server/webapps/
 
 # IDE
 .idea/

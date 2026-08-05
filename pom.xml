@@ -19,7 +19,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.wso2.dpdp.accelerator</groupId>
-    <artifactId>dpdp-accelerator</artifactId>
+    <artifactId>dpdp</artifactId>
     <packaging>pom</packaging>
     <version>1.0.0-SNAPSHOT</version>
 
@@ -34,8 +34,12 @@
     <url>https://wso2.com</url>
 
     <modules>
-        <module>react-apps</module>
-        <module>accelerators/dpdp-is</module>
+        <module>dpdp-accelerator</module>
+        <!--
+          The accelerators subtree parents to this root pom rather than to the
+          dpdp-accelerator aggregator, matching the financial services accelerator.
+        -->
+        <module>dpdp-accelerator/accelerators</module>
     </modules>
 
     <licenses>
