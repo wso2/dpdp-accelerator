@@ -15,8 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 #
-# Applies the offline configuration the accelerator needs: the deployment.toml
-# additions, the portal configuration file and the consent schema migration.
+# Applies the offline configuration the accelerator needs: installs the shipped
+# deployment.toml, writes the portal configuration file and applies the consent
+# schema migration.
 # Run this with the server STOPPED, then start it and run register-portal-app.sh.
 
 set -e
@@ -30,7 +31,15 @@ if [ -z "${WSO2_IS_HOME}" ]; then
 fi
 
 if [ ! -d "${WSO2_IS_HOME}/repository/components" ]; then
-  echo -e "\nERROR: ${WSO2_IS_HOME} is not a valid Carbon product path.\n"
+  printf '\nERROR: %s is not a valid Carbon product path.\n\n' "${WSO2_IS_HOME}"
+  exit 2
+fi
+
+# This script replaces deployment.toml and runs a schema migration against the
+# embedded database, neither of which is safe while the server holds it open.
+if pgrep -f "carbon.home=${WSO2_IS_HOME}" > /dev/null 2>&1; then
+  printf '\nERROR: the Identity Server at %s is still running.\n' "${WSO2_IS_HOME}"
+  printf '       Stop it first: sh %s/bin/wso2server.sh stop\n\n' "${WSO2_IS_HOME}"
   exit 2
 fi
 

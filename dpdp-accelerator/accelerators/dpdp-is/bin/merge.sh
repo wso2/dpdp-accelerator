@@ -33,7 +33,7 @@ echo "Product home     : ${WSO2_IS_HOME}"
 echo "Accelerator home : ${ACCELERATOR_HOME}"
 
 if [ ! -d "${WSO2_IS_HOME}/repository/components" ]; then
-  echo -e "\nERROR: ${WSO2_IS_HOME} is not a valid Carbon product path.\n"
+  printf '\nERROR: %s is not a valid Carbon product path.\n\n' "${WSO2_IS_HOME}"
   exit 2
 fi
 
@@ -64,4 +64,4 @@ if [ -f "${BACKUP_PROPERTIES}" ]; then
   rm -f "${BACKUP_PROPERTIES}"
 fi
 
-echo -e "\nMerge complete. Next: sh bin/configure.sh ${WSO2_IS_HOME}\n"
+printf '\nMerge complete. Next: sh bin/configure.sh %s\n\n' "${WSO2_IS_HOME}"
