@@ -62,6 +62,20 @@
     <build>
         <finalName>${project.artifactId}</finalName>
         <plugins>
+            <!--
+              Opted in here rather than inherited from the root, so the pom-only
+              aggregator modules are not analysed. failOnError makes a new
+              finding fail the build; findbugs-exclude.xml carries the reviewed
+              suppressions with the reason for each.
+            -->
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <configuration>
+                    <failOnError>true</failOnError>
+                    <excludeFilterFile>${project.basedir}/findbugs-exclude.xml</excludeFilterFile>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>

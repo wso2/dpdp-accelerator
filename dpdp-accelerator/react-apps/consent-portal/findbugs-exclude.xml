@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ ~ Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ ~
+ ~ WSO2 LLC. licenses this file to you under the Apache License,
+ ~ Version 2.0 (the "License"); you may not use this file except
+ ~ in compliance with the License.
+ ~ You may obtain a copy of the License at
+ ~
+ ~     http://www.apache.org/licenses/LICENSE-2.0
+ ~
+ ~ Unless required by applicable law or agreed to in writing,
+ ~ software distributed under the License is distributed on an
+ ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ ~ KIND, either express or implied. See the License for the
+ ~ specific language governing permissions and limitations
+ ~ under the License.
+ -->
+
+<!--
+  Reviewed SpotBugs/FindSecBugs suppressions for the consent portal BFF.
+
+  Every entry below names a specific class and bug pattern and carries the
+  reason it is safe here. Analysis runs with failOnError=true, so anything not
+  listed fails the build: add a new entry only after establishing the finding is
+  a false positive, never to silence a real one.
+-->
+<FindBugsFilter>
+
+    <!--
+      The BFF is a proxy: it reads request parameters and query strings by
+      design and forwards them to the Identity Server, which authenticates and
+      authorizes every call. Paths are constrained before use - AdminApiServlet
+      validates against SAFE_PATH and an explicit translation table, and
+      MyConsentsServlet matches consent ids against CONSENT_ID - so tainted
+      input never reaches a sensitive sink unchecked.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.AuthRefreshServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.MyConsentsServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.OAuthCallbackServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.AdminApiServlet"/>
+        <Bug pattern="SERVLET_QUERY_STRING"/>
+    </Match>
+
+    <!--
+      The Authorization header is read deliberately: it carries part one of the
+      split access token, which is meaningless without the HttpOnly part two
+      cookie. Both halves are rejoined and handed to the Identity Server for
+      validation - the portal never trusts the header on its own.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.AuthUtil"/>
+        <Bug pattern="SERVLET_HEADER"/>
+    </Match>
+
+    <!--
+      Storing tokens in cookies is the design: part one is script-readable so
+      the SPA can send it as a bearer, part two is HttpOnly so scripts can never
+      reconstruct a whole token. Cookies are Secure and SameSite=Strict.
+      assertHeaderSafe() rejects CR, LF and ';' in every name, value and path
+      before a Set-Cookie header is written, which is what makes the manual
+      header construction safe.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.CookieUtil"/>
+        <Bug pattern="COOKIE_USAGE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.CookieUtil"/>
+        <Bug pattern="HTTP_RESPONSE_SPLITTING"/>
+    </Match>
+
+    <!--
+      Redirect targets are built from configuration (identity.server.base.url
+      plus the webapp context path), never from request input, so a caller
+      cannot steer them at a phishing site.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.OAuthLoginServlet"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.service.OAuthService"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.PortalConfig"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+
+    <!--
+      Relayed bodies are Identity Server JSON responses written with an explicit
+      application/json content type, so a browser never interprets them as HTML.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.AbstractProxyServlet"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.IdentityServerClient"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+
+    <!--
+      The only value logged is a filesystem path built from carbon.home, not
+      from request input.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.PortalConfig"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+
+    <!--
+      A shared, thread-safe Jackson ObjectMapper is returned intentionally;
+      creating one per call is expensive and the instance is never reconfigured
+      after startup.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.HttpUtil"/>
+        <Bug pattern="MS_EXPOSE_REP"/>
+    </Match>
+
+    <!--
+      False positives from try-with-resources over a nullable resource:
+      getResourceAsStream returns null when index.html is absent, and the
+      compiler's generated close guard is what SpotBugs objects to. The explicit
+      null check is required, not redundant - it produces the 503 that stops the
+      servlet recursing during a redeploy.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.SpaServlet"/>
+        <Bug pattern="NP_LOAD_OF_KNOWN_NULL_VALUE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.SpaServlet"/>
+        <Bug pattern="RCN_REDUNDANT_NULLCHECK_OF_NULL_VALUE"/>
+    </Match>
+
+</FindBugsFilter>
