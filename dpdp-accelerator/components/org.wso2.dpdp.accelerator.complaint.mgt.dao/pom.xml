@@ -20,23 +20,37 @@
 
     <parent>
         <groupId>org.wso2.dpdp.accelerator</groupId>
-        <artifactId>dpdp</artifactId>
+        <artifactId>dpdp-accelerator</artifactId>
         <version>1.0.0-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
+        <relativePath>../../pom.xml</relativePath>
     </parent>
 
-    <artifactId>dpdp-accelerator</artifactId>
-    <packaging>pom</packaging>
-    <name>WSO2 DPDP Accelerator</name>
+    <artifactId>org.wso2.dpdp.accelerator.complaint.mgt.dao</artifactId>
+    <packaging>jar</packaging>
 
-    <!--
-      components/ and internal-webapps/ carry no aggregator pom of their own, so
-      each module inside them is listed here with its path prefix.
-    -->
-    <modules>
-        <module>react-apps</module>
-        <module>components/org.wso2.dpdp.accelerator.complaint.mgt.dao</module>
-        <module>components/org.wso2.dpdp.accelerator.complaint.mgt.service</module>
-        <module>internal-webapps/org.wso2.dpdp.accelerator.complaint.mgt.endpoint</module>
-    </modules>
+    <name>WSO2 DPDP Accelerator - Complaint Management DAO</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
 </project>
