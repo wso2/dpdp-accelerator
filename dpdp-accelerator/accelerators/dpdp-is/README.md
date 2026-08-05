@@ -10,7 +10,7 @@ involved.
 |---|---|
 | Consent portal (React SPA + Java BFF) | `<IS_HOME>/repository/deployment/server/webapps/consent-portal/` |
 | Portal configuration | `<IS_HOME>/repository/conf/dpdp-portal.properties` |
-| Server settings | appended to `<IS_HOME>/repository/conf/deployment.toml` |
+| Server settings | `<IS_HOME>/repository/conf/deployment.toml`, replaced from the shipped template |
 
 ## Prerequisites
 
@@ -32,8 +32,16 @@ involved.
    ```
    Edit `repository/conf/configure.properties` first if your hostname, port,
    administrator credentials or database differ from the defaults. This step
-   appends the required `deployment.toml` settings (backing the file up first),
-   writes `dpdp-portal.properties`, and applies the consent schema migration.
+   installs `deployment.toml`, writes `dpdp-portal.properties`, and applies the
+   consent schema migration.
+
+   > **`deployment.toml` is replaced, not merged.** The accelerator ships a
+   > complete file — `repository/resources/wso2is-7.3.0-deployment.toml`, the
+   > stock Identity Server 7.3.0 configuration plus the accelerator's own
+   > settings. Your existing file is copied to `deployment.toml.bak-<timestamp>`
+   > first; re-apply any local customisation from that backup before starting
+   > the server. To target a different Identity Server version, add a template
+   > beside the shipped one and point `PRODUCT_CONF_PATH` at it.
 
 4. Start the Identity Server.
 

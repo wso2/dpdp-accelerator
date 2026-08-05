@@ -38,31 +38,49 @@ fi
 source "${ACCELERATOR_HOME}/repository/conf/configure.properties"
 
 DEPLOYMENT_TOML="${WSO2_IS_HOME}/repository/conf/deployment.toml"
-TOML_SEGMENT="${ACCELERATOR_HOME}/repository/resources/deployment.toml.segment"
+TOML_TEMPLATE="${ACCELERATOR_HOME}/${PRODUCT_CONF_PATH}"
+TOML_STAGING="${ACCELERATOR_HOME}/repository/resources/deployment.toml"
 PORTAL_PROPERTIES="${WSO2_IS_HOME}/repository/conf/dpdp-portal.properties"
 
 echo "Product home: ${WSO2_IS_HOME}"
 echo
 
 # ---------------------------------------------------------------- deployment.toml
-# Appending a second [consent_mgt] table would make the file invalid TOML and
-# stop the server from starting, so bail out rather than corrupt existing edits.
-if grep -q "BEGIN WSO2 DPDP ACCELERATOR" "${DEPLOYMENT_TOML}"; then
-  echo "[1/3] deployment.toml already carries the accelerator settings; leaving it alone."
-elif grep -qE "^\[consent_mgt\]" "${DEPLOYMENT_TOML}" \
-     || grep -q "consent-portal" "${DEPLOYMENT_TOML}"; then
-  echo "[1/3] SKIPPED: deployment.toml already defines [consent_mgt] or a consent-portal rule."
-  echo "      Appending would produce a duplicate table and an unparseable file."
-  echo "      Merge these settings in by hand instead:"
-  echo
-  sed 's/^/        /' "${TOML_SEGMENT}"
-  echo
-else
-  echo "[1/3] Appending accelerator settings to deployment.toml (backup: deployment.toml.dpdp-backup)"
-  cp "${DEPLOYMENT_TOML}" "${DEPLOYMENT_TOML}.dpdp-backup"
-  printf '\n' >> "${DEPLOYMENT_TOML}"
-  cat "${TOML_SEGMENT}" >> "${DEPLOYMENT_TOML}"
+# The accelerator ships a complete deployment.toml and installs it wholesale.
+# Appending to whatever the product already had could not work: a second
+# [consent_mgt] table makes the file unparseable, and the result depended on the
+# state the operator's file happened to be in.
+if [ ! -f "${TOML_TEMPLATE}" ]; then
+  echo "ERROR: no deployment.toml template at ${TOML_TEMPLATE}"
+  echo "       Check PRODUCT_CONF_PATH in repository/conf/configure.properties."
+  exit 2
 fi
+
+echo "[1/3] Installing deployment.toml from $(basename "${TOML_TEMPLATE}")"
+cp "${TOML_TEMPLATE}" "${TOML_STAGING}"
+
+# Substituted on the staging copy so the shipped template keeps its placeholders.
+# None of these tokens is a prefix of another, so the order does not matter.
+for pair in "IS_HOSTNAME=${IS_HOSTNAME}" \
+            "IS_ADMIN_USERNAME=${IS_ADMIN_USERNAME}" \
+            "IS_ADMIN_PASSWORD=${IS_ADMIN_PASSWORD}"; do
+  token="${pair%%=*}"
+  value="${pair#*=}"
+  # sed -i needs a backup suffix to be portable across GNU and BSD; remove it after.
+  sed -i.tmp "s|${token}|${value}|g" "${TOML_STAGING}"
+  rm -f "${TOML_STAGING}.tmp"
+done
+
+if [ -f "${DEPLOYMENT_TOML}" ]; then
+  BACKUP="${DEPLOYMENT_TOML}.bak-$(date +%Y%m%d%H%M%S)"
+  cp "${DEPLOYMENT_TOML}" "${BACKUP}"
+  echo "      Previous deployment.toml backed up to $(basename "${BACKUP}")"
+fi
+
+cp "${TOML_STAGING}" "${DEPLOYMENT_TOML}"
+rm -f "${TOML_STAGING}"
+echo "      deployment.toml was REPLACED, not merged - re-apply any local"
+echo "      customisation from the backup before starting the server."
 
 # ------------------------------------------------------------- portal properties
 echo "[2/3] Writing ${PORTAL_PROPERTIES}"
