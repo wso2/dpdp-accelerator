@@ -81,10 +81,16 @@ else
 fi
 
 # A first-party self-care portal should not prompt the user to consent to its
-# own scopes on every login.
-${CURL} -X PATCH -H 'Content-Type: application/json' \
-  -d '{"advancedConfigurations":{"skipLoginConsent":true,"skipLogoutConsent":true}}' \
-  "${BASE}/api/server/v1/applications/${APP_ID}" -o /dev/null
+# own scopes on every login. The username claim has to be requested explicitly:
+# the openid and profile scopes alone leave the ID token carrying only "sub",
+# and the portal would then greet everyone as "Unknown user".
+${CURL} -X PATCH -H 'Content-Type: application/json' -d '{
+    "advancedConfigurations": {"skipLoginConsent": true, "skipLogoutConsent": true},
+    "claimConfiguration": {
+      "dialect": "LOCAL",
+      "requestedClaims": [{"claim": {"uri": "http://wso2.org/claims/username"}, "mandatory": true}]
+    }
+  }' "${BASE}/api/server/v1/applications/${APP_ID}" -o /dev/null
 
 # ------------------------------------------------------------- API authorization
 echo "[2/4] Authorizing the consent management v2 APIs"
