@@ -8,9 +8,6 @@
 hs_err_pid*
 replay_pid*
 
-# Working documents, not part of the deliverable
-GAP-ANALYSIS.md
-
 # Maven
 target/
 release.properties
