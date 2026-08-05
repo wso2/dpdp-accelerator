@@ -1,0 +1,116 @@
+[server]
+hostname = "IS_HOSTNAME"
+node_ip = "127.0.0.1"
+base_path = "https://$ref{server.hostname}:${carbon.management.port}"
+
+[super_admin]
+username = "IS_ADMIN_USERNAME"
+password = "IS_ADMIN_PASSWORD"
+create_admin_account = true
+
+[user_store]
+type = "database_unique_id"
+
+[database.identity_db]
+type = "h2"
+url = "jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
+username = "wso2carbon"
+password = "wso2carbon"
+
+[database.shared_db]
+type = "h2"
+url = "jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
+username = "wso2carbon"
+password = "wso2carbon"
+
+[datasource.AgentIdentity]
+id = "AgentIdentity"
+url = "jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
+username = "wso2carbon"
+password = "wso2carbon"
+driver = "org.h2.Driver"
+
+[keystore.primary]
+file_name = "wso2carbon.p12"
+password = "wso2carbon"
+type="PKCS12"
+
+[truststore]
+file_name="client-truststore.p12"
+password="wso2carbon"
+type="PKCS12"
+
+[account_recovery.endpoint.auth]
+hash= "66cd9688a2ae068244ea01e70f0e230f5623b7fa4cdecb65070a09ec06452262"
+
+[identity.auth_framework.endpoint]
+app_password= "dashboard"
+
+# The KeyStore which is used for encrypting/decrypting internal data. By default the primary keystore is used as the internal keystore.
+
+#[keystore.internal]
+#file_name = "$ref{keystore.primary.file_name}"
+#type = "$ref{keystore.primary.type}"
+#password = "$ref{keystore.primary.password}"
+#alias = "$ref{keystore.primary.alias}"
+#key_password = "$ref{keystore.primary.key_password}"
+
+# The KeyStore which is used for tls communication. By default the primary keystore is used as the tls keystore.
+
+#[keystore.tls]
+#file_name = "$ref{keystore.primary.file_name}"
+#type = "$ref{keystore.primary.type}"
+#password = "$ref{keystore.primary.password}"
+#alias = "$ref{keystore.primary.alias}"
+#key_password = "$ref{keystore.primary.key_password}"
+
+#Google reCAPTCHA settings.
+
+#[recaptcha]
+#enabled = true
+#api_url = "https://www.google.com/recaptcha/api.js"
+#verify_url = "https://www.google.com/recaptcha/api/siteverify"
+#site_key = ""
+#secret_key = ""
+
+# SMTP email sender settings.
+#[output_adapter.email]
+#from_address= "abcd@gmail.com"
+#username= "abcd"
+#password= "xxxx"
+#hostname= "smtp.gmail.com"
+#port= 587
+
+# =============================================================================
+# WSO2 DPDP Accelerator
+#
+# Everything above this banner is the stock WSO2 Identity Server 7.3.0
+# deployment.toml, unchanged apart from the IS_HOSTNAME, IS_ADMIN_USERNAME and
+# IS_ADMIN_PASSWORD placeholders that configure.sh substitutes.
+# =============================================================================
+
+# Enables the consent management v2 API used by the consent portal. This single
+# switch also re-renders repository/conf/identity/resource-access-control-v2.xml
+# with the v2 rules and registers the v2 API resources together with their
+# internal_consent_mgt_* scopes, so none of those files should be edited by hand.
+[consent_mgt]
+enable_v2_api = true
+
+# Lets the Console's flows view read consent purposes.
+[console.flows.scopes]
+read = ["internal_flow_view", "internal_governance_view", "internal_consent_mgt_purpose_view"]
+
+# The consent portal's BFF authenticates every request itself: it rejoins the
+# split access-token cookie halves and forwards the user's own token to the
+# Identity Server APIs, which then enforce that user's scopes. The server's
+# authentication valve must therefore not gate these paths. Webapp contexts that
+# are not listed here default to secured, which would reject the SPA's static
+# assets and the login and callback redirects before any servlet ran. The
+# pattern has no slash before the wildcard so the bare context path matches too.
+#
+# Entries here are merged with the Identity Server's built-in rules rather than
+# replacing them.
+[[resource.access_control]]
+context = "(.*)/consent-portal(.*)"
+secure = "false"
+http_method = "all"
