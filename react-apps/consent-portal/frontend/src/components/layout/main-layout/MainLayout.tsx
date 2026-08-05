@@ -42,7 +42,9 @@ function MainLayout(): React.JSX.Element {
             <Header.BrandLogo>
               <Box
                 component="img"
-                src="/wso2-logo.png"
+                // Resolved against the deployed base path: the portal is served
+                // from a webapp context, not the server root.
+                src={`${import.meta.env.BASE_URL}wso2-logo.png`}
                 alt=""
                 aria-hidden="true"
                 sx={{

@@ -19,7 +19,10 @@
 package org.wso2.dpdp.accelerator.portal.webapp.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
+import java.nio.charset.StandardCharsets;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -54,16 +57,36 @@ public class SpaServlet extends HttpServlet {
             throws ServletException, IOException {
 
         String path = request.getServletPath();
-        if (path == null || path.isEmpty() || "/".equals(path) || !resourceExists(path)) {
-            request.getRequestDispatcher(INDEX).forward(request, response);
-            return;
-        }
+        boolean staticFile = path != null && !path.isEmpty() && !"/".equals(path) && resourceExists(path);
+
         RequestDispatcher container = getServletContext().getNamedDispatcher(DEFAULT_SERVLET);
-        if (container == null) {
-            request.getRequestDispatcher(INDEX).forward(request, response);
+        if (staticFile && container != null) {
+            container.forward(request, response);
             return;
         }
-        container.forward(request, response);
+
+        // index.html is streamed rather than dispatched to. A forward or include
+        // would re-enter this servlet, since "/" is also the default mapping,
+        // and while the webapp redeploys index.html briefly does not exist --
+        // which turned that re-entry into unbounded recursion and a blown stack.
+        try (InputStream index = getServletContext().getResourceAsStream(INDEX)) {
+            if (index == null) {
+                response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE,
+                        "The consent portal is not fully deployed yet.");
+                return;
+            }
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.setContentType("text/html");
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            // The shell must not be cached: it names the hashed asset bundles.
+            response.setHeader("Cache-Control", "no-cache");
+            OutputStream out = response.getOutputStream();
+            byte[] buffer = new byte[8192];
+            int read;
+            while ((read = index.read(buffer)) != -1) {
+                out.write(buffer, 0, read);
+            }
+        }
     }
 
     @Override
