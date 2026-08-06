@@ -30,7 +30,7 @@ public class DBUtil {
         }
         try {
             InitialContext ctx = new InitialContext();
-            dataSource = (DataSource) ctx.lookup("jdbc/ComplaintDB");
+            dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/ComplaintDB");
             return dataSource.getConnection();
         } catch (NamingException e) {
             String dbUrl = System.getProperty("CO_DB_URL", DEFAULT_JDBC_URL);

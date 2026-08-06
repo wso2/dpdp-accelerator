@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
@@ -114,6 +113,10 @@ public final class AppBootstrap {
     }
 
     public static void initDatabase() {
+        // Only used as DBUtil's DriverManager fallback default - applied when no
+        // jdbc/ComplaintDB resource is bound (see META-INF/context.xml) and no CO_DB_*
+        // override is already set. A properly configured deployment goes through the JNDI
+        // datasource instead; see DBUtil#getConnection().
         String dbType = System.getProperty("CO_DB_TYPE", System.getenv("CO_DB_TYPE"));
 
         String defaultUrl = "jdbc:h2:mem:complaint_db;DB_CLOSE_DELAY=-1;MODE=MySQL";
@@ -127,28 +130,18 @@ public final class AppBootstrap {
             defaultPass = "root";
         }
 
-        String dbUrl = System.getProperty("CO_DB_URL",
-                System.getenv("CO_DB_URL") != null ? System.getenv("CO_DB_URL") : defaultUrl);
-        String dbUser = System.getProperty("CO_DB_USER",
-                System.getenv("CO_DB_USER") != null ? System.getenv("CO_DB_USER") : defaultUser);
-        String dbPass = System.getProperty("CO_DB_PASS",
-                System.getenv("CO_DB_PASS") != null ? System.getenv("CO_DB_PASS") : defaultPass);
+        System.setProperty("CO_DB_URL", System.getProperty("CO_DB_URL",
+                System.getenv("CO_DB_URL") != null ? System.getenv("CO_DB_URL") : defaultUrl));
+        System.setProperty("CO_DB_USER", System.getProperty("CO_DB_USER",
+                System.getenv("CO_DB_USER") != null ? System.getenv("CO_DB_USER") : defaultUser));
+        System.setProperty("CO_DB_PASS", System.getProperty("CO_DB_PASS",
+                System.getenv("CO_DB_PASS") != null ? System.getenv("CO_DB_PASS") : defaultPass));
 
-        System.setProperty("CO_DB_URL", dbUrl);
-        System.setProperty("CO_DB_USER", dbUser);
-        System.setProperty("CO_DB_PASS", dbPass);
-
-        boolean isMysql = dbUrl.startsWith("jdbc:mysql:");
-
-        try {
-            Class.forName(isMysql ? "com.mysql.cj.jdbc.Driver" : "org.h2.Driver");
-        } catch (ClassNotFoundException e) {
-            LOGGER.log(Level.WARNING, "JDBC driver class not found", e);
-        }
-
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUser, dbPass);
+        try (Connection conn = DBUtil.getConnection();
              Statement stmt = conn.createStatement()) {
 
+            String dbUrl = conn.getMetaData().getURL();
+            boolean isMysql = dbUrl.startsWith("jdbc:mysql:");
             LOGGER.info("Connected to database (" + (isMysql ? "MySQL" : "H2") + "): " + dbUrl);
 
             InputStream is = AppBootstrap.class.getClassLoader().getResourceAsStream("dbscripts/mysql.sql");

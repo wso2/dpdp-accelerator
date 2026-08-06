@@ -114,3 +114,11 @@ read = ["internal_flow_view", "internal_governance_view", "internal_consent_mgt_
 context = "(.*)/consent-portal(.*)"
 secure = "false"
 http_method = "all"
+
+# The complaint management API has no authentication of its own (it trusts a
+# caller-supplied org-id header), so the server's authentication valve must not
+# gate it either or every request is rejected before reaching the servlet.
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints(.*)"
+secure = "false"
+http_method = "all"
