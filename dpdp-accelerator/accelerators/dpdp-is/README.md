@@ -78,6 +78,12 @@ Because of this, the shipped `deployment.toml` carries a
 the Identity Server's authentication valve rejects every request with `401` before it
 reaches the servlet. Do not expose this context directly to untrusted callers.
 
+`GET /complaints/categories` returns every valid `subjectCategory` value together with
+the priority a complaint in that category is assigned (`[{"category": "DATA_BREACH",
+"priority": "CRITICAL"}, ...]`) - intended for a frontend to populate a category picker
+without hardcoding the list, and to stay in sync with a `[categoryPriority]` override in
+`deployment.toml`.
+
 ### Database
 
 Backed by a container-managed `javax.sql.DataSource`, declared in the webapp's own

@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.CategoryListResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateRequestBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintListResponseBean;
@@ -52,6 +53,17 @@ class ComplaintEndpointTest {
                 .thenReturn(handlerResponse);
 
         Response response = endpoint.listComplaints("org1", "OPEN", "HIGH", "user1", 10, 0, "updatedTime");
+
+        assertEquals(200, response.getStatus());
+        assertSame(handlerResponse, response.getEntity());
+    }
+
+    @Test
+    void getCategoriesReturns200WithHandlerResponse() {
+        CategoryListResponseBean handlerResponse = new CategoryListResponseBean();
+        when(complaintHandler.getCategories()).thenReturn(handlerResponse);
+
+        Response response = endpoint.getCategories();
 
         assertEquals(200, response.getStatus());
         assertSame(handlerResponse, response.getEntity());

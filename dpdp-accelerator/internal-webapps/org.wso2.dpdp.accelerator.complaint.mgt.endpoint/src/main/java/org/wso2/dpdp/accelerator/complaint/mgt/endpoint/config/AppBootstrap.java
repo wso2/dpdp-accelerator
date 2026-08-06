@@ -83,8 +83,9 @@ public final class AppBootstrap {
     /**
      * Looks for deployment.toml in, in order: an explicit -Ddeployment.config.path override, the
      * CO_DEPLOYMENT_CONFIG_PATH env var, the current working directory (repo root during local
-     * dev), and finally $CATALINA_BASE or $CATALINA_HOME conf/ directories so a Tomcat deployment
-     * can pick it up from a mounted volume.
+     * dev), the Identity Server's own repository/conf/deployment.toml (found via the carbon.home
+     * system property wso2server.sh always sets), and finally $CATALINA_BASE or $CATALINA_HOME
+     * conf/ directories so a plain Tomcat deployment can pick it up from a mounted volume.
      */
     private static File resolveDeploymentConfigFile() {
         String explicitPath = System.getProperty("deployment.config.path", System.getenv("CO_DEPLOYMENT_CONFIG_PATH"));
@@ -98,6 +99,14 @@ public final class AppBootstrap {
         File cwdFile = new File("deployment.toml");
         if (cwdFile.isFile()) {
             return cwdFile;
+        }
+
+        String carbonHome = System.getProperty("carbon.home");
+        if (carbonHome != null) {
+            File file = new File(carbonHome, "repository/conf/deployment.toml");
+            if (file.isFile()) {
+                return file;
+            }
         }
 
         for (String catalinaDir : new String[]{System.getenv("CATALINA_BASE"), System.getenv("CATALINA_HOME")}) {

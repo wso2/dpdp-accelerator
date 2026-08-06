@@ -1,5 +1,7 @@
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint.handler;
 
+import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.CategoryListResponseBean;
+import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCategoryBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateRequestBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintListResponseBean;
@@ -15,9 +17,12 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintDTO;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.impl.ComplaintAttachmentServiceImpl;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.impl.ComplaintEventServiceImpl;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.impl.ComplaintServiceImpl;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.util.PriorityMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class ComplaintHandler {
 
@@ -71,6 +76,15 @@ public class ComplaintHandler {
 
         PageMetadataBean metadata = new PageMetadataBean(totalOut[0], off, beanList.size(), lim);
         return new ComplaintListResponseBean(beanList, metadata);
+    }
+
+    public CategoryListResponseBean getCategories() {
+        Map<String, String> categoryPriorities = new TreeMap<>(PriorityMapper.getCategoryPriorities());
+        List<ComplaintCategoryBean> beanList = new ArrayList<>();
+        for (Map.Entry<String, String> entry : categoryPriorities.entrySet()) {
+            beanList.add(new ComplaintCategoryBean(entry.getKey(), entry.getValue()));
+        }
+        return new CategoryListResponseBean(beanList);
     }
 
     public ComplaintStatusUpdateResponseBean updateStatus(String orgId, String complaintId,

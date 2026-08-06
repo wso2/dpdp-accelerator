@@ -1,5 +1,6 @@
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint;
 
+import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.CategoryListResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateRequestBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintListResponseBean;
@@ -51,6 +52,13 @@ public class ComplaintEndpoint {
             @QueryParam("sort") String sort) {
         ComplaintListResponseBean response =
                 complaintHandler.listComplaints(orgId, status, priority, userId, limit, offset, sort);
+        return Response.ok(response).build();
+    }
+
+    @GET
+    @Path("/categories")
+    public Response getCategories() {
+        CategoryListResponseBean response = complaintHandler.getCategories();
         return Response.ok(response).build();
     }
 

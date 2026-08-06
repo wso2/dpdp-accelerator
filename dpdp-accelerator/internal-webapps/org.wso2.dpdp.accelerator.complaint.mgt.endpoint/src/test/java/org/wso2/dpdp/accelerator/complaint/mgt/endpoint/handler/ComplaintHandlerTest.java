@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.CategoryListResponseBean;
+import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCategoryBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateRequestBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintListResponseBean;
@@ -20,6 +22,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
@@ -139,6 +142,21 @@ class ComplaintHandlerTest {
         assertEquals(2, response.getData().size());
         assertEquals(42, response.getMetadata().getTotal());
         assertEquals(2, response.getMetadata().getCount());
+    }
+
+    @Test
+    void getCategoriesReturnsEveryKnownCategoryWithItsPriority() {
+        CategoryListResponseBean response = handler.getCategories();
+
+        assertEquals(10, response.getData().size());
+        boolean foundDataBreach = false;
+        for (ComplaintCategoryBean bean : response.getData()) {
+            if ("DATA_BREACH".equals(bean.getCategory())) {
+                assertEquals("CRITICAL", bean.getPriority());
+                foundDataBreach = true;
+            }
+        }
+        assertTrue(foundDataBreach);
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.wso2.dpdp.accelerator.complaint.mgt.service.util;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -68,5 +69,14 @@ public class PriorityMapper {
 
     public static boolean isKnownCategory(String category) {
         return category != null && categoryToPriority.containsKey(category.trim());
+    }
+
+    /**
+     * The current set of valid ComplaintCategory values, each with the priority a complaint in
+     * that category is assigned. Reflects the built-in defaults, or the [categoryPriority]
+     * override from deployment.toml if one is configured.
+     */
+    public static Map<String, String> getCategoryPriorities() {
+        return Collections.unmodifiableMap(categoryToPriority);
     }
 }

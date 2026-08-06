@@ -8,6 +8,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class PriorityMapperTest {
@@ -53,6 +54,27 @@ class PriorityMapperTest {
         assertTrue(PriorityMapper.isKnownCategory("DATA_BREACH"));
         assertFalse(PriorityMapper.isKnownCategory("NOT_A_CATEGORY"));
         assertFalse(PriorityMapper.isKnownCategory(null));
+    }
+
+    @Test
+    void getCategoryPrioritiesReflectsTheBuiltInDefaultsByDefault() {
+        assertEquals(DEFAULT_MAPPING, PriorityMapper.getCategoryPriorities());
+    }
+
+    @Test
+    void getCategoryPrioritiesReflectsAConfiguredOverride() {
+        Map<String, String> overrides = new HashMap<>();
+        overrides.put("CUSTOM_CATEGORY", "high");
+
+        PriorityMapper.configure(overrides);
+
+        assertEquals(Map.of("CUSTOM_CATEGORY", "HIGH"), PriorityMapper.getCategoryPriorities());
+    }
+
+    @Test
+    void getCategoryPrioritiesReturnsAnUnmodifiableView() {
+        assertThrows(UnsupportedOperationException.class,
+                () -> PriorityMapper.getCategoryPriorities().put("X", "LOW"));
     }
 
     @Test

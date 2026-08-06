@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class AppBootstrapTest {
 
     private static final String[] MANAGED_PROPERTIES = {
-            "deployment.config.path", "CO_DB_TYPE", "CO_DB_URL", "CO_DB_USER", "CO_DB_PASS",
+            "deployment.config.path", "carbon.home", "CO_DB_TYPE", "CO_DB_URL", "CO_DB_USER", "CO_DB_PASS",
             "CO_MAX_ATTACHMENT_SIZE_BYTES", "CO_STATUTORY_DUE_PERIOD_DAYS"
     };
 
@@ -111,6 +111,27 @@ class AppBootstrapTest {
             assertEquals("jdbc:preexisting-url", System.getProperty("CO_DB_URL"));
         } finally {
             Files.deleteIfExists(file);
+        }
+    }
+
+    @Test
+    void loadDeploymentConfigFindsCarbonHomeDeploymentTomlWhenNoOverrideIsSet() throws IOException {
+        Path carbonHome = Files.createTempDirectory("carbon-home");
+        try {
+            Path confDir = carbonHome.resolve("repository").resolve("conf");
+            Files.createDirectories(confDir);
+            Files.writeString(confDir.resolve("deployment.toml"), "[database]\n"
+                    + "url = \"jdbc:mysql://from-carbon-home:3306/db\"\n");
+            System.setProperty("carbon.home", carbonHome.toString());
+
+            AppBootstrap.loadDeploymentConfig();
+
+            assertEquals("jdbc:mysql://from-carbon-home:3306/db", System.getProperty("CO_DB_URL"));
+        } finally {
+            Files.deleteIfExists(carbonHome.resolve("repository").resolve("conf").resolve("deployment.toml"));
+            Files.deleteIfExists(carbonHome.resolve("repository").resolve("conf"));
+            Files.deleteIfExists(carbonHome.resolve("repository"));
+            Files.deleteIfExists(carbonHome);
         }
     }
 
