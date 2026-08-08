@@ -4,9 +4,12 @@ info:
   version: 0.3.0
   description: >-
     Stateless portal backend endpoints, including health checks, portal-facing
-    user routes, and explicit passthrough routes to Consent Management API v0.3.0.
-    For proxied endpoints in this spec, response payload shape is inherited from the
-    consent-management API.
+    user routes, explicit passthrough routes to Consent Management API v0.3.0,
+    and the /complaints route group proxied to the standalone complaint-server
+    API v2.3.0. For proxied endpoints in this spec, response payload shape is
+    inherited from the upstream API, except where noted (complaint-server has
+    no `referenceId` concept, and its create/comment/status responses are
+    trimmed to the leaner shapes documented below).
 servers:
   - url: http://localhost:8080
 security:
@@ -16,6 +19,7 @@ tags:
   - name: Health
   - name: Authentication
   - name: User
+  - name: Complaints
   - name: Passthrough
 paths:
   /health:
@@ -335,6 +339,314 @@ paths:
         '502': { $ref: '#/components/responses/ProxyError' }
         '503': { $ref: '#/components/responses/ProxyError' }
 
+  /complaints:
+    get:
+      tags: [Complaints]
+      summary: List complaints
+      description: >-
+        Proxies to complaint-server's `GET /complaints`. Under the `self`
+        surface, any client-supplied `userId` filter is discarded and replaced
+        with the caller's own verified id, so a Data Principal can only ever
+        list their own complaints. Each record's `referenceId` is passed
+        through unchanged from complaint-server.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:read:self, portal:complaint:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - in: query
+          name: status
+          schema: { $ref: '#/components/schemas/ComplaintStatus' }
+        - in: query
+          name: priority
+          schema: { $ref: '#/components/schemas/ComplaintPriority' }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 10, maximum: 100 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+        - in: query
+          name: sort
+          schema: { type: string, default: '-updatedTime' }
+      responses:
+        '200':
+          description: List of complaints
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintListResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/AuthError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+    post:
+      tags: [Complaints]
+      summary: Create a complaint
+      description: >-
+        Injects the caller's own verified id as `userId` (a client-supplied
+        value would let one user file a complaint in another's name), then
+        proxies to complaint-server's `POST /complaints`. The response is
+        trimmed to `{id, referenceId}`, both passed through unchanged from
+        complaint-server.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:write:self]
+          AccessTokenPart2: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ComplaintCreateRequest' }
+      responses:
+        '201':
+          description: Complaint created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintCreateResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/AuthError' }
+        '422': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/categories:
+    get:
+      tags: [Complaints]
+      summary: List accepted complaint categories
+      description: >-
+        Answered locally by the BFF — complaint-server defines no such
+        endpoint. Mirrors the `ComplaintCategory` enum in its contract.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:read:self, portal:complaint:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+      responses:
+        '200':
+          description: Accepted categories
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintCategoriesResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+  /complaints/{complaintId}:
+    get:
+      tags: [Complaints]
+      summary: Get complaint
+      description: >-
+        Under the `self` surface, fetches the complaint and returns 404
+        (rather than 403) when the caller does not own it, so a non-owner
+        cannot learn the complaint exists.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:read:self, portal:complaint:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+      responses:
+        '200':
+          description: Complaint detail
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintRecord' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/{complaintId}/timeline:
+    get:
+      tags: [Complaints]
+      summary: Get complaint timeline
+      description: >-
+        Ownership-checked as above under `self`, which also forces
+        `isPublic=true` regardless of what the client requests — a Data
+        Principal must never see officer-internal notes.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:read:self, portal:complaint:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+        - in: query
+          name: since
+          schema: { type: string, format: date-time }
+        - in: query
+          name: isPublic
+          description: Ignored (forced true) under the self surface.
+          schema: { type: boolean }
+        - in: query
+          name: order
+          schema: { type: string, enum: [asc, desc], default: asc }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20, maximum: 100 }
+        - in: query
+          name: offset
+          schema: { type: integer, default: 0 }
+      responses:
+        '200':
+          description: Timeline entries
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintTimelineListResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/{complaintId}/comments:
+    post:
+      tags: [Complaints]
+      summary: Add a comment, optionally transitioning status
+      description: >-
+        Ownership-checked as above under `self`. `actorUserId` is always the
+        caller's own verified id. Under `self`, `actorRole` is forced to
+        `USER` and `isPublic` is forced `true` (only a Complaint Officer may
+        post an officer-internal note); under `management`, `actorRole` is
+        `COMPLAINT_OFFICER` and `isPublic` defaults to `true` if omitted. The
+        response is trimmed to `{id}`.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:write:self, portal:complaint:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ComplaintMessageRequest' }
+      responses:
+        '200':
+          description: Comment created.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintCommentCreateResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '409': { $ref: '#/components/responses/ProxyError' }
+        '422': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/{complaintId}/attachments:
+    post:
+      tags: [Complaints]
+      summary: Upload attachments on a complaint
+      description: Ownership-checked as above under `self`. Response is relayed unchanged.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:write:self, portal:complaint:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: array
+                  items: { type: string, format: binary }
+      responses:
+        '201':
+          description: Attachments stored.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ComplaintAttachment' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '422': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/{complaintId}/comments/{commentId}/attachments:
+    post:
+      tags: [Complaints]
+      summary: Upload attachments on a comment
+      description: >-
+        Ownership-checked as above under `self`. complaint-server requires an
+        `actorUserId` form field matching the comment's own author; the SPA
+        never sends one, so the BFF injects the caller's own verified id.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:write:self, portal:complaint:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+        - $ref: '#/components/parameters/CommentID'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: array
+                  items: { type: string, format: binary }
+      responses:
+        '201':
+          description: Attachments stored.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ComplaintAttachment' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '422': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/{complaintId}/attachments/{attachmentId}:
+    get:
+      tags: [Complaints]
+      summary: Download an attachment
+      description: Ownership-checked as above under `self`. Response is relayed unchanged.
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:read:self, portal:complaint:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+        - $ref: '#/components/parameters/AttachmentID'
+      responses:
+        '200':
+          description: Attachment metadata and base64-encoded content.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintAttachmentDownload' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+  /complaints/{complaintId}/status:
+    post:
+      tags: [Complaints]
+      summary: Transition complaint status
+      description: >-
+        Management surface only — a `self` request is rejected with 403
+        regardless of the caller's scopes, since status transitions are an
+        officer-only action. `actorUserId`/`actorRole` are set from the
+        caller's own verified identity (`COMPLAINT_OFFICER`). The response is
+        trimmed to `{status}` (complaint-server's `toStatus` field).
+      security:
+        - PortalOAuthDocumentation: [portal:complaint:write:any]
+          AccessTokenPart2: []
+      parameters:
+        - $ref: '#/components/parameters/PortalSurface'
+        - $ref: '#/components/parameters/ComplaintID'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ComplaintStatusUpdateRequest' }
+      responses:
+        '200':
+          description: Status transition confirmed.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ComplaintStatusUpdateResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '409': { $ref: '#/components/responses/ProxyError' }
+        '502': { $ref: '#/components/responses/ProxyError' }
+
   /api/consents:
     get:
       tags: [Passthrough]
@@ -628,6 +940,10 @@ components:
             'portal:elements:write': Modify consent elements.
             'portal:purposes:read': Read consent purposes.
             'portal:purposes:write': Modify consent purposes.
+            'portal:complaint:read:self': Read the current user's own complaints.
+            'portal:complaint:write:self': Submit or reply to the current user's own complaints.
+            'portal:complaint:read:any': Read complaints across all data principals.
+            'portal:complaint:write:any': Manage complaints across all data principals.
     AccessTokenPart2:
       type: apiKey
       in: cookie
@@ -638,6 +954,21 @@ components:
     PurposeID: { in: path, name: purposeId, required: true, schema: { type: string } }
     ElementID: { in: path, name: elementId, required: true, schema: { type: string } }
     Version: { in: path, name: version, required: true, schema: { type: string, pattern: '^v[1-9][0-9]*$' } }
+    ComplaintID: { in: path, name: complaintId, required: true, schema: { type: string } }
+    CommentID: { in: path, name: commentId, required: true, schema: { type: string } }
+    AttachmentID: { in: path, name: attachmentId, required: true, schema: { type: string } }
+    PortalSurface:
+      in: header
+      name: X-Portal-Surface
+      required: true
+      description: >-
+        Selects which of the caller's own already-verified scopes this
+        request exercises — the Data Principal's own complaints (`self`) or
+        the Complaint Officer's cross-complaint access (`management`). The
+        BFF always independently verifies the caller actually holds the
+        scope implied by whichever value is sent; this header is never
+        trusted for authorization by itself.
+      schema: { type: string, enum: [self, management] }
   schemas:
     CurrentUser:
       type: object
@@ -659,6 +990,10 @@ components:
               - portal:elements:write
               - portal:purposes:read
               - portal:purposes:write
+              - portal:complaint:read:self
+              - portal:complaint:write:self
+              - portal:complaint:read:any
+              - portal:complaint:write:any
     LogoutResponse:
       type: object
       required: [logoutUrl]
@@ -764,6 +1099,163 @@ components:
       properties:
         code: { type: string, example: UPSTREAM_UNAVAILABLE }
         message: { type: string, example: upstream unavailable }
+    ComplaintCategory:
+      type: string
+      enum:
+        - DATA_BREACH
+        - UNAUTHORIZED_DATA_SHARING
+        - CONSENT_WITHDRAWN_DATA_STILL_USED
+        - PURPOSE_VIOLATION
+        - DATA_ERASURE_NOT_COMPLETED
+        - DATA_CORRECTION_NOT_COMPLETED
+        - CONSENT_LIFECYCLE_ISSUE
+        - DATA_ACCESS_DENIED
+        - EXCESSIVE_DATA_COLLECTION
+        - OTHER
+    ComplaintPriority:
+      type: string
+      enum: [CRITICAL, HIGH, MEDIUM, LOW]
+    ComplaintStatus:
+      type: string
+      enum: [OPEN, IN_PROGRESS, WAITING_ON_CLIENT, AWAITING_INTERNAL_REVIEW, RESOLVED]
+    ComplaintActorRole:
+      type: string
+      enum: [USER, COMPLAINT_OFFICER, SYSTEM]
+    ComplaintAttachment:
+      type: object
+      required: [attachmentId, fileName, sizeBytes]
+      properties:
+        attachmentId: { type: string }
+        fileName: { type: string }
+        contentType: { type: string }
+        sizeBytes: { type: integer }
+    ComplaintAttachmentDownload:
+      type: object
+      required: [contentType, content]
+      properties:
+        contentType: { type: string }
+        content: { type: string, format: byte, description: Base64-encoded file content. }
+    ComplaintRecord:
+      type: object
+      description: >-
+        Matches complaint-server's ComplaintRecord, with a `referenceId`
+        field added by the BFF (equal to `id` — complaint-server has no
+        reference-number concept of its own).
+      required:
+        - id
+        - referenceId
+        - userId
+        - subjectCategory
+        - priority
+        - status
+        - description
+        - submittedAt
+        - updatedAt
+        - statutoryDueDate
+        - attachments
+      properties:
+        id: { type: string, format: uuid }
+        referenceId: { type: string }
+        userId: { type: string }
+        subjectCategory: { $ref: '#/components/schemas/ComplaintCategory' }
+        priority: { $ref: '#/components/schemas/ComplaintPriority' }
+        status: { $ref: '#/components/schemas/ComplaintStatus' }
+        description: { type: string }
+        submittedAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        statutoryDueDate: { type: string, format: date-time }
+        attachments:
+          type: array
+          items: { $ref: '#/components/schemas/ComplaintAttachment' }
+    ComplaintListResponse:
+      type: object
+      required: [data, metadata]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/ComplaintRecord' }
+        metadata:
+          type: object
+          required: [total]
+          properties:
+            total: { type: integer }
+    ComplaintCategoriesResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/ComplaintCategory' }
+    ComplaintCreateRequest:
+      type: object
+      required: [subjectCategory, description]
+      properties:
+        subjectCategory: { $ref: '#/components/schemas/ComplaintCategory' }
+        description: { type: string, maxLength: 5000 }
+    ComplaintCreateResponse:
+      type: object
+      description: >-
+        Trimmed from complaint-server's full ComplaintCreateResponse; the
+        rest of the created record is available via GET /complaints/{id}.
+      required: [id, referenceId]
+      properties:
+        id: { type: string, format: uuid }
+        referenceId: { type: string }
+    ComplaintTimelineEntry:
+      type: object
+      required: [id, type, isPublic, actorRole, message, attachments, createdTime]
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [STATUS_CHANGE, COMMENT, INTERNAL_NOTE] }
+        isPublic: { type: boolean }
+        actorUserId: { type: string, nullable: true }
+        actorRole: { $ref: '#/components/schemas/ComplaintActorRole' }
+        message: { type: string }
+        fromStatus: { allOf: [{ $ref: '#/components/schemas/ComplaintStatus' }], nullable: true }
+        toStatus: { allOf: [{ $ref: '#/components/schemas/ComplaintStatus' }], nullable: true }
+        attachments:
+          type: array
+          items: { $ref: '#/components/schemas/ComplaintAttachment' }
+        createdTime: { type: string, format: date-time }
+    ComplaintTimelineListResponse:
+      type: object
+      required: [data]
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/ComplaintTimelineEntry' }
+    ComplaintMessageRequest:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+        isPublic:
+          type: boolean
+          description: >-
+            Ignored (forced true) under the self surface. Under management,
+            defaults to true if omitted; only a Complaint Officer may set it
+            false, to post an officer-internal note.
+        toStatus:
+          allOf: [{ $ref: '#/components/schemas/ComplaintStatus' }]
+          nullable: true
+          description: Optional — transitions the complaint in the same call as posting this message.
+    ComplaintCommentCreateResponse:
+      type: object
+      description: Trimmed from complaint-server's full comment response.
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+    ComplaintStatusUpdateRequest:
+      type: object
+      required: [toStatus, note]
+      properties:
+        toStatus: { $ref: '#/components/schemas/ComplaintStatus' }
+        note: { type: string }
+    ComplaintStatusUpdateResponse:
+      type: object
+      required: [status]
+      properties:
+        status: { $ref: '#/components/schemas/ComplaintStatus' }
   responses:
     AuthError:
       description: Authentication request rejected.

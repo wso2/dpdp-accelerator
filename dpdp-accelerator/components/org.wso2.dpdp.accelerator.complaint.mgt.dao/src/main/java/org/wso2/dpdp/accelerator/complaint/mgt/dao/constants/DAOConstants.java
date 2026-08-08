@@ -13,7 +13,7 @@ public class DAOConstants {
     // ComplaintStatus
     public static final String STATUS_OPEN = "OPEN";
     public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
-    public static final String STATUS_AWAITING_COMPLAINANT_INFO = "AWAITING_COMPLAINANT_INFO";
+    public static final String STATUS_WAITING_ON_CLIENT = "WAITING_ON_CLIENT";
     public static final String STATUS_AWAITING_INTERNAL_REVIEW = "AWAITING_INTERNAL_REVIEW";
     public static final String STATUS_RESOLVED = "RESOLVED";
 

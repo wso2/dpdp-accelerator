@@ -7,10 +7,6 @@ import java.time.Instant;
 
 /**
  * Generates the human-facing REFERENCE_ID (e.g. "CMP-2026-04821") described in the ER diagram.
- * Note: the OpenAPI spec's response schemas do not currently expose a referenceId field - this
- * generator/DTO field is included on the assumption that the human-readable ticket number is meant
- * to be surfaced to callers (otherwise there would be no reason to store it). Flag this to the
- * front-end/BFF team so the field can be added to the published spec if it is in fact wanted.
  */
 public class ReferenceIdGenerator {
 

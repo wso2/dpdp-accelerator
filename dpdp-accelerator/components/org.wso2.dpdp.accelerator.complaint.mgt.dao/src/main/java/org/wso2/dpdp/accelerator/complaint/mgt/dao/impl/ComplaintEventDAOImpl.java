@@ -21,11 +21,17 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
 
     @Override
     public boolean addEvent(ComplaintEvent event) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        try {
-            conn = DBUtil.getConnection();
-            ps = conn.prepareStatement(QueryConstants.ADD_COMPLAINT_EVENT);
+        try (Connection conn = DBUtil.getConnection()) {
+            return addEvent(conn, event);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error adding complaint event for complaint: " + event.getComplaintId(), e);
+        }
+        return false;
+    }
+
+    /** Overload for callers composing this write into a caller-owned {@link DBUtil#executeInTransaction}. */
+    public boolean addEvent(Connection conn, ComplaintEvent event) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(QueryConstants.ADD_COMPLAINT_EVENT)) {
             ps.setString(1, event.getEventId());
             ps.setString(2, event.getOrgId());
             ps.setString(3, event.getComplaintId());
@@ -37,12 +43,7 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
             ps.setString(9, event.getToStatus());
             ps.setLong(10, event.getActionTime());
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error adding complaint event for complaint: " + event.getComplaintId(), e);
-        } finally {
-            DBUtil.closeAll(conn, ps, null);
         }
-        return false;
     }
 
     @Override

@@ -637,7 +637,7 @@ components:
       enum: [CRITICAL, HIGH, MEDIUM, LOW]
     ComplaintStatus:
       type: string
-      enum: [OPEN, IN_PROGRESS, AWAITING_COMPLAINANT_INFO, AWAITING_INTERNAL_REVIEW, RESOLVED]
+      enum: [OPEN, IN_PROGRESS, WAITING_ON_CLIENT, AWAITING_INTERNAL_REVIEW, RESOLVED]
     ComplaintTimelineEntryType:
       type: string
       description: >

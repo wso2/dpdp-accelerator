@@ -92,22 +92,24 @@ public class ComplaintDAOImpl implements ComplaintDAO {
 
     @Override
     public boolean updateStatus(String complaintId, String orgId, String newStatus, long updatedTime) {
-        Connection conn = null;
-        PreparedStatement ps = null;
-        try {
-            conn = DBUtil.getConnection();
-            ps = conn.prepareStatement(QueryConstants.UPDATE_COMPLAINT_STATUS);
+        try (Connection conn = DBUtil.getConnection()) {
+            return updateStatus(conn, complaintId, orgId, newStatus, updatedTime);
+        } catch (SQLException e) {
+            LOGGER.log(Level.SEVERE, "Error updating status for complaint: " + complaintId, e);
+        }
+        return false;
+    }
+
+    /** Overload for callers composing this write into a caller-owned {@link DBUtil#executeInTransaction}. */
+    public boolean updateStatus(Connection conn, String complaintId, String orgId, String newStatus,
+            long updatedTime) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(QueryConstants.UPDATE_COMPLAINT_STATUS)) {
             ps.setString(1, newStatus);
             ps.setLong(2, updatedTime);
             ps.setString(3, complaintId);
             ps.setString(4, orgId);
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error updating status for complaint: " + complaintId, e);
-        } finally {
-            DBUtil.closeAll(conn, ps, null);
         }
-        return false;
     }
 
     @Override

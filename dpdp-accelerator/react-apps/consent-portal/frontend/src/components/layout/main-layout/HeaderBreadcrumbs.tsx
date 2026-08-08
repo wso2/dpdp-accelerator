@@ -47,7 +47,72 @@ function buildBreadcrumbItems(
   elementsLabel: string,
   administrationLabel: string,
   administrationConsentsLabel: string,
+  myComplaintsLabel: string,
+  complaintManagementLabel: string,
 ): BreadcrumbItem[] {
+  const complaintCaseDetailsMatch = pathname.match(/^\/complaint-management\/([^/]+)$/)
+
+  if (complaintCaseDetailsMatch) {
+    return [
+      { label: homeLabel, path: '/dashboard', isCurrent: false },
+      {
+        label: administrationLabel,
+        path: '/complaint-management',
+        isCurrent: false,
+      },
+      {
+        label: complaintManagementLabel,
+        path: '/complaint-management',
+        isCurrent: false,
+      },
+      {
+        label: safeDecodeURIComponent(complaintCaseDetailsMatch[1]),
+        path: pathname,
+        isCurrent: true,
+      },
+    ]
+  }
+
+  if (pathname.startsWith('/complaint-management')) {
+    return [
+      { label: homeLabel, path: '/dashboard', isCurrent: false },
+      {
+        label: administrationLabel,
+        path: '/complaint-management',
+        isCurrent: false,
+      },
+      {
+        label: complaintManagementLabel,
+        path: '/complaint-management',
+        isCurrent: true,
+      },
+    ]
+  }
+
+  const complaintDetailsMatch = pathname.match(/^\/complaints\/([^/]+)$/)
+
+  if (complaintDetailsMatch) {
+    return [
+      { label: homeLabel, path: '/dashboard', isCurrent: false },
+      {
+        label: myComplaintsLabel,
+        path: '/complaints',
+        isCurrent: false,
+      },
+      {
+        label: safeDecodeURIComponent(complaintDetailsMatch[1]),
+        path: pathname,
+        isCurrent: true,
+      },
+    ]
+  }
+
+  if (pathname.startsWith('/complaints')) {
+    return [
+      { label: homeLabel, path: '/dashboard', isCurrent: false },
+      { label: myComplaintsLabel, path: '/complaints', isCurrent: true },
+    ]
+  }
   const adminConsentDetailsMatch = pathname.match(/^\/administration\/consents\/([^/]+)$/)
 
   if (adminConsentDetailsMatch) {
@@ -178,6 +243,8 @@ function HeaderBreadcrumbs({ currentLabel }: HeaderBreadcrumbsProps): React.JSX.
     t('sidebar.elements'),
     t('sidebar.administration'),
     t('sidebar.adminConsents'),
+    t('sidebar.myComplaints'),
+    t('sidebar.complaintManagement'),
   ).map((item) => (item.isCurrent && currentLabel ? { ...item, label: currentLabel } : item))
 
   return (

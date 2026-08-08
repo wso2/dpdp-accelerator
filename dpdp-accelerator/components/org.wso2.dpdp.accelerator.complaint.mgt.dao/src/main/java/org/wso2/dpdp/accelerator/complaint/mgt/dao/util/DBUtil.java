@@ -40,6 +40,30 @@ public class DBUtil {
         }
     }
 
+    /** Unit of work run against a single connection inside {@link #executeInTransaction}. */
+    @FunctionalInterface
+    public interface TransactionalWork {
+        void execute(Connection conn) throws SQLException;
+    }
+
+    /**
+     * Runs the given work against a single connection with auto-commit disabled, committing on success and
+     * rolling back if the work throws. Lets callers group multiple DAO writes (e.g. a status update and its
+     * audit event) into one atomic transaction.
+     */
+    public static void executeInTransaction(TransactionalWork work) throws SQLException {
+        try (Connection conn = getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                work.execute(conn);
+                conn.commit();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        }
+    }
+
     public static void closeAll(Connection conn, PreparedStatement ps, ResultSet rs) {
         if (rs != null) {
             try {
