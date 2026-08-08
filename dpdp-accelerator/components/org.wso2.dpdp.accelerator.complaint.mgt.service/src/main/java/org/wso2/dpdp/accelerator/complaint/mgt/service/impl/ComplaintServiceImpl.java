@@ -24,6 +24,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintErrorCode;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServiceConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.PriorityMapper;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.ReferenceIdGenerator;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.StatutoryDuePeriodPolicy;
@@ -49,27 +50,28 @@ public class ComplaintServiceImpl implements ComplaintService {
     @Override
     public Complaint createComplaint(String orgId, String userId, String subjectCategory, String description) {
         if (orgId == null || orgId.trim().isEmpty()) {
-            throw new ComplaintException(ComplaintErrorCode.INVALID_REQUEST_BODY, "Header 'org-id' is required.");
+            throw new ComplaintException(ComplaintErrorCode.INVALID_REQUEST_BODY,
+                    ComplaintServiceConstants.ORG_ID_HEADER_REQUIRED_ERROR);
         }
         if (userId == null || userId.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'userId' is required and must not be blank.");
+                    ComplaintServiceConstants.USER_ID_REQUIRED_ERROR);
         }
         if (subjectCategory == null || subjectCategory.trim().isEmpty()) {
-            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED, "Field 'subjectCategory' is required.");
+            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
+                    ComplaintServiceConstants.SUBJECT_CATEGORY_REQUIRED_ERROR);
         }
         if (!isValidCategory(subjectCategory)) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'subjectCategory' must be one of the defined ComplaintCategory enum values; received '"
-                            + subjectCategory + "'.");
+                    String.format(ComplaintServiceConstants.INVALID_SUBJECT_CATEGORY_ERROR, subjectCategory));
         }
         if (description == null || description.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'description' is required and must not be blank.");
+                    ComplaintServiceConstants.DESCRIPTION_REQUIRED_ERROR);
         }
         if (description.length() > 5000) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'description' must not exceed 5000 characters.");
+                    ComplaintServiceConstants.DESCRIPTION_TOO_LONG_ERROR);
         }
 
         String complaintId = UUID.randomUUID().toString();
@@ -83,7 +85,8 @@ public class ComplaintServiceImpl implements ComplaintService {
 
         boolean created = complaintDAO.addComplaint(complaint);
         if (!created) {
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR, "Failed to create complaint.");
+            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                    ComplaintServiceConstants.CREATE_COMPLAINT_FAILED_ERROR);
         }
 
         return complaint;
@@ -98,12 +101,12 @@ public class ComplaintServiceImpl implements ComplaintService {
     public Complaint requireComplaint(String orgId, String complaintId) {
         if (complaintId == null || complaintId.trim().isEmpty() || orgId == null || orgId.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.COMPLAINT_NOT_FOUND,
-                    "No complaint exists with the given ID for this organization.");
+                    ComplaintServiceConstants.COMPLAINT_NOT_FOUND_ERROR);
         }
         Optional<Complaint> complaintOpt = complaintDAO.getComplaintById(complaintId.trim(), orgId.trim());
         if (complaintOpt.isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.COMPLAINT_NOT_FOUND,
-                    "No complaint exists with id '" + complaintId + "' for this organization.");
+                    String.format(ComplaintServiceConstants.COMPLAINT_NOT_FOUND_BY_ID_ERROR, complaintId));
         }
         return complaintOpt.get();
     }

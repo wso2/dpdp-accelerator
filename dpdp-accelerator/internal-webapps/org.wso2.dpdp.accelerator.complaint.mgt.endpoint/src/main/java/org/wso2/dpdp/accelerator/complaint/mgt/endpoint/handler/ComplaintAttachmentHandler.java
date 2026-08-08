@@ -28,6 +28,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintEventService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintErrorCode;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServiceConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.impl.ComplaintAttachmentServiceImpl;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.impl.ComplaintEventServiceImpl;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.impl.ComplaintServiceImpl;
@@ -95,7 +96,7 @@ public class ComplaintAttachmentHandler {
                 files.add(new UploadedFile(fileName, contentType, data));
             } catch (IOException e) {
                 throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                        "Could not read uploaded file content.");
+                        ComplaintServiceConstants.FILE_READ_FAILED_ERROR);
             }
         }
         return files;

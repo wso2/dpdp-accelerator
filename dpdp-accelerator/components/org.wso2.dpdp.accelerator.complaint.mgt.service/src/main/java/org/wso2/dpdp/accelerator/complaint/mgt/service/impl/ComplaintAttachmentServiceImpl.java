@@ -27,6 +27,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintEventService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintErrorCode;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServiceConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.AttachmentPolicy;
 
 import java.util.ArrayList;
@@ -72,7 +73,7 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
             String actorUserId, List<UploadedFile> files) {
         if (actorUserId == null || actorUserId.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'actorUserId' is required and must not be blank.");
+                    ComplaintServiceConstants.ACTOR_USER_ID_REQUIRED_ERROR);
         }
 
         // getTimelineEntry() already 404s (CO-4040) if the complaint or the comment doesn't exist.
@@ -80,7 +81,7 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
 
         if (entry.getActorUserId() == null || !entry.getActorUserId().equals(actorUserId.trim())) {
             throw new ComplaintException(ComplaintErrorCode.FORBIDDEN,
-                    "actorUserId '" + actorUserId + "' does not match the actorUserId that created this comment.");
+                    String.format(ComplaintServiceConstants.ACTOR_USER_ID_MISMATCH_ERROR, actorUserId));
         }
 
         validateFiles(files);
@@ -109,7 +110,7 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
                 attachmentDAO.getAttachmentWithDataById(attachmentId, orgId, complaintId);
         if (attachmentOpt.isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.ATTACHMENT_NOT_FOUND,
-                    "No attachment exists with attachmentId '" + attachmentId + "' for this organization.");
+                    String.format(ComplaintServiceConstants.ATTACHMENT_NOT_FOUND_ERROR, attachmentId));
         }
         ComplaintAttachment attachment = attachmentOpt.get();
 
@@ -121,8 +122,7 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
                     complaintEventService.getTimelineEntry(orgId, complaintId, attachment.getEventId());
             if (!entry.isPublic()) {
                 throw new ComplaintException(ComplaintErrorCode.FORBIDDEN,
-                        "Requesting user is not authorized to access an attachment bound to a timeline entry with "
-                                + "isPublic=false.");
+                        ComplaintServiceConstants.INTERNAL_ATTACHMENT_ACCESS_DENIED_ERROR);
             }
         }
 
@@ -131,22 +131,24 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
 
     private void validateFiles(List<UploadedFile> files) {
         if (files == null || files.isEmpty()) {
-            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED, "At least one file is required.");
+            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
+                    ComplaintServiceConstants.FILE_LIST_REQUIRED_ERROR);
         }
         long maxSize = AttachmentPolicy.getMaxSizeBytes();
         for (UploadedFile file : files) {
             if (file.getData() == null || file.getData().length == 0) {
                 throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                        "Uploaded file must not be empty.");
+                        ComplaintServiceConstants.UPLOADED_FILE_EMPTY_ERROR);
             }
             if (!AttachmentPolicy.isAllowedContentType(file.getContentType())) {
                 throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                        "File contentType '" + file.getContentType() + "' is not one of the supported types.");
+                        String.format(ComplaintServiceConstants.UNSUPPORTED_CONTENT_TYPE_ERROR,
+                                file.getContentType()));
             }
             if (file.getData().length > maxSize) {
                 throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                        "File '" + file.getFileName() + "' exceeds the maximum allowed size of " + maxSize
-                                + " bytes.");
+                        String.format(ComplaintServiceConstants.FILE_SIZE_EXCEEDED_ERROR, file.getFileName(),
+                                maxSize));
             }
         }
     }
@@ -159,7 +161,8 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
 
         boolean added = attachmentDAO.addAttachment(attachment);
         if (!added) {
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR, "Failed to store attachment.");
+            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                    ComplaintServiceConstants.ATTACHMENT_STORE_FAILED_ERROR);
         }
         return attachment;
     }

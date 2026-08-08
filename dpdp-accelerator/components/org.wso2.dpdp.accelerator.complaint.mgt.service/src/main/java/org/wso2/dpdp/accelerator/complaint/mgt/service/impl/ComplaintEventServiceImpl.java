@@ -30,6 +30,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintEventService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintErrorCode;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServiceConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.StatusTransitionValidator;
 
 import java.util.List;
@@ -71,21 +72,21 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
 
         if (message == null || message.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'message' is required and must not be blank.");
+                    ComplaintServiceConstants.MESSAGE_REQUIRED_ERROR);
         }
         if (actorUserId == null || actorUserId.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'actorUserId' is required and must not be blank.");
+                    ComplaintServiceConstants.ACTOR_USER_ID_REQUIRED_ERROR);
         }
         // SYSTEM is deliberately excluded - only ever written by the server itself, never accepted from a caller.
         if (!ComplaintActorRole.USER.name().equals(actorRole)
                 && !ComplaintActorRole.COMPLAINT_OFFICER.name().equals(actorRole)) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'actorRole' must be one of USER, COMPLAINT_OFFICER.");
+                    ComplaintServiceConstants.ACTOR_ROLE_INVALID_ERROR);
         }
         if (!isPublic && !ComplaintActorRole.COMPLAINT_OFFICER.name().equals(actorRole)) {
             throw new ComplaintException(ComplaintErrorCode.FORBIDDEN,
-                    "Actor role '" + actorRole + "' cannot set isPublic to false on a timeline entry.");
+                    String.format(ComplaintServiceConstants.INTERNAL_NOTE_FORBIDDEN_ERROR, actorRole));
         }
 
         boolean hasToStatus = toStatus != null && !toStatus.trim().isEmpty();
@@ -93,13 +94,13 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
         if (hasToStatus) {
             if (!ComplaintStatus.isValid(toStatus)) {
                 throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                        "Field 'toStatus' must be one of the defined ComplaintStatus enum values; received '"
-                                + toStatus + "'.");
+                        String.format(ComplaintServiceConstants.INVALID_STATUS_VALUE_ERROR, toStatus));
             }
             fromStatus = complaint.getStatus();
             if (!StatusTransitionValidator.isValidTransition(fromStatus, toStatus)) {
                 throw new ComplaintException(ComplaintErrorCode.INVALID_STATE_TRANSITION,
-                        "Cannot transition complaint from status '" + fromStatus + "' to '" + toStatus + "'.");
+                        String.format(ComplaintServiceConstants.INVALID_STATUS_TRANSITION_ERROR, fromStatus,
+                                toStatus));
             }
         }
 
@@ -110,13 +111,15 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
 
         boolean added = complaintEventDAO.addEvent(event);
         if (!added) {
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR, "Failed to add comment.");
+            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                    ComplaintServiceConstants.ADD_COMMENT_FAILED_ERROR);
         }
 
         if (hasToStatus) {
             boolean statusUpdated = complaintDAO.updateStatus(complaintId, orgId, toStatus, now);
             if (!statusUpdated) {
-                throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR, "Failed to update complaint status.");
+                throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                        ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR);
             }
         }
 
@@ -129,7 +132,7 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
         Optional<ComplaintEvent> eventOpt = complaintEventDAO.getEventById(eventId, orgId, complaintId);
         if (eventOpt.isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.COMMENT_NOT_FOUND,
-                    "No timeline entry exists with id '" + eventId + "' under this complaint.");
+                    String.format(ComplaintServiceConstants.TIMELINE_ENTRY_NOT_FOUND_ERROR, eventId));
         }
         return eventOpt.get();
     }
@@ -140,28 +143,29 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
         Complaint complaint = complaintService.requireComplaint(orgId, complaintId);
 
         if (toStatus == null || toStatus.trim().isEmpty()) {
-            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED, "Field 'toStatus' is required.");
+            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
+                    ComplaintServiceConstants.TO_STATUS_REQUIRED_ERROR);
         }
         if (!ComplaintStatus.isValid(toStatus)) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'toStatus' must be one of the defined ComplaintStatus enum values; received '"
-                            + toStatus + "'.");
+                    String.format(ComplaintServiceConstants.INVALID_STATUS_VALUE_ERROR, toStatus));
         }
         if (RESOLVED.name().equals(toStatus) && (note == null || note.trim().isEmpty())) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                    "Field 'note' is required when transitioning to status 'RESOLVED'.");
+                    ComplaintServiceConstants.NOTE_REQUIRED_FOR_RESOLVED_ERROR);
         }
 
         String fromStatus = complaint.getStatus();
         if (!StatusTransitionValidator.isValidTransition(fromStatus, toStatus)) {
             throw new ComplaintException(ComplaintErrorCode.INVALID_STATE_TRANSITION,
-                    "Cannot transition complaint from status '" + fromStatus + "' to '" + toStatus + "'.");
+                    String.format(ComplaintServiceConstants.INVALID_STATUS_TRANSITION_ERROR, fromStatus, toStatus));
         }
 
         long now = System.currentTimeMillis();
         boolean statusUpdated = complaintDAO.updateStatus(complaintId, orgId, toStatus, now);
         if (!statusUpdated) {
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR, "Failed to update complaint status.");
+            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                    ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR);
         }
 
         String eventId = UUID.randomUUID().toString();
