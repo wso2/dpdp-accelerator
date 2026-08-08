@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.service.impl;
 
 import org.junit.jupiter.api.AfterEach;
@@ -8,11 +26,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintAttachmentDAO;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintAttachmentService.UploadedFile;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintEventService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintAttachmentDTO;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintTimelineEntryDTO;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
 
 import java.util.List;
@@ -108,7 +125,7 @@ class ComplaintAttachmentServiceImplTest {
     void uploadComplaintAttachmentsStoresEachFileWithNullEventId() {
         when(attachmentDAO.addAttachment(any(ComplaintAttachment.class))).thenReturn(true);
 
-        List<ComplaintAttachmentDTO> result = attachmentService.uploadComplaintAttachments("org1", "c1",
+        List<ComplaintAttachment> result = attachmentService.uploadComplaintAttachments("org1", "c1",
                 List.of(pdfFile("a.pdf", 10), pdfFile("b.pdf", 20)));
 
         assertEquals(2, result.size());
@@ -139,7 +156,7 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void uploadCommentAttachmentsThrowsForbiddenWhenActorDoesNotMatchCommentAuthor() {
-        ComplaintTimelineEntryDTO entry = new ComplaintTimelineEntryDTO();
+        ComplaintEvent entry = new ComplaintEvent();
         entry.setActorUserId("original-author");
         when(complaintEventService.getTimelineEntry("org1", "c1", "e1")).thenReturn(entry);
 
@@ -153,12 +170,12 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void uploadCommentAttachmentsStoresFilesBoundToTheEventWhenActorMatches() {
-        ComplaintTimelineEntryDTO entry = new ComplaintTimelineEntryDTO();
+        ComplaintEvent entry = new ComplaintEvent();
         entry.setActorUserId("author1");
         when(complaintEventService.getTimelineEntry("org1", "c1", "e1")).thenReturn(entry);
         when(attachmentDAO.addAttachment(any(ComplaintAttachment.class))).thenReturn(true);
 
-        List<ComplaintAttachmentDTO> result = attachmentService.uploadCommentAttachments("org1", "c1", "e1",
+        List<ComplaintAttachment> result = attachmentService.uploadCommentAttachments("org1", "c1", "e1",
                 "author1", List.of(pdfFile("a.pdf", 10)));
 
         assertEquals(1, result.size());
@@ -175,7 +192,7 @@ class ComplaintAttachmentServiceImplTest {
         attachment.setSizeBytesOverride(123L);
         when(attachmentDAO.listAttachmentsForComplaint("org1", "c1")).thenReturn(List.of(attachment));
 
-        List<ComplaintAttachmentDTO> result = attachmentService.listAttachmentsForComplaint("org1", "c1");
+        List<ComplaintAttachment> result = attachmentService.listAttachmentsForComplaint("org1", "c1");
 
         assertEquals(1, result.size());
         assertEquals("a1", result.get(0).getAttachmentId());
@@ -186,7 +203,7 @@ class ComplaintAttachmentServiceImplTest {
     void listAttachmentsForEventMapsDaoResultsToMetadataDtos() {
         when(attachmentDAO.listAttachmentsForEvent("org1", "c1", "e1")).thenReturn(List.of());
 
-        List<ComplaintAttachmentDTO> result = attachmentService.listAttachmentsForEvent("org1", "c1", "e1");
+        List<ComplaintAttachment> result = attachmentService.listAttachmentsForEvent("org1", "c1", "e1");
 
         assertTrue(result.isEmpty());
     }
@@ -209,10 +226,10 @@ class ComplaintAttachmentServiceImplTest {
                 "application/pdf", new byte[]{1, 2, 3}, 100L);
         when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
 
-        ComplaintAttachmentDTO dto = attachmentService.downloadAttachment("org1", "c1", "a1", "USER");
+        ComplaintAttachment result = attachmentService.downloadAttachment("org1", "c1", "a1", "USER");
 
-        assertEquals("a1", dto.getAttachmentId());
-        assertEquals(3, dto.getContent().length);
+        assertEquals("a1", result.getAttachmentId());
+        assertEquals(3, result.getFileData().length);
     }
 
     @Test
@@ -220,7 +237,7 @@ class ComplaintAttachmentServiceImplTest {
         ComplaintAttachment attachment = new ComplaintAttachment("a1", "org1", "c1", "e1", "a.pdf",
                 "application/pdf", new byte[]{1}, 100L);
         when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
-        ComplaintTimelineEntryDTO entry = new ComplaintTimelineEntryDTO();
+        ComplaintEvent entry = new ComplaintEvent();
         entry.setPublic(false);
         when(complaintEventService.getTimelineEntry("org1", "c1", "e1")).thenReturn(entry);
 
@@ -235,13 +252,13 @@ class ComplaintAttachmentServiceImplTest {
         ComplaintAttachment attachment = new ComplaintAttachment("a1", "org1", "c1", "e1", "a.pdf",
                 "application/pdf", new byte[]{1}, 100L);
         when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
-        ComplaintTimelineEntryDTO entry = new ComplaintTimelineEntryDTO();
+        ComplaintEvent entry = new ComplaintEvent();
         entry.setPublic(true);
         when(complaintEventService.getTimelineEntry("org1", "c1", "e1")).thenReturn(entry);
 
-        ComplaintAttachmentDTO dto = attachmentService.downloadAttachment("org1", "c1", "a1", "USER");
+        ComplaintAttachment result = attachmentService.downloadAttachment("org1", "c1", "a1", "USER");
 
-        assertEquals("a1", dto.getAttachmentId());
+        assertEquals("a1", result.getAttachmentId());
     }
 
     @Test
@@ -250,9 +267,9 @@ class ComplaintAttachmentServiceImplTest {
                 "application/pdf", new byte[]{1}, 100L);
         when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
 
-        ComplaintAttachmentDTO dto = attachmentService.downloadAttachment("org1", "c1", "a1", null);
+        ComplaintAttachment result = attachmentService.downloadAttachment("org1", "c1", "a1", null);
 
-        assertEquals("a1", dto.getAttachmentId());
+        assertEquals("a1", result.getAttachmentId());
         verify(complaintEventService, never()).getTimelineEntry(any(), any(), any());
     }
 
@@ -262,9 +279,9 @@ class ComplaintAttachmentServiceImplTest {
                 "application/pdf", new byte[]{1}, 100L);
         when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
 
-        ComplaintAttachmentDTO dto = attachmentService.downloadAttachment("org1", "c1", "a1", "COMPLAINT_OFFICER");
+        ComplaintAttachment result = attachmentService.downloadAttachment("org1", "c1", "a1", "COMPLAINT_OFFICER");
 
-        assertEquals("a1", dto.getAttachmentId());
+        assertEquals("a1", result.getAttachmentId());
         verify(complaintEventService, never()).getTimelineEntry(any(), any(), any());
     }
 }

@@ -35,6 +35,7 @@
     -->
     <modules>
         <module>react-apps</module>
+        <module>components/org.wso2.dpdp.common</module>
         <module>components/org.wso2.dpdp.accelerator.complaint.mgt.dao</module>
         <module>components/org.wso2.dpdp.accelerator.complaint.mgt.service</module>
         <module>internal-webapps/org.wso2.dpdp.accelerator.complaint.mgt.endpoint</module>

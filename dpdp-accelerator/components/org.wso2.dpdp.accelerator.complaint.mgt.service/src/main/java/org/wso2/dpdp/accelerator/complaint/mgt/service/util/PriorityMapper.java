@@ -1,26 +1,43 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.service.util;
+
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintPriority;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.PRIORITY_CRITICAL;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.PRIORITY_HIGH;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.PRIORITY_LOW;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.PRIORITY_MEDIUM;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintPriority.CRITICAL;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintPriority.HIGH;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintPriority.LOW;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintPriority.MEDIUM;
 
 /**
  * ComplaintPriority is "server-derived, never client-supplied" per the API spec. This maps each
  * ComplaintCategory to a default priority, and the set of its keys is also the set of valid
  * ComplaintCategory values (see ComplaintServiceImpl#isValidCategory). The mapping below is the
  * built-in default; it is replaced wholesale by the [categoryPriority] table in deployment.toml
- * when present, via configure() - see Main#loadCategoryPriorityMapping.
+ * when present, via configure() - see AppBootstrap#loadDeploymentConfig in the endpoint webapp
+ * module, which is invoked once at servlet context startup by AppContextListener.
  */
 public class PriorityMapper {
-
-    private static final Set<String> VALID_PRIORITIES =
-            Set.of(PRIORITY_CRITICAL, PRIORITY_HIGH, PRIORITY_MEDIUM, PRIORITY_LOW);
 
     private static volatile Map<String, String> categoryToPriority = buildDefaultMapping();
 
@@ -29,16 +46,16 @@ public class PriorityMapper {
 
     private static Map<String, String> buildDefaultMapping() {
         Map<String, String> defaults = new HashMap<>();
-        defaults.put("DATA_BREACH", PRIORITY_CRITICAL);
-        defaults.put("UNAUTHORIZED_DATA_SHARING", PRIORITY_HIGH);
-        defaults.put("CONSENT_WITHDRAWN_DATA_STILL_USED", PRIORITY_HIGH);
-        defaults.put("PURPOSE_VIOLATION", PRIORITY_HIGH);
-        defaults.put("DATA_ACCESS_DENIED", PRIORITY_HIGH);
-        defaults.put("DATA_ERASURE_NOT_COMPLETED", PRIORITY_MEDIUM);
-        defaults.put("DATA_CORRECTION_NOT_COMPLETED", PRIORITY_MEDIUM);
-        defaults.put("CONSENT_LIFECYCLE_ISSUE", PRIORITY_MEDIUM);
-        defaults.put("EXCESSIVE_DATA_COLLECTION", PRIORITY_MEDIUM);
-        defaults.put("OTHER", PRIORITY_LOW);
+        defaults.put("DATA_BREACH", CRITICAL.name());
+        defaults.put("UNAUTHORIZED_DATA_SHARING", HIGH.name());
+        defaults.put("CONSENT_WITHDRAWN_DATA_STILL_USED", HIGH.name());
+        defaults.put("PURPOSE_VIOLATION", HIGH.name());
+        defaults.put("DATA_ACCESS_DENIED", HIGH.name());
+        defaults.put("DATA_ERASURE_NOT_COMPLETED", MEDIUM.name());
+        defaults.put("DATA_CORRECTION_NOT_COMPLETED", MEDIUM.name());
+        defaults.put("CONSENT_LIFECYCLE_ISSUE", MEDIUM.name());
+        defaults.put("EXCESSIVE_DATA_COLLECTION", MEDIUM.name());
+        defaults.put("OTHER", LOW.name());
         return defaults;
     }
 
@@ -54,7 +71,7 @@ public class PriorityMapper {
         Map<String, String> validated = new HashMap<>();
         for (Map.Entry<String, String> entry : overrides.entrySet()) {
             String priority = entry.getValue() == null ? null : entry.getValue().trim().toUpperCase();
-            if (entry.getKey() != null && VALID_PRIORITIES.contains(priority)) {
+            if (entry.getKey() != null && ComplaintPriority.isValid(priority)) {
                 validated.put(entry.getKey().trim(), priority);
             }
         }
@@ -64,7 +81,7 @@ public class PriorityMapper {
     }
 
     public static String derivePriority(String category) {
-        return categoryToPriority.getOrDefault(category, PRIORITY_LOW);
+        return categoryToPriority.getOrDefault(category, LOW.name());
     }
 
     public static boolean isKnownCategory(String category) {

@@ -1,15 +1,35 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.service.util;
 
-import java.util.HashMap;
-import java.util.HashSet;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus;
+
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.STATUS_AWAITING_COMPLAINANT_INFO;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.STATUS_AWAITING_INTERNAL_REVIEW;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.STATUS_IN_PROGRESS;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.STATUS_OPEN;
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants.STATUS_RESOLVED;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.AWAITING_COMPLAINANT_INFO;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.AWAITING_INTERNAL_REVIEW;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.IN_PROGRESS;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.OPEN;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.RESOLVED;
 
 /**
  * Valid ComplaintStatus transitions.
@@ -27,23 +47,26 @@ import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants
  */
 public class StatusTransitionValidator {
 
-    private static final Map<String, Set<String>> ALLOWED_TRANSITIONS = new HashMap<>();
+    private static final Map<ComplaintStatus, Set<ComplaintStatus>> ALLOWED_TRANSITIONS =
+            new EnumMap<>(ComplaintStatus.class);
 
     static {
-        ALLOWED_TRANSITIONS.put(STATUS_OPEN, Set.of(STATUS_IN_PROGRESS, STATUS_AWAITING_COMPLAINANT_INFO));
-        ALLOWED_TRANSITIONS.put(STATUS_IN_PROGRESS,
-                Set.of(STATUS_AWAITING_COMPLAINANT_INFO, STATUS_RESOLVED));
-        ALLOWED_TRANSITIONS.put(STATUS_AWAITING_COMPLAINANT_INFO,
-                Set.of(STATUS_AWAITING_INTERNAL_REVIEW));
-        ALLOWED_TRANSITIONS.put(STATUS_AWAITING_INTERNAL_REVIEW, Set.of(STATUS_IN_PROGRESS, STATUS_RESOLVED));
-        ALLOWED_TRANSITIONS.put(STATUS_RESOLVED, new HashSet<>());
+        ALLOWED_TRANSITIONS.put(OPEN, EnumSet.of(IN_PROGRESS, AWAITING_COMPLAINANT_INFO));
+        ALLOWED_TRANSITIONS.put(IN_PROGRESS, EnumSet.of(AWAITING_COMPLAINANT_INFO, RESOLVED));
+        ALLOWED_TRANSITIONS.put(AWAITING_COMPLAINANT_INFO, EnumSet.of(AWAITING_INTERNAL_REVIEW));
+        ALLOWED_TRANSITIONS.put(AWAITING_INTERNAL_REVIEW, EnumSet.of(IN_PROGRESS, RESOLVED));
+        ALLOWED_TRANSITIONS.put(RESOLVED, EnumSet.noneOf(ComplaintStatus.class));
     }
 
     private StatusTransitionValidator() {
     }
 
+    /** fromStatus/toStatus are the raw column/API values; unknown values (not a ComplaintStatus) are rejected. */
     public static boolean isValidTransition(String fromStatus, String toStatus) {
-        Set<String> allowedTargets = ALLOWED_TRANSITIONS.get(fromStatus);
-        return allowedTargets != null && toStatus != null && allowedTargets.contains(toStatus);
+        if (!ComplaintStatus.isValid(fromStatus) || !ComplaintStatus.isValid(toStatus)) {
+            return false;
+        }
+        Set<ComplaintStatus> allowedTargets = ALLOWED_TRANSITIONS.get(ComplaintStatus.valueOf(fromStatus));
+        return allowedTargets.contains(ComplaintStatus.valueOf(toStatus));
     }
 }

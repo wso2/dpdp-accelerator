@@ -69,14 +69,18 @@ handling. It is independent of the consent portal - no browser UI, no shared ses
 
 Base path: `https://<host>:9443/api/dpdp/complaints/v1`
 
-**It has no authentication of its own.** Every request is trusted on a caller-supplied
-`org-id` header (and a `userId` field/param) rather than a validated token; callers are
-expected to be an internal gateway or BFF that has already authenticated the request.
-Because of this, the shipped `deployment.toml` carries a
-`[[resource.access_control]]` rule with `secure = "false"` for
-`(.*)/api/dpdp/complaints(.*)`, matching the consent portal's own carve-out - without it
-the Identity Server's authentication valve rejects every request with `401` before it
-reaches the servlet. Do not expose this context directly to untrusted callers.
+**It has no application-level authentication of its own** - the `org-id` header (and a
+`userId` field/param) identifies which organization's data to act on, not who the
+caller is. Instead, the shipped `deployment.toml` gates every operation behind the same
+`portal_complaint_{read,write}_{self,any}` scopes the portal BFF uses, via one
+`[[resource.access_control]]` rule per endpoint (context + `http_method` + `scopes`) -
+a token needs either the `self` or the `any` variant of the matching read/write scope,
+except complaint creation, which only accepts `portal_complaint_write_self` (there is no
+"create a complaint on someone else's behalf" capability). Self-vs-any ownership
+filtering itself happens in the application layer, not here. See the comment above
+those rules in `deployment.toml` for the full per-endpoint breakdown. Registering these
+as grantable OAuth scopes for a real caller (an internal gateway or BFF) is a separate
+setup step this accelerator does not yet automate.
 
 `GET /complaints/categories` returns every valid `subjectCategory` value together with
 the priority a complaint in that category is assigned (`[{"category": "DATA_BREACH",
@@ -86,13 +90,13 @@ without hardcoding the list, and to stay in sync with a `[categoryPriority]` ove
 
 ### Database
 
-Backed by a container-managed `javax.sql.DataSource`, declared in the webapp's own
-`META-INF/context.xml` and looked up via JNDI at `java:comp/env/jdbc/ComplaintDB` (see
-`DBUtil#getConnection()` in the complaint DAO module) — the same idiom the
-[financial-services-accelerator](https://github.com/wso2/financial-services-accelerator)
-uses for its own datasources, adapted for a plain Tomcat webapp rather than an
-OSGi-managed one. `configure.sh` step `[4/4]` fills in the real connection details from
-`configure.properties`:
+Backed by a Carbon-managed `javax.sql.DataSource`, declared as a `[datasource.ComplaintDB]`
+block in `deployment.toml` (the same mechanism the Identity Server's own built-in
+datasources use) and bound into the webapp's local JNDI tree via a `<ResourceLink>` in
+`META-INF/context.xml`, looked up at `java:comp/env/jdbc/ComplaintDB` (see
+`DBUtil#getConnection()` in the complaint DAO module). `configure.sh` step `[1/3]` fills
+in the real connection details from `configure.properties` when it installs
+`deployment.toml`:
 
 ```
 COMPLAINT_DB_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
@@ -103,15 +107,17 @@ COMPLAINT_DB_PASSWORD=<password>
 
 MySQL only for now; point `COMPLAINT_DB_URL` at an already-created, empty database - the
 schema (`COMPLAINT`, `COMPLAINT_EVENT`, `COMPLAINT_ATTACHMENT`) is created automatically
-on first startup. Edit `configure.properties`, not `context.xml` directly - re-running
-`configure.sh` overwrites the substituted values.
+on first startup. Edit `configure.properties`, not `deployment.toml` directly -
+re-running `configure.sh` overwrites the substituted values. (Carbon transcribes this
+value verbatim into `master-datasources.xml` at startup without XML-escaping it, so
+`configure.sh` escapes `&` in the URL itself before substitution - a raw `&` there would
+otherwise produce invalid XML and take down every datasource, not just this one.)
 
 If no `jdbc/ComplaintDB` resource is bound at all (for example, running the WAR outside
-this accelerator), `DBUtil` falls back to `DriverManager` using the `CO_DB_TYPE` /
-`CO_DB_URL` / `CO_DB_USER` / `CO_DB_PASS` system properties or environment variables,
-defaulting to an in-memory H2 database that is wiped on every restart. This fallback
-exists for standalone testing - a deployment through this accelerator should always go
-through the JNDI datasource above.
+this accelerator), `DBUtil` falls back to `DriverManager` using the `CO_DB_URL` /
+`CO_DB_USER` / `CO_DB_PASS` system properties, defaulting to a local MySQL instance if
+unset. This fallback exists for standalone testing - a deployment through this
+accelerator should always go through the JNDI datasource above.
 
 ## Notes on the underlying server
 

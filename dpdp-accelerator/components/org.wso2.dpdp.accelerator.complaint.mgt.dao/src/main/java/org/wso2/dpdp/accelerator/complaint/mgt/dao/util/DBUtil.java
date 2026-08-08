@@ -1,4 +1,24 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.util;
+
+import org.wso2.dpdp.common.config.ConfigProvider;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -16,11 +36,6 @@ public class DBUtil {
     private static final Logger LOGGER = Logger.getLogger(DBUtil.class.getName());
     private static DataSource dataSource = null;
 
-    private static final String DEFAULT_JDBC_URL = System.getProperty("CO_DB_URL",
-            "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&allowPublicKeyRetrieval=true");
-    private static final String DEFAULT_JDBC_USER = System.getProperty("CO_DB_USER", "root");
-    private static final String DEFAULT_JDBC_PASS = System.getProperty("CO_DB_PASS", "root");
-
     private DBUtil() {
     }
 
@@ -33,9 +48,17 @@ public class DBUtil {
             dataSource = (DataSource) ctx.lookup("java:comp/env/jdbc/ComplaintDB");
             return dataSource.getConnection();
         } catch (NamingException e) {
-            String dbUrl = System.getProperty("CO_DB_URL", DEFAULT_JDBC_URL);
-            String dbUser = System.getProperty("CO_DB_USER", DEFAULT_JDBC_USER);
-            String dbPass = System.getProperty("CO_DB_PASS", DEFAULT_JDBC_PASS);
+            // JNDI is only unavailable outside this accelerator (a plain unit test, or the WAR
+            // run standalone) - deployment.toml's [datasource.ComplaintDB] is still consulted
+            // first there via ConfigProvider, with the CO_DB_* system properties (set directly
+            // by H2TestDbSupport in tests) as the fallback beneath that.
+            String dbUrl = ConfigProvider.getString("datasource.ComplaintDB.url",
+                    System.getProperty("CO_DB_URL",
+                            "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&allowPublicKeyRetrieval=true"));
+            String dbUser = ConfigProvider.getString("datasource.ComplaintDB.username",
+                    System.getProperty("CO_DB_USER", "root"));
+            String dbPass = ConfigProvider.getString("datasource.ComplaintDB.password",
+                    System.getProperty("CO_DB_PASS", "root"));
             return DriverManager.getConnection(dbUrl, dbUser, dbPass);
         }
     }

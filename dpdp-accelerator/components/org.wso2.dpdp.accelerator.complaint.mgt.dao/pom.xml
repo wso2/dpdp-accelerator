@@ -32,6 +32,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.wso2.dpdp.accelerator</groupId>
+            <artifactId>org.wso2.dpdp.common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>

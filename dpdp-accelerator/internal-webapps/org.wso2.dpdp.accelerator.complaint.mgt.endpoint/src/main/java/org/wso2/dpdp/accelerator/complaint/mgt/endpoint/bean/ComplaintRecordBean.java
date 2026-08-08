@@ -1,8 +1,26 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean;
 
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.util.DateTimeUtil;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintAttachmentDTO;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +42,22 @@ public class ComplaintRecordBean {
     public ComplaintRecordBean() {
     }
 
-    public static ComplaintRecordBean from(ComplaintDTO dto, List<ComplaintAttachmentDTO> attachmentDTOs) {
+    public static ComplaintRecordBean from(Complaint complaint, List<ComplaintAttachment> attachments) {
         ComplaintRecordBean bean = new ComplaintRecordBean();
-        bean.id = dto.getId();
-        bean.referenceId = dto.getReferenceId();
-        bean.subjectCategory = dto.getSubjectCategory();
-        bean.priority = dto.getPriority();
-        bean.status = dto.getStatus();
-        bean.userId = dto.getUserId();
-        bean.description = dto.getDescription();
-        bean.submittedAt = DateTimeUtil.toIso(dto.getSubmittedTime());
-        bean.updatedAt = DateTimeUtil.toIso(dto.getUpdatedTime());
-        bean.statutoryDueDate = DateTimeUtil.toIso(dto.getStatutoryDueTime());
+        bean.id = complaint.getComplaintId();
+        bean.referenceId = complaint.getReferenceId();
+        bean.subjectCategory = complaint.getCategory();
+        bean.priority = complaint.getPriority();
+        bean.status = complaint.getStatus();
+        bean.userId = complaint.getUserId();
+        bean.description = complaint.getDescription();
+        bean.submittedAt = DateTimeUtil.toIso(complaint.getCreatedTime());
+        bean.updatedAt = DateTimeUtil.toIso(complaint.getUpdatedTime());
+        bean.statutoryDueDate = DateTimeUtil.toIso(complaint.getStatutoryDueTime());
 
         List<ComplaintAttachmentResponseBean> attachmentBeans = new ArrayList<>();
-        if (attachmentDTOs != null) {
-            for (ComplaintAttachmentDTO a : attachmentDTOs) {
+        if (attachments != null) {
+            for (ComplaintAttachment a : attachments) {
                 attachmentBeans.add(new ComplaintAttachmentResponseBean(a.getAttachmentId(), a.getFileName(),
                         a.getContentType(), a.getSizeBytes()));
             }

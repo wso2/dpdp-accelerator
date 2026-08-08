@@ -1,6 +1,25 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.queries.QueryConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.DBUtil;
@@ -40,10 +59,10 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error adding complaint for org: " + complaint.getOrgId(), e);
+            throw new ComplaintDAOException("Error adding complaint for org: " + complaint.getOrgId(), e);
         } finally {
             DBUtil.closeAll(conn, ps, null);
         }
-        return false;
     }
 
     @Override
@@ -62,6 +81,7 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting complaint by ID: " + complaintId, e);
+            throw new ComplaintDAOException("Error getting complaint by ID: " + complaintId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -84,6 +104,7 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error counting complaints by reference prefix for org: " + orgId, e);
+            throw new ComplaintDAOException("Error counting complaints by reference prefix for org: " + orgId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -104,10 +125,10 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating status for complaint: " + complaintId, e);
+            throw new ComplaintDAOException("Error updating status for complaint: " + complaintId, e);
         } finally {
             DBUtil.closeAll(conn, ps, null);
         }
-        return false;
     }
 
     @Override
@@ -166,6 +187,10 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         try {
             conn = DBUtil.getConnection();
 
+            // Two queries share the same WHERE clause/params built above: COUNT(*) first for the
+            // total (written back via the totalOut out-param), then the LIMIT/OFFSET query for
+            // the actual page. Both must run against the same filters so the reported total
+            // matches what's actually being paged through.
             PreparedStatement countPs = conn.prepareStatement(countSql.toString());
             for (int i = 0; i < params.size(); i++) {
                 countPs.setObject(i + 1, params.get(i));
@@ -190,6 +215,7 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error listing complaints for org: " + orgId, e);
+            throw new ComplaintDAOException("Error listing complaints for org: " + orgId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }

@@ -1,6 +1,26 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintEventDAO;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.queries.QueryConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.DBUtil;
@@ -39,10 +59,11 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error adding complaint event for complaint: " + event.getComplaintId(), e);
+            throw new ComplaintDAOException("Error adding complaint event for complaint: "
+                    + event.getComplaintId(), e);
         } finally {
             DBUtil.closeAll(conn, ps, null);
         }
-        return false;
     }
 
     @Override
@@ -62,6 +83,7 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting complaint event by ID: " + eventId, e);
+            throw new ComplaintDAOException("Error getting complaint event by ID: " + eventId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -124,6 +146,7 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error listing complaint events for complaint: " + complaintId, e);
+            throw new ComplaintDAOException("Error listing complaint events for complaint: " + complaintId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -132,7 +155,7 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
 
     private ComplaintEvent mapResultSetToEvent(ResultSet rs) throws SQLException {
         return new ComplaintEvent(
-                rs.getString("EVENT_ID"),
+                rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID),
                 rs.getString("ORG_ID"),
                 rs.getString("COMPLAINT_ID"),
                 rs.getString("ACTOR_USER_ID"),

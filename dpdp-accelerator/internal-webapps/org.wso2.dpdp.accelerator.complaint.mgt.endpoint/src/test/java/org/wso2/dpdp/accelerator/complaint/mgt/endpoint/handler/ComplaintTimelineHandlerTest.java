@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint.handler;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -5,10 +23,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.TimelineListResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintAttachmentService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintEventService;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintTimelineEntryDTO;
 
 import java.util.List;
 
@@ -36,12 +54,12 @@ class ComplaintTimelineHandlerTest {
         handler = new ComplaintTimelineHandler(complaintEventService, complaintAttachmentService);
     }
 
-    private ComplaintTimelineEntryDTO entry(String id) {
-        ComplaintTimelineEntryDTO dto = new ComplaintTimelineEntryDTO();
-        dto.setId(id);
-        dto.setType("COMMENT");
-        dto.setCreatedTime(100L);
-        return dto;
+    private ComplaintEvent entry(String id) {
+        ComplaintEvent event = new ComplaintEvent();
+        event.setEventId(id);
+        event.setPublic(true);
+        event.setActionTime(100L);
+        return event;
     }
 
     @Test

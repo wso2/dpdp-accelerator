@@ -18,28 +18,16 @@
  -->
 
 <!--
-    Tomcat picks this up automatically as this webapp's Context configuration. The Resource
-    below is a container-managed, pooled javax.sql.DataSource (Tomcat's default DBCP2-backed
-    factory applies since none is specified) bound at java:comp/env/jdbc/ComplaintDB - see
-    DBUtil#getConnection() in the DAO module for the JNDI lookup, and web.xml's <resource-ref>
-    for the declaration.
-
-    The CO_DB_* values below are plain substitution tokens, not Tomcat's own ${...} property
-    syntax: bin/configure.sh replaces them from configure.properties after this file is
-    deployed, the same way it substitutes IS_HOSTNAME/IS_ADMIN_USERNAME/IS_ADMIN_PASSWORD into
-    deployment.toml. Edit configure.properties, not this file, to change the database target.
+    Tomcat picks this up automatically as this webapp's Context configuration. The
+    ResourceLink below binds this webapp's local java:comp/env/jdbc/ComplaintDB name (see
+    DBUtil#getConnection() in the DAO module for the JNDI lookup, and web.xml's
+    <resource-ref> for the declaration) to the Carbon-managed pooled javax.sql.DataSource
+    Carbon registers globally as jdbc/ComplaintDB from the [datasource.ComplaintDB] block in
+    deployment.toml - see repository/resources/wso2is-7.3.0-deployment.toml. Edit
+    configure.properties, not this file or deployment.toml directly, to change the database
+    target; bin/configure.sh substitutes it into deployment.toml the same way it substitutes
+    IS_HOSTNAME/IS_ADMIN_USERNAME/IS_ADMIN_PASSWORD.
 -->
 <Context>
-    <Resource name="jdbc/ComplaintDB"
-              auth="Container"
-              type="javax.sql.DataSource"
-              driverClassName="CO_DB_DRIVER_CLASS_NAME"
-              url="CO_DB_URL"
-              username="CO_DB_USERNAME"
-              password="CO_DB_PASSWORD"
-              maxTotal="20"
-              maxIdle="10"
-              minIdle="5"
-              testOnBorrow="true"
-              validationQuery="SELECT 1"/>
+    <ResourceLink name="jdbc/ComplaintDB" global="jdbc/ComplaintDB" type="javax.sql.DataSource"/>
 </Context>

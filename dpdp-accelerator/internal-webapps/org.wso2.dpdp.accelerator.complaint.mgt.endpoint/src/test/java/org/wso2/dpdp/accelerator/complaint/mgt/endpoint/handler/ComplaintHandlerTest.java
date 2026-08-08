@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint.handler;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -5,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.CategoryListResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCategoryBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintCreateRequestBean;
@@ -16,7 +35,6 @@ import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintStatusUpda
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintAttachmentService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintEventService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintDTO;
 
 import java.util.List;
 
@@ -46,8 +64,9 @@ class ComplaintHandlerTest {
         handler = new ComplaintHandler(complaintService, complaintEventService, complaintAttachmentService);
     }
 
-    private ComplaintDTO sampleDto(String id, String status) {
-        return new ComplaintDTO(id, "CMP-2026-00001", "DATA_BREACH", "CRITICAL", status, "user1", "desc", 1L, 2L, 3L);
+    private Complaint sampleComplaint(String id, String status) {
+        return new Complaint(id, "org1", "user1", "CMP-2026-00001", "DATA_BREACH", "CRITICAL", status, "desc", 1L, 2L,
+                3L);
     }
 
     @Test
@@ -57,7 +76,7 @@ class ComplaintHandlerTest {
         request.setSubjectCategory("DATA_BREACH");
         request.setDescription("desc");
         when(complaintService.createComplaint("org1", "user1", "DATA_BREACH", "desc"))
-                .thenReturn(sampleDto("c1", "OPEN"));
+                .thenReturn(sampleComplaint("c1", "OPEN"));
 
         ComplaintCreateResponseBean response = handler.createComplaint("org1", request);
 
@@ -68,7 +87,7 @@ class ComplaintHandlerTest {
     @Test
     void createComplaintToleratesNullRequestBody() {
         when(complaintService.createComplaint(eq("org1"), eq(null), eq(null), eq(null)))
-                .thenReturn(sampleDto("c1", "OPEN"));
+                .thenReturn(sampleComplaint("c1", "OPEN"));
 
         ComplaintCreateResponseBean response = handler.createComplaint("org1", null);
 
@@ -77,7 +96,7 @@ class ComplaintHandlerTest {
 
     @Test
     void getComplaintComposesRecordWithAttachments() {
-        when(complaintService.getComplaint("org1", "c1")).thenReturn(sampleDto("c1", "OPEN"));
+        when(complaintService.getComplaint("org1", "c1")).thenReturn(sampleComplaint("c1", "OPEN"));
         when(complaintAttachmentService.listAttachmentsForComplaint("org1", "c1")).thenReturn(List.of());
 
         ComplaintRecordBean bean = handler.getComplaint("org1", "c1");
@@ -133,7 +152,7 @@ class ComplaintHandlerTest {
                 .thenAnswer(invocation -> {
                     int[] totalOut = invocation.getArgument(7);
                     totalOut[0] = 42;
-                    return List.of(sampleDto("c1", "OPEN"), sampleDto("c2", "IN_PROGRESS"));
+                    return List.of(sampleComplaint("c1", "OPEN"), sampleComplaint("c2", "IN_PROGRESS"));
                 });
         when(complaintAttachmentService.listAttachmentsForComplaint(eq("org1"), anyString())).thenReturn(List.of());
 
@@ -167,7 +186,7 @@ class ComplaintHandlerTest {
         request.setToStatus("IN_PROGRESS");
         request.setNote("note");
         when(complaintEventService.updateStatus("org1", "c1", "officer1", "COMPLAINT_OFFICER", "IN_PROGRESS", "note"))
-                .thenReturn(sampleDto("c1", "IN_PROGRESS"));
+                .thenReturn(sampleComplaint("c1", "IN_PROGRESS"));
 
         ComplaintStatusUpdateResponseBean response = handler.updateStatus("org1", "c1", request);
 

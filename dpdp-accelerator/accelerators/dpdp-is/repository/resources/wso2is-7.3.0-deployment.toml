@@ -30,6 +30,18 @@ username = "wso2carbon"
 password = "wso2carbon"
 driver = "org.h2.Driver"
 
+# Backs the complaint management API's jdbc/ComplaintDB datasource (see DBUtil#getConnection()
+# in the complaint DAO module). MySQL only for now - point the url at an already-created, empty
+# database; the schema is created automatically on first startup. bin/configure.sh substitutes
+# these CO_DB_* tokens from configure.properties; edit that file, not this one, to change the
+# database target.
+[datasource.ComplaintDB]
+id = "ComplaintDB"
+url = "CO_DB_URL"
+username = "CO_DB_USERNAME"
+password = "CO_DB_PASSWORD"
+driver = "CO_DB_DRIVER_CLASS_NAME"
+
 [keystore.primary]
 file_name = "wso2carbon.p12"
 password = "wso2carbon"
@@ -115,10 +127,76 @@ context = "(.*)/consent-portal(.*)"
 secure = "false"
 http_method = "all"
 
-# The complaint management API has no authentication of its own (it trusts a
-# caller-supplied org-id header), so the server's authentication valve must not
-# gate it either or every request is rejected before reaching the servlet.
+# The complaint management API has no application-level authentication of its own -
+# the org-id header identifies which organization's data to act on, not who the
+# caller is - so the server's own authentication valve is the only thing standing
+# between this API and an unauthenticated caller. Scopes follow the same
+# portal_complaint_{read,write}_{self,any} vocabulary the portal BFF already uses:
+# a token with either the self or the any variant of the right read/write scope is
+# accepted, since self-vs-any ownership filtering happens in the application layer,
+# not here - except complaint creation, which is self-only (there is no "create a
+# complaint on someone else's behalf" capability, so there is no _any variant of it).
+#
+# /complaints/categories and /complaints/{complaintId} are the same shape as a raw
+# path (/complaints/<one-segment>); the get-by-id pattern excludes the literal
+# "categories" via a negative lookahead so the two can't ambiguously both match,
+# rather than relying on rule-evaluation order between these entries.
 [[resource.access_control]]
-context = "(.*)/api/dpdp/complaints(.*)"
-secure = "false"
-http_method = "all"
+context = "(.*)/api/dpdp/complaints/v1/complaints"
+http_method = "POST"
+secure = "true"
+scopes = ["portal_complaint_write_self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints"
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/categories"
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/(?!categories)[^/]+"
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/status"
+http_method = "POST"
+secure = "true"
+scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/timeline"
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments"
+http_method = "POST"
+secure = "true"
+scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments"
+http_method = "POST"
+secure = "true"
+scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments/[^/]+"
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments/[^/]+/attachments"
+http_method = "POST"
+secure = "true"
+scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]

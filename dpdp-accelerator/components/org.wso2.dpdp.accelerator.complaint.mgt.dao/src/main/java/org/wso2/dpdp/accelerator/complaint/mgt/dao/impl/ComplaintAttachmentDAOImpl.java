@@ -1,6 +1,26 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintAttachmentDAO;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.queries.QueryConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.DBUtil;
@@ -42,10 +62,11 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error adding attachment for complaint: " + attachment.getComplaintId(), e);
+            throw new ComplaintDAOException("Error adding attachment for complaint: " + attachment.getComplaintId(),
+                    e);
         } finally {
             DBUtil.closeAll(conn, ps, null);
         }
-        return false;
     }
 
     @Override
@@ -66,7 +87,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
                 a.setAttachmentId(rs.getString("ATTACHMENT_ID"));
                 a.setOrgId(rs.getString("ORG_ID"));
                 a.setComplaintId(rs.getString("COMPLAINT_ID"));
-                a.setEventId(rs.getString("EVENT_ID"));
+                a.setEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
                 a.setFileName(rs.getString("FILE_NAME"));
                 a.setContentType(rs.getString("FILE_CONTENT_TYPE"));
                 a.setSizeBytesOverride(rs.getLong("SIZE_BYTES")); // fileData left null - blob not loaded
@@ -75,6 +96,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting attachment metadata by ID: " + attachmentId, e);
+            throw new ComplaintDAOException("Error getting attachment metadata by ID: " + attachmentId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -99,6 +121,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error getting attachment with data by ID: " + attachmentId, e);
+            throw new ComplaintDAOException("Error getting attachment with data by ID: " + attachmentId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -134,7 +157,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
                 a.setAttachmentId(rs.getString("ATTACHMENT_ID"));
                 a.setOrgId(rs.getString("ORG_ID"));
                 a.setComplaintId(rs.getString("COMPLAINT_ID"));
-                a.setEventId(rs.getString("EVENT_ID"));
+                a.setEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
                 a.setFileName(rs.getString("FILE_NAME"));
                 a.setContentType(rs.getString("FILE_CONTENT_TYPE"));
                 a.setSizeBytesOverride(rs.getLong("SIZE_BYTES")); // size only, no real bytes loaded
@@ -143,6 +166,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
             }
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error listing attachments for complaint: " + complaintId, e);
+            throw new ComplaintDAOException("Error listing attachments for complaint: " + complaintId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }
@@ -154,7 +178,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
         a.setAttachmentId(rs.getString("ATTACHMENT_ID"));
         a.setOrgId(rs.getString("ORG_ID"));
         a.setComplaintId(rs.getString("COMPLAINT_ID"));
-        a.setEventId(rs.getString("EVENT_ID"));
+        a.setEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
         a.setFileName(rs.getString("FILE_NAME"));
         a.setContentType(rs.getString("FILE_CONTENT_TYPE"));
         a.setFileData(rs.getBytes("FILE_DATA"));

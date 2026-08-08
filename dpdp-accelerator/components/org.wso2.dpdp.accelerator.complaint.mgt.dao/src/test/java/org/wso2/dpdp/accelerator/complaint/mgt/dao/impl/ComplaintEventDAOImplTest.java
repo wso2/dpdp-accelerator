@@ -1,8 +1,27 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.DBUtil;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.H2TestDbSupport;
@@ -15,13 +34,14 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ComplaintEventDAOImplTest {
 
     private static final String CREATE_TABLE =
             "CREATE TABLE IF NOT EXISTS COMPLAINT_EVENT (" +
-            "EVENT_ID VARCHAR(64) PRIMARY KEY, " +
+            "COMPLAINT_EVENT_ID VARCHAR(64) PRIMARY KEY, " +
             "ORG_ID VARCHAR(64) NOT NULL, " +
             "COMPLAINT_ID VARCHAR(64) NOT NULL, " +
             "ACTOR_USER_ID VARCHAR(64), " +
@@ -61,6 +81,14 @@ class ComplaintEventDAOImplTest {
         assertTrue(fetched.isPresent());
         assertEquals("comment e1", fetched.get().getComment());
         assertTrue(fetched.get().isPublic());
+    }
+
+    @Test
+    void addEventThrowsOnDuplicateEventIdInsteadOfReturningFalse() {
+        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+
+        assertThrows(ComplaintDAOException.class,
+                () -> dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 200L)));
     }
 
     @Test

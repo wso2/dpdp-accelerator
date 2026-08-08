@@ -1,9 +1,27 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.util.DateTimeUtil;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintAttachmentDTO;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintTimelineEntryDTO;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +42,22 @@ public class ComplaintTimelineEntryResponseBean {
     public ComplaintTimelineEntryResponseBean() {
     }
 
-    public static ComplaintTimelineEntryResponseBean from(ComplaintTimelineEntryDTO dto,
-            List<ComplaintAttachmentDTO> attachmentDTOs) {
+    public static ComplaintTimelineEntryResponseBean from(ComplaintEvent event,
+            List<ComplaintAttachment> attachments) {
         ComplaintTimelineEntryResponseBean bean = new ComplaintTimelineEntryResponseBean();
-        bean.id = dto.getId();
-        bean.type = dto.getType();
-        bean.isPublic = dto.isPublic();
-        bean.actorUserId = dto.getActorUserId();
-        bean.actorRole = dto.getActorRole();
-        bean.message = dto.getMessage();
-        bean.fromStatus = dto.getFromStatus();
-        bean.toStatus = dto.getToStatus();
-        bean.createdTime = DateTimeUtil.toIso(dto.getCreatedTime());
+        bean.id = event.getEventId();
+        bean.type = event.deriveEntryType();
+        bean.isPublic = event.isPublic();
+        bean.actorUserId = event.getActorUserId();
+        bean.actorRole = event.getActorRole();
+        bean.message = event.getComment();
+        bean.fromStatus = event.getFromStatus();
+        bean.toStatus = event.getToStatus();
+        bean.createdTime = DateTimeUtil.toIso(event.getActionTime());
 
         List<ComplaintAttachmentResponseBean> attachmentBeans = new ArrayList<>();
-        if (attachmentDTOs != null) {
-            for (ComplaintAttachmentDTO a : attachmentDTOs) {
+        if (attachments != null) {
+            for (ComplaintAttachment a : attachments) {
                 attachmentBeans.add(new ComplaintAttachmentResponseBean(a.getAttachmentId(), a.getFileName(),
                         a.getContentType(), a.getSizeBytes()));
             }

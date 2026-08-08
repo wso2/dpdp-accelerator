@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.service.impl;
 
 import org.junit.jupiter.api.AfterEach;
@@ -9,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintDTO;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
 
 import java.util.List;
@@ -105,12 +122,12 @@ class ComplaintServiceImplTest {
         when(complaintDAO.countByReferenceIdPrefix(eq("org1"), anyString())).thenReturn(0);
         when(complaintDAO.addComplaint(any(Complaint.class))).thenReturn(true);
 
-        ComplaintDTO dto = complaintService.createComplaint("org1", "user1", "DATA_BREACH", "desc  ");
+        Complaint complaint = complaintService.createComplaint("org1", "user1", "DATA_BREACH", "desc  ");
 
-        assertEquals("CRITICAL", dto.getPriority());
-        assertEquals("OPEN", dto.getStatus());
-        assertEquals("desc", dto.getDescription());
-        assertEquals("user1", dto.getUserId());
+        assertEquals("CRITICAL", complaint.getPriority());
+        assertEquals("OPEN", complaint.getStatus());
+        assertEquals("desc", complaint.getDescription());
+        assertEquals("user1", complaint.getUserId());
 
         ArgumentCaptor<Complaint> captor = ArgumentCaptor.forClass(Complaint.class);
         verify(complaintDAO).addComplaint(captor.capture());
@@ -160,10 +177,10 @@ class ComplaintServiceImplTest {
                 "OPEN", "desc", 1L, 2L, 3L);
         when(complaintDAO.getComplaintById("c1", "org1")).thenReturn(Optional.of(complaint));
 
-        ComplaintDTO dto = complaintService.requireComplaint("org1", "c1");
+        Complaint result = complaintService.requireComplaint("org1", "c1");
 
-        assertEquals("c1", dto.getId());
-        assertEquals("CMP-2026-00001", dto.getReferenceId());
+        assertEquals("c1", result.getComplaintId());
+        assertEquals("CMP-2026-00001", result.getReferenceId());
     }
 
     @Test
@@ -172,9 +189,9 @@ class ComplaintServiceImplTest {
                 "OPEN", "desc", 1L, 2L, 3L);
         when(complaintDAO.getComplaintById("c1", "org1")).thenReturn(Optional.of(complaint));
 
-        ComplaintDTO dto = complaintService.getComplaint("org1", "c1");
+        Complaint result = complaintService.getComplaint("org1", "c1");
 
-        assertEquals("c1", dto.getId());
+        assertEquals("c1", result.getComplaintId());
     }
 
     @Test
@@ -187,12 +204,12 @@ class ComplaintServiceImplTest {
         when(complaintDAO.listComplaints("org1", "OPEN", null, "user1", 10, 0, "-updatedTime", totalOut))
                 .thenReturn(List.of(c1, c2));
 
-        List<ComplaintDTO> results =
+        List<Complaint> results =
                 complaintService.listComplaints("org1", "OPEN", null, "user1", 10, 0, "-updatedTime", totalOut);
 
         assertEquals(2, results.size());
-        assertEquals("c1", results.get(0).getId());
-        assertEquals("c2", results.get(1).getId());
+        assertEquals("c1", results.get(0).getComplaintId());
+        assertEquals("c2", results.get(1).getComplaintId());
     }
 
     @Test
@@ -201,7 +218,7 @@ class ComplaintServiceImplTest {
         when(complaintDAO.listComplaints(anyString(), any(), any(), any(), anyInt(), anyInt(), any(), eq(totalOut)))
                 .thenReturn(List.of());
 
-        List<ComplaintDTO> results =
+        List<Complaint> results =
                 complaintService.listComplaints("org1", null, null, null, 10, 0, null, totalOut);
 
         assertTrue(results.isEmpty());

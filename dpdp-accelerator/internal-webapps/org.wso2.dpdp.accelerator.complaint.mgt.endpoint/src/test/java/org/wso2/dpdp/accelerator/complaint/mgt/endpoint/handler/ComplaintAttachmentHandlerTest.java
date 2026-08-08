@@ -1,3 +1,21 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.dpdp.accelerator.complaint.mgt.endpoint.handler;
 
 import org.glassfish.jersey.media.multipart.ContentDisposition;
@@ -8,11 +26,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintAttachmentDownloadResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.endpoint.bean.ComplaintAttachmentResponseBean;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintAttachmentService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintAttachmentService.UploadedFile;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintAttachmentDTO;
 
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayInputStream;
@@ -49,8 +67,13 @@ class ComplaintAttachmentHandlerTest {
         when(filePart.getMediaType()).thenReturn(MediaType.valueOf("application/pdf"));
         when(filePart.getContentDisposition()).thenReturn(contentDisposition);
         when(contentDisposition.getFileName()).thenReturn("a.pdf");
+        ComplaintAttachment attachment = new ComplaintAttachment();
+        attachment.setAttachmentId("att1");
+        attachment.setFileName("a.pdf");
+        attachment.setContentType("application/pdf");
+        attachment.setSizeBytesOverride(data.length);
         when(complaintAttachmentService.uploadComplaintAttachments(any(), any(), any()))
-                .thenReturn(List.of(new ComplaintAttachmentDTO("att1", "a.pdf", "application/pdf", data.length)));
+                .thenReturn(List.of(attachment));
 
         List<ComplaintAttachmentResponseBean> result =
                 handler.uploadComplaintAttachments("org1", "c1", List.of(filePart));
@@ -116,9 +139,9 @@ class ComplaintAttachmentHandlerTest {
     @Test
     void downloadAttachmentBase64EncodesContentInTheResponseBean() {
         byte[] content = "hello".getBytes();
-        ComplaintAttachmentDTO dto = new ComplaintAttachmentDTO("att1", "a.pdf", "application/pdf", content.length);
-        dto.setContent(content);
-        when(complaintAttachmentService.downloadAttachment("org1", "c1", "att1", "USER")).thenReturn(dto);
+        ComplaintAttachment attachment = new ComplaintAttachment("att1", "org1", "c1", null, "a.pdf",
+                "application/pdf", content, 100L);
+        when(complaintAttachmentService.downloadAttachment("org1", "c1", "att1", "USER")).thenReturn(attachment);
 
         ComplaintAttachmentDownloadResponseBean response =
                 handler.downloadAttachment("org1", "c1", "att1", "USER");
