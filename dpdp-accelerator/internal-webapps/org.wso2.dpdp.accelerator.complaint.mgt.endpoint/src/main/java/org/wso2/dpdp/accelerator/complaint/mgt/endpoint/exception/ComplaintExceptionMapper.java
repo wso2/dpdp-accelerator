@@ -54,7 +54,7 @@ public class ComplaintExceptionMapper implements ExceptionMapper<Throwable> {
 
         ErrorEnvelope envelope = new ErrorEnvelope(
                 ComplaintErrorCode.INTERNAL_ERROR.getCode(),
-                ComplaintErrorCode.INTERNAL_ERROR.getMessage(),
+                "Internal error",
                 "An unexpected error occurred while processing the request.",
                 UUID.randomUUID().toString()
         );

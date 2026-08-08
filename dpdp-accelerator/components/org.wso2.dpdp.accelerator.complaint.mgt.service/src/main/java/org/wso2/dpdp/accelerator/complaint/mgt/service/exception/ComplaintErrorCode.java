@@ -19,37 +19,33 @@
 package org.wso2.dpdp.accelerator.complaint.mgt.service.exception;
 
 /**
- * The (code, message, HTTP status) triples documented in complaint-server-API.yaml for each error
- * response - kept here once instead of repeating the same literals at every throw site. The
- * per-call dynamic detail still goes through ComplaintException's separate "description" argument.
+ * The (code, HTTP status) pairs documented in complaint-server-API.yaml for each error response -
+ * kept here once instead of repeating the same literals at every throw site. No message text
+ * lives on this enum - see ComplaintServiceConstants for that, mirroring the
+ * ConsentMgtErrorCodes/ConsentCoreServiceConstants split in financial-services-accelerator's
+ * ConsentCoreServiceImpl.
  */
 public enum ComplaintErrorCode {
 
-    INVALID_REQUEST_BODY("CO-4001", "Invalid request body", 400),
-    VALIDATION_FAILED("CO-4002", "Validation failed", 422),
-    FORBIDDEN("CO-4030", "Forbidden", 403),
-    COMPLAINT_NOT_FOUND("CO-4040", "Complaint not found", 404),
-    ATTACHMENT_NOT_FOUND("CO-4040", "Attachment not found", 404),
-    COMMENT_NOT_FOUND("CO-4040", "Comment not found", 404),
-    INVALID_STATE_TRANSITION("CO-4090", "Invalid state transition", 409),
-    INTERNAL_ERROR("CO-5000", "Internal error", 500);
+    INVALID_REQUEST_BODY("CO-4001", 400),
+    VALIDATION_FAILED("CO-4002", 422),
+    FORBIDDEN("CO-4030", 403),
+    COMPLAINT_NOT_FOUND("CO-4040", 404),
+    ATTACHMENT_NOT_FOUND("CO-4040", 404),
+    COMMENT_NOT_FOUND("CO-4040", 404),
+    INVALID_STATE_TRANSITION("CO-4090", 409),
+    INTERNAL_ERROR("CO-5000", 500);
 
     private final String code;
-    private final String message;
     private final int httpStatus;
 
-    ComplaintErrorCode(String code, String message, int httpStatus) {
+    ComplaintErrorCode(String code, int httpStatus) {
         this.code = code;
-        this.message = message;
         this.httpStatus = httpStatus;
     }
 
     public String getCode() {
         return code;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
     public int getHttpStatus() {
