@@ -88,6 +88,26 @@ the priority a complaint in that category is assigned (`[{"category": "DATA_BREA
 without hardcoding the list, and to stay in sync with a `[categoryPriority]` override in
 `deployment.toml`.
 
+### Configuration
+
+`AppBootstrap` reads three optional tables from `deployment.toml` at startup - every key
+in all three is optional and falls back to a built-in default if the table (or the key
+within it) is absent, so an out-of-the-box `deployment.toml` behaves identically to one
+with these tables spelled out explicitly:
+
+- **`[attachment]`** - `maxSizeBytes` caps a single complaint/comment attachment upload
+  (default 10 MB; see `AttachmentPolicy`).
+- **`[statutory]`** - `dueDatePeriodDays` sets how many days from creation until a
+  complaint's statutory due date, per the DPDP Act's grievance redressal timeline
+  (default 90; see `StatutoryDuePeriodPolicy`).
+- **`[categoryPriority]`** - overrides the built-in `subjectCategory` -> priority mapping
+  (see `PriorityMapper`) wholesale, not merged - list every category if you override any
+  of them, or the omitted ones lose their priority.
+
+All three are commented out (or left at their default values) in the shipped
+`deployment.toml` - edit them directly there, unlike the database credentials above,
+which go through `configure.properties` instead.
+
 ### Database
 
 Backed by a Carbon-managed `javax.sql.DataSource`, declared as a `[datasource.ComplaintDB]`
