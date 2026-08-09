@@ -45,7 +45,7 @@ public class ComplaintTimelineEntryResponseBean {
     public static ComplaintTimelineEntryResponseBean from(ComplaintEvent event,
             List<ComplaintAttachment> attachments) {
         ComplaintTimelineEntryResponseBean bean = new ComplaintTimelineEntryResponseBean();
-        bean.id = event.getEventId();
+        bean.id = event.getComplaintEventId();
         bean.type = event.deriveEntryType();
         bean.isPublic = event.isPublic();
         bean.actorUserId = event.getActorUserId();

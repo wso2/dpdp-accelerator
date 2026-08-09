@@ -66,9 +66,9 @@ class ComplaintAttachmentDAOImplTest {
         }
     }
 
-    private ComplaintAttachment sampleAttachment(String id, String orgId, String complaintId, String eventId,
+    private ComplaintAttachment sampleAttachment(String id, String orgId, String complaintId, String complaintEventId,
             byte[] data, long createdTime) {
-        return new ComplaintAttachment(id, orgId, complaintId, eventId, "file-" + id + ".pdf", "application/pdf",
+        return new ComplaintAttachment(id, orgId, complaintId, complaintEventId, "file-" + id + ".pdf", "application/pdf",
                 data, createdTime);
     }
 
@@ -79,7 +79,7 @@ class ComplaintAttachmentDAOImplTest {
         assertTrue(added);
         Optional<ComplaintAttachment> fetched = dao.getAttachmentWithDataById("a1", "org1", "c1");
         assertTrue(fetched.isPresent());
-        assertNull(fetched.get().getEventId());
+        assertNull(fetched.get().getComplaintEventId());
         assertArrayEquals(new byte[]{1, 2, 3}, fetched.get().getFileData());
     }
 
@@ -90,7 +90,7 @@ class ComplaintAttachmentDAOImplTest {
         Optional<ComplaintAttachment> fetched = dao.getAttachmentWithDataById("a1", "org1", "c1");
 
         assertTrue(fetched.isPresent());
-        assertEquals("e1", fetched.get().getEventId());
+        assertEquals("e1", fetched.get().getComplaintEventId());
     }
 
     @Test

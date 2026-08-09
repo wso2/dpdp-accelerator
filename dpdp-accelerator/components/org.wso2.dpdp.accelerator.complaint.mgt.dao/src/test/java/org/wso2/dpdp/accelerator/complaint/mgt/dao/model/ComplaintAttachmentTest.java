@@ -57,7 +57,7 @@ class ComplaintAttachmentTest {
         assertEquals("a1", attachment.getAttachmentId());
         assertEquals("org1", attachment.getOrgId());
         assertEquals("c1", attachment.getComplaintId());
-        assertEquals("e1", attachment.getEventId());
+        assertEquals("e1", attachment.getComplaintEventId());
         assertEquals("file.png", attachment.getFileName());
         assertEquals("image/png", attachment.getContentType());
         assertEquals(data, attachment.getFileData());

@@ -56,7 +56,7 @@ class ComplaintTimelineHandlerTest {
 
     private ComplaintEvent entry(String id) {
         ComplaintEvent event = new ComplaintEvent();
-        event.setEventId(id);
+        event.setComplaintEventId(id);
         event.setPublic(true);
         event.setActionTime(100L);
         return event;

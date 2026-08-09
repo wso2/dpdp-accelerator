@@ -38,7 +38,7 @@ public class ComplaintCommentCreateResponseBean {
 
     public static ComplaintCommentCreateResponseBean from(ComplaintEvent event) {
         ComplaintCommentCreateResponseBean bean = new ComplaintCommentCreateResponseBean();
-        bean.id = event.getEventId();
+        bean.id = event.getComplaintEventId();
         bean.actorUserId = event.getActorUserId();
         bean.actorRole = event.getActorRole();
         bean.message = event.getComment();

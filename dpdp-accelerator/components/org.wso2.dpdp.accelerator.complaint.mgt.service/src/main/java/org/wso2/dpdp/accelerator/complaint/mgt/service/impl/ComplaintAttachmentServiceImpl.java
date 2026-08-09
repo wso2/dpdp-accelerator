@@ -99,8 +99,8 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
     }
 
     @Override
-    public List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String eventId) {
-        return attachmentDAO.listAttachmentsForEvent(orgId, complaintId, eventId);
+    public List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String complaintEventId) {
+        return attachmentDAO.listAttachmentsForEvent(orgId, complaintId, complaintEventId);
     }
 
     @Override
@@ -117,9 +117,9 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
         // Non-disclosure of officer-internal attachments to Data Principals. requesterRole is optional -
         // supplied by the BFF via the "actor-role" header - and this check is skipped when it is absent,
         // since callers other than the BFF-fronted Data Principal Portal are trusted internal callers.
-        if ("USER".equalsIgnoreCase(requesterRole) && attachment.getEventId() != null) {
+        if ("USER".equalsIgnoreCase(requesterRole) && attachment.getComplaintEventId() != null) {
             ComplaintEvent entry =
-                    complaintEventService.getTimelineEntry(orgId, complaintId, attachment.getEventId());
+                    complaintEventService.getTimelineEntry(orgId, complaintId, attachment.getComplaintEventId());
             if (!entry.isPublic()) {
                 throw new ComplaintException(ComplaintErrorCode.FORBIDDEN,
                         ComplaintServiceConstants.INTERNAL_ATTACHMENT_ACCESS_DENIED_ERROR);
@@ -153,10 +153,10 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
         }
     }
 
-    private ComplaintAttachment store(String orgId, String complaintId, String eventId, UploadedFile file) {
+    private ComplaintAttachment store(String orgId, String complaintId, String complaintEventId, UploadedFile file) {
         String attachmentId = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
-        ComplaintAttachment attachment = new ComplaintAttachment(attachmentId, orgId, complaintId, eventId,
+        ComplaintAttachment attachment = new ComplaintAttachment(attachmentId, orgId, complaintId, complaintEventId,
                 file.getFileName(), file.getContentType(), file.getData(), now);
 
         boolean added = attachmentDAO.addAttachment(attachment);

@@ -43,7 +43,7 @@ public interface ComplaintEventService {
             String message, boolean isPublic, String toStatus);
 
     /** Returns the underlying timeline entry, used by the comment-attachment endpoint to verify ownership. */
-    ComplaintEvent getTimelineEntry(String orgId, String complaintId, String eventId);
+    ComplaintEvent getTimelineEntry(String orgId, String complaintId, String complaintEventId);
 
     /**
      * Transitions a complaint to toStatus, recording a timeline entry for the change. note is

@@ -24,7 +24,7 @@ package org.wso2.dpdp.accelerator.complaint.mgt.service.util;
  */
 public class StatutoryDuePeriodPolicy {
 
-    private static final int DEFAULT_DUE_PERIOD_DAYS = 90;
+    private static final int DEFAULT_DUE_PERIOD_DAYS = 90; // default
 
     private StatutoryDuePeriodPolicy() {
     }

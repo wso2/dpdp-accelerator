@@ -104,9 +104,9 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
             }
         }
 
-        String eventId = UUID.randomUUID().toString();
+        String complaintEventId = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
-        ComplaintEvent event = new ComplaintEvent(eventId, orgId, complaintId, actorUserId.trim(), actorRole,
+        ComplaintEvent event = new ComplaintEvent(complaintEventId, orgId, complaintId, actorUserId.trim(), actorRole,
                 isPublic, message.trim(), fromStatus, hasToStatus ? toStatus : null, now);
 
         boolean added = complaintEventDAO.addEvent(event);
@@ -127,12 +127,12 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
     }
 
     @Override
-    public ComplaintEvent getTimelineEntry(String orgId, String complaintId, String eventId) {
+    public ComplaintEvent getTimelineEntry(String orgId, String complaintId, String complaintEventId) {
         complaintService.requireComplaint(orgId, complaintId);
-        Optional<ComplaintEvent> eventOpt = complaintEventDAO.getEventById(eventId, orgId, complaintId);
+        Optional<ComplaintEvent> eventOpt = complaintEventDAO.getEventById(complaintEventId, orgId, complaintId);
         if (eventOpt.isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.COMMENT_NOT_FOUND,
-                    String.format(ComplaintServiceConstants.TIMELINE_ENTRY_NOT_FOUND_ERROR, eventId));
+                    String.format(ComplaintServiceConstants.TIMELINE_ENTRY_NOT_FOUND_ERROR, complaintEventId));
         }
         return eventOpt.get();
     }
@@ -168,8 +168,8 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
                     ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR);
         }
 
-        String eventId = UUID.randomUUID().toString();
-        ComplaintEvent event = new ComplaintEvent(eventId, orgId, complaintId, actorUserId, actorRole, true, note,
+        String complaintEventId = UUID.randomUUID().toString();
+        ComplaintEvent event = new ComplaintEvent(complaintEventId, orgId, complaintId, actorUserId, actorRole, true, note,
                 fromStatus, toStatus, now);
         complaintEventDAO.addEvent(event);
 

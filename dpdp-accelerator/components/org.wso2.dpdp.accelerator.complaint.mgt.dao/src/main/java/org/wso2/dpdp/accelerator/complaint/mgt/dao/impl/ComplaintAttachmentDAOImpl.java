@@ -50,8 +50,8 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
             ps.setString(1, attachment.getAttachmentId());
             ps.setString(2, attachment.getOrgId());
             ps.setString(3, attachment.getComplaintId());
-            if (attachment.getEventId() != null) {
-                ps.setString(4, attachment.getEventId());
+            if (attachment.getComplaintEventId() != null) {
+                ps.setString(4, attachment.getComplaintEventId());
             } else {
                 ps.setNull(4, Types.VARCHAR);
             }
@@ -87,7 +87,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
                 a.setAttachmentId(rs.getString("ATTACHMENT_ID"));
                 a.setOrgId(rs.getString("ORG_ID"));
                 a.setComplaintId(rs.getString("COMPLAINT_ID"));
-                a.setEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
+                a.setComplaintEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
                 a.setFileName(rs.getString("FILE_NAME"));
                 a.setContentType(rs.getString("FILE_CONTENT_TYPE"));
                 a.setSizeBytesOverride(rs.getLong("SIZE_BYTES")); // fileData left null - blob not loaded
@@ -134,11 +134,12 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
     }
 
     @Override
-    public List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String eventId) {
-        return listByQuery(QueryConstants.LIST_ATTACHMENT_METADATA_BY_EVENT, orgId, complaintId, eventId);
+    public List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String complaintEventId) {
+        return listByQuery(QueryConstants.LIST_ATTACHMENT_METADATA_BY_EVENT, orgId, complaintId, complaintEventId);
     }
 
-    private List<ComplaintAttachment> listByQuery(String query, String orgId, String complaintId, String eventId) {
+    private List<ComplaintAttachment> listByQuery(String query, String orgId, String complaintId,
+            String complaintEventId) {
         List<ComplaintAttachment> attachments = new ArrayList<>();
         Connection conn = null;
         PreparedStatement ps = null;
@@ -148,8 +149,8 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
             ps = conn.prepareStatement(query);
             ps.setString(1, orgId);
             ps.setString(2, complaintId);
-            if (eventId != null) {
-                ps.setString(3, eventId);
+            if (complaintEventId != null) {
+                ps.setString(3, complaintEventId);
             }
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -157,7 +158,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
                 a.setAttachmentId(rs.getString("ATTACHMENT_ID"));
                 a.setOrgId(rs.getString("ORG_ID"));
                 a.setComplaintId(rs.getString("COMPLAINT_ID"));
-                a.setEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
+                a.setComplaintEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
                 a.setFileName(rs.getString("FILE_NAME"));
                 a.setContentType(rs.getString("FILE_CONTENT_TYPE"));
                 a.setSizeBytesOverride(rs.getLong("SIZE_BYTES")); // size only, no real bytes loaded
@@ -178,7 +179,7 @@ public class ComplaintAttachmentDAOImpl implements ComplaintAttachmentDAO {
         a.setAttachmentId(rs.getString("ATTACHMENT_ID"));
         a.setOrgId(rs.getString("ORG_ID"));
         a.setComplaintId(rs.getString("COMPLAINT_ID"));
-        a.setEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
+        a.setComplaintEventId(rs.getString(DAOConstants.COLUMN_COMPLAINT_EVENT_ID));
         a.setFileName(rs.getString("FILE_NAME"));
         a.setContentType(rs.getString("FILE_CONTENT_TYPE"));
         a.setFileData(rs.getBytes("FILE_DATA"));

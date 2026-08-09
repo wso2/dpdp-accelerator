@@ -23,7 +23,7 @@ public class ComplaintAttachment {
     private String attachmentId;
     private String orgId;
     private String complaintId;
-    private String eventId; // null = attached directly to the complaint, not to a timeline entry
+    private String complaintEventId; // null = attached directly to the complaint, not to a timeline entry
     private String fileName;
     private String contentType;
     private byte[] fileData;
@@ -38,12 +38,12 @@ public class ComplaintAttachment {
     public ComplaintAttachment() {
     }
 
-    public ComplaintAttachment(String attachmentId, String orgId, String complaintId, String eventId,
+    public ComplaintAttachment(String attachmentId, String orgId, String complaintId, String complaintEventId,
             String fileName, String contentType, byte[] fileData, long createdTime) {
         this.attachmentId = attachmentId;
         this.orgId = orgId;
         this.complaintId = complaintId;
-        this.eventId = eventId;
+        this.complaintEventId = complaintEventId;
         this.fileName = fileName;
         this.contentType = contentType;
         this.fileData = fileData;
@@ -86,12 +86,12 @@ public class ComplaintAttachment {
         this.complaintId = complaintId;
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getComplaintEventId() {
+        return complaintEventId;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setComplaintEventId(String complaintEventId) {
+        this.complaintEventId = complaintEventId;
     }
 
     public String getFileName() {

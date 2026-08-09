@@ -20,7 +20,7 @@ package org.wso2.dpdp.accelerator.complaint.mgt.dao.model;
 
 public class ComplaintEvent {
 
-    private String eventId;
+    private String complaintEventId;
     private String orgId;
     private String complaintId;
     private String actorUserId;
@@ -34,9 +34,9 @@ public class ComplaintEvent {
     public ComplaintEvent() {
     }
 
-    public ComplaintEvent(String eventId, String orgId, String complaintId, String actorUserId, String actorRole,
+    public ComplaintEvent(String complaintEventId, String orgId, String complaintId, String actorUserId, String actorRole,
             boolean isPublic, String comment, String fromStatus, String toStatus, long actionTime) {
-        this.eventId = eventId;
+        this.complaintEventId = complaintEventId;
         this.orgId = orgId;
         this.complaintId = complaintId;
         this.actorUserId = actorUserId;
@@ -61,12 +61,12 @@ public class ComplaintEvent {
         return isPublic ? "COMMENT" : "INTERNAL_NOTE";
     }
 
-    public String getEventId() {
-        return eventId;
+    public String getComplaintEventId() {
+        return complaintEventId;
     }
 
-    public void setEventId(String eventId) {
-        this.eventId = eventId;
+    public void setComplaintEventId(String complaintEventId) {
+        this.complaintEventId = complaintEventId;
     }
 
     public String getOrgId() {

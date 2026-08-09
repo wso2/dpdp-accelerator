@@ -122,7 +122,7 @@ class ComplaintAttachmentServiceImplTest {
     }
 
     @Test
-    void uploadComplaintAttachmentsStoresEachFileWithNullEventId() {
+    void uploadComplaintAttachmentsStoresEachFileWithNullComplaintEventId() {
         when(attachmentDAO.addAttachment(any(ComplaintAttachment.class))).thenReturn(true);
 
         List<ComplaintAttachment> result = attachmentService.uploadComplaintAttachments("org1", "c1",

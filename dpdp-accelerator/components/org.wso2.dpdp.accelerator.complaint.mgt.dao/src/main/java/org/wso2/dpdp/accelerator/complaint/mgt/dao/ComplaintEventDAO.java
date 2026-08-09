@@ -31,12 +31,12 @@ public interface ComplaintEventDAO {
     /**
      * Fetches a single timeline entry scoped to its complaint and org.
      *
-     * <p>complaintId is taken in addition to eventId/orgId even though eventId is already
+     * <p>complaintId is taken in addition to complaintEventId/orgId even though complaintEventId is already
      * unique per orgId, for the same reason as {@link ComplaintAttachmentDAO}: it lets the DAO
-     * verify the two path segments the caller has ({complaintId}, {eventId}) are actually
+     * verify the two path segments the caller has ({complaintId}, {complaintEventId}) are actually
      * consistent, rather than silently ignoring a mismatch.
      */
-    Optional<ComplaintEvent> getEventById(String eventId, String orgId, String complaintId);
+    Optional<ComplaintEvent> getEventById(String complaintEventId, String orgId, String complaintId);
 
     /**
      * Lists timeline entries for a complaint with an optional since/isPublic filter, sort order,

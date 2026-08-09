@@ -110,8 +110,8 @@ class ComplaintEventDAOImplTest {
         List<ComplaintEvent> results = dao.listEvents("org1", "c1", 150L, null, "asc", 10, 0, totalOut);
 
         assertEquals(2, totalOut[0]);
-        assertEquals("e2", results.get(0).getEventId());
-        assertEquals("e3", results.get(1).getEventId());
+        assertEquals("e2", results.get(0).getComplaintEventId());
+        assertEquals("e3", results.get(1).getComplaintEventId());
     }
 
     @Test
@@ -125,7 +125,7 @@ class ComplaintEventDAOImplTest {
 
         assertEquals(1, totalOut[0]);
         assertEquals(1, results.size());
-        assertEquals("e2", results.get(0).getEventId());
+        assertEquals("e2", results.get(0).getComplaintEventId());
     }
 
     @Test
@@ -136,8 +136,8 @@ class ComplaintEventDAOImplTest {
         int[] totalOut = new int[1];
         List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, null, 10, 0, totalOut);
 
-        assertEquals("e2", results.get(0).getEventId());
-        assertEquals("e1", results.get(1).getEventId());
+        assertEquals("e2", results.get(0).getComplaintEventId());
+        assertEquals("e1", results.get(1).getComplaintEventId());
     }
 
     @Test
@@ -148,8 +148,8 @@ class ComplaintEventDAOImplTest {
         int[] totalOut = new int[1];
         List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, "desc", 10, 0, totalOut);
 
-        assertEquals("e2", results.get(0).getEventId());
-        assertEquals("e1", results.get(1).getEventId());
+        assertEquals("e2", results.get(0).getComplaintEventId());
+        assertEquals("e1", results.get(1).getComplaintEventId());
     }
 
     @Test
@@ -162,7 +162,7 @@ class ComplaintEventDAOImplTest {
         List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, "asc", 10, 0, totalOut);
 
         assertEquals(1, results.size());
-        assertEquals("e1", results.get(0).getEventId());
+        assertEquals("e1", results.get(0).getComplaintEventId());
     }
 
     @Test

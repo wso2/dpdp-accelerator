@@ -39,7 +39,7 @@ public interface ComplaintAttachmentService {
     List<ComplaintAttachment> listAttachmentsForComplaint(String orgId, String complaintId);
 
     /** Metadata (no file content) for attachments bound to a specific timeline entry (comment/note). */
-    List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String eventId);
+    List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String complaintEventId);
 
     /**
      * Downloads an attachment including its file content. requesterRole is optional (passed through

@@ -64,7 +64,7 @@ public class ComplaintTimelineHandler {
         List<ComplaintTimelineEntryResponseBean> beanList = new ArrayList<>();
         for (ComplaintEvent entry : entries) {
             List<ComplaintAttachment> attachments =
-                    complaintAttachmentService.listAttachmentsForEvent(orgId, complaintId, entry.getEventId());
+                    complaintAttachmentService.listAttachmentsForEvent(orgId, complaintId, entry.getComplaintEventId());
             beanList.add(ComplaintTimelineEntryResponseBean.from(entry, attachments));
         }
 

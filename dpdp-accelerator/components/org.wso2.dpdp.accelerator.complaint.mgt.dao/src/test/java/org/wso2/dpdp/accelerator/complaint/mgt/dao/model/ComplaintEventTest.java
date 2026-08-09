@@ -50,7 +50,7 @@ class ComplaintEventTest {
     @Test
     void noArgsConstructorAndSettersRoundTrip() {
         ComplaintEvent event = new ComplaintEvent();
-        event.setEventId("e2");
+        event.setComplaintEventId("e2");
         event.setOrgId("org2");
         event.setComplaintId("c2");
         event.setActorUserId("u2");
@@ -61,7 +61,7 @@ class ComplaintEventTest {
         event.setToStatus("IN_PROGRESS");
         event.setActionTime(123L);
 
-        assertEquals("e2", event.getEventId());
+        assertEquals("e2", event.getComplaintEventId());
         assertEquals("org2", event.getOrgId());
         assertEquals("c2", event.getComplaintId());
         assertEquals("u2", event.getActorUserId());

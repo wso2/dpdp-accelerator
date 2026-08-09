@@ -46,7 +46,7 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
         try {
             conn = DBUtil.getConnection();
             ps = conn.prepareStatement(QueryConstants.ADD_COMPLAINT_EVENT);
-            ps.setString(1, event.getEventId());
+            ps.setString(1, event.getComplaintEventId());
             ps.setString(2, event.getOrgId());
             ps.setString(3, event.getComplaintId());
             ps.setString(4, event.getActorUserId());
@@ -67,14 +67,14 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
     }
 
     @Override
-    public Optional<ComplaintEvent> getEventById(String eventId, String orgId, String complaintId) {
+    public Optional<ComplaintEvent> getEventById(String complaintEventId, String orgId, String complaintId) {
         Connection conn = null;
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
             conn = DBUtil.getConnection();
             ps = conn.prepareStatement(QueryConstants.GET_COMPLAINT_EVENT_BY_ID);
-            ps.setString(1, eventId);
+            ps.setString(1, complaintEventId);
             ps.setString(2, orgId);
             ps.setString(3, complaintId);
             rs = ps.executeQuery();
@@ -82,8 +82,8 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
                 return Optional.of(mapResultSetToEvent(rs));
             }
         } catch (SQLException e) {
-            LOGGER.log(Level.SEVERE, "Error getting complaint event by ID: " + eventId, e);
-            throw new ComplaintDAOException("Error getting complaint event by ID: " + eventId, e);
+            LOGGER.log(Level.SEVERE, "Error getting complaint event by ID: " + complaintEventId, e);
+            throw new ComplaintDAOException("Error getting complaint event by ID: " + complaintEventId, e);
         } finally {
             DBUtil.closeAll(conn, ps, rs);
         }

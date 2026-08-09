@@ -46,5 +46,5 @@ public interface ComplaintAttachmentDAO {
     List<ComplaintAttachment> listAttachmentsForComplaint(String orgId, String complaintId);
 
     /** Attachments bound to a specific timeline entry (comment/note). */
-    List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String eventId);
+    List<ComplaintAttachment> listAttachmentsForEvent(String orgId, String complaintId, String complaintEventId);
 }
