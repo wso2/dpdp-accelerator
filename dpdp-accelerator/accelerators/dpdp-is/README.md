@@ -114,30 +114,37 @@ Backed by a Carbon-managed `javax.sql.DataSource`, declared as a `[datasource.Co
 block in `deployment.toml` (the same mechanism the Identity Server's own built-in
 datasources use) and bound into the webapp's local JNDI tree via a `<ResourceLink>` in
 `META-INF/context.xml`, looked up at `java:comp/env/jdbc/ComplaintDB` (see
-`DBUtil#getConnection()` in the complaint DAO module). `configure.sh` step `[1/3]` fills
-in the real connection details from `configure.properties` when it installs
-`deployment.toml`:
+`DBUtil#getConnection()` in the complaint DAO module).
+
+Edit the block directly in `deployment.toml` - `configure.sh` no longer substitutes these
+values from `configure.properties`, so re-running it does not touch whatever you set here
+(though it does still replace the rest of the file wholesale; back up any other local
+customization first, same as always):
 
 ```
-COMPLAINT_DB_DRIVER_CLASS_NAME=com.mysql.cj.jdbc.Driver
-COMPLAINT_DB_URL="jdbc:mysql://<host>:3306/<db>?useSSL=false&allowPublicKeyRetrieval=true"
-COMPLAINT_DB_USERNAME=<user>
-COMPLAINT_DB_PASSWORD=<password>
+[datasource.ComplaintDB]
+id = "ComplaintDB"
+url = "jdbc:mysql://<host>:3306/<db>?useSSL=false&amp;allowPublicKeyRetrieval=true"
+username = "<user>"
+password = "<password>"
+driver = "com.mysql.cj.jdbc.Driver"
 ```
 
-MySQL only for now; point `COMPLAINT_DB_URL` at an already-created, empty database - the
-schema (`COMPLAINT`, `COMPLAINT_EVENT`, `COMPLAINT_ATTACHMENT`) is created automatically
-on first startup. Edit `configure.properties`, not `deployment.toml` directly -
-re-running `configure.sh` overwrites the substituted values. (Carbon transcribes this
-value verbatim into `master-datasources.xml` at startup without XML-escaping it, so
-`configure.sh` escapes `&` in the URL itself before substitution - a raw `&` there would
-otherwise produce invalid XML and take down every datasource, not just this one.)
+MySQL only for now; point `url` at an already-created, empty database - the schema
+(`COMPLAINT`, `COMPLAINT_EVENT`, `COMPLAINT_ATTACHMENT`) is created automatically on first
+startup. **Carbon transcribes datasource values verbatim into `master-datasources.xml` at
+startup without XML-escaping them** - write any `&` in the URL's query string as `&amp;`
+(as in the example above), or a raw `&` produces invalid XML and takes down every
+datasource at startup, not just this one.
 
 If no `jdbc/ComplaintDB` resource is bound at all (for example, running the WAR outside
-this accelerator), `DBUtil` falls back to `DriverManager` using the `CO_DB_URL` /
-`CO_DB_USER` / `CO_DB_PASS` system properties, defaulting to a local MySQL instance if
-unset. This fallback exists for standalone testing - a deployment through this
-accelerator should always go through the JNDI datasource above.
+this accelerator), `DBUtil` falls back to reading `datasource.ComplaintDB.url` /
+`.username` / `.password` straight out of `deployment.toml` itself (via a small
+`ConfigProvider` in the `dpdp.common` module, since a plain Tomcat webapp has no direct API
+access to Carbon's own parsed config), then to the `CO_DB_URL` / `CO_DB_USER` / `CO_DB_PASS`
+system properties, defaulting to a local MySQL instance if neither is set. This fallback
+exists for standalone testing - a deployment through this accelerator should always go
+through the JNDI datasource above.
 
 ## Notes on the underlying server
 

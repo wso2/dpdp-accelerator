@@ -187,25 +187,31 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         try {
             conn = DBUtil.getConnection();
 
-            // Two queries share the same WHERE clause/params built above: COUNT(*) first for the
+            // sql and countSql share the same WHERE clause/params built above: COUNT(*) first for the
             // total (written back via the totalOut out-param), then the LIMIT/OFFSET query for
             // the actual page. Both must run against the same filters so the reported total
             // matches what's actually being paged through.
-            PreparedStatement countPs = conn.prepareStatement(countSql.toString());
-            for (int i = 0; i < params.size(); i++) {
-                countPs.setObject(i + 1, params.get(i));
+            PreparedStatement countPs = null;
+            ResultSet countRs = null;
+            try {
+                countPs = conn.prepareStatement(countSql.toString());
+                for (int i = 0; i < params.size(); i++) {
+                    countPs.setObject(i + 1, params.get(i));
+                }
+                countRs = countPs.executeQuery();
+                if (countRs.next() && totalOut != null && totalOut.length > 0) {
+                    totalOut[0] = countRs.getInt(1);
+                }
+            } finally {
+                DBUtil.closeAll(null, countPs, countRs);
             }
-            ResultSet countRs = countPs.executeQuery();
-            if (countRs.next() && totalOut != null && totalOut.length > 0) {
-                totalOut[0] = countRs.getInt(1);
-            }
-            DBUtil.closeAll(null, countPs, countRs);
 
             ps = conn.prepareStatement(sql.toString());
             int idx = 1;
             for (Object param : params) {
                 ps.setObject(idx++, param);
             }
+            // Order must match the "LIMIT ? OFFSET ?" placeholders appended to sql above.
             ps.setInt(idx++, limit);
             ps.setInt(idx, offset);
 

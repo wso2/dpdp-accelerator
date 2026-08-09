@@ -77,22 +77,10 @@ for pair in "IS_HOSTNAME=${IS_HOSTNAME}" \
   rm -f "${TOML_STAGING}.tmp"
 done
 
-# Carbon transcribes [datasource.*] TOML values verbatim into master-datasources.xml at
-# startup without XML-escaping them, so a raw & here (COMPLAINT_DB_URL routinely has one
-# as a query-string separator) produces invalid XML and takes down the whole datasource
-# subsystem - not just this one - since master-datasources.xml fails to parse entirely.
-# XML-escape first, then sed-escape (sed's replacement text treats & and \ specially too).
-for pair in "CO_DB_DRIVER_CLASS_NAME=${COMPLAINT_DB_DRIVER_CLASS_NAME}" \
-            "CO_DB_URL=${COMPLAINT_DB_URL}" \
-            "CO_DB_USERNAME=${COMPLAINT_DB_USERNAME}" \
-            "CO_DB_PASSWORD=${COMPLAINT_DB_PASSWORD}"; do
-  token="${pair%%=*}"
-  value="${pair#*=}"
-  xml_escaped_value=$(printf '%s' "${value}" | sed -e 's/&/\&amp;/g')
-  sed_escaped_value=$(printf '%s' "${xml_escaped_value}" | sed -e 's/[&\]/\\&/g')
-  sed -i.tmp "s|${token}|${sed_escaped_value}|g" "${TOML_STAGING}"
-  rm -f "${TOML_STAGING}.tmp"
-done
+# [datasource.ComplaintDB] is NOT substituted here - deployment.toml carries the real,
+# directly-editable connection details (see the comment above that block in the template).
+# Edit them there before running this script, or in the installed deployment.toml afterward
+# (re-running this script REPLACES the file wholesale - see the backup/restore note below).
 
 if [ -f "${DEPLOYMENT_TOML}" ]; then
   BACKUP="${DEPLOYMENT_TOML}.bak-$(date +%Y%m%d%H%M%S)"

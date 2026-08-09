@@ -31,16 +31,20 @@ password = "wso2carbon"
 driver = "org.h2.Driver"
 
 # Backs the complaint management API's jdbc/ComplaintDB datasource (see DBUtil#getConnection()
-# in the complaint DAO module). MySQL only for now - point the url at an already-created, empty
-# database; the schema is created automatically on first startup. bin/configure.sh substitutes
-# these CO_DB_* tokens from configure.properties; edit that file, not this one, to change the
-# database target.
+# in the complaint DAO module). MySQL only for now - edit the values below directly for your
+# environment; point url at an already-created, empty database - the schema is created
+# automatically on first startup.
+#
+# Carbon transcribes datasource values verbatim into master-datasources.xml at startup WITHOUT
+# XML-escaping them, so a literal & in the url's query string (a common separator, as below)
+# must be written here as &amp; - a raw & produces invalid XML and takes down every datasource
+# at startup, not just this one.
 [datasource.ComplaintDB]
 id = "ComplaintDB"
-url = "CO_DB_URL"
-username = "CO_DB_USERNAME"
-password = "CO_DB_PASSWORD"
-driver = "CO_DB_DRIVER_CLASS_NAME"
+url = "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&amp;allowPublicKeyRetrieval=true"
+username = "root"
+password = "root"
+driver = "com.mysql.cj.jdbc.Driver"
 
 [keystore.primary]
 file_name = "wso2carbon.p12"

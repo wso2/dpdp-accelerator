@@ -27,13 +27,13 @@ import java.util.Set;
  */
 public class AttachmentPolicy {
 
-    public static final Set<String> ALLOWED_CONTENT_TYPES = Set.of(
+    public static final Set<String> ALLOWED_CONTENT_TYPES = Set.of( // default fallabck value
             "application/pdf",
             "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             "image/png",
             "image/jpeg");
 
-    private static final long DEFAULT_MAX_SIZE_BYTES = 10L * 1024 * 1024; // 10 MB
+    private static final long DEFAULT_MAX_SIZE_BYTES = 10L * 1024 * 1024; // 10 MB (deafult fallback)
 
     private AttachmentPolicy() {
     }
