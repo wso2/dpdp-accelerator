@@ -27,6 +27,7 @@ import com.nimbusds.jose.proc.JWSVerificationKeySelector;
 import com.nimbusds.jose.proc.SecurityContext;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
+import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
 import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import org.wso2.dpdp.accelerator.portal.webapp.exception.TokenValidationException;
 import org.wso2.dpdp.accelerator.portal.webapp.model.AuthenticatedUser;
@@ -36,6 +37,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Validates Identity Server JWT access tokens against the server's JWKS
@@ -57,6 +59,10 @@ public final class TokenValidator {
         jwtProcessor.setJWSTypeVerifier(new DefaultJOSEObjectTypeVerifier<>(
                 new JOSEObjectType("at+jwt"), JOSEObjectType.JWT, null));
         jwtProcessor.setJWSKeySelector(new JWSVerificationKeySelector<>(JWSAlgorithm.RS256, keySource));
+        // The key selector and type verifier above only check the signature and header -
+        // Nimbus does not enforce exp/nbf unless a claims verifier is installed, so without
+        // this an expired access token would validate forever.
+        jwtProcessor.setJWTClaimsSetVerifier(new DefaultJWTClaimsVerifier<>(null, Set.of("exp")));
     }
 
     public static TokenValidator getInstance(PortalConfig config) throws TokenValidationException {

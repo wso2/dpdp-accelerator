@@ -28,10 +28,18 @@ public class DAOConstants {
     public static final String TABLE_COMPLAINT_EVENT = "COMPLAINT_EVENT";
     public static final String TABLE_COMPLAINT_ATTACHMENT = "COMPLAINT_ATTACHMENT";
 
-    // Column Names
-    // Prefixed with COMPLAINT_ (rather than plain EVENT_ID) so it doesn't read as a hook into
-    // some generic event-notification system - it is purely the PK of COMPLAINT_EVENT.
-    public static final String COLUMN_COMPLAINT_EVENT_ID = "COMPLAINT_EVENT_ID";
+    // ComplaintStatus
+    public static final String STATUS_OPEN = "OPEN";
+    public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";
+    public static final String STATUS_WAITING_ON_CLIENT = "WAITING_ON_CLIENT";
+    public static final String STATUS_AWAITING_INTERNAL_REVIEW = "AWAITING_INTERNAL_REVIEW";
+    public static final String STATUS_RESOLVED = "RESOLVED";
+
+    // ComplaintPriority
+    public static final String PRIORITY_CRITICAL = "CRITICAL";
+    public static final String PRIORITY_HIGH = "HIGH";
+    public static final String PRIORITY_MEDIUM = "MEDIUM";
+    public static final String PRIORITY_LOW = "LOW";
 
     // ComplaintStatus, ComplaintPriority, and ComplaintActorRole each have their own enum type
     // (see the ComplaintStatus/ComplaintPriority/ComplaintActorRole classes in this package) -

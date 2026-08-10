@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `COMPLAINT` (
   -- DB migration. The CHECK here is only a backstop against direct writes that bypass that layer.
   CONSTRAINT `CHK_COMPLAINT_PRIORITY` CHECK (`PRIORITY` in ('CRITICAL', 'HIGH', 'MEDIUM', 'LOW')),
   CONSTRAINT `CHK_COMPLAINT_STATUS` CHECK (`STATUS` in
-      ('OPEN', 'IN_PROGRESS', 'AWAITING_COMPLAINANT_INFO', 'AWAITING_INTERNAL_REVIEW', 'RESOLVED'))
+      ('OPEN', 'IN_PROGRESS', 'WAITING_ON_CLIENT', 'AWAITING_INTERNAL_REVIEW', 'RESOLVED'))
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 
 -- COMPLAINT_EVENT definition (timeline: status changes, comments, internal notes)

@@ -16,8 +16,9 @@
 # under the License.
 #
 # Registers the consent portal as an OAuth application on a RUNNING Identity
-# Server, authorizes it for the consent management v2 APIs, creates the portal
-# administrator role and writes the client credentials into the portal
+# Server, authorizes it for the consent management v2 APIs and a custom
+# complaint management API, creates the portal administrator and complaint
+# officer roles, and writes the client credentials into the portal
 # configuration. Safe to re-run.
 
 set -e
@@ -53,7 +54,7 @@ if ! ${CURL} "${BASE}/api/server/v1/api-resources?limit=1" -o /dev/null -w '' 2>
 fi
 
 # ------------------------------------------------------------------ application
-echo "[1/4] Registering the OAuth application"
+echo "[1/6] Registering the OAuth application"
 EXISTING=$(${CURL} --get --data-urlencode "filter=name eq ${APP_NAME}" \
   "${BASE}/api/server/v1/applications" | json "d['applications'][0]['id'] if d.get('applications') else ''")
 
@@ -93,7 +94,7 @@ ${CURL} -X PATCH -H 'Content-Type: application/json' -d '{
   }' "${BASE}/api/server/v1/applications/${APP_ID}" -o /dev/null
 
 # ------------------------------------------------------------- API authorization
-echo "[2/4] Authorizing the consent management v2 APIs"
+echo "[2/6] Authorizing the consent management v2 APIs"
 ALL_SCOPES=""
 for IDENTIFIER in \
   "/api/identity/consent-mgt/v2.0/consents" \
@@ -119,7 +120,7 @@ for IDENTIFIER in \
 done
 
 # ------------------------------------------------------------------------- role
-echo "[3/4] Creating the ${PORTAL_ADMIN_ROLE} role"
+echo "[3/6] Creating the ${PORTAL_ADMIN_ROLE} role"
 # Scope authorization alone is not enough: with an RBAC policy the Identity
 # Server only puts a scope in a token when the user holds a role granting it.
 # Roles are scoped to an audience, so a same-named role belonging to a different
@@ -147,8 +148,106 @@ print(json.dumps({
   echo "      Assign users to it to grant portal administration access."
 fi
 
+# --------------------------------------------------------- complaint management
+echo "[4/6] Authorizing the complaint management API"
+# Unlike the consent-mgt v2 resources above, this API resource does not ship
+# with the Identity Server - the complaint management webapp is a custom
+# accelerator component, so its scopes have to be registered here before any
+# role can carry them.
+COMPLAINT_API_IDENTIFIER="dpdp-complaint-mgt"
+COMPLAINT_RESOURCE=$(${CURL} --get --data-urlencode "filter=identifier eq ${COMPLAINT_API_IDENTIFIER}" \
+  "${BASE}/api/server/v1/api-resources" | json "d['apiResources'][0]['id'] if d.get('apiResources') else ''")
+
+if [ -n "${COMPLAINT_RESOURCE}" ]; then
+  echo "      API resource already exists (${COMPLAINT_RESOURCE}); reusing it."
+  COMPLAINT_SCOPES=$(${CURL} "${BASE}/api/server/v1/api-resources/${COMPLAINT_RESOURCE}" \
+    | json "json.dumps([s['name'] for s in d.get('scopes',[])])")
+else
+  COMPLAINT_RESOURCE_BODY='{
+    "name": "DPDP Complaint Management",
+    "identifier": "'"${COMPLAINT_API_IDENTIFIER}"'",
+    "requiresAuthorization": true,
+    "scopes": [
+      {"name": "portal_complaint_read_any", "displayName": "View complaints",
+       "description": "View complaints filed by any data principal"},
+      {"name": "portal_complaint_write_any", "displayName": "Manage complaints",
+       "description": "Respond to and change the status of complaints filed by any data principal"}
+    ]
+  }'
+  CREATED=$(${CURL} -H 'Content-Type: application/json' -d "${COMPLAINT_RESOURCE_BODY}" \
+    "${BASE}/api/server/v1/api-resources")
+  COMPLAINT_RESOURCE=$(echo "${CREATED}" | json "d.get('id','')")
+  if [ -z "${COMPLAINT_RESOURCE}" ]; then
+    echo "ERROR: failed to create the complaint management API resource: ${CREATED}"
+    exit 2
+  fi
+  COMPLAINT_SCOPES='["portal_complaint_read_any","portal_complaint_write_any"]'
+  echo "      Created API resource ${COMPLAINT_RESOURCE}"
+fi
+
+# A silent parse failure anywhere above would otherwise surface only as an empty
+# authorization/role - i.e. exactly the "everything looks configured but tokens
+# never carry the scope" failure mode this script is meant to prevent.
+if [ -z "${COMPLAINT_SCOPES}" ] || [ "${COMPLAINT_SCOPES}" = "[]" ]; then
+  echo "ERROR: could not determine the complaint management API's scopes."
+  exit 2
+fi
+
+# POST only authorizes an API the app doesn't already have a (possibly stale or
+# empty) authorization entry for; it does not update an existing one. Reconcile
+# via PATCH instead when the entry already exists, so a re-run always converges
+# the live scope list to match COMPLAINT_SCOPES rather than leaving it as-is.
+COMPLAINT_ALREADY_AUTHORIZED=$(${CURL} "${BASE}/api/server/v1/applications/${APP_ID}/authorized-apis" \
+  | json "'true' if any(a.get('id')=='${COMPLAINT_RESOURCE}' for a in d) else ''")
+
+if [ -n "${COMPLAINT_ALREADY_AUTHORIZED}" ]; then
+  COMPLAINT_PATCH_BODY=$(python3 -c "import json;print(json.dumps({'addedScopes':json.loads('''${COMPLAINT_SCOPES}'''),'removedScopes':[]}))")
+  ${CURL} -X PATCH -H 'Content-Type: application/json' -d "${COMPLAINT_PATCH_BODY}" \
+    "${BASE}/api/server/v1/applications/${APP_ID}/authorized-apis/${COMPLAINT_RESOURCE}" -o /dev/null
+else
+  COMPLAINT_AUTH_BODY=$(python3 -c "import json;print(json.dumps({'id':'${COMPLAINT_RESOURCE}','policyIdentifier':'RBAC','scopes':json.loads('''${COMPLAINT_SCOPES}''')}))")
+  ${CURL} -H 'Content-Type: application/json' -d "${COMPLAINT_AUTH_BODY}" \
+    "${BASE}/api/server/v1/applications/${APP_ID}/authorized-apis" -o /dev/null
+fi
+
+echo "[5/6] Creating the ${PORTAL_COMPLAINT_OFFICER_ROLE} role"
+OFFICER_ROLE_ID=$(${CURL} --get --data-urlencode "filter=displayName eq ${PORTAL_COMPLAINT_OFFICER_ROLE}" \
+  "${BASE}/scim2/v2/Roles" \
+  | json "next((r['id'] for r in d.get('Resources',[]) if r.get('audience',{}).get('value')=='${APP_ID}'), '')")
+
+if [ -n "${OFFICER_ROLE_ID}" ]; then
+  echo "      Role already exists (${OFFICER_ROLE_ID}); leaving its members unchanged."
+else
+  OFFICER_ROLE_BODY=$(python3 -c "
+import json
+scopes = json.loads('''${COMPLAINT_SCOPES}''')
+print(json.dumps({
+  'schemas': ['urn:ietf:params:scim:schemas:extension:2.0:Role'],
+  'displayName': '${PORTAL_COMPLAINT_OFFICER_ROLE}',
+  'audience': {'value': '${APP_ID}', 'type': 'application'},
+  'permissions': [{'value': s} for s in scopes],
+}))")
+  OFFICER_ROLE_ID=$(${CURL} -H 'Content-Type: application/json' -d "${OFFICER_ROLE_BODY}" \
+    "${BASE}/scim2/v2/Roles" | json "d.get('id','')")
+  echo "      Created role ${OFFICER_ROLE_ID}"
+  echo "      Assign users to it to grant complaint officer access."
+fi
+
+# Membership is left alone above, but permissions are reconciled unconditionally:
+# a role created (or left over) with an empty/stale permission set would otherwise
+# never self-heal on a later re-run, the same failure mode fixed for the API above.
+COMPLAINT_ROLE_PATCH_BODY=$(python3 -c "
+import json
+scopes = json.loads('''${COMPLAINT_SCOPES}''')
+print(json.dumps({
+  'schemas': ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+  'Operations': [{'op': 'add', 'value': {'permissions': [{'value': s} for s in scopes]}}],
+}))")
+${CURL} -X PATCH -H 'Content-Type: application/json' -d "${COMPLAINT_ROLE_PATCH_BODY}" \
+  "${BASE}/scim2/v2/Roles/${OFFICER_ROLE_ID}" -o /dev/null
+
 # ---------------------------------------------------------------- portal config
-echo "[4/4] Writing client credentials to dpdp-portal.properties"
+echo "[6/6] Writing client credentials to dpdp-portal.properties"
 python3 - "${PORTAL_PROPERTIES}" "${CLIENT_ID}" "${CLIENT_SECRET}" <<'PY'
 import sys
 path, client_id, client_secret = sys.argv[1], sys.argv[2], sys.argv[3]

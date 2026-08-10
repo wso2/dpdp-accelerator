@@ -29,11 +29,13 @@ class StatusTransitionValidatorTest {
     @ParameterizedTest
     @CsvSource({
             "OPEN, IN_PROGRESS",
-            "OPEN, AWAITING_COMPLAINANT_INFO",
-            "IN_PROGRESS, AWAITING_COMPLAINANT_INFO",
+            "OPEN, WAITING_ON_CLIENT",
+            "OPEN, AWAITING_INTERNAL_REVIEW",
+            "IN_PROGRESS, WAITING_ON_CLIENT",
             "IN_PROGRESS, RESOLVED",
-            "AWAITING_COMPLAINANT_INFO, AWAITING_INTERNAL_REVIEW",
+            "WAITING_ON_CLIENT, AWAITING_INTERNAL_REVIEW",
             "AWAITING_INTERNAL_REVIEW, IN_PROGRESS",
+            "AWAITING_INTERNAL_REVIEW, WAITING_ON_CLIENT",
             "AWAITING_INTERNAL_REVIEW, RESOLVED"
     })
     void allowsDocumentedValidTransitions(String from, String to) {
@@ -47,9 +49,8 @@ class StatusTransitionValidatorTest {
             "RESOLVED, OPEN",
             "RESOLVED, IN_PROGRESS",
             "IN_PROGRESS, AWAITING_INTERNAL_REVIEW",
-            "AWAITING_COMPLAINANT_INFO, IN_PROGRESS",
-            "AWAITING_COMPLAINANT_INFO, RESOLVED",
-            "AWAITING_INTERNAL_REVIEW, AWAITING_COMPLAINANT_INFO"
+            "WAITING_ON_CLIENT, IN_PROGRESS",
+            "WAITING_ON_CLIENT, RESOLVED"
     })
     void rejectsInvalidTransitions(String from, String to) {
         assertFalse(StatusTransitionValidator.isValidTransition(from, to));

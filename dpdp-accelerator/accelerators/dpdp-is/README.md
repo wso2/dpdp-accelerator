@@ -57,10 +57,17 @@ involved.
 
 ## Granting administration access
 
-Every authenticated user can see and manage their own consents. The
-administration and catalog areas additionally require the consent management
-scopes, which are granted through the `dpdp-consent-admin` role created in
-step 5 — assign users to that role in the Console.
+Every authenticated user can see and manage their own consents and complaints.
+The administration and catalog areas additionally require the consent
+management scopes, which are granted through the `dpdp-consent-admin` role
+created in step 5 — assign users to that role in the Console.
+
+Similarly, the complaint management area requires the complaint officer
+scopes, granted through the `dpdp-complaint-officer` role that step 5 also
+creates (its API resource, unlike the consent-mgt ones, doesn't ship with the
+Identity Server — the script registers it itself). Assign users to that role
+in the Console to give them the "All Complaints" view instead of just their
+own.
 
 ## Complaint management API
 

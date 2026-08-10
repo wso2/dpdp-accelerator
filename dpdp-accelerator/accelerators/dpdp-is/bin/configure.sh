@@ -111,6 +111,7 @@ cat > "${PORTAL_PROPERTIES}" <<EOF
 # register-portal-app.sh. This file survives an accelerator upgrade.
 identity.server.base.url=${IS_BASE_URL}
 identity.server.internal.base.url=https://localhost:${IS_PORT}
+complaint.server.internal.base.url=https://localhost:${IS_PORT}/api/dpdp/complaints/v1
 oauth.client.id=${CLIENT_ID}
 oauth.client.secret=${CLIENT_SECRET}
 cookie.secure=true

@@ -17,7 +17,16 @@
  */
 
 import { Sidebar } from '@wso2/oxygen-ui'
-import { Blocks, Clock3, House, ShieldCheck, ShieldPlus, Target } from '@wso2/oxygen-ui-icons-react'
+import {
+  Blocks,
+  Clock3,
+  House,
+  Inbox,
+  Shield,
+  ShieldCheck,
+  ShieldPlus,
+  Target,
+} from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useAuthorization from '../../../features/auth/useAuthorization'
@@ -79,6 +88,16 @@ const CATALOG_ITEMS: SidebarItem[] = [
   },
 ]
 
+const COMPLAINT_ITEMS: SidebarItem[] = [
+  {
+    id: 'my-complaints',
+    labelKey: 'sidebar.myComplaints',
+    path: '/complaints',
+    icon: <Inbox size={18} />,
+    requiredScope: PORTAL_SCOPES.COMPLAINT_READ_SELF,
+  },
+]
+
 const ADMINISTRATION_ITEMS: SidebarItem[] = [
   {
     id: 'administration-consents',
@@ -87,11 +106,26 @@ const ADMINISTRATION_ITEMS: SidebarItem[] = [
     icon: <ShieldPlus size={18} />,
     requiredScope: PORTAL_SCOPES.CONSENTS_READ_ANY,
   },
+  {
+    id: 'complaint-management',
+    labelKey: 'sidebar.complaintManagement',
+    path: '/complaint-management',
+    icon: <Shield size={18} />,
+    requiredScope: PORTAL_SCOPES.COMPLAINT_READ_ANY,
+  },
 ]
 
 function mapPathToMenuId(pathname: string, search: string): string {
   if (pathname.startsWith('/administration/consents')) {
     return 'administration-consents'
+  }
+
+  if (pathname.startsWith('/complaint-management')) {
+    return 'complaint-management'
+  }
+
+  if (pathname.startsWith('/complaints')) {
+    return 'my-complaints'
   }
 
   if (pathname.startsWith('/dashboard')) {
@@ -127,9 +161,16 @@ function AppSidebar({ collapsed }: AppSidebarProps): React.JSX.Element {
 
   const dashboardItems = DASHBOARD_ITEMS.filter((item) => hasScope(item.requiredScope))
   const consentItems = CONSENT_ITEMS.filter((item) => hasScope(item.requiredScope))
+  const complaintItems = COMPLAINT_ITEMS.filter((item) => hasScope(item.requiredScope))
   const catalogItems = CATALOG_ITEMS.filter((item) => hasScope(item.requiredScope))
   const administrationItems = ADMINISTRATION_ITEMS.filter((item) => hasScope(item.requiredScope))
-  const visibleItems = [...dashboardItems, ...consentItems, ...catalogItems, ...administrationItems]
+  const visibleItems = [
+    ...dashboardItems,
+    ...consentItems,
+    ...complaintItems,
+    ...catalogItems,
+    ...administrationItems,
+  ]
 
   const activeItem = mapPathToMenuId(location.pathname, location.search)
 
@@ -162,6 +203,17 @@ function AppSidebar({ collapsed }: AppSidebarProps): React.JSX.Element {
           <Sidebar.Category>
             <Sidebar.CategoryLabel>{t('sidebar.consent')}</Sidebar.CategoryLabel>
             {consentItems.map((item) => (
+              <Sidebar.Item key={item.id} id={item.id}>
+                <Sidebar.ItemIcon>{item.icon}</Sidebar.ItemIcon>
+                <Sidebar.ItemLabel>{t(item.labelKey)}</Sidebar.ItemLabel>
+              </Sidebar.Item>
+            ))}
+          </Sidebar.Category>
+        ) : null}
+
+        {complaintItems.length > 0 ? (
+          <Sidebar.Category>
+            {complaintItems.map((item) => (
               <Sidebar.Item key={item.id} id={item.id}>
                 <Sidebar.ItemIcon>{item.icon}</Sidebar.ItemIcon>
                 <Sidebar.ItemLabel>{t(item.labelKey)}</Sidebar.ItemLabel>

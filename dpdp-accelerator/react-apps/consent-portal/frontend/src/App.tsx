@@ -27,6 +27,10 @@ import ElementListPage from './features/catalog/ElementListPage'
 import PurposeDetailsPage from './features/catalog/PurposeDetailsPage'
 import PurposeListPage from './features/catalog/PurposeListPage'
 import AdminConsentRegistryPage from './features/admin-consents/AdminConsentRegistryPage'
+import ComplaintCaseDetailPage from './features/complaint-management/ComplaintCaseDetailPage'
+import ComplaintQueuePage from './features/complaint-management/ComplaintQueuePage'
+import ComplaintDetailPage from './features/complaints/ComplaintDetailPage'
+import ComplaintListPage from './features/complaints/ComplaintListPage'
 import ConsentDetailsPage from './features/consent-registry/ConsentDetailsPage'
 import ConsentRegistryPage from './features/consent-registry/ConsentRegistryPage'
 import DashboardPage from './features/dashboard/DashboardPage'
@@ -197,6 +201,38 @@ function App(): React.JSX.Element {
             element={
               <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_ANY}>
                 <ConsentDetailsPage variant="admin" />
+              </AuthorizedRoute>
+            }
+          />
+          <Route
+            path="/complaints"
+            element={
+              <AuthorizedRoute scope={PORTAL_SCOPES.COMPLAINT_READ_SELF}>
+                <ComplaintListPage />
+              </AuthorizedRoute>
+            }
+          />
+          <Route
+            path="/complaints/:id"
+            element={
+              <AuthorizedRoute scope={PORTAL_SCOPES.COMPLAINT_READ_SELF}>
+                <ComplaintDetailPage />
+              </AuthorizedRoute>
+            }
+          />
+          <Route
+            path="/complaint-management"
+            element={
+              <AuthorizedRoute scope={PORTAL_SCOPES.COMPLAINT_READ_ANY}>
+                <ComplaintQueuePage />
+              </AuthorizedRoute>
+            }
+          />
+          <Route
+            path="/complaint-management/:id"
+            element={
+              <AuthorizedRoute scope={PORTAL_SCOPES.COMPLAINT_READ_ANY}>
+                <ComplaintCaseDetailPage />
               </AuthorizedRoute>
             }
           />

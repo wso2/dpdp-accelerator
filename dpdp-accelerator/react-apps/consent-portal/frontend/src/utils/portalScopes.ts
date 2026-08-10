@@ -25,6 +25,10 @@ export const PORTAL_SCOPES = {
   ELEMENTS_WRITE: 'portal:elements:write',
   PURPOSES_READ: 'portal:purposes:read',
   PURPOSES_WRITE: 'portal:purposes:write',
+  COMPLAINT_READ_SELF: 'portal:complaint:read:self',
+  COMPLAINT_WRITE_SELF: 'portal:complaint:write:self',
+  COMPLAINT_READ_ANY: 'portal_complaint_read_any',
+  COMPLAINT_WRITE_ANY: 'portal_complaint_write_any',
 } as const
 
 export type PortalScope = (typeof PORTAL_SCOPES)[keyof typeof PORTAL_SCOPES]
