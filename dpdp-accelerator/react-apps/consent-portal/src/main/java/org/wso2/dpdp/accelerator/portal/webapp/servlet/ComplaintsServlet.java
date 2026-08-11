@@ -493,7 +493,7 @@ public class ComplaintsServlet extends HttpServlet {
         }
 
         String orgId = user.getOrganizationId() == null ? "carbon.super" : user.getOrganizationId();
-        return new RequestContext(user, surface, new ComplaintServerClient(config, orgId));
+        return new RequestContext(user, surface, new ComplaintServerClient(config, orgId, accessToken));
     }
 
     private static String requiredScope(String surface, boolean write) {

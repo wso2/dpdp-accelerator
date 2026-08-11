@@ -19,7 +19,9 @@
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.DAOConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.DuplicateReferenceIdException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.queries.QueryConstants;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.DBUtil;
@@ -28,6 +30,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,11 +61,25 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             ps.setLong(11, complaint.getStatutoryDueTime());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
+            if (isReferenceIdConflict(e)) {
+                throw new DuplicateReferenceIdException(e);
+            }
             LOGGER.log(Level.SEVERE, "Error adding complaint for org: " + complaint.getOrgId(), e);
             throw new ComplaintDAOException("Error adding complaint for org: " + complaint.getOrgId(), e);
         } finally {
             DBUtil.closeAll(conn, ps, null);
         }
+    }
+
+    /**
+     * Distinguishes the (ORG_ID, REFERENCE_ID) unique-constraint violation - which the caller is
+     * expected to retry with a freshly generated reference ID - from any other integrity violation
+     * (e.g. a COMPLAINT_ID primary-key clash), which should keep surfacing as a generic DAO error.
+     */
+    private static boolean isReferenceIdConflict(SQLException e) {
+        return e instanceof SQLIntegrityConstraintViolationException
+                && e.getMessage() != null
+                && e.getMessage().contains(DAOConstants.CONSTRAINT_UQ_COMPLAINT_REFERENCE);
     }
 
     @Override
@@ -133,8 +150,6 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         } catch (SQLException e) {
             LOGGER.log(Level.SEVERE, "Error updating status for complaint: " + complaintId, e);
             throw new ComplaintDAOException("Error updating status for complaint: " + complaintId, e);
-        } finally {
-            DBUtil.closeAll(conn, ps, null);
         }
     }
 

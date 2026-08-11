@@ -31,20 +31,21 @@ import java.time.Duration;
 import java.util.List;
 
 /**
- * Calls the standalone complaint-server API. Unlike {@link IdentityServerClient},
- * no user access token is forwarded — complaint-server defines no auth scheme of
- * its own, only the {@code org-id} tenant header, and is assumed reachable only
- * from this webapp on a trusted internal network.
+ * Calls the standalone complaint-server API on behalf of the signed-in user by forwarding that
+ * user's access token, the same way {@link IdentityServerClient} does — the complaint API's own
+ * {@code resource.access_control} rules enforce the token's portal_complaint_* scopes.
  */
 public class ComplaintServerClient {
 
     private final PortalConfig config;
     private final String orgId;
+    private final String accessToken;
 
-    public ComplaintServerClient(PortalConfig config, String orgId) {
+    public ComplaintServerClient(PortalConfig config, String orgId, String accessToken) {
 
         this.config = config;
         this.orgId = orgId;
+        this.accessToken = accessToken;
     }
 
     /**
@@ -82,6 +83,7 @@ public class ComplaintServerClient {
         return HttpRequest.newBuilder()
                 .uri(URI.create(config.getComplaintServerInternalBaseUrl() + path))
                 .timeout(Duration.ofSeconds(30))
+                .header("Authorization", "Bearer " + accessToken)
                 .header("org-id", orgId)
                 .header("Accept", PortalConstants.CONTENT_TYPE_JSON);
     }

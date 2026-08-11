@@ -25,7 +25,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.AWAITING_COMPLAINANT_INFO;
+import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.WAITING_ON_CLIENT;
 import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.AWAITING_INTERNAL_REVIEW;
 import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.IN_PROGRESS;
 import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.OPEN;
@@ -33,16 +33,16 @@ import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintSta
 
 /**
  * Valid ComplaintStatus transitions.
- *   OPEN                        -> IN_PROGRESS, AWAITING_COMPLAINANT_INFO
- *   IN_PROGRESS                 -> AWAITING_COMPLAINANT_INFO, RESOLVED
- *   AWAITING_COMPLAINANT_INFO   -> AWAITING_INTERNAL_REVIEW
+ *   OPEN                        -> IN_PROGRESS, WAITING_ON_CLIENT
+ *   IN_PROGRESS                 -> WAITING_ON_CLIENT, RESOLVED
+ *   WAITING_ON_CLIENT   -> AWAITING_INTERNAL_REVIEW
  *   AWAITING_INTERNAL_REVIEW    -> IN_PROGRESS, RESOLVED
  *   RESOLVED                    -> (terminal - no further transitions)
  *
  * A complaint can only be RESOLVED after having gone through IN_PROGRESS or AWAITING_INTERNAL_REVIEW,
  * so OPEN -> RESOLVED directly is rejected (this matches the 409 example in the API spec).
  *
- * Once a complaint is AWAITING_COMPLAINANT_INFO, the complainant's reply routes it to internal
+ * Once a complaint is WAITING_ON_CLIENT, the complainant's reply routes it to internal
  * review rather than back into IN_PROGRESS directly - AWAITING_INTERNAL_REVIEW is the only way out.
  */
 public class StatusTransitionValidator {
@@ -51,10 +51,10 @@ public class StatusTransitionValidator {
             new EnumMap<>(ComplaintStatus.class);
 
     static {
-        ALLOWED_TRANSITIONS.put(OPEN, EnumSet.of(IN_PROGRESS, AWAITING_COMPLAINANT_INFO));
-        ALLOWED_TRANSITIONS.put(IN_PROGRESS, EnumSet.of(AWAITING_COMPLAINANT_INFO, RESOLVED));
-        ALLOWED_TRANSITIONS.put(AWAITING_COMPLAINANT_INFO, EnumSet.of(AWAITING_INTERNAL_REVIEW));
-        ALLOWED_TRANSITIONS.put(AWAITING_INTERNAL_REVIEW, EnumSet.of(IN_PROGRESS, RESOLVED));
+        ALLOWED_TRANSITIONS.put(OPEN, EnumSet.of(IN_PROGRESS, WAITING_ON_CLIENT, AWAITING_INTERNAL_REVIEW));
+        ALLOWED_TRANSITIONS.put(IN_PROGRESS, EnumSet.of(WAITING_ON_CLIENT, RESOLVED));
+        ALLOWED_TRANSITIONS.put(WAITING_ON_CLIENT, EnumSet.of(AWAITING_INTERNAL_REVIEW));
+        ALLOWED_TRANSITIONS.put(AWAITING_INTERNAL_REVIEW, EnumSet.of(IN_PROGRESS, WAITING_ON_CLIENT, RESOLVED));
         ALLOWED_TRANSITIONS.put(RESOLVED, EnumSet.noneOf(ComplaintStatus.class));
     }
 

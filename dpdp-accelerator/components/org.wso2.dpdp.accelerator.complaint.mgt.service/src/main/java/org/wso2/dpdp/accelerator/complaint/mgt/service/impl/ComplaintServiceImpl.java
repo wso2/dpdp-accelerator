@@ -19,6 +19,7 @@
 package org.wso2.dpdp.accelerator.complaint.mgt.service.impl;
 
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.DuplicateReferenceIdException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.impl.ComplaintDAOImpl;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
@@ -36,6 +37,11 @@ import java.util.UUID;
 import static org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintStatus.OPEN;
 
 public class ComplaintServiceImpl implements ComplaintService {
+
+    // ReferenceIdGenerator's count-then-format sequence is racy under concurrent submissions for
+    // the same org/year, so a fresh reference ID is retried a bounded number of times on conflict
+    // rather than surfacing the first collision as a 500.
+    private static final int MAX_REFERENCE_ID_ATTEMPTS = 5;
 
     private final ComplaintDAO complaintDAO;
 
@@ -77,16 +83,27 @@ public class ComplaintServiceImpl implements ComplaintService {
         String complaintId = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
         String priority = PriorityMapper.derivePriority(subjectCategory.trim());
-        String referenceId = ReferenceIdGenerator.generate(complaintDAO, orgId, now);
         long statutoryDueTime = now + StatutoryDuePeriodPolicy.getDuePeriodMillis();
 
-        Complaint complaint = new Complaint(complaintId, orgId, userId.trim(), referenceId, subjectCategory.trim(),
-                priority, OPEN.name(), description.trim(), now, now, statutoryDueTime);
-
-        boolean created = complaintDAO.addComplaint(complaint);
-        if (!created) {
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
-                    ComplaintServiceConstants.CREATE_COMPLAINT_FAILED_ERROR);
+        Complaint complaint;
+        int attempt = 0;
+        while (true) {
+            attempt++;
+            String referenceId = ReferenceIdGenerator.generate(complaintDAO, orgId, now);
+            complaint = new Complaint(complaintId, orgId, userId.trim(), referenceId, subjectCategory.trim(),
+                    priority, OPEN.name(), description.trim(), now, now, statutoryDueTime);
+            try {
+                if (!complaintDAO.addComplaint(complaint)) {
+                    throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                            ComplaintServiceConstants.CREATE_COMPLAINT_FAILED_ERROR);
+                }
+                break;
+            } catch (DuplicateReferenceIdException e) {
+                if (attempt >= MAX_REFERENCE_ID_ATTEMPTS) {
+                    throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                            ComplaintServiceConstants.CREATE_COMPLAINT_FAILED_ERROR);
+                }
+            }
         }
 
         return complaint;

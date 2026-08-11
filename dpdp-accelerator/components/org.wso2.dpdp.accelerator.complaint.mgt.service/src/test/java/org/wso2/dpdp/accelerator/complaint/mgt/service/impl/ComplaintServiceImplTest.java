@@ -26,9 +26,11 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.DuplicateReferenceIdException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
 
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 import java.util.Optional;
 
@@ -146,6 +148,33 @@ class ComplaintServiceImplTest {
 
         assertEquals("CO-5000", ex.getCode());
         assertEquals(500, ex.getStatusCode());
+    }
+
+    @Test
+    void createComplaintRetriesWithFreshReferenceIdOnConflict() {
+        when(complaintDAO.countByReferenceIdPrefix(anyString(), anyString())).thenReturn(0);
+        when(complaintDAO.addComplaint(any(Complaint.class)))
+                .thenThrow(new DuplicateReferenceIdException(new SQLIntegrityConstraintViolationException("dup")))
+                .thenReturn(true);
+
+        Complaint complaint = complaintService.createComplaint("org1", "user1", "DATA_BREACH", "desc");
+
+        assertEquals("OPEN", complaint.getStatus());
+        verify(complaintDAO, times(2)).addComplaint(any(Complaint.class));
+    }
+
+    @Test
+    void createComplaintGivesUpAfterMaxReferenceIdAttempts() {
+        when(complaintDAO.countByReferenceIdPrefix(anyString(), anyString())).thenReturn(0);
+        when(complaintDAO.addComplaint(any(Complaint.class)))
+                .thenThrow(new DuplicateReferenceIdException(new SQLIntegrityConstraintViolationException("dup")));
+
+        ComplaintException ex = assertThrows(ComplaintException.class,
+                () -> complaintService.createComplaint("org1", "user1", "DATA_BREACH", "desc"));
+
+        assertEquals("CO-5000", ex.getCode());
+        assertEquals(500, ex.getStatusCode());
+        verify(complaintDAO, times(5)).addComplaint(any(Complaint.class));
     }
 
     @Test

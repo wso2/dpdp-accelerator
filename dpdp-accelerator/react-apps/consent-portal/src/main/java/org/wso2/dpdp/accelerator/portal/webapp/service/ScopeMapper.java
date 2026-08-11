@@ -38,8 +38,8 @@ public final class ScopeMapper {
     public static final String PORTAL_ELEMENTS_WRITE = "portal:elements:write";
     public static final String PORTAL_PURPOSES_READ = "portal:purposes:read";
     public static final String PORTAL_PURPOSES_WRITE = "portal:purposes:write";
-    public static final String PORTAL_COMPLAINT_READ_SELF = "portal:complaint:read:self";
-    public static final String PORTAL_COMPLAINT_WRITE_SELF = "portal:complaint:write:self";
+    public static final String PORTAL_COMPLAINT_READ_SELF = "portal_complaint_read_self";
+    public static final String PORTAL_COMPLAINT_WRITE_SELF = "portal_complaint_write_self";
     public static final String PORTAL_COMPLAINT_READ_ANY = "portal_complaint_read_any";
     public static final String PORTAL_COMPLAINT_WRITE_ANY = "portal_complaint_write_any";
 
@@ -63,13 +63,12 @@ public final class ScopeMapper {
     public static List<String> toPortalScopes(List<String> identityServerScopes) {
 
         List<String> portalScopes = new ArrayList<>();
-        portalScopes.addAll(identityServerScopes.stream().filter(s -> s.startsWith("portal:"))
+        portalScopes.addAll(identityServerScopes.stream().filter(s -> s.startsWith("portal"))
                 .collect(Collectors.toList()));
+
         if (identityServerScopes.contains(IS_INTERNAL_LOGIN)) {
             portalScopes.add(PORTAL_CONSENTS_READ_SELF);
             portalScopes.add(PORTAL_CONSENTS_WRITE_SELF);
-            portalScopes.add(PORTAL_COMPLAINT_READ_SELF);
-            portalScopes.add(PORTAL_COMPLAINT_WRITE_SELF);
         }
         
         if (identityServerScopes.contains(IS_CONSENT_VIEW)) {

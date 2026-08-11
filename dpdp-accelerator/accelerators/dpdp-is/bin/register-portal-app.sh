@@ -54,7 +54,7 @@ if ! ${CURL} "${BASE}/api/server/v1/api-resources?limit=1" -o /dev/null -w '' 2>
 fi
 
 # ------------------------------------------------------------------ application
-echo "[1/6] Registering the OAuth application"
+echo "[1/7] Registering the OAuth application"
 EXISTING=$(${CURL} --get --data-urlencode "filter=name eq ${APP_NAME}" \
   "${BASE}/api/server/v1/applications" | json "d['applications'][0]['id'] if d.get('applications') else ''")
 
@@ -94,7 +94,7 @@ ${CURL} -X PATCH -H 'Content-Type: application/json' -d '{
   }' "${BASE}/api/server/v1/applications/${APP_ID}" -o /dev/null
 
 # ------------------------------------------------------------- API authorization
-echo "[2/6] Authorizing the consent management v2 APIs"
+echo "[2/7] Authorizing the consent management v2 APIs"
 ALL_SCOPES=""
 for IDENTIFIER in \
   "/api/identity/consent-mgt/v2.0/consents" \
@@ -120,7 +120,7 @@ for IDENTIFIER in \
 done
 
 # ------------------------------------------------------------------------- role
-echo "[3/6] Creating the ${PORTAL_ADMIN_ROLE} role"
+echo "[3/7] Creating the ${PORTAL_ADMIN_ROLE} role"
 # Scope authorization alone is not enough: with an RBAC policy the Identity
 # Server only puts a scope in a token when the user holds a role granting it.
 # Roles are scoped to an audience, so a same-named role belonging to a different
@@ -149,7 +149,7 @@ print(json.dumps({
 fi
 
 # --------------------------------------------------------- complaint management
-echo "[4/6] Authorizing the complaint management API"
+echo "[4/7] Authorizing the complaint management API"
 # Unlike the consent-mgt v2 resources above, this API resource does not ship
 # with the Identity Server - the complaint management webapp is a custom
 # accelerator component, so its scopes have to be registered here before any
@@ -210,7 +210,7 @@ else
     "${BASE}/api/server/v1/applications/${APP_ID}/authorized-apis" -o /dev/null
 fi
 
-echo "[5/6] Creating the ${PORTAL_COMPLAINT_OFFICER_ROLE} role"
+echo "[5/7] Creating the ${PORTAL_COMPLAINT_OFFICER_ROLE} role"
 OFFICER_ROLE_ID=$(${CURL} --get --data-urlencode "filter=displayName eq ${PORTAL_COMPLAINT_OFFICER_ROLE}" \
   "${BASE}/scim2/v2/Roles" \
   | json "next((r['id'] for r in d.get('Resources',[]) if r.get('audience',{}).get('value')=='${APP_ID}'), '')")
@@ -246,8 +246,48 @@ print(json.dumps({
 ${CURL} -X PATCH -H 'Content-Type: application/json' -d "${COMPLAINT_ROLE_PATCH_BODY}" \
   "${BASE}/scim2/v2/Roles/${OFFICER_ROLE_ID}" -o /dev/null
 
+echo "[6/7] Creating the ${PORTAL_COMPLAINT_PRINCIPAL_ROLE} role"
+# Deliberately NOT COMPLAINT_SCOPES (which also carries the _any scopes, now that
+# they're registered on the resource): this role is for ordinary data principals,
+# who must never receive portal_complaint_read_any/write_any - that would let the
+# BFF's ScopeMapper grant them the management surface, exposing every other
+# principal's complaints, not just their own.
+PRINCIPAL_SCOPES='["portal_complaint_read_self","portal_complaint_write_self"]'
+PRINCIPAL_ROLE_ID=$(${CURL} --get --data-urlencode "filter=displayName eq ${PORTAL_COMPLAINT_PRINCIPAL_ROLE}" \
+  "${BASE}/scim2/v2/Roles" \
+  | json "next((r['id'] for r in d.get('Resources',[]) if r.get('audience',{}).get('value')=='${APP_ID}'), '')")
+
+if [ -n "${PRINCIPAL_ROLE_ID}" ]; then
+  echo "      Role already exists (${PRINCIPAL_ROLE_ID}); leaving its members unchanged."
+else
+  PRINCIPAL_ROLE_BODY=$(python3 -c "
+import json
+scopes = json.loads('''${PRINCIPAL_SCOPES}''')
+print(json.dumps({
+  'schemas': ['urn:ietf:params:scim:schemas:extension:2.0:Role'],
+  'displayName': '${PORTAL_COMPLAINT_PRINCIPAL_ROLE}',
+  'audience': {'value': '${APP_ID}', 'type': 'application'},
+  'permissions': [{'value': s} for s in scopes],
+}))")
+  PRINCIPAL_ROLE_ID=$(${CURL} -H 'Content-Type: application/json' -d "${PRINCIPAL_ROLE_BODY}" \
+    "${BASE}/scim2/v2/Roles" | json "d.get('id','')")
+  echo "      Created role ${PRINCIPAL_ROLE_ID}"
+  echo "      Assign every ordinary user to it, or their own complaints stay inaccessible to them."
+fi
+
+# Same unconditional self-heal as the officer role above.
+PRINCIPAL_ROLE_PATCH_BODY=$(python3 -c "
+import json
+scopes = json.loads('''${PRINCIPAL_SCOPES}''')
+print(json.dumps({
+  'schemas': ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
+  'Operations': [{'op': 'add', 'value': {'permissions': [{'value': s} for s in scopes]}}],
+}))")
+${CURL} -X PATCH -H 'Content-Type: application/json' -d "${PRINCIPAL_ROLE_PATCH_BODY}" \
+  "${BASE}/scim2/v2/Roles/${PRINCIPAL_ROLE_ID}" -o /dev/null
+
 # ---------------------------------------------------------------- portal config
-echo "[6/6] Writing client credentials to dpdp-portal.properties"
+echo "[7/7] Writing client credentials to dpdp-portal.properties"
 python3 - "${PORTAL_PROPERTIES}" "${CLIENT_ID}" "${CLIENT_SECRET}" <<'PY'
 import sys
 path, client_id, client_secret = sys.argv[1], sys.argv[2], sys.argv[3]

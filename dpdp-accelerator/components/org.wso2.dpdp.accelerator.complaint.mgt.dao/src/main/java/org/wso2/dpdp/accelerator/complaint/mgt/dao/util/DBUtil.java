@@ -52,9 +52,14 @@ public class DBUtil {
             // run standalone) - deployment.toml's [datasource.ComplaintDB] is still consulted
             // first there via ConfigProvider, with the CO_DB_* system properties (set directly
             // by H2TestDbSupport in tests) as the fallback beneath that.
+            // The TOML value is written with "&amp;" (see the comment above [datasource.ComplaintDB]
+            // in the shipped deployment.toml) so Carbon's verbatim, non-escaping transcription into
+            // master-datasources.xml produces a real "&" once that XML is parsed. Read directly off
+            // the TOML here instead, so unescape it back to a literal "&" before using it as a URL.
             String dbUrl = ConfigProvider.getString("datasource.ComplaintDB.url",
                     System.getProperty("CO_DB_URL",
-                            "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&allowPublicKeyRetrieval=true"));
+                            "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&allowPublicKeyRetrieval=true"))
+                    .replace("&amp;", "&");
             String dbUser = ConfigProvider.getString("datasource.ComplaintDB.username",
                     System.getProperty("CO_DB_USER", "root"));
             String dbPass = ConfigProvider.getString("datasource.ComplaintDB.password",

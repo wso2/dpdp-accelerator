@@ -40,7 +40,7 @@ class DBUtilTransactionTest {
 
     private static final String CREATE_EVENT_TABLE =
             "CREATE TABLE IF NOT EXISTS COMPLAINT_EVENT (" +
-            "EVENT_ID VARCHAR(64) PRIMARY KEY, " +
+            "COMPLAINT_EVENT_ID VARCHAR(64) PRIMARY KEY, " +
             "ORG_ID VARCHAR(64) NOT NULL, " +
             "COMPLAINT_ID VARCHAR(64) NOT NULL, " +
             "ACTOR_USER_ID VARCHAR(64), " +

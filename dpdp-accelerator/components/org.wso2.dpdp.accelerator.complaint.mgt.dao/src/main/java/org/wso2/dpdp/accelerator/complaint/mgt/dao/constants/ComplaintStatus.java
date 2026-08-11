@@ -28,7 +28,7 @@ public enum ComplaintStatus {
 
     OPEN,
     IN_PROGRESS,
-    AWAITING_COMPLAINANT_INFO,
+    WAITING_ON_CLIENT,
     AWAITING_INTERNAL_REVIEW,
     RESOLVED;
 

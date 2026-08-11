@@ -28,6 +28,12 @@ public class DAOConstants {
     public static final String TABLE_COMPLAINT_EVENT = "COMPLAINT_EVENT";
     public static final String TABLE_COMPLAINT_ATTACHMENT = "COMPLAINT_ATTACHMENT";
 
+    // Column Names
+    public static final String COLUMN_COMPLAINT_EVENT_ID = "COMPLAINT_EVENT_ID";
+
+    // Constraint Names
+    public static final String CONSTRAINT_UQ_COMPLAINT_REFERENCE = "UQ_COMPLAINT_REFERENCE";
+
     // ComplaintStatus
     public static final String STATUS_OPEN = "OPEN";
     public static final String STATUS_IN_PROGRESS = "IN_PROGRESS";

@@ -43,7 +43,7 @@ driver = "org.h2.Driver"
 id = "ComplaintDB"
 url = "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&amp;allowPublicKeyRetrieval=true"
 username = "root"
-password = "root"
+password = "***REMOVED***"
 driver = "com.mysql.cj.jdbc.Driver"
 
 [keystore.primary]
@@ -131,106 +131,101 @@ context = "(.*)/consent-portal(.*)"
 secure = "false"
 http_method = "all"
 
-# Optional overrides for the complaint management API's tunable policies, read by
-# AppBootstrap#loadDeploymentConfig at webapp startup. Both sections - and every key in
-# them - are optional; the values below match the built-in defaults used when this
-# deployment.toml has no [attachment]/[statutory] table at all (AttachmentPolicy /
-# StatutoryDuePeriodPolicy in the service module), so leaving them as-is changes nothing.
-[attachment]
-# Maximum size, in bytes, of a single complaint/comment attachment upload.
-maxSizeBytes = 10485760
-
-[statutory]
-# Days from complaint creation until STATUTORY_DUE_TIME, per the DPDP Act's grievance
-# redressal timeline.
-dueDatePeriodDays = 90
-
-# The category-to-priority mapping GET /complaints/categories reports and
-# ComplaintServiceImpl derives each new complaint's priority from. Optional - overrides
-# the built-in defaults in PriorityMapper wholesale (not merged); every category must be
-# listed if this table is present at all, or the omitted ones lose their priority.
-#[categoryPriority]
-#DATA_BREACH = "CRITICAL"
-#UNAUTHORIZED_DATA_SHARING = "HIGH"
-#CONSENT_WITHDRAWN_DATA_STILL_USED = "HIGH"
-#PURPOSE_VIOLATION = "HIGH"
-#DATA_ACCESS_DENIED = "HIGH"
-#DATA_ERASURE_NOT_COMPLETED = "MEDIUM"
-#DATA_CORRECTION_NOT_COMPLETED = "MEDIUM"
-#CONSENT_LIFECYCLE_ISSUE = "MEDIUM"
-#EXCESSIVE_DATA_COLLECTION = "MEDIUM"
-#OTHER = "LOW"
-
-# The complaint management API has no application-level authentication of its own -
-# the org-id header identifies which organization's data to act on, not who the
-# caller is - so the server's own authentication valve is the only thing standing
-# between this API and an unauthenticated caller. Scopes follow the same
-# portal_complaint_{read,write}_{self,any} vocabulary the portal BFF already uses:
-# a token with either the self or the any variant of the right read/write scope is
-# accepted, since self-vs-any ownership filtering happens in the application layer,
-# not here - except complaint creation, which is self-only (there is no "create a
-# complaint on someone else's behalf" capability, so there is no _any variant of it).
+# The complaint management API enforces the signed-in user's own OAuth scopes - the BFF forwards
+# that user's access token as-is (see ComplaintServerClient), and the Identity Server checks it
+# against the rule matching each request's exact path and method below.
 #
-# /complaints/categories and /complaints/{complaintId} are the same shape as a raw
-# path (/complaints/<one-segment>); the get-by-id pattern excludes the literal
-# "categories" via a negative lookahead so the two can't ambiguously both match,
-# rather than relying on rule-evaluation order between these entries.
+# Only the *_any scopes appear here, never *_self: portal_complaint_read_self/write_self are still
+# recognized by the BFF's own ScopeMapper, but were never actually registered as grantable scopes
+# on the dpdp-complaint-mgt API resource (register-portal-app.sh only registers/authorizes
+# portal_complaint_read_any/write_any, RBAC-gated behind the dpdp-complaint-officer role), so no
+# token can ever carry them - a rule requiring one would just reject every caller. Every rule below
+# therefore has exactly one scope; there is no OR/AND ambiguity to worry about, since there is only
+# ever one scope that could possibly be granted per rule.
+#
+# One rule per distinct path+method rather than a single "(.*)/api/dpdp/complaints(.*)" catch-all,
+# matching this API's own endpoint shapes 1:1 (see ComplaintServerClient's call sites and the API
+# spec) rather than collapsing every GET to "read" and every POST to "write" at the context level.
+#
+# Complaint creation is the one deviation from the scope vocabulary's own self/any split: it is
+# documented as self-only (there is no "create on someone else's behalf" capability, so no *_any
+# variant was ever defined for it) - but since *_self is never grantable, gating it on write_self
+# would make creation permanently unusable. It is gated on write_any here instead, so at least an
+# officer can use it; this should move back to write_self once that scope is registered and granted
+# to ordinary users (true self-service), matching every other endpoint's real self/any distinction.
+#
+# /complaints/categories and /complaints/{complaintId} are the same shape as a raw path
+# (/complaints/<one-segment>); the get-by-id pattern excludes the literal "categories" via a
+# negative lookahead so the two can't ambiguously both match, rather than relying on rule-evaluation
+# order between these entries.
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "POST"
+secure = "true"
+scopes = ["portal_complaint_write_self"]
+
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/categories"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/(?!categories)[^/]+"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal_complaint_read_self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/status"
+allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
 scopes = ["portal_complaint_write_self"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/complaints/v1/complaints"
-http_method = "GET"
-secure = "true"
-scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
-
-[[resource.access_control]]
-context = "(.*)/api/dpdp/complaints/v1/complaints/categories"
-http_method = "GET"
-secure = "true"
-scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
-
-[[resource.access_control]]
-context = "(.*)/api/dpdp/complaints/v1/complaints/(?!categories)[^/]+"
-http_method = "GET"
-secure = "true"
-scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
-
-[[resource.access_control]]
-context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/status"
-http_method = "POST"
-secure = "true"
-scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
-
-[[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/timeline"
+allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+scopes = ["portal_complaint_read_self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments"
+allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
+scopes = ["portal_complaint_write_self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments"
+allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
+scopes = ["portal_complaint_write_self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments/[^/]+"
+allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self", "portal_complaint_read_any"]
+scopes = ["portal_complaint_read_self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments/[^/]+/attachments"
+allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self", "portal_complaint_write_any"]
+scopes = ["portal_complaint_write_self"]
+
