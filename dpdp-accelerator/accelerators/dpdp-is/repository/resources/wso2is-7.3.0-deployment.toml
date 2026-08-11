@@ -41,9 +41,9 @@ driver = "org.h2.Driver"
 # at startup, not just this one.
 [datasource.ComplaintDB]
 id = "ComplaintDB"
-url = "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&amp;allowPublicKeyRetrieval=true"
-username = "root"
-password = "***REMOVED***"
+url = "jdbc:mysql://<host>:3306/<db>?useSSL=false&amp;allowPublicKeyRetrieval=true"
+username = "<user>"
+password = "<password>"
 driver = "com.mysql.cj.jdbc.Driver"
 
 [keystore.primary]
