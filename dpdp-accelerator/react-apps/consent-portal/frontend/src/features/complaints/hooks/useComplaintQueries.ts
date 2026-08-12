@@ -49,6 +49,7 @@ import {
   uploadMyCommentAttachments,
   uploadMyComplaintAttachments,
 } from '../api/complaintsApi'
+import useAuthorization from '../../auth/useAuthorization'
 import { buildComplaintDetail, buildComplaintRecord } from '../utils/complaintMapper'
 
 interface ComplaintListParams {
@@ -113,6 +114,8 @@ export function useManagedComplaintListQuery(
 }
 
 export function useMyComplaintDetailQuery(id: string | undefined): UseQueryResult<ComplaintDetail> {
+  const { currentUser } = useAuthorization()
+
   return useQuery<ComplaintDetail>({
     queryKey: ['complaint', 'me', id],
     queryFn: async (): Promise<ComplaintDetail> => {
@@ -121,7 +124,7 @@ export function useMyComplaintDetailQuery(id: string | undefined): UseQueryResul
         getMyComplaintTimeline(String(id)),
       ])
 
-      return buildComplaintDetail(record, timeline.data)
+      return buildComplaintDetail(record, timeline.data, currentUser)
     },
     enabled: Boolean(id),
   })
@@ -130,6 +133,8 @@ export function useMyComplaintDetailQuery(id: string | undefined): UseQueryResul
 export function useManagedComplaintDetailQuery(
   id: string | undefined,
 ): UseQueryResult<ComplaintDetail> {
+  const { currentUser } = useAuthorization()
+
   return useQuery<ComplaintDetail>({
     queryKey: ['complaint', 'managed', id],
     queryFn: async (): Promise<ComplaintDetail> => {
@@ -138,7 +143,7 @@ export function useManagedComplaintDetailQuery(
         getManagedComplaintTimeline(String(id)),
       ])
 
-      return buildComplaintDetail(record, timeline.data)
+      return buildComplaintDetail(record, timeline.data, currentUser)
     },
     enabled: Boolean(id),
   })

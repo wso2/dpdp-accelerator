@@ -20,6 +20,8 @@ package org.wso2.dpdp.accelerator.portal.webapp.servlet;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.dpdp.accelerator.portal.webapp.exception.TokenValidationException;
@@ -32,6 +34,7 @@ import org.wso2.dpdp.accelerator.portal.webapp.util.PortalConfig;
 import org.wso2.dpdp.accelerator.portal.webapp.util.PortalConstants;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -40,7 +43,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * Returns the authenticated principal in the shape the SPA validates:
- * {@code {userId, organizationId, scopes[]}} with {@code portal:*} scopes.
+ * {@code {userId, organizationId, username, scopes[]}} with {@code portal:*} scopes.
  */
 @WebServlet(urlPatterns = "/me")
 public class MeServlet extends HttpServlet {
@@ -72,8 +75,36 @@ public class MeServlet extends HttpServlet {
         ObjectNode body = HttpUtil.mapper().createObjectNode();
         body.put("userId", user.getUserId());
         body.put("organizationId", user.getOrganizationId() == null ? "carbon.super" : user.getOrganizationId());
+        body.put("username", resolveUsername(request, user.getUserId()));
         ArrayNode scopes = body.putArray("scopes");
         ScopeMapper.toPortalScopes(user.getScopes()).forEach(scopes::add);
         HttpUtil.sendJson(response, HttpServletResponse.SC_OK, body);
+    }
+
+    /**
+     * The access token carries no username claim, so this reads it from the ID token instead
+     * (requested explicitly at app registration - see register-portal-app.sh), following the
+     * same preferred_username -> username precedence the SPA already uses when decoding the ID
+     * token itself (see frontend/src/components/layout/main-layout/UserProfileMenu.tsx). The ID
+     * token arrived through our own OAuth code exchange over TLS and is never sent anywhere else,
+     * so it's read for display purposes here without re-verifying its signature.
+     */
+    private String resolveUsername(HttpServletRequest request, String fallback) {
+
+        String idToken = AuthUtil.resolveIdToken(request);
+        if (idToken == null) {
+            return fallback;
+        }
+        try {
+            JWTClaimsSet claims = JWTParser.parse(idToken).getJWTClaimsSet();
+            String username = claims.getStringClaim("preferred_username");
+            if (username == null) {
+                username = claims.getStringClaim("username");
+            }
+            return username == null ? fallback : username;
+        } catch (ParseException e) {
+            LOG.debug("Failed to parse ID token for username claim.", e);
+            return fallback;
+        }
     }
 }

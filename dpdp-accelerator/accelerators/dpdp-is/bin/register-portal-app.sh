@@ -168,10 +168,14 @@ else
     "identifier": "'"${COMPLAINT_API_IDENTIFIER}"'",
     "requiresAuthorization": true,
     "scopes": [
-      {"name": "portal_complaint_read_any", "displayName": "View complaints",
+      {"name": "portal:complaint:read:any", "displayName": "View complaints",
        "description": "View complaints filed by any data principal"},
-      {"name": "portal_complaint_write_any", "displayName": "Manage complaints",
-       "description": "Respond to and change the status of complaints filed by any data principal"}
+      {"name": "portal:complaint:write:any", "displayName": "Manage complaints",
+       "description": "Respond to and change the status of complaints filed by any data principal"},
+      {"name": "portal:complaint:read:self", "displayName": "View own complaints",
+       "description": "View complaints filed by the authenticated data principal"},
+      {"name": "portal:complaint:write:self", "displayName": "Manage own complaints",
+       "description": "Respond to and change the status of complaints filed by the authenticated data principal"}
     ]
   }'
   CREATED=$(${CURL} -H 'Content-Type: application/json' -d "${COMPLAINT_RESOURCE_BODY}" \
@@ -181,7 +185,8 @@ else
     echo "ERROR: failed to create the complaint management API resource: ${CREATED}"
     exit 2
   fi
-  COMPLAINT_SCOPES='["portal_complaint_read_any","portal_complaint_write_any"]'
+  COMPLAINT_SCOPES=$(${CURL} "${BASE}/api/server/v1/api-resources/${COMPLAINT_RESOURCE}" \
+    | json "json.dumps([s['name'] for s in d.get('scopes',[])])")
   echo "      Created API resource ${COMPLAINT_RESOURCE}"
 fi
 
@@ -249,10 +254,10 @@ ${CURL} -X PATCH -H 'Content-Type: application/json' -d "${COMPLAINT_ROLE_PATCH_
 echo "[6/7] Creating the ${PORTAL_COMPLAINT_PRINCIPAL_ROLE} role"
 # Deliberately NOT COMPLAINT_SCOPES (which also carries the _any scopes, now that
 # they're registered on the resource): this role is for ordinary data principals,
-# who must never receive portal_complaint_read_any/write_any - that would let the
+# who must never receive portal:complaint:read:any/write_any - that would let the
 # BFF's ScopeMapper grant them the management surface, exposing every other
 # principal's complaints, not just their own.
-PRINCIPAL_SCOPES='["portal_complaint_read_self","portal_complaint_write_self"]'
+PRINCIPAL_SCOPES='["portal:complaint:read:self","portal:complaint:write:self"]'
 PRINCIPAL_ROLE_ID=$(${CURL} --get --data-urlencode "filter=displayName eq ${PORTAL_COMPLAINT_PRINCIPAL_ROLE}" \
   "${BASE}/scim2/v2/Roles" \
   | json "next((r['id'] for r in d.get('Resources',[]) if r.get('audience',{}).get('value')=='${APP_ID}'), '')")

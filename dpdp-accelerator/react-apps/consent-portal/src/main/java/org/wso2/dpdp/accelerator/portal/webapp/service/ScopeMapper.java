@@ -38,10 +38,10 @@ public final class ScopeMapper {
     public static final String PORTAL_ELEMENTS_WRITE = "portal:elements:write";
     public static final String PORTAL_PURPOSES_READ = "portal:purposes:read";
     public static final String PORTAL_PURPOSES_WRITE = "portal:purposes:write";
-    public static final String PORTAL_COMPLAINT_READ_SELF = "portal_complaint_read_self";
-    public static final String PORTAL_COMPLAINT_WRITE_SELF = "portal_complaint_write_self";
-    public static final String PORTAL_COMPLAINT_READ_ANY = "portal_complaint_read_any";
-    public static final String PORTAL_COMPLAINT_WRITE_ANY = "portal_complaint_write_any";
+    public static final String PORTAL_COMPLAINT_READ_SELF = "portal:complaint:read:self";
+    public static final String PORTAL_COMPLAINT_WRITE_SELF = "portal:complaint:write:self";
+    public static final String PORTAL_COMPLAINT_READ_ANY = "portal:complaint:read:any";
+    public static final String PORTAL_COMPLAINT_WRITE_ANY = "portal:complaint:write:any";
 
     public static final String IS_INTERNAL_LOGIN = "internal_login";
     public static final String IS_CONSENT_VIEW = "internal_consent_mgt_consent_view";
@@ -54,8 +54,6 @@ public final class ScopeMapper {
     public static final String IS_PURPOSE_CREATE = "internal_consent_mgt_purpose_create";
     public static final String IS_PURPOSE_UPDATE = "internal_consent_mgt_purpose_update";
     public static final String IS_PURPOSE_DELETE = "internal_consent_mgt_purpose_delete";
-    public static final String IS_COMPLAINT_VIEW = "portal_complaint_read_any";
-    public static final String IS_COMPLAINT_MANAGE = "portal_complaint_write_any";
 
     private ScopeMapper() {
     }
@@ -63,14 +61,21 @@ public final class ScopeMapper {
     public static List<String> toPortalScopes(List<String> identityServerScopes) {
 
         List<String> portalScopes = new ArrayList<>();
-        portalScopes.addAll(identityServerScopes.stream().filter(s -> s.startsWith("portal"))
+        // portal_complaint_{read,write}_{self,any} are registered as real IS scopes (see
+        // register-portal-app.sh) rather than translated from an internal_* name like the
+        // consent/element/purpose scopes below - a token only carries them when the caller
+        // holds a role that was explicitly granted them, so passing them through verbatim is
+        // the whole mapping. There is deliberately no internal_login-based auto-grant: unlike
+        // consents, self-service complaint access is opt-in per user via the
+        // dpdp-complaint-principal role (see configure.properties).
+        portalScopes.addAll(identityServerScopes.stream().filter(scope -> scope.startsWith("portal"))
                 .collect(Collectors.toList()));
 
         if (identityServerScopes.contains(IS_INTERNAL_LOGIN)) {
             portalScopes.add(PORTAL_CONSENTS_READ_SELF);
             portalScopes.add(PORTAL_CONSENTS_WRITE_SELF);
         }
-        
+
         if (identityServerScopes.contains(IS_CONSENT_VIEW)) {
             portalScopes.add(PORTAL_CONSENTS_READ_ANY);
         }
@@ -92,12 +97,6 @@ public final class ScopeMapper {
                 || identityServerScopes.contains(IS_PURPOSE_UPDATE)
                 || identityServerScopes.contains(IS_PURPOSE_DELETE)) {
             portalScopes.add(PORTAL_PURPOSES_WRITE);
-        }
-        if (identityServerScopes.contains(IS_COMPLAINT_VIEW)) {
-            portalScopes.add(PORTAL_COMPLAINT_READ_ANY);
-        }
-        if (identityServerScopes.contains(IS_COMPLAINT_MANAGE)) {
-            portalScopes.add(PORTAL_COMPLAINT_WRITE_ANY);
         }
         return portalScopes;
     }

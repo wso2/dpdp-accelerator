@@ -156,7 +156,7 @@ function AttachmentTile({
         <Box sx={{ display: 'flex', color, flexShrink: 0 }}>
           <Icon size={13} />
         </Box>
-        <Typography variant="caption" noWrap sx={{ fontSize: 11 }}>
+        <Typography variant="caption" noWrap sx={{ fontSize: '0.6875rem' }}>
           {attachment.fileName}
         </Typography>
       </Stack>
@@ -332,7 +332,7 @@ function ComplaintActivityFeed({
                     height: 18,
                     borderColor: accentColor,
                     color: accentColor,
-                    '& .MuiChip-label': { px: 0.75, fontSize: 11 },
+                    '& .MuiChip-label': { px: 0.75, fontSize: '0.6875rem' },
                   }}
                 />
                 {isInternal ? (
@@ -346,7 +346,7 @@ function ComplaintActivityFeed({
                       borderColor: 'info.main',
                       color: 'info.main',
                       '& .MuiChip-icon': { color: 'info.main' },
-                      '& .MuiChip-label': { px: 0.75, fontSize: 11 },
+                      '& .MuiChip-label': { px: 0.75, fontSize: '0.6875rem' },
                     }}
                   />
                 ) : null}

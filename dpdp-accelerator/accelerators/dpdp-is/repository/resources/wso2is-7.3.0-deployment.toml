@@ -41,9 +41,9 @@ driver = "org.h2.Driver"
 # at startup, not just this one.
 [datasource.ComplaintDB]
 id = "ComplaintDB"
-url = "jdbc:mysql://<host>:3306/<db>?useSSL=false&amp;allowPublicKeyRetrieval=true"
-username = "<user>"
-password = "<password>"
+url = "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&amp;allowPublicKeyRetrieval=true"
+username = "root"
+password = "root"
 driver = "com.mysql.cj.jdbc.Driver"
 
 [keystore.primary]
@@ -135,10 +135,10 @@ http_method = "all"
 # that user's access token as-is (see ComplaintServerClient), and the Identity Server checks it
 # against the rule matching each request's exact path and method below.
 #
-# Only the *_any scopes appear here, never *_self: portal_complaint_read_self/write_self are still
+# Only the *_any scopes appear here, never *_self: portal:complaint:read:self/write_self are still
 # recognized by the BFF's own ScopeMapper, but were never actually registered as grantable scopes
 # on the dpdp-complaint-mgt API resource (register-portal-app.sh only registers/authorizes
-# portal_complaint_read_any/write_any, RBAC-gated behind the dpdp-complaint-officer role), so no
+# portal:complaint:read:any/write_any, RBAC-gated behind the dpdp-complaint-officer role), so no
 # token can ever carry them - a rule requiring one would just reject every caller. Every rule below
 # therefore has exactly one scope; there is no OR/AND ambiguity to worry about, since there is only
 # ever one scope that could possibly be granted per rule.
@@ -163,7 +163,7 @@ context = "(.*)/api/dpdp/complaints/v1/complaints"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self"]
+scopes = ["portal:complaint:write:self"]
 
 
 [[resource.access_control]]
@@ -171,61 +171,61 @@ context = "(.*)/api/dpdp/complaints/v1/complaints"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self"]
+scopes = ["portal:complaint:read:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/categories"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self"]
+scopes = ["portal:complaint:read:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/(?!categories)[^/]+"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self"]
+scopes = ["portal:complaint:read:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/status"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self"]
+scopes = ["portal:complaint:write:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/timeline"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self"]
+scopes = ["portal:complaint:read:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self"]
+scopes = ["portal:complaint:write:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self"]
+scopes = ["portal:complaint:write:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments/[^/]+"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "GET"
 secure = "true"
-scopes = ["portal_complaint_read_self"]
+scopes = ["portal:complaint:read:self"]
 
 [[resource.access_control]]
 context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments/[^/]+/attachments"
 allowed_auth_handlers = ["OAuthAuthentication"]
 http_method = "POST"
 secure = "true"
-scopes = ["portal_complaint_write_self"]
+scopes = ["portal:complaint:write:self"]
 

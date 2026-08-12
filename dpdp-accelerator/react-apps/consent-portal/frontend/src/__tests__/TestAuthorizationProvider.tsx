@@ -31,7 +31,7 @@ function TestAuthorizationProvider({
 }: TestAuthorizationProviderProps): React.JSX.Element {
   return (
     <AuthorizationProvider
-      currentUser={{ userId: 'test-user', organizationId: 'test-org', scopes }}
+      currentUser={{ userId: 'test-user', organizationId: 'test-org', username: 'test-user', scopes }}
     >
       {children}
     </AuthorizationProvider>

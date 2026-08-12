@@ -17,6 +17,7 @@
  */
 
 import {
+  Paper,
   Table,
   TableBody,
   TableCell,
@@ -110,7 +111,7 @@ function ComplaintQueueTable({
   }
 
   return (
-    <TableContainer sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
+    <TableContainer component={Paper} elevation={1}>
       <Table aria-label={t('complaints.management.queue.table.tableAriaLabel')}>
         <TableHead>
           <TableRow>

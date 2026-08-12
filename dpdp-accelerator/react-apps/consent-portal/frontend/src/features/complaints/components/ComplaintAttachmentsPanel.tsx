@@ -104,7 +104,7 @@ function AttachmentRow({
                 height: 18,
                 borderColor: accentColor,
                 color: accentColor,
-                '& .MuiChip-label': { px: 0.75, fontSize: 11 },
+                '& .MuiChip-label': { px: 0.75, fontSize: '0.6875rem' },
               }}
             />
           ) : (

@@ -767,6 +767,7 @@ components:
         attachments have been uploaded.
       required:
         - id
+        - referenceId
         - subjectCategory
         - priority
         - status
@@ -779,6 +780,9 @@ components:
         id:
           type: string
           format: uuid
+        referenceId:
+          type: string
+          description: Human-facing ticket number (e.g. "CMP-2026-00042"), distinct from the UUID id.
         subjectCategory:
           $ref: '#/components/schemas/ComplaintCategory'
         priority:
@@ -803,6 +807,7 @@ components:
       type: object
       required:
         - id
+        - referenceId
         - subjectCategory
         - priority
         - status
@@ -816,6 +821,9 @@ components:
         id:
           type: string
           format: uuid
+        referenceId:
+          type: string
+          description: Human-facing ticket number (e.g. "CMP-2026-00042"), distinct from the UUID id.
         subjectCategory:
           $ref: '#/components/schemas/ComplaintCategory'
         priority:

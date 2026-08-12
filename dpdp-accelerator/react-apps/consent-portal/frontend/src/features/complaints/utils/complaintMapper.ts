@@ -29,6 +29,7 @@ import type {
   ComplaintStatus,
   ComplaintTimelineEntry,
 } from '../../../types/complaint'
+import type { CurrentUser } from '../../../types/auth'
 
 const ACTOR_ROLE_FROM_API: Record<ComplaintActorRoleAPI, ComplaintActorRole> = {
   USER: 'DataPrincipal',
@@ -75,11 +76,22 @@ function mapTimelineEntryType(
   return entryType === 'INTERNAL_NOTE' ? 'note' : 'communication'
 }
 
-function mapTimelineEntryFromApi(entry: ComplaintTimelineEntryAPI): ComplaintTimelineEntry {
+function resolveActorName(actorUserId: string | undefined, currentUser?: CurrentUser): string {
+  if (currentUser && actorUserId === currentUser.userId) {
+    return currentUser.username
+  }
+
+  return actorUserId ?? ''
+}
+
+function mapTimelineEntryFromApi(
+  entry: ComplaintTimelineEntryAPI,
+  currentUser?: CurrentUser,
+): ComplaintTimelineEntry {
   return {
     id: entry.id,
     type: mapTimelineEntryType(entry.type, entry.toStatus),
-    actorName: entry.actorUserId ?? '',
+    actorName: resolveActorName(entry.actorUserId, currentUser),
     actorRole: mapActorRoleFromApi(entry.actorRole),
     message: entry.message,
     timestamp: entry.createdTime,
@@ -105,6 +117,7 @@ function buildAcknowledgementEntry(record: ComplaintRecordAPI): ComplaintTimelin
 export function buildComplaintDetail(
   record: ComplaintRecordAPI,
   timelineEntries: ComplaintTimelineEntryAPI[],
+  currentUser?: CurrentUser,
 ): ComplaintDetail {
   return {
     id: record.id,
@@ -118,7 +131,10 @@ export function buildComplaintDetail(
     statutoryDueDate: record.statutoryDueDate,
     description: record.description,
     attachments: record.attachments.map(mapAttachmentFromApi),
-    timeline: [buildAcknowledgementEntry(record), ...timelineEntries.map(mapTimelineEntryFromApi)],
+    timeline: [
+      buildAcknowledgementEntry(record),
+      ...timelineEntries.map((entry) => mapTimelineEntryFromApi(entry, currentUser)),
+    ],
   }
 }
 

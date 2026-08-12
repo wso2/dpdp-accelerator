@@ -114,7 +114,14 @@ function ComplaintCaseDetailPage(): React.JSX.Element {
       </Stack>
 
       <Card sx={{ boxShadow: 1 }}>
-        <CardHeader title={t(`complaints.categories.${complaint.category}`)} sx={{ pb: 1 }} />
+        <CardHeader
+          title={
+            <Typography variant="h6" fontWeight={700}>
+              {t(`complaints.categories.${complaint.category}`)}
+            </Typography>
+          }
+          sx={{ pb: 1 }}
+        />
         <Divider />
         <CardContent>
           <Stack spacing={2}>

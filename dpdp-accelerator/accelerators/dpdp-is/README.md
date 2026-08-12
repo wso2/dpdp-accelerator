@@ -82,7 +82,7 @@ caller is. Instead, the shipped `deployment.toml` gates every operation behind t
 `portal_complaint_{read,write}_{self,any}` scopes the portal BFF uses, via one
 `[[resource.access_control]]` rule per endpoint (context + `http_method` + `scopes`) -
 a token needs either the `self` or the `any` variant of the matching read/write scope,
-except complaint creation, which only accepts `portal_complaint_write_self` (there is no
+except complaint creation, which only accepts `portal:complaint:write:self` (there is no
 "create a complaint on someone else's behalf" capability). Self-vs-any ownership
 filtering itself happens in the application layer, not here. See the comment above
 those rules in `deployment.toml` for the full per-endpoint breakdown. Registering these

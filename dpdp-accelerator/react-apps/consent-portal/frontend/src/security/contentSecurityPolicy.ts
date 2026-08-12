@@ -47,7 +47,10 @@ export function contentSecurityPolicy(options: ContentSecurityPolicyOptions): st
     // exception with a style nonce when the static host supports per-request HTML.
     "style-src 'self' 'unsafe-inline'",
     connectSrc(options.apiBaseURL),
-    "img-src 'self' data:",
+    // blob: is required for the draft-attachment preview (DraftAttachmentCard.tsx uses
+    // URL.createObjectURL on the locally-selected File before it's ever uploaded); data:
+    // is for the already-uploaded attachment preview, fetched and inlined as base64.
+    "img-src 'self' data: blob:",
     "font-src 'self'",
     "object-src 'none'",
     "base-uri 'none'",

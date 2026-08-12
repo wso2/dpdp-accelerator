@@ -24,6 +24,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  Paper,
   Select,
   Stack,
   Table,
@@ -165,9 +166,17 @@ function ComplaintListPage(): React.JSX.Element {
         ) : null}
 
         {!listQuery.isPending && !listQuery.isError && rows.length > 0 ? (
-          <TableContainer sx={{ border: 1, borderColor: 'divider', borderRadius: 1 }}>
+          <TableContainer component={Paper} elevation={1}>
             <Table aria-label={t('complaints.list.table.tableAriaLabel')}>
-              <TableHead>
+              <TableHead
+                sx={(theme) => ({
+                  '& .MuiTableCell-head': {
+                    fontWeight: 600,
+                    ...theme.applyStyles('light', { backgroundColor: theme.palette.grey[50] }),
+                    ...theme.applyStyles('dark', { backgroundColor: 'rgba(255, 255, 255, 0.04)' }),
+                  },
+                })}
+              >
                 <TableRow>
                   <TableCell>{t('complaints.list.table.headers.referenceId')}</TableCell>
                   <TableCell>{t('complaints.list.table.headers.category')}</TableCell>
