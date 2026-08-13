@@ -1,0 +1,44 @@
+/*
+ * Copyright (c) 2026, WSO2 LLC. (https://www.wso2.com).
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.dpdp.accelerator.complaint.mgt.service.util;
+
+/**
+ * Statutory due period for grievance redressal under the DPDP Act. Configurable via the
+ * CO_STATUTORY_DUE_PERIOD_DAYS system property (defaults to 90 days).
+ */
+public class StatutoryDuePeriodPolicy {
+
+    private static final int DEFAULT_DUE_PERIOD_DAYS = 90; // default
+
+    private StatutoryDuePeriodPolicy() {
+    }
+
+    public static long getDuePeriodMillis() {
+        String configured = System.getProperty("CO_STATUTORY_DUE_PERIOD_DAYS");
+        int days = DEFAULT_DUE_PERIOD_DAYS;
+        if (configured != null) {
+            try {
+                days = Integer.parseInt(configured.trim());
+            } catch (NumberFormatException ignored) {
+                // fall through to default
+            }
+        }
+        return days * 24L * 60 * 60 * 1000;
+    }
+}

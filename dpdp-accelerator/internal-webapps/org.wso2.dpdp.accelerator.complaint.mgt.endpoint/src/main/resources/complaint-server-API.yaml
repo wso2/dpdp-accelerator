@@ -1,0 +1,986 @@
+openapi: 3.0.3
+info:
+  title: Complaint Server API
+  description: >
+    Standalone complaint-server API 
+
+  version: "2.3.0"
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: http://0.0.0.0:8091/api/v1
+    description: Local development (standalone Grizzly runner)
+  - url: http://localhost:8080/complaint-server/api/v1
+    description: Tomcat / Docker deployment (complaint-server.war)
+tags:
+  - name: Complaints
+    description:
+  - name: Comments
+    description: Adding comments and internal notes to a complaint
+  - name: Timeline
+    description: Complaint timeline retrieval (comments, internal notes, status changes)
+  - name: Attachments
+    description: Upload and download endpoints for complaint/comment attachments
+paths:
+  /complaints:
+    post:
+      tags: [Complaints]
+      summary: Create a complaint
+      description: >
+      operationId: createComplaint
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintCreateRequest'
+      responses:
+        '201':
+          description: >
+            Complaint created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          description: Validation failed (CO-4002) — invalid payload field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4002"
+                message: "Validation failed"
+                description: "Field 'subjectCategory' must be one of the defined ComplaintCategory enum values; received 'DATA_LEAK'."
+                traceId: "3f29a1c4-7b8e-4d2a-9c1f-6e0a2d8b4f11"
+        '500':
+          $ref: '#/components/responses/InternalError'
+    get:
+      tags: [Complaints]
+      summary: List/search complaints
+      description: >
+
+      operationId: listComplaints
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ComplaintStatus'
+        - name: priority
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/ComplaintPriority'
+        - name: userId
+          in: query
+          required: false
+          description: Exact match
+          schema:
+            type: string
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 10
+            maximum: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: sort
+          in: query
+          required: false
+          description: >
+            Default -updatedTime; only updatedTime/submittedTime/statutoryDueTime
+            sortable, "-" prefix for descending.
+          schema:
+            type: string
+            default: "-updatedTime"
+      responses:
+        '200':
+          description: List of complaints
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintListResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /complaints/{complaintId}:
+    get:
+      tags: [Complaints]
+      summary: Get complaint
+      description: >
+      operationId: getComplaint
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+      responses:
+        '200':
+          description: Complaint core fields
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintRecord'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /complaints/{complaintId}/attachments:
+    post:
+      tags: [Attachments]
+      summary: Upload and bind attachments to a complaint
+      description: >
+        ```
+        curl -X POST "http://localhost:8090/api/v1/complaints/{complaintId}/attachments" \
+        -H "org-id: wso2-org-1" \
+        -F "file=@incident-screenshot.png;type=image/png" \
+        -F "file=@breach-report.pdf;type=application/pdf"
+        ```
+      operationId: uploadComplaintAttachment
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: One or more files to upload in a single request.
+              encoding:
+                file:
+                  contentType: application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/png, image/jpeg
+      responses:
+        '201':
+          description: Attachments stored and bound directly to the complaint
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComplaintAttachmentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          description: >
+            Validation failed (CO-4002) — missing file, or a
+            file with unsupported contentType / sizeBytes over the configured max
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4002"
+                message: "Validation failed"
+                description: "File contentType 'application/zip' is not one of the supported types."
+                traceId: "3f29a1c4-7b8e-4d2a-9c1f-6e0a2d8b4f11"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /complaints/{complaintId}/timeline:
+    get:
+      tags: [Timeline]
+      summary: Get complaint timeline
+      description: >
+        This endpoint returns the
+        comment, internal-note, and status-change entries added over
+        the life of the complaint, in chronological order.
+      operationId: getComplaintTimeline
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+        - name: since
+          in: query
+          required: false
+          description: Return only entries created after this timestamp (for polling)
+          schema:
+            type: string
+            format: date-time
+        - name: isPublic
+          in: query
+          required: false
+          description: >
+            Filter entries by visibility: true for entries visible to the
+            Data Principal, false for officer-internal notes. Omit to
+            return both.
+          schema:
+            type: boolean
+        - name: order
+          in: query
+          required: false
+          description: >
+            Default asc (oldest first — natural reading order for a
+            submission-and-replies thread). Set desc for newest first.
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: asc
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Timeline entries
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TimelineListResponse'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /complaints/{complaintId}/comments:
+    post:
+      tags: [Comments]
+      summary: Append a comment, optionally transitioning status
+      description: >
+        Adds a comment or internal note to the complaint. Optionally accepts
+        toStatus to transition the complaint's status in the same call —
+        useful for an officer replying with a message that also resolves,
+        reopens, or otherwise moves the complaint (e.g. replying "Confirmed
+        and resolved" while setting toStatus to RESOLVED). If toStatus is
+        omitted, this behaves exactly as before: a plain comment/note with
+        no status change. See POST /complaints/{complaintId}/status for
+        status-only transitions with no accompanying message (e.g. automated
+        SYSTEM transitions).
+      operationId: addComplaintMessage
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintMessageRequest'
+            example:
+              actorUserId: "orgId-65fa2b1c9e"
+              actorRole: "COMPLAINT_OFFICER"
+              message: "Confirmed and resolved — thanks for the details."
+              isPublic: true
+              toStatus: RESOLVED
+
+      responses:
+        '200':
+          description: >
+            The created comment, including the generated commentId to use
+            for POST /complaints/{complaintId}/comments/{commentId}/attachments.
+            If toStatus was supplied, fromStatus/toStatus are populated on
+            this same entry to reflect the transition that was applied.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintCommentCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: >
+            Forbidden — isPublic=false from a User actor (CO-4030)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4030"
+                message: "Forbidden"
+                description: "Actor role 'User' cannot set isPublic to false on a timeline entry."
+                traceId: "1a2b3c4d-5e6f-4789-a0b1-c2d3e4f5a6b7"
+        '409':
+          description: >
+            Invalid state transition (CO-4090) — only returned when
+            toStatus was supplied and the requested transition is not
+            allowed from the complaint's current status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4090"
+                message: "Invalid state transition"
+                description: "Cannot transition complaint from status 'OPEN' to 'RESOLVED'."
+                traceId: "9e8d7c6b-5a4b-4c3d-9e2f-1a0b9c8d7e6f"
+        '422':
+          description: Validation failed (CO-4002) — invalid payload field
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4002"
+                message: "Validation failed"
+                description: "Field 'message' is required and must not be blank."
+                traceId: "8b6e4f2a-1d3c-4a7e-9f0b-2c5d8e1a6b09"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /complaints/{complaintId}/comments/{commentId}/attachments:
+    post:
+      tags: [Attachments]
+      summary: Upload and bind attachments to a specific comment
+      description: >
+
+        ```
+        curl -X POST "http://localhost:8090/api/v1/complaints/{complaintId}/comments/{commentId}/attachments" \
+        -H "org-id: wso2-org-1" \
+        -F "actorUserId=orgId-65fa2b1c9e" \
+        -F "file=@followup-screenshot.png;type=image/png"
+        ```
+      operationId: uploadCommentAttachment
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+        - $ref: '#/components/parameters/CommentId'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [actorUserId, file]
+              properties:
+                file:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                  description: One or more files to upload in a single request.
+              encoding:
+                file:
+                  contentType: application/pdf, application/vnd.openxmlformats-officedocument.wordprocessingml.document, image/png, image/jpeg
+      responses:
+        '201':
+          description: Attachments stored and bound to the comment's timeline entry
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ComplaintAttachmentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          description: >
+            Forbidden — the supplied actorUserId does not match the
+            actorUserId that created this comment (CO-4030)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4030"
+                message: "Forbidden"
+                description: "actorUserId 'orgId-65fa2b1c9e' does not match the actorUserId that created this comment."
+                traceId: "6f5e4d3c-2b1a-4c0d-8e9f-1a2b3c4d5e6f"
+        '422':
+          description: >
+            Validation failed (CO-4002) — missing actorUserId, missing file,
+            or a file with unsupported contentType / sizeBytes over the
+            configured max
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4002"
+                message: "Validation failed"
+                description: "File contentType 'application/zip' is not one of the supported types."
+                traceId: "3f29a1c4-7b8e-4d2a-9c1f-6e0a2d8b4f11"
+        '404':
+          description: >
+            No complaint exists with this complaintId for the org, or no
+            comment/timeline entry exists with this commentId under that
+            complaint (CO-4040)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4040"
+                message: "Comment not found"
+                description: "No timeline entry exists with id 'a1b2c3d4-5e6f-4a7b-8c9d-0e1f2a3b4c5d' under this complaint."
+                traceId: "7a6b5c4d-3e2f-4a1b-9c8d-0e1f2a3b4c5d"
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /complaints/{complaintId}/status:
+    post:
+      tags: [Complaints]
+      summary: Transition complaint status (no message)
+      description: >
+        Status-only transition with no accompanying comment — intended for
+        automated/SYSTEM transitions (e.g. an SLA monitor auto-closing a
+        complaint) or any case where an officer wants to change status
+        without posting a reply. For an officer transitioning status while
+        also leaving a message for the Data Principal or a colleague, use
+        POST /complaints/{complaintId}/comments with toStatus set instead.
+      operationId: updateComplaintStatus
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintStatusUpdateRequest'
+            example:
+              actorUserId: "orgId-65fa2b1c9e"
+              toStatus: RESOLVED
+      responses:
+        '200':
+          description: Status transition confirmed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintStatusUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '422':
+          description: Validation failed (CO-4002)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4002"
+                message: "Validation failed"
+                description: "Field 'note' is required when transitioning to status 'RESOLVED'."
+                traceId: "5d4c3b2a-1e0f-4a9b-8c7d-6e5f4a3b2c1d"
+        '409':
+          description: Invalid state transition (CO-4090)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4090"
+                message: "Invalid state transition"
+                description: "Cannot transition complaint from status 'OPEN' to 'RESOLVED'."
+                traceId: "9e8d7c6b-5a4b-4c3d-9e2f-1a0b9c8d7e6f"
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /complaints/{complaintId}/attachments/{attachmentId}:
+    get:
+      tags: [Attachments]
+      summary: Download an attachment by attachmentId
+      description: >
+        Returns the attachment's metadata together with its file content,
+        base64-encoded, in a single JSON body.
+      operationId: downloadComplaintAttachment
+      parameters:
+        - $ref: '#/components/parameters/OrgId'
+        - $ref: '#/components/parameters/ComplaintId'
+        - name: attachmentId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Attachment metadata and base64-encoded file content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintAttachmentDownloadResponse'
+        '403':
+          description: >
+            Caller is not authorized for this attachment — either wrong org,
+            or a User attempting to access an attachment bound to
+            a timeline entry with isPublic=false (CO-4030)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4030"
+                message: "Forbidden"
+                description: "Requesting user '65fa2b1c9e' is a User and is not authorized to access an attachment bound to a timeline entry with isPublic=false."
+                traceId: "6f5e4d3c-2b1a-4c0d-8e9f-1a2b3c4d5e6f"
+        '404':
+          description: >
+            No attachment exists with the given attachmentId for this
+            complaint/org (CO-4040)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorEnvelope'
+              example:
+                code: "CO-4040"
+                message: "Attachment not found"
+                description: "No attachment exists with attachmentId '6f5e4d3c-2b1a-4c0d-8e9f-1a2b3c4d5e6f' for this organization."
+                traceId: "7a6b5c4d-3e2f-4a1b-9c8d-0e1f2a3b4c5d"
+        '500':
+          $ref: '#/components/responses/InternalError'
+components:
+  parameters:
+    OrgId:
+      name: org-id
+      in: header
+      required: true
+      description: Tenant/org scoping
+      schema:
+        type: string
+    ComplaintId:
+      name: complaintId
+      in: path
+      required: true
+      schema:
+        type: string
+    CommentId:
+      name: commentId
+      in: path
+      required: true
+      description: >
+        Id of the comment/timeline entry, as returned by
+        POST /complaints/{complaintId}/comments.
+      schema:
+        type: string
+  responses:
+    BadRequest:
+      description: Invalid request body (CO-4001)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            code: "CO-4001"
+            message: "Invalid request body"
+            description: "Request body is not valid JSON, or is missing entirely."
+            traceId: "0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d"
+    ValidationError:
+      description: Validation failed (CO-4002)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            code: "CO-4002"
+            message: "Validation failed"
+            description: "Field 'userId' is required and must not be blank."
+            traceId: "1b2c3d4e-5f6a-4b7c-9d8e-0f1a2b3c4d5e"
+    NotFound:
+      description: Complaint not found (CO-4040)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            code: "CO-4040"
+            message: "Complaint not found"
+            description: "No complaint exists with id 'a7f3c9d2-4b1e-4f8a-9c6d-2e5f8a1b3c7d' for this organization."
+            traceId: "2c3d4e5f-6a7b-4c8d-9e0f-1a2b3c4d5e6f"
+    InternalError:
+      description: Internal error (CO-5000)
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorEnvelope'
+          example:
+            code: "CO-5000"
+            message: "Internal error"
+            description: "An unexpected error occurred while processing the request. Retry with the same traceId if the issue persists."
+            traceId: "3d4e5f6a-7b8c-4d9e-8f0a-1b2c3d4e5f6a"
+  schemas:
+    ComplaintCategory:
+      type: string
+      description: >
+        UPPER_SNAKE_CASE codes derived directly from the category wording
+        shown in the Subject Category dropdown.
+      enum:
+        - DATA_BREACH
+        - UNAUTHORIZED_DATA_SHARING
+        - CONSENT_WITHDRAWN_DATA_STILL_USED
+        - PURPOSE_VIOLATION
+        - DATA_ERASURE_NOT_COMPLETED
+        - DATA_CORRECTION_NOT_COMPLETED
+        - CONSENT_LIFECYCLE_ISSUE
+        - DATA_ACCESS_DENIED
+        - EXCESSIVE_DATA_COLLECTION
+        - OTHER
+    ComplaintPriority:
+      type: string
+      description: Server-derived, never client-supplied
+      enum: [CRITICAL, HIGH, MEDIUM, LOW]
+    ComplaintStatus:
+      type: string
+      enum: [OPEN, IN_PROGRESS, WAITING_ON_CLIENT, AWAITING_INTERNAL_REVIEW, RESOLVED]
+    ComplaintTimelineEntryType:
+      type: string
+      description: >
+        Entries added over the life of the complaint. There is no entry type
+        for complaint creation — the original description and any
+        complaint-level attachments live directly on the complaint record
+        (see ComplaintRecord), not in the timeline.
+      enum: [STATUS_CHANGE, COMMENT, INTERNAL_NOTE]
+    ComplaintActorRole:
+      type: string
+      enum: [USER, COMPLAINT_OFFICER, SYSTEM]
+    ErrorEnvelope:
+      type: object
+      required: [code, message, description, traceId]
+      properties:
+        code:
+          type: string
+          example: "CO-4040"
+        message:
+          type: string
+          example: "Complaint not found"
+        description:
+          type: string
+          example: "No complaint exists with the given ID for this organization."
+        traceId:
+          type: string
+          format: uuid
+    ComplaintAttachmentResponse:
+      type: object
+      required: [attachmentId, fileName, contentType, sizeBytes]
+      properties:
+        attachmentId:
+          type: string
+        fileName:
+          type: string
+        contentType:
+          type: string
+        sizeBytes:
+          type: integer
+    ComplaintCommentCreateResponse:
+      type: object
+      description: >
+        Response for POST /complaints/{complaintId}/comments. Returns the
+        created comment plus its generated id — no attachments field, since
+        attachments are added afterward via
+        POST /complaints/{complaintId}/comments/{commentId}/attachments.
+        fromStatus/toStatus are null unless the request included toStatus,
+        in which case they reflect the transition applied alongside this
+        message.
+      required: [id, actorUserId, actorRole, message, isPublic, fromStatus, toStatus, createdTime]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The generated commentId, used in POST /complaints/{complaintId}/comments/{commentId}/attachments.
+        actorUserId:
+          type: string
+        actorRole:
+          $ref: '#/components/schemas/ComplaintActorRole'
+        message:
+          type: string
+        isPublic:
+          type: boolean
+        fromStatus:
+          allOf:
+            - $ref: '#/components/schemas/ComplaintStatus'
+          nullable: true
+          description: Null unless toStatus was supplied on the request.
+        toStatus:
+          allOf:
+            - $ref: '#/components/schemas/ComplaintStatus'
+          nullable: true
+          description: Null unless toStatus was supplied on the request.
+        createdTime:
+          type: string
+          format: date-time
+    ComplaintTimelineEntryResponse:
+      type: object
+      required: [id, type, isPublic, actorRole, message, attachments, createdTime]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: '#/components/schemas/ComplaintTimelineEntryType'
+        isPublic:
+          type: boolean
+          description: >
+            true if this entry is visible to the Data Principal (formerly
+            visibility=SHARED); false if it is officer-internal only
+            (formerly visibility=INTERNAL).
+        actorUserId:
+          type: string
+          nullable: true
+        actorRole:
+          $ref: '#/components/schemas/ComplaintActorRole'
+        message:
+          type: string
+        fromStatus:
+          allOf:
+            - $ref: '#/components/schemas/ComplaintStatus'
+          nullable: true
+        toStatus:
+          allOf:
+            - $ref: '#/components/schemas/ComplaintStatus'
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplaintAttachmentResponse'
+          description: >
+            Empty at creation time; populated once
+            POST /complaints/{complaintId}/comments/{commentId}/attachments
+            has been called for this entry. (Complaint-level attachments are
+            separate — see ComplaintRecord.attachments.)
+        createdTime:
+          type: string
+          format: date-time
+    ComplaintCreateResponse:
+      type: object
+      description: >
+        Lean response for POST /complaints. Contains no attachments field —
+        a newly created complaint has no attachments yet by definition, since
+        they can only be added afterward via
+        POST /complaints/{complaintId}/attachments. Use
+        GET /complaints/{complaintId} (returns the full ComplaintRecord) once
+        attachments have been uploaded.
+      required:
+        - id
+        - referenceId
+        - subjectCategory
+        - priority
+        - status
+        - userId
+        - description
+        - submittedAt
+        - updatedAt
+        - statutoryDueDate
+      properties:
+        id:
+          type: string
+          format: uuid
+        referenceId:
+          type: string
+          description: Human-facing ticket number (e.g. "CMP-2026-00042"), distinct from the UUID id.
+        subjectCategory:
+          $ref: '#/components/schemas/ComplaintCategory'
+        priority:
+          $ref: '#/components/schemas/ComplaintPriority'
+        status:
+          $ref: '#/components/schemas/ComplaintStatus'
+        userId:
+          type: string
+        description:
+          type: string
+          description: The original complaint description, as submitted in ComplaintCreateRequest.
+        submittedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        statutoryDueDate:
+          type: string
+          format: date-time
+    ComplaintRecord:
+      type: object
+      required:
+        - id
+        - referenceId
+        - subjectCategory
+        - priority
+        - status
+        - userId
+        - description
+        - attachments
+        - submittedAt
+        - updatedAt
+        - statutoryDueDate
+      properties:
+        id:
+          type: string
+          format: uuid
+        referenceId:
+          type: string
+          description: Human-facing ticket number (e.g. "CMP-2026-00042"), distinct from the UUID id.
+        subjectCategory:
+          $ref: '#/components/schemas/ComplaintCategory'
+        priority:
+          $ref: '#/components/schemas/ComplaintPriority'
+        status:
+          $ref: '#/components/schemas/ComplaintStatus'
+        userId:
+          type: string
+        description:
+          type: string
+          description: The original complaint description, as submitted in ComplaintCreateRequest.
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplaintAttachmentResponse'
+          description: >
+            Empty at creation time; populated once
+            POST /complaints/{complaintId}/attachments has been called.
+        submittedAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+        statutoryDueDate:
+          type: string
+          format: date-time
+    ComplaintListResponse:
+      type: object
+      required: [data, metadata]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplaintRecord'
+        metadata:
+          type: object
+          required: [total, offset, count, limit]
+          properties:
+            total:
+              type: integer
+            offset:
+              type: integer
+            count:
+              type: integer
+            limit:
+              type: integer
+    TimelineListResponse:
+      type: object
+      required: [data, metadata]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ComplaintTimelineEntryResponse'
+        metadata:
+          type: object
+          required: [total, offset, count, limit]
+          properties:
+            total:
+              type: integer
+            offset:
+              type: integer
+            count:
+              type: integer
+            limit:
+              type: integer
+    ComplaintStatusUpdateResponse:
+      type: object
+      required: [message, toStatus, updatedAt]
+      properties:
+        toStatus:
+          $ref: '#/components/schemas/ComplaintStatus'
+        updatedAt:
+          type: string
+          format: date-time
+    ComplaintCreateRequest:
+      type: object
+      description: >
+        Pure-JSON body for POST /complaints. Contains no attachment
+        references — files are uploaded afterward via
+        POST /complaints/{complaintId}/attachments, using the id returned by
+        this call.
+      properties:
+        userId:
+          type: string
+        subjectCategory:
+          $ref: '#/components/schemas/ComplaintCategory'
+        description:
+          type: string
+          maxLength: 5000
+      example:
+        userId: "65fa2b1c9e"
+        subjectCategory: "DATA_BREACH"
+        description: "My personal information was exposed due to a security incident on the platform."
+    ComplaintMessageRequest:
+      type: object
+      description: >
+        Pure-JSON body for POST /complaints/{complaintId}/comments. Contains
+        no attachment references — files are uploaded afterward via
+        POST /complaints/{complaintId}/comments/{commentId}/attachments,
+        using the id returned by this call. toStatus is optional; when
+        supplied, the complaint is transitioned to that status as part of
+        the same call and the transition is recorded on this same timeline
+        entry (see ComplaintCommentCreateResponse.fromStatus/toStatus).
+      required: [actorUserId, actorRole, message, isPublic]
+      properties:
+        actorUserId:
+          type: string
+        actorRole:
+          type: string
+          enum: [USER, COMPLAINT_OFFICER]
+        message:
+          type: string
+        isPublic:
+          type: boolean
+          description: >
+            true to post a shared reply visible to the Data Principal
+            (formerly visibility=SHARED); false for an officer-internal note
+            (formerly visibility=INTERNAL). Only COMPLAINT_OFFICER actors may
+            set this to false.
+        toStatus:
+          allOf:
+            - $ref: '#/components/schemas/ComplaintStatus'
+          nullable: true
+          description: >
+            Optional. If present, transitions the complaint to this status
+            in the same call as posting the message. Subject to the same
+            state-machine rules as POST /complaints/{complaintId}/status
+            (invalid transitions return 409 CO-4090). Omit for a plain
+            comment/note with no status change.
+    ComplaintStatusUpdateRequest:
+      type: object
+      required: [actorUserId, actorRole, toStatus, note]
+      properties:
+        actorUserId:
+          type: string
+          description: >
+            Identity of the caller performing the transition. Recorded on the
+            resulting statusChange timeline entry. Use a well-known system
+            identifier (e.g. "system-sla-monitor") for automated transitions.
+        actorRole:
+          $ref: '#/components/schemas/ComplaintActorRole'
+        toStatus:
+          $ref: '#/components/schemas/ComplaintStatus'
+        note:
+          type: string
+
+    ComplaintAttachmentDownloadResponse:
+      type: object
+      description: >
+        Full attachment payload for GET
+        /complaints/{complaintId}/attachments/{attachmentId} — metadata plus
+        the file content itself, base64-encoded, in one JSON body.
+      required: [attachmentId, fileName, contentType, content]
+      properties:
+        attachmentId:
+          type: string
+        fileName:
+          type: string

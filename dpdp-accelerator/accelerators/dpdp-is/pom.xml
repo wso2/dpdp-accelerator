@@ -36,6 +36,12 @@
             <version>${project.version}</version>
             <type>war</type>
         </dependency>
+        <dependency>
+            <groupId>org.wso2.dpdp.accelerator</groupId>
+            <artifactId>org.wso2.dpdp.accelerator.complaint.mgt.endpoint</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
+        </dependency>
     </dependencies>
 
     <build>
@@ -80,6 +86,8 @@
                             <target>
                                 <unzip src="../../react-apps/consent-portal/target/consent-portal.war"
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consent-portal/"/>
+                                <unzip src="../../internal-webapps/org.wso2.dpdp.accelerator.complaint.mgt.endpoint/target/api#dpdp#complaints.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#dpdp#complaints/"/>
                             </target>
                         </configuration>
                     </execution>

@@ -30,6 +30,22 @@ username = "wso2carbon"
 password = "wso2carbon"
 driver = "org.h2.Driver"
 
+# Backs the complaint management API's jdbc/ComplaintDB datasource (see DBUtil#getConnection()
+# in the complaint DAO module). MySQL only for now - edit the values below directly for your
+# environment; point url at an already-created, empty database - the schema is created
+# automatically on first startup.
+#
+# Carbon transcribes datasource values verbatim into master-datasources.xml at startup WITHOUT
+# XML-escaping them, so a literal & in the url's query string (a common separator, as below)
+# must be written here as &amp; - a raw & produces invalid XML and takes down every datasource
+# at startup, not just this one.
+[datasource.ComplaintDB]
+id = "ComplaintDB"
+url = "jdbc:mysql://localhost:3306/complaint_db?useSSL=false&amp;allowPublicKeyRetrieval=true"
+username = "root"
+password = "root"
+driver = "com.mysql.cj.jdbc.Driver"
+
 [keystore.primary]
 file_name = "wso2carbon.p12"
 password = "wso2carbon"
@@ -114,3 +130,102 @@ read = ["internal_flow_view", "internal_governance_view", "internal_consent_mgt_
 context = "(.*)/consent-portal(.*)"
 secure = "false"
 http_method = "all"
+
+# The complaint management API enforces the signed-in user's own OAuth scopes - the BFF forwards
+# that user's access token as-is (see ComplaintServerClient), and the Identity Server checks it
+# against the rule matching each request's exact path and method below.
+#
+# Only the *_any scopes appear here, never *_self: portal:complaint:read:self/write_self are still
+# recognized by the BFF's own ScopeMapper, but were never actually registered as grantable scopes
+# on the dpdp-complaint-mgt API resource (register-portal-app.sh only registers/authorizes
+# portal:complaint:read:any/write_any, RBAC-gated behind the dpdp-complaint-officer role), so no
+# token can ever carry them - a rule requiring one would just reject every caller. Every rule below
+# therefore has exactly one scope; there is no OR/AND ambiguity to worry about, since there is only
+# ever one scope that could possibly be granted per rule.
+#
+# One rule per distinct path+method rather than a single "(.*)/api/dpdp/complaints(.*)" catch-all,
+# matching this API's own endpoint shapes 1:1 (see ComplaintServerClient's call sites and the API
+# spec) rather than collapsing every GET to "read" and every POST to "write" at the context level.
+#
+# Complaint creation is the one deviation from the scope vocabulary's own self/any split: it is
+# documented as self-only (there is no "create on someone else's behalf" capability, so no *_any
+# variant was ever defined for it) - but since *_self is never grantable, gating it on write_self
+# would make creation permanently unusable. It is gated on write_any here instead, so at least an
+# officer can use it; this should move back to write_self once that scope is registered and granted
+# to ordinary users (true self-service), matching every other endpoint's real self/any distinction.
+#
+# /complaints/categories and /complaints/{complaintId} are the same shape as a raw path
+# (/complaints/<one-segment>); the get-by-id pattern excludes the literal "categories" via a
+# negative lookahead so the two can't ambiguously both match, rather than relying on rule-evaluation
+# order between these entries.
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "POST"
+secure = "true"
+scopes = ["portal:complaint:write:self"]
+
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal:complaint:read:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/categories"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal:complaint:read:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/(?!categories)[^/]+"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal:complaint:read:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/status"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "POST"
+secure = "true"
+scopes = ["portal:complaint:write:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/timeline"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal:complaint:read:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "POST"
+secure = "true"
+scopes = ["portal:complaint:write:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "POST"
+secure = "true"
+scopes = ["portal:complaint:write:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/attachments/[^/]+"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "GET"
+secure = "true"
+scopes = ["portal:complaint:read:self"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/complaints/v1/complaints/[^/]+/comments/[^/]+/attachments"
+allowed_auth_handlers = ["OAuthAuthentication"]
+http_method = "POST"
+secure = "true"
+scopes = ["portal:complaint:write:self"]
+

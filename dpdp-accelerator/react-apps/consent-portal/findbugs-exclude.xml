@@ -112,6 +112,38 @@
     </Match>
 
     <!--
+      ComplaintsServlet proxies to complaint-server the same way AbstractProxyServlet
+      proxies to the Identity Server: query parameters (status/priority/limit/offset/
+      sort/since/order/isPublic) are URL-encoded before being appended to the upstream
+      query string, and complaint-server validates and authorizes every value itself, so
+      tainted input never reaches a sensitive sink unchecked. The X-Portal-Surface header
+      is only ever compared against a fixed self/management whitelist before selecting
+      which of the caller's own already-verified token scopes applies - it is never
+      trusted for authorization by itself. Relayed bodies are complaint-server JSON
+      responses written with an explicit application/json content type.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ComplaintsServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ComplaintsServlet"/>
+        <Bug pattern="SERVLET_HEADER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ComplaintsServlet"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ComplaintServerClient"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ComplaintServerClient$Result"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+
+    <!--
       The only value logged is a filesystem path built from carbon.home, not
       from request input.
     -->

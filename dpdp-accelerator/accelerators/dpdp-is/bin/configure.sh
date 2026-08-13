@@ -77,6 +77,11 @@ for pair in "IS_HOSTNAME=${IS_HOSTNAME}" \
   rm -f "${TOML_STAGING}.tmp"
 done
 
+# [datasource.ComplaintDB] is NOT substituted here - deployment.toml carries the real,
+# directly-editable connection details (see the comment above that block in the template).
+# Edit them there before running this script, or in the installed deployment.toml afterward
+# (re-running this script REPLACES the file wholesale - see the backup/restore note below).
+
 if [ -f "${DEPLOYMENT_TOML}" ]; then
   BACKUP="${DEPLOYMENT_TOML}.bak-$(date +%Y%m%d%H%M%S)"
   cp "${DEPLOYMENT_TOML}" "${BACKUP}"
@@ -106,6 +111,7 @@ cat > "${PORTAL_PROPERTIES}" <<EOF
 # register-portal-app.sh. This file survives an accelerator upgrade.
 identity.server.base.url=${IS_BASE_URL}
 identity.server.internal.base.url=https://localhost:${IS_PORT}
+complaint.server.internal.base.url=https://localhost:${IS_PORT}/api/dpdp/complaints/v1
 oauth.client.id=${CLIENT_ID}
 oauth.client.secret=${CLIENT_SECRET}
 cookie.secure=true

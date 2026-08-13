@@ -21,5 +21,6 @@ import type { PortalScope } from '../utils/portalScopes'
 export interface CurrentUser {
   userId: string
   organizationId: string
+  username: string
   scopes: PortalScope[]
 }

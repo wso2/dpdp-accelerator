@@ -33,6 +33,14 @@
         <param-value>https://localhost:9443</param-value>
     </context-param>
     <context-param>
+        <param-name>complaint.server.base.url</param-name>
+        <param-value>http://localhost:8091/api/v1</param-value>
+    </context-param>
+    <context-param>
+        <param-name>complaint.server.internal.base.url</param-name>
+        <param-value>http://localhost:8091/api/v1</param-value>
+    </context-param>
+    <context-param>
         <param-name>oauth.client.id</param-name>
         <param-value></param-value>
     </context-param>
@@ -42,7 +50,7 @@
     </context-param>
     <context-param>
         <param-name>oauth.scopes</param-name>
-        <param-value>openid profile internal_login internal_consent_mgt_consent_view internal_consent_mgt_consent_create internal_consent_mgt_consent_update internal_consent_mgt_purpose_view internal_consent_mgt_purpose_create internal_consent_mgt_purpose_update internal_consent_mgt_purpose_delete internal_consent_mgt_element_view internal_consent_mgt_element_create internal_consent_mgt_element_delete</param-value>
+        <param-value>openid profile internal_login internal_consent_mgt_consent_view internal_consent_mgt_consent_create internal_consent_mgt_consent_update internal_consent_mgt_purpose_view internal_consent_mgt_purpose_create internal_consent_mgt_purpose_update internal_consent_mgt_purpose_delete internal_consent_mgt_element_view internal_consent_mgt_element_create internal_consent_mgt_element_delete portal:complaint:read:any portal:complaint:write:any portal:complaint:write:self portal:complaint:read:self</param-value>
     </context-param>
     <context-param>
         <param-name>cookie.secure</param-name>

@@ -31,6 +31,8 @@ function parseCurrentUser(value: unknown): CurrentUser {
     !value.userId.trim() ||
     typeof value.organizationId !== 'string' ||
     !value.organizationId.trim() ||
+    typeof value.username !== 'string' ||
+    !value.username.trim() ||
     !Array.isArray(value.scopes) ||
     !value.scopes.every(isPortalScope)
   ) {
@@ -40,6 +42,7 @@ function parseCurrentUser(value: unknown): CurrentUser {
   return {
     userId: value.userId,
     organizationId: value.organizationId,
+    username: value.username,
     scopes: value.scopes,
   }
 }

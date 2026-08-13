@@ -46,6 +46,8 @@ public final class PortalConfig {
 
     public static final String IDENTITY_SERVER_BASE_URL = "identity.server.base.url";
     public static final String IDENTITY_SERVER_INTERNAL_BASE_URL = "identity.server.internal.base.url";
+    public static final String COMPLAINT_SERVER_BASE_URL = "complaint.server.base.url";
+    public static final String COMPLAINT_SERVER_INTERNAL_BASE_URL = "complaint.server.internal.base.url";
     public static final String OAUTH_CLIENT_ID = "oauth.client.id";
     public static final String OAUTH_CLIENT_SECRET = "oauth.client.secret";
     public static final String OAUTH_SCOPES = "oauth.scopes";
@@ -103,6 +105,16 @@ public final class PortalConfig {
     public String getIdentityServerInternalBaseUrl() {
 
         return trimTrailingSlash(get(IDENTITY_SERVER_INTERNAL_BASE_URL, getIdentityServerBaseUrl()));
+    }
+
+    public String getComplaintServerBaseUrl() {
+
+        return trimTrailingSlash(get(COMPLAINT_SERVER_BASE_URL, "http://localhost:8091/api/v1"));
+    }
+
+    public String getComplaintServerInternalBaseUrl() {
+
+        return trimTrailingSlash(get(COMPLAINT_SERVER_INTERNAL_BASE_URL, getComplaintServerBaseUrl()));
     }
 
     public String getClientId() {

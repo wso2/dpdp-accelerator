@@ -35,12 +35,14 @@ describe('current-user API', () => {
     apiClientMocks.apiRequest.mockResolvedValue({
       userId: 'user-1',
       organizationId: 'org-1',
+      username: 'jdoe',
       scopes: [PORTAL_SCOPES.CONSENTS_READ_SELF],
     })
 
     await expect(fetchCurrentUser()).resolves.toEqual({
       userId: 'user-1',
       organizationId: 'org-1',
+      username: 'jdoe',
       scopes: [PORTAL_SCOPES.CONSENTS_READ_SELF],
     })
     expect(apiClientMocks.apiRequest).toHaveBeenCalledWith('/me', { method: 'GET' })
@@ -50,6 +52,7 @@ describe('current-user API', () => {
     apiClientMocks.apiRequest.mockResolvedValue({
       userId: 'user-1',
       organizationId: '',
+      username: 'jdoe',
       scopes: ['portal:unknown'],
     })
 
