@@ -2,7 +2,7 @@
 
 The portal ships 23 languages out of the box (`frontend/public/i18n/`, listed
 in `meta.json`). There are two independent kinds of translatable content, and
-they're kept in separate files for a reason — read [How catalog.json
+they're kept in separate files for a reason - read [How catalog.json
 works](#how-catalogjson-works) before touching it.
 
 ## The two kinds of content
@@ -16,7 +16,7 @@ works](#how-catalogjson-works) before touching it.
 
 ## How `catalog.json` works
 
-Purposes and elements aren't known at build time — an admin can create a new
+Purposes and elements aren't known at build time - an admin can create a new
 one (e.g. "Finance Info") from the portal UI at any moment, stored in the
 Consent Server's database, not in any file in this repo. So the list of
 *things needing translation* can only be discovered by asking the server.
@@ -24,7 +24,7 @@ Consent Server's database, not in any file in this repo. So the list of
 That's what `frontend/scripts/sync-catalog-i18n.mjs` does:
 
 - `en/catalog.json` is **regenerated every run** from the server's current
-  purposes/elements — it's a report of what exists, not something anyone
+  purposes/elements - it's a report of what exists, not something anyone
   hand-edits. English text comes from whatever the admin typed when they
   created the item.
 - Every other `<lang>/catalog.json` gets the same set of keys, but **existing
@@ -111,10 +111,4 @@ touching purpose/element wording (what a person is actually consenting to)
 should get a native-speaker or legal review pass before shipping, even if the
 UI-chrome strings (buttons, labels) don't strictly need one.
 
-## Related
 
-- [`frontend/README.md`](../react-apps/consent-portal/frontend/README.md) —
-  general frontend setup.
-- [`frontend/src/i18n/catalogText.ts`](../react-apps/consent-portal/frontend/src/i18n/catalogText.ts) —
-  how the app resolves a purpose/element's display text at runtime (falls
-  back to the server's English text when no translation exists).
