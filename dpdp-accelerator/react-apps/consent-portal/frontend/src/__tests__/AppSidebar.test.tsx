@@ -72,7 +72,7 @@ describe('AppSidebar', () => {
 
     fireEvent.click(screen.getByText('Pending Consents'))
 
-    expect(screen.getByText('/consents?state=PENDING')).toBeInTheDocument()
+    expect(screen.getByText('/consents?status=Pending')).toBeInTheDocument()
 
     fireEvent.click(screen.getByText('Dashboard'))
 

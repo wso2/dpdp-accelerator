@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.wso2.dpdp.nomination.extension.accelerator</groupId>
+    <artifactId>nomination-extension-accelerator</artifactId>
+    <version>1.5.0</version>
+    <packaging>bundle</packaging>
+
+    <name>OpenFGC Nomination Impersonation Validator</name>
+    <description>
+        Custom WSO2 IS ImpersonationValidator: before a subject token is minted,
+        confirms an ACTIVE nomination (owner -> nominee) exists by asking
+        nominee-service. Closes the "any impersonate-scope holder can impersonate
+        anyone"
+    </description>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <is.home>C:/IS/wso2is-7.3.0</is.home>
+        <is.plugins>${is.home}/repository/components/plugins</is.plugins>
+    </properties>
+
+    <dependencies>
+        <!-- ImpersonationValidator SPI + context/DTO models + IdentityOAuth2Exception.
+             Version-matched to this exact IS install (compile-only). -->
+        <dependency>
+            <groupId>org.wso2.carbon.identity</groupId>
+            <artifactId>org.wso2.carbon.identity.oauth</artifactId>
+            <version>7.4.99.20</version>
+            <scope>system</scope>
+            <systemPath>${is.plugins}/org.wso2.carbon.identity.oauth_7.4.99.20.jar</systemPath>
+        </dependency>
+        <!-- AuthenticatedUser (the nominee) + UserIdNotFoundException -->
+        <dependency>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
+            <artifactId>org.wso2.carbon.identity.application.authentication.framework</artifactId>
+            <version>7.10.156.16</version>
+            <scope>system</scope>
+            <systemPath>${is.plugins}/org.wso2.carbon.identity.application.authentication.framework_7.10.156.16.jar</systemPath>
+        </dependency>
+        <!-- User - superclass of AuthenticatedUser -->
+        <dependency>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
+            <artifactId>org.wso2.carbon.identity.application.common</artifactId>
+            <version>7.10.156</version>
+            <scope>system</scope>
+            <systemPath>${is.plugins}/org.wso2.carbon.identity.application.common_7.10.156.jar</systemPath>
+        </dependency>
+        <!-- IdentityException - superclass of IdentityOAuth2Exception -->
+        <dependency>
+            <groupId>org.wso2.carbon.identity.framework</groupId>
+            <artifactId>org.wso2.carbon.identity.base</artifactId>
+            <version>7.10.156</version>
+            <scope>system</scope>
+            <systemPath>${is.plugins}/org.wso2.carbon.identity.base_7.10.156.jar</systemPath>
+        </dependency>
+        <!-- commons-logging: provided by the IS runtime, compile-only here -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- OSGi core framework API (BundleActivator, BundleContext). Provided by
+             the runtime; compile-only here. -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>6.0.0</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>5.1.9</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <!-- The groupId alone, not groupId.artifactId: the artifactId
+                             now repeats the groupId's own tail, and appending it would
+                             just duplicate "nomination.extension.accelerator" a second
+                             time in the symbolic name. The groupId is already a unique,
+                             fully-qualified identifier on its own. -->
+                        <Bundle-SymbolicName>org.wso2.dpdp.nomination.extension.accelerator</Bundle-SymbolicName>
+                        <Bundle-Name>OpenFGC Nomination Impersonation Validator</Bundle-Name>
+                        <!-- Register the service from a plain BundleActivator - no
+                             dependency on the SCR extender processing a descriptor. -->
+                        <Bundle-Activator>org.wso2.dpdp.nomination.extension.accelerator.NominationValidatorActivator</Bundle-Activator>
+                        <!-- Wide ranges: some IS packages (e.g. impersonation.models)
+                             are exported with no version (=0.0.0), so strict ranges
+                             would fail OSGi resolution. -->
+                        <!-- CRITICAL: never import java.* - those are boot-delegated,
+                             not exported by the system bundle, so importing them makes
+                             the bundle unresolvable (installed but never ACTIVE). -->
+                        <Import-Package>
+                            !java.*,
+                            org.wso2.carbon.identity.oauth2.impersonation.validators;version="[0,9)",
+                            org.wso2.carbon.identity.oauth2.impersonation.models;version="[0,9)",
+                            org.wso2.carbon.identity.oauth2;version="[0,9)",
+                            org.wso2.carbon.identity.oauth2.authz;version="[0,9)",
+                            org.wso2.carbon.identity.application.authentication.framework.model;version="[0,9)",
+                            org.wso2.carbon.identity.application.authentication.framework.exception;version="[0,9)",
+                            *
+                        </Import-Package>
+                        <Private-Package>org.wso2.dpdp.nomination.extension.accelerator</Private-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -16,94 +16,94 @@
  * under the License.
  */
 
-import { Button, IconButton, Stack, TextField, Typography } from '@wso2/oxygen-ui'
-import { Plus, X } from '@wso2/oxygen-ui-icons-react'
+import { Box, Button, IconButton, Stack, TextField, Typography } from '@wso2/oxygen-ui'
+import { Plus, Trash2 } from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
-import { EMPTY_PROPERTY_ROW, getPropertyRowIssues, type PropertyRow } from '../utils/propertyRows'
+import type { PropertyEntry } from '../utils/formProperties'
 
 interface PropertyEditorProps {
-  rows: PropertyRow[]
-  disabled: boolean
-  onChange: (rows: PropertyRow[]) => void
+  entries: PropertyEntry[]
+  embedded?: boolean
+  onChange: (entries: PropertyEntry[]) => void
 }
 
-/**
- * Key/value property editor shared by the Element and Purpose forms.
- * Validates in place -- a value without a key, or a key reused across rows,
- * is flagged immediately rather than silently dropped on submit.
- */
-function PropertyEditor({ rows, disabled, onChange }: PropertyEditorProps): React.JSX.Element {
+function PropertyEditor({ entries, embedded, onChange }: PropertyEditorProps): React.JSX.Element {
   const { t } = useTranslation('common')
-  const issues = getPropertyRowIssues(rows)
-
-  const updateRow = (index: number, next: Partial<PropertyRow>): void => {
-    onChange(rows.map((row, i) => (i === index ? { ...row, ...next } : row)))
-  }
-
-  const removeRow = (index: number): void => {
-    onChange(rows.filter((_, i) => i !== index))
-  }
+  const isEmbedded = embedded ?? false
 
   return (
-    <Stack spacing={1.5}>
-      <Typography variant="subtitle2" fontWeight={600}>
-        {t('catalog.elementForm.propertiesLabel')}
-      </Typography>
-
-      {rows.map((row, index) => {
-        const { duplicateKey, orphanedValue } = issues[index]
-        let keyHelperText: string | undefined
-        if (duplicateKey) {
-          keyHelperText = t('catalog.elementForm.propertyDuplicateKey')
-        } else if (orphanedValue) {
-          keyHelperText = t('catalog.elementForm.propertyKeyRequired')
-        }
-
-        return (
-          // eslint-disable-next-line react/no-array-index-key -- rows have no stable id until saved
-          <Stack key={index} direction="row" spacing={1} alignItems="flex-start">
-            <TextField
-              size="small"
-              fullWidth
-              label={t('catalog.elementForm.propertyKeyLabel')}
-              error={duplicateKey || orphanedValue}
-              helperText={keyHelperText}
-              value={row.key}
-              disabled={disabled}
-              onChange={(event) => updateRow(index, { key: event.target.value })}
-            />
-            <TextField
-              size="small"
-              fullWidth
-              label={t('catalog.elementForm.propertyValueLabel')}
-              value={row.value}
-              disabled={disabled}
-              onChange={(event) => updateRow(index, { value: event.target.value })}
-            />
-            <IconButton
-              size="small"
-              disabled={disabled}
-              aria-label={t('catalog.elementForm.removeProperty')}
-              onClick={() => removeRow(index)}
-            >
-              <X size={16} />
-            </IconButton>
-          </Stack>
-        )
-      })}
-
-      <Button
-        size="small"
-        variant="outlined"
-        startIcon={<Plus size={16} />}
-        disabled={disabled}
-        sx={{ alignSelf: 'flex-start' }}
-        onClick={() => onChange([...rows, { ...EMPTY_PROPERTY_ROW }])}
+    <Stack spacing={1}>
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent={isEmbedded ? 'flex-end' : 'space-between'}
       >
-        {t('catalog.elementForm.addProperty')}
-      </Button>
+        {!isEmbedded ? (
+          <Typography variant="subtitle2" fontWeight={600}>
+            {t('catalog.fields.properties')}
+          </Typography>
+        ) : null}
+        <Button
+          size="small"
+          startIcon={<Plus size={16} />}
+          onClick={() => {
+            onChange([...entries, { id: Date.now(), key: '', value: '' }])
+          }}
+        >
+          {t('catalog.actions.addProperty')}
+        </Button>
+      </Stack>
+      {entries.length === 0 ? (
+        <Typography variant="body2" color="text.secondary">
+          {t('catalog.messages.noProperties')}
+        </Typography>
+      ) : null}
+      {entries.map((entry) => (
+        <Stack key={entry.id} direction="row" spacing={1} alignItems="center">
+          <TextField
+            size="small"
+            label={t('catalog.fields.propertyKey')}
+            value={entry.key}
+            onChange={(event) => {
+              onChange(
+                entries.map((item) =>
+                  item.id === entry.id ? { ...item, key: event.target.value } : item,
+                ),
+              )
+            }}
+            fullWidth
+          />
+          <TextField
+            size="small"
+            label={t('catalog.fields.propertyValue')}
+            value={entry.value}
+            onChange={(event) => {
+              onChange(
+                entries.map((item) =>
+                  item.id === entry.id ? { ...item, value: event.target.value } : item,
+                ),
+              )
+            }}
+            fullWidth
+          />
+          <Box>
+            <IconButton
+              aria-label={t('catalog.actions.removeProperty')}
+              onClick={() => {
+                onChange(entries.filter((item) => item.id !== entry.id))
+              }}
+            >
+              <Trash2 size={17} />
+            </IconButton>
+          </Box>
+        </Stack>
+      ))}
     </Stack>
   )
+}
+
+PropertyEditor.defaultProps = {
+  embedded: false,
 }
 
 export default PropertyEditor

@@ -20,7 +20,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AcrylicOrangeTheme, CssBaseline, OxygenUIThemeProvider } from '@wso2/oxygen-ui'
 import { I18nextProvider } from 'react-i18next'
-import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import ConsentRegistryPage from '../features/consent-registry/ConsentRegistryPage'
 import i18n from '../i18n/i18n'
@@ -29,6 +29,16 @@ import { PORTAL_SCOPES } from '../utils/portalScopes'
 
 const fetchMock = vi.fn()
 
+function PendingConsentsLink(): React.JSX.Element {
+  const navigate = useNavigate()
+
+  return (
+    <button type="button" onClick={() => navigate('/consents?status=Pending')}>
+      Pending Consents
+    </button>
+  )
+}
+
 function CurrentLocation(): React.JSX.Element {
   const location = useLocation()
 
@@ -36,32 +46,13 @@ function CurrentLocation(): React.JSX.Element {
 }
 
 function createQueryClient(): QueryClient {
-  return new QueryClient({ defaultOptions: { queries: { retry: false } } })
-}
-
-function buildConsent(overrides: Record<string, unknown> = {}): Record<string, unknown> {
-  return {
-    id: 'db1f6e7a-2107-438c-a4cf-b62588c50259',
-    subjectId: 'admin',
-    serviceId: 'dpdp-portal',
-    state: 'ACTIVE',
-    language: 'en',
-    timestamp: 1785833979893,
-    purposes: [
-      {
-        id: '690eb7ef-3a32-4439-b006-2d47f2fb6885',
-        name: 'marketing-spike',
-        type: 'CONSENT',
-        versionId: 'cc689174-c91a-449d-ae85-05c33cab1721',
-        version: '1.0.0',
-        elements: [],
-        properties: {},
+  return new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
       },
-    ],
-    authorizations: [],
-    properties: {},
-    ...overrides,
-  }
+    },
+  })
 }
 
 function renderConsentRegistryPage(queryClient: QueryClient, initialEntry = '/consents'): void {
@@ -77,6 +68,7 @@ function renderConsentRegistryPage(queryClient: QueryClient, initialEntry = '/co
                   path="*"
                   element={
                     <>
+                      <PendingConsentsLink />
                       <CurrentLocation />
                       <ConsentRegistryPage />
                     </>
@@ -91,18 +83,6 @@ function renderConsentRegistryPage(queryClient: QueryClient, initialEntry = '/co
   )
 }
 
-function mockConsentSearch(data: unknown[], limit = 10): void {
-  vi.stubGlobal('fetch', fetchMock)
-  fetchMock.mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: async () => ({
-      data,
-      metadata: { total: data.length, offset: 0, count: data.length, limit },
-    }),
-  })
-}
-
 afterEach(() => {
   cleanup()
   fetchMock.mockReset()
@@ -110,35 +90,63 @@ afterEach(() => {
 })
 
 describe('ConsentRegistryPage', () => {
-  it('renders heading, filters and native consent rows', async () => {
-    mockConsentSearch([buildConsent()])
+  it('renders page heading, filters, and grouped consent rows', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [
+          {
+            id: 'CON/8291?draft',
+            groupId: 'tesco-bank',
+            type: 'Accounts',
+            status: 'ACTIVE',
+            createdTime: 1702800000,
+            updatedTime: 1702800000,
+            expirationTime: 0,
+            purposes: [
+              {
+                purposeId: 'purpose-marketing',
+                name: 'marketing_preferences',
+                version: 'v1',
+                displayName: 'Marketing',
+                elements: [],
+              },
+            ],
+          },
+        ],
+        metadata: {
+          total: 1,
+          offset: 0,
+          count: 1,
+          limit: 10,
+        },
+      }),
+    })
 
-    renderConsentRegistryPage(createQueryClient())
+    const queryClient = createQueryClient()
+
+    renderConsentRegistryPage(queryClient)
 
     expect(await screen.findByRole('heading', { name: 'All Consents' })).toBeInTheDocument()
     expect(screen.getByLabelText('Consent filters')).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Search by service')).toBeInTheDocument()
-    expect(screen.getByRole('combobox', { name: 'State' })).toBeInTheDocument()
-    expect(await screen.findByText('marketing-spike')).toBeInTheDocument()
-    expect(screen.getByText('dpdp-portal')).toBeInTheDocument()
+    expect(screen.getByPlaceholderText('Search by purpose name')).toBeInTheDocument()
+    expect(screen.getByRole('combobox', { name: 'Status' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Advanced filters' })).toBeInTheDocument()
+    expect(await screen.findByText('Group ID: tesco-bank')).toBeInTheDocument()
+    expect(screen.getByRole('table', { name: 'Consent registry table' })).toBeInTheDocument()
+    expect(await screen.findByText('Marketing')).toBeInTheDocument()
+    expect(await screen.findByText('Not applicable')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'View' })).toHaveAttribute(
       'href',
-      '/consents/db1f6e7a-2107-438c-a4cf-b62588c50259',
+      '/consents/CON%2F8291%3Fdraft',
     )
-    expect(
-      screen.getByLabelText('Consent ID: db1f6e7a-2107-438c-a4cf-b62588c50259'),
-    ).toHaveTextContent('db1f6e7a…')
-  })
-
-  it('never renders a group column or an exact result total', async () => {
-    mockConsentSearch([buildConsent()])
-
-    renderConsentRegistryPage(createQueryClient())
-
-    expect(await screen.findByText('marketing-spike')).toBeInTheDocument()
-    expect(screen.queryByText(/group id/i)).not.toBeInTheDocument()
-    expect(screen.queryByText(/1–1 of/i)).not.toBeInTheDocument()
-    expect(screen.queryByRole('columnheader', { name: 'Expiration' })).not.toBeInTheDocument()
+    // The consent id is deliberately not a column: it identifies a record to the
+    // system, not to the person reading the table.
+    expect(screen.queryByText('Consent ID')).not.toBeInTheDocument()
+    expect(screen.queryByLabelText('Consent ID: CON/8291?draft')).not.toBeInTheDocument()
+    expect(screen.queryByText('Type')).not.toBeInTheDocument()
   })
 
   it('shows an error message when consent fetch fails', async () => {
@@ -146,40 +154,103 @@ describe('ConsentRegistryPage', () => {
     fetchMock.mockResolvedValue({
       ok: false,
       status: 500,
-      json: async () => ({ code: 'INTERNAL_SERVER_ERROR', message: 'Something went wrong.' }),
+      json: async () => ({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Something went wrong.',
+      }),
+    })
+
+    const queryClient = createQueryClient()
+
+    renderConsentRegistryPage(queryClient)
+
+    expect(await screen.findByRole('heading', { name: 'All Consents' })).toBeInTheDocument()
+    expect(await screen.findByText('Unable to load consents right now.')).toBeInTheDocument()
+    expect(screen.getByRole('table', { name: 'Consent registry table' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
+  })
+
+  it('renders consent rows in API order without sorting the current page locally', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [
+          {
+            id: 'z-consent',
+            groupId: 'group-1',
+            type: 'accounts',
+            status: 'ACTIVE',
+            createdTime: 1702800000000,
+            updatedTime: 1702800000000,
+            purposes: [],
+          },
+          {
+            id: 'a-consent',
+            groupId: 'group-1',
+            type: 'accounts',
+            status: 'ACTIVE',
+            createdTime: 1702900000000,
+            updatedTime: 1702900000000,
+            purposes: [],
+          },
+        ],
+        metadata: { total: 2, offset: 0, count: 2, limit: 10 },
+      }),
     })
 
     renderConsentRegistryPage(createQueryClient())
 
-    expect(await screen.findByText('Unable to load consents right now.')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument()
-  })
+    // Order is asserted through the View links, which carry the consent id in
+    // their href, now that the id is not shown as a column.
+    const links = await screen.findAllByRole('link', { name: 'View' })
 
-  it('renders consent rows in API order', async () => {
-    mockConsentSearch([buildConsent({ id: 'z-consent' }), buildConsent({ id: 'a-consent' })])
-
-    renderConsentRegistryPage(createQueryClient())
-
-    const consentIDs = await screen.findAllByLabelText(/^Consent ID: /)
-
-    expect(consentIDs.map((element) => element.getAttribute('aria-label'))).toEqual([
-      'Consent ID: z-consent',
-      'Consent ID: a-consent',
+    expect(links.map((element) => element.getAttribute('href'))).toEqual([
+      '/consents/z-consent',
+      '/consents/a-consent',
     ])
   })
 
-  it('shows the empty state for an empty response', async () => {
-    mockConsentSearch([])
+  it('shows the empty state for an empty v0.3 response', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [],
+        metadata: { total: 0, offset: 0, count: 0, limit: 10 },
+      }),
+    })
 
     renderConsentRegistryPage(createQueryClient())
 
     expect(
       await screen.findByText('No consents found for the selected filters.'),
     ).toBeInTheDocument()
+    expect(screen.getByRole('table', { name: 'Consent registry table' })).toBeInTheDocument()
   })
 
-  it('shows the error state when a consent response has an unsupported state', async () => {
-    mockConsentSearch([buildConsent({ state: 'CREATED' })])
+  it('shows the error state when a consent response has an unsupported status', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [
+          {
+            id: 'CON-INVALID',
+            groupId: 'sample-group',
+            type: 'Accounts',
+            status: 'UNKNOWN',
+            createdTime: 1702800000000,
+            updatedTime: 1702800000000,
+            purposes: [],
+          },
+        ],
+        metadata: { total: 1, offset: 0, count: 1, limit: 10 },
+      }),
+    })
 
     renderConsentRegistryPage(createQueryClient())
 
@@ -187,87 +258,231 @@ describe('ConsentRegistryPage', () => {
   })
 
   it('does not render approve action for rejected consents', async () => {
-    mockConsentSearch([buildConsent({ state: 'REJECTED' })])
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [
+          {
+            id: 'CON-9123',
+            groupId: 'sample-group',
+            type: 'Accounts',
+            status: 'REJECTED',
+            createdTime: 1702800000,
+            updatedTime: 1702800000,
+            purposes: [
+              {
+                purposeId: 'purpose-marketing',
+                name: 'marketing_preferences',
+                version: 'v1',
+                displayName: 'Marketing',
+                elements: [],
+              },
+            ],
+          },
+        ],
+        metadata: {
+          total: 1,
+          offset: 0,
+          count: 1,
+          limit: 10,
+        },
+      }),
+    })
 
-    renderConsentRegistryPage(createQueryClient())
+    const queryClient = createQueryClient()
 
-    expect(await screen.findByText('marketing-spike')).toBeInTheDocument()
+    renderConsentRegistryPage(queryClient)
+
+    expect(await screen.findByRole('table', { name: 'Consent registry table' })).toBeInTheDocument()
     expect(screen.queryByLabelText('Approve')).not.toBeInTheDocument()
-    expect(screen.queryByLabelText('Revoke')).not.toBeInTheDocument()
   })
 
-  it('renders approve and revoke actions from the consent state alone', async () => {
-    mockConsentSearch([
-      buildConsent({ id: 'pending-consent', state: 'PENDING' }),
-      buildConsent({ id: 'active-consent', state: 'ACTIVE' }),
-    ])
+  it('uses page and rowsPerPage URL params when fetching consents', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [],
+        metadata: {
+          total: 0,
+          offset: 25,
+          count: 0,
+          limit: 25,
+        },
+      }),
+    })
+
+    const queryClient = createQueryClient()
+
+    renderConsentRegistryPage(queryClient, '/consents?page=2&rowsPerPage=25')
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled()
+    })
+
+    const [requestUrl] = fetchMock.mock.calls[0] ?? []
+
+    expect(String(requestUrl)).toContain('limit=25')
+    expect(String(requestUrl)).toContain('offset=25')
+    expect(String(requestUrl)).toContain('sort=updatedTime%3Adesc')
+  })
+
+  it('sends a valid URL sort to the API', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [],
+        metadata: { total: 0, offset: 0, count: 0, limit: 10 },
+      }),
+    })
+
+    renderConsentRegistryPage(createQueryClient(), '/consents?sort=validityTime%3Aasc')
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled()
+    })
+
+    const [requestUrl] = fetchMock.mock.calls[0] ?? []
+    const url = new URL(String(requestUrl))
+
+    expect(url.searchParams.get('sort')).toBe('validityTime:asc')
+  })
+
+  it('falls back to updatedTime descending for an invalid URL sort', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [],
+        metadata: { total: 0, offset: 0, count: 0, limit: 10 },
+      }),
+    })
+
+    renderConsentRegistryPage(createQueryClient(), '/consents?sort=unsupported%3Aasc')
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled()
+    })
+
+    const [requestUrl] = fetchMock.mock.calls[0] ?? []
+    const url = new URL(String(requestUrl))
+
+    expect(url.searchParams.get('sort')).toBe('updatedTime:desc')
+  })
+
+  it('requests a newly selected server sort from the first page', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [
+          {
+            id: 'consent-1',
+            groupId: 'group-1',
+            type: 'accounts',
+            status: 'ACTIVE',
+            createdTime: 1702800000000,
+            updatedTime: 1702800000000,
+            expirationTime: 1702900000000,
+            purposes: [],
+          },
+        ],
+        metadata: { total: 1, offset: 10, count: 1, limit: 10 },
+      }),
+    })
+
+    renderConsentRegistryPage(createQueryClient(), '/consents?page=2')
+
+    expect(await screen.findByRole('button', { name: 'Status' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Status' }))
+
+    await waitFor(() => {
+      const requests = fetchMock.mock.calls.map(([requestUrl]) => new URL(String(requestUrl)))
+
+      expect(
+        requests.some(
+          (url) =>
+            url.searchParams.get('sort') === 'status:asc' && url.searchParams.get('offset') === '0',
+        ),
+      ).toBe(true)
+      expect(screen.getByTestId('current-location')).toHaveTextContent(
+        '/consents?sort=status%3Aasc',
+      )
+    })
+  })
+
+  it('prefetches exactly one next page when more consents are available', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockImplementation(async (input: RequestInfo | URL) => {
+      const url = new URL(String(input))
+      const offset = Number(url.searchParams.get('offset') ?? 0)
+
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({
+          data: [],
+          metadata: {
+            total: 25,
+            offset,
+            count: 0,
+            limit: 10,
+          },
+        }),
+      }
+    })
 
     renderConsentRegistryPage(createQueryClient())
 
-    expect((await screen.findAllByLabelText('Approve')).length).toBeGreaterThan(0)
-    expect(screen.getAllByLabelText('Revoke').length).toBeGreaterThan(0)
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(2)
+    })
+
+    const requestedOffsets = fetchMock.mock.calls.map(([requestUrl]) => {
+      const url = new URL(String(requestUrl))
+      return Number(url.searchParams.get('offset'))
+    })
+
+    expect(requestedOffsets).toEqual([0, 10])
   })
 
-  it('maps URL filters to the supported self-service query parameters', async () => {
-    mockConsentSearch([])
+  it('maps URL filters to v0.3 consent search parameters', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({
+        data: [],
+        metadata: { total: 0, offset: 0, count: 0, limit: 10 },
+      }),
+    })
 
     renderConsentRegistryPage(
       createQueryClient(),
-      '/consents?state=PENDING&serviceId=dpdp-portal&page=3&rowsPerPage=25',
+      '/consents?status=Pending&purposeName=marketing&groupIds=group-1%2Cgroup-2&startDate=2026-01-01&endDate=2026-01-02',
     )
 
-    await waitFor(() => expect(fetchMock).toHaveBeenCalled())
-
-    const [requestUrl] = fetchMock.mock.calls[0] ?? []
-    expect(Object.fromEntries(new URL(String(requestUrl)).searchParams)).toEqual({
-      consentStatuses: 'PENDING',
-      serviceId: 'dpdp-portal',
-      limit: '25',
-      offset: '50',
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalled()
     })
-  })
-
-  it('ignores the removed CREATED status in the URL', async () => {
-    mockConsentSearch([])
-
-    renderConsentRegistryPage(createQueryClient(), '/consents?state=CREATED')
-
-    await waitFor(() => expect(fetchMock).toHaveBeenCalled())
 
     const [requestUrl] = fetchMock.mock.calls[0] ?? []
-    expect(new URL(String(requestUrl)).searchParams.get('consentStatuses')).toBeNull()
-  })
-
-  it('pages with next and previous instead of numbered pages', async () => {
-    mockConsentSearch(
-      Array.from({ length: 10 }, (_, index) => buildConsent({ id: `consent-${String(index)}` })),
+    const url = new URL(String(requestUrl))
+    expect(url.searchParams.get('consentStatuses')).toBe('CREATED')
+    expect(url.searchParams.get('purposeName')).toBe('marketing')
+    expect(url.searchParams.get('groupIds')).toBe('group-1,group-2')
+    expect(url.searchParams.get('elementName')).toBeNull()
+    expect(url.searchParams.get('elementVersion')).toBeNull()
+    expect(Number(url.searchParams.get('fromTime'))).toBeGreaterThan(1_000_000_000_000)
+    expect(Number(url.searchParams.get('toTime'))).toBeGreaterThan(
+      Number(url.searchParams.get('fromTime')),
     )
-
-    renderConsentRegistryPage(createQueryClient())
-
-    const nextButton = await screen.findByRole('button', { name: 'Next' })
-    await waitFor(() => expect(nextButton).toBeEnabled())
-    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
-
-    fireEvent.click(nextButton)
-
-    await waitFor(() => {
-      expect(screen.getByTestId('current-location')).toHaveTextContent('/consents?page=2')
-    })
-    await waitFor(() => {
-      const offsets = fetchMock.mock.calls.map(([requestUrl]) =>
-        new URL(String(requestUrl)).searchParams.get('offset'),
-      )
-      expect(offsets).toContain('10')
-    })
-  })
-
-  it('disables next when a short page indicates the end of the results', async () => {
-    mockConsentSearch([buildConsent()])
-
-    renderConsentRegistryPage(createQueryClient())
-
-    expect(await screen.findByText('marketing-spike')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
   })
 })

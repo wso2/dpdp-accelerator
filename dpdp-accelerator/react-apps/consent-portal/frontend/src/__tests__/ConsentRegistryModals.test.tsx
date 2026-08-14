@@ -44,45 +44,93 @@ afterEach(() => {
 })
 
 describe('consent registry dialogs', () => {
-  it('confirms the whole consent without any per element selection', () => {
-    const onConfirm = vi.fn()
-    const onClose = vi.fn()
-
+  it('shows loading text instead of empty states while approval details load', () => {
     renderWithProviders(
       <ConsentApprovalDialog
         open
         consentId="consent-123"
-        loading={false}
-        onClose={onClose}
-        onConfirm={onConfirm}
-      />,
-    )
-
-    expect(screen.getByText('Consent ID: consent-123')).toBeInTheDocument()
-    expect(screen.queryAllByRole('checkbox')).toHaveLength(0)
-    expect(screen.queryByText(/optional elements/i)).not.toBeInTheDocument()
-
-    fireEvent.click(screen.getByRole('button', { name: /approve consent/i }))
-    expect(onConfirm).toHaveBeenCalledTimes(1)
-    expect(onConfirm).toHaveBeenCalledWith()
-
-    fireEvent.click(screen.getByRole('button', { name: /cancel/i }))
-    expect(onClose).toHaveBeenCalledTimes(1)
-  })
-
-  it('surfaces an invalid consent state error inside the approval dialog', () => {
-    renderWithProviders(
-      <ConsentApprovalDialog
-        open
-        consentId="consent-123"
-        loading={false}
-        error="Consent is not in PENDING state."
+        loading
+        purposes={[]}
         onClose={vi.fn()}
         onConfirm={vi.fn()}
       />,
     )
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Consent is not in PENDING state.')
+    expect(screen.getByText('Loading consent details...')).toBeInTheDocument()
+    expect(
+      screen.queryByText('No mandatory requirements for this consent.'),
+    ).not.toBeInTheDocument()
+  })
+
+  it('submits selected optional permissions from approval dialog', () => {
+    const onConfirm = vi.fn()
+
+    renderWithProviders(
+      <ConsentApprovalDialog
+        open
+        consentId="consent-123"
+        loading={false}
+        purposes={[
+          {
+            purposeId: 'purpose-accounts',
+            name: 'Accounts',
+            version: 'v2',
+            displayName: 'Accounts',
+            elements: [
+              {
+                elementId: 'element-account-number',
+                name: 'account_number',
+                namespace: 'accounts',
+                version: 'v1',
+                displayName: 'Account Number',
+                approved: true,
+                mandatory: true,
+              },
+              {
+                elementId: 'element-transactions',
+                name: 'transaction_history',
+                namespace: 'accounts',
+                version: 'v3',
+                displayName: 'Transaction History',
+                approved: true,
+                mandatory: false,
+              },
+              {
+                elementId: 'element-marketing',
+                name: 'marketing_messages',
+                namespace: 'accounts',
+                version: 'v2',
+                displayName: 'Marketing Messages',
+                approved: false,
+                mandatory: false,
+              },
+            ],
+          },
+        ]}
+        onClose={vi.fn()}
+        onConfirm={onConfirm}
+      />,
+    )
+
+    const toggles = screen.getAllByRole('checkbox', { name: /toggle permission/i })
+    fireEvent.click(toggles[1])
+
+    fireEvent.click(screen.getByRole('button', { name: /approve & continue/i }))
+
+    expect(onConfirm).toHaveBeenCalledWith([
+      {
+        purposeId: 'purpose-accounts',
+        purposeVersion: 'v2',
+        elementId: 'element-transactions',
+        elementVersion: 'v3',
+      },
+      {
+        purposeId: 'purpose-accounts',
+        purposeVersion: 'v2',
+        elementId: 'element-marketing',
+        elementVersion: 'v2',
+      },
+    ])
   })
 
   it('calls revocation handlers from confirmation dialog', () => {
@@ -99,7 +147,7 @@ describe('consent registry dialogs', () => {
       />,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /revoke consent/i }))
+    fireEvent.click(screen.getByRole('button', { name: /revoke consents/i }))
     expect(onConfirm).toHaveBeenCalledTimes(1)
 
     fireEvent.click(screen.getByRole('button', { name: /cancel/i }))

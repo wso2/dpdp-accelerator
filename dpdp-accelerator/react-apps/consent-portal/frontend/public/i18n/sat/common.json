@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱯᱳᱨᱴᱟᱞ"
+  },
+  "language": {
+    "label": "ᱯᱟᱹᱨᱥᱤ",
+    "selectAria": "ᱯᱟᱹᱨᱥᱤ ᱵᱟᱪᱷᱟᱣ ᱢᱮ"
+  },
+  "authorization": {
+    "loading": "ᱟᱢᱟᱜ ᱥᱮᱥᱚᱱ ᱞᱳᱰ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ",
+    "loadFailed": "ᱟᱢᱟᱜ ᱥᱮᱥᱚᱱ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+    "tryAgain": "ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟᱭ ᱢᱮ",
+    "noAccessTitle": "ᱯᱳᱨᱴᱟᱞ ᱟᱠᱥᱮᱥ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+    "noAccessDescription": "ᱟᱢᱟᱜ ᱮᱠᱟᱣᱩᱱᱴ ᱨᱮ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱯᱳᱨᱴᱟᱞ ᱥᱟᱠᱟᱢ ᱟᱠᱥᱮᱥ ᱨᱮᱱᱟᱜ ᱟᱹᱭᱫᱟᱹᱨᱤ ᱵᱟᱹᱱᱩᱜᱼᱟ।"
+  },
+  "copyableText": {
+    "copy": "ᱠᱚᱯᱤ",
+    "copied": "ᱠᱚᱯᱤ ᱮᱱᱟ",
+    "copyLabel": "{{label}} ᱠᱚᱯᱤ ᱢᱮ",
+    "copyValue": "{{label}} {{value}} ᱠᱚᱯᱤ ᱢᱮ",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "ᱢᱩᱬᱩᱛ ᱱᱮᱵᱷᱤᱜᱮᱥᱚᱱ",
+    "dashboard": "ᱰᱮᱥᱵᱳᱨᱰ",
+    "consent": "ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "allConsents": "ᱡᱚᱛᱚ ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "pendingConsents": "ᱵᱟᱹᱠᱤ ᱛᱟᱦᱮᱸᱠᱟᱱ ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "catalog": "ᱢᱮᱱᱮᱛ",
+    "purposes": "ᱩᱫᱽᱫᱮᱥ",
+    "elements": "ᱮᱞᱤᱢᱮᱱᱴ",
+    "administration": "ᱥᱟᱥᱚᱱ",
+    "adminConsents": "ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "nominations": "ᱱᱳᱢᱤᱱᱮᱥᱚᱱ",
+    "nomineeActivation": "ᱱᱳᱢᱤᱱᱤ ᱮᱠᱴᱤᱵᱷᱮᱥᱚᱱ",
+    "myComplaints": "ᱤᱧᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ",
+    "complaintManagement": "ᱚᱵᱷᱤᱡᱳᱜᱽ",
+    "dataProcessors": "ᱰᱮᱴᱟ ᱯᱨᱳᱥᱮᱥᱚᱨ",
+    "dataProcessorTopics": "ᱴᱳᱯᱤᱠ",
+    "dataProcessorSubscriptions": "ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ",
+    "dataProcessorEvents": "ᱜᱷᱚᱴᱚᱱ"
+  },
+  "layout": {
+    "home": "ᱳᱲᱟᱜ",
+    "breadcrumbAriaLabel": "ᱵᱨᱮᱰᱠᱨᱚᱢᱵᱽ",
+    "userMenu": {
+      "unknownUser": "ᱚᱡᱟᱱᱟ ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ",
+      "noEmail": "ᱤᱢᱮᱞ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+      "signOut": "ᱥᱟᱭᱤᱱ ᱟᱣᱩᱴ",
+      "signOutError": "ᱥᱟᱭᱤᱱ ᱟᱣᱩᱴ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ। ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟᱭ ᱢᱮ।",
+      "tryAgain": "ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟᱭ ᱢᱮ"
+    }
+  },
+  "dashboard": {
+    "active": "ᱪᱟᱹᱞᱩ ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "attention": "ᱟᱢᱟᱜ ᱫᱷᱟᱭᱟᱱ ᱞᱟᱹᱠᱛᱤᱭᱟ",
+    "commonPurposes": "ᱥᱟᱫᱷᱟᱨᱚᱱ ᱦᱟᱹᱴᱤᱧ ᱩᱫᱽᱫᱮᱥ",
+    "commonPurposesSubtitle": "ᱟᱢᱟᱜ ᱪᱟᱹᱞᱩ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱮ ᱥᱮᱞᱮᱫ ᱢᱮᱱᱟᱜ ᱩᱫᱽᱫᱮᱥ",
+    "consentCount": "{{count}} ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "consentCount_one": "{{count}} ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "consentCount_other": "{{count}} ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "expiringSoon": "ᱞᱚᱜᱚᱱ ᱪᱟᱵᱟᱜᱼᱟ",
+    "loadFailed": "ᱱᱤᱛᱚᱜ ᱟᱢᱟᱜ ᱰᱮᱥᱵᱳᱨᱰ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+    "noExpiring": "ᱦᱤᱡᱩᱜ ᱠᱟᱱ {{days}} ᱢᱟᱦᱟᱸ ᱨᱮ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱝ ᱪᱟᱵᱟᱜᱼᱟ।",
+    "noPending": "ᱟᱢ ᱴᱷᱮᱱ ᱧᱮᱞ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱵᱟᱹᱠᱤ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+    "noPurposes": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱦᱟᱹᱴᱤᱧ ᱩᱫᱽᱫᱮᱥ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+    "pending": "ᱵᱟᱹᱠᱤ ᱛᱟᱦᱮᱸᱠᱟᱱ ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "pendingConsents": "ᱵᱟᱹᱠᱤ ᱛᱟᱦᱮᱸᱠᱟᱱ ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "subtitle": "ᱟᱢᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱠᱟᱹᱢᱤ ᱟᱨ ᱦᱤᱡᱩᱜ ᱠᱟᱱ ᱠᱟᱹᱢᱤ ᱨᱮᱱᱟᱜ ᱥᱟᱢᱟᱝ।",
+    "title": "ᱰᱮᱥᱵᱳᱨᱰ",
+    "typeBreakdown": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱴᱟᱭᱤᱯ ᱦᱟᱹᱴᱤᱧ",
+    "typeBreakdownSubtitle": "ᱟᱢᱟᱜ ᱡᱚᱛᱚ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱴᱟᱭᱤᱯ ᱞᱮᱠᱟᱛᱮ ᱦᱟᱹᱴᱤᱧ ᱟᱠᱟᱱᱟ",
+    "noTypes": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱴᱟᱭᱤᱯ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+    "viewPending": "ᱡᱚᱛᱚ ᱵᱟᱹᱠᱤ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱧᱮᱞ ᱢᱮ"
+  },
+  "adminConsents": {
+    "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "filters": {
+      "sectionAriaLabel": "ᱥᱟᱥᱚᱱᱤᱭᱟᱹ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱯᱷᱤᱞᱴᱚᱨ",
+      "consentIdSearchPlaceholder": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+      "removeConsentIdForAdvanced": "ᱮᱰᱵᱷᱟᱱᱥ ᱯᱷᱤᱞᱴᱚᱨ ᱵᱮᱵᱷᱟᱨ ᱞᱟᱹᱜᱤᱫ ᱥᱟᱹᱢᱟᱹᱛᱤ ID ᱯᱷᱤᱞᱴᱚᱨ ᱚᱪᱚᱜ ᱢᱮ।",
+      "removeConsentIdForStatus": "ᱥᱴᱮᱴᱚᱥ ᱯᱷᱤᱞᱴᱚᱨ ᱵᱮᱵᱷᱟᱨ ᱞᱟᱹᱜᱤᱫ ᱥᱟᱹᱢᱟᱹᱛᱤ ID ᱯᱷᱤᱞᱴᱚᱨ ᱚᱪᱚᱜ ᱢᱮ।",
+      "userIds": "ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ ID ᱠᱚ",
+      "groupIds": "ᱜᱩᱴ ID ᱠᱚ",
+      "commaSeparatedUsers": "ᱟᱭᱢᱟ ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ ID ᱠᱚᱢᱟ (,) ᱛᱮ ᱵᱷᱮᱜᱟᱨ ᱢᱮ",
+      "active": "ᱪᱟᱹᱞᱩ ᱯᱷᱤᱞᱴᱚᱨ ᱠᱚ"
+    }
+  },
+  "consentRegistry": {
+    "title": "ᱡᱚᱛᱚ ᱥᱟᱹᱢᱟᱹᱛᱤ",
+    "details": {
+      "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱤᱵᱚᱨᱚᱱ",
+      "consentId": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID",
+      "status": "ᱥᱴᱮᱴᱚᱥ",
+      "type": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱴᱟᱭᱤᱯ",
+      "frequency": "ᱟᱠᱥᱮᱥ ᱥᱤᱢᱟᱹ",
+      "frequencyHelp": "ᱱᱚᱣᱟ ᱫᱚ ᱫᱤᱱᱟᱹᱢ ᱜᱮ ᱱᱚᱣᱟ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱛᱤᱱᱟᱹᱜ ᱫᱷᱟᱣ ᱟᱠᱥᱮᱥ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ ᱚᱱᱟ ᱩᱫᱩᱜᱟ।",
+      "frequencyUnitSingular": "ᱫᱷᱟᱣ ᱫᱤᱱᱟᱹᱢ",
+      "frequencyUnitPlural": "ᱫᱷᱟᱣ ᱫᱤᱱᱟᱹᱢ",
+      "purposes": "ᱩᱫᱽᱫᱮᱥ",
+      "duration": "ᱞᱩᱠᱵᱮᱠ ᱚᱠᱛᱚ",
+      "durationHelp": "ᱱᱚᱣᱟ ᱫᱚ ᱛᱤᱱᱟᱹᱜ ᱛᱟᱭᱚᱢ ᱨᱮᱱᱟᱜ ᱰᱮᱴᱟ ᱟᱠᱥᱮᱥ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ ᱚᱱᱟ ᱴᱷᱟᱹᱣᱠᱟᱹᱭᱟ।",
+      "durationUnitHourSingular": "ᱛᱟᱲᱟᱝ",
+      "durationUnitHourPlural": "ᱛᱟᱲᱟᱝ",
+      "durationUnitDaySingular": "ᱢᱟᱦᱟᱸ",
+      "durationUnitDayPlural": "ᱢᱟᱦᱟᱸ",
+      "durationUnitYearSingular": "ᱥᱮᱨᱢᱟ",
+      "durationUnitYearPlural": "ᱥᱮᱨᱢᱟ",
+      "created": "ᱵᱮᱱᱟᱣ ᱟᱠᱟᱱᱟ",
+      "updated": "ᱟᱯᱰᱮᱴ ᱟᱠᱟᱱᱟ",
+      "validUntil": "ᱱᱚᱣᱟ ᱦᱟᱹᱵᱤᱡ ᱪᱟᱹᱞᱩ",
+      "groupId": "ᱜᱩᱴ ID",
+      "recurring": "ᱫᱚᱲᱦᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱ",
+      "back": "ᱨᱮᱡᱤᱥᱴᱨᱤ ᱛᱮ ᱨᱩᱣᱟᱹᱲ",
+      "notFound": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱮᱠᱳᱨᱰ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+      "approved": "ᱟᱸᱜᱳᱪ ᱟᱠᱟᱱᱟ",
+      "notApproved": "ᱵᱟᱝ ᱟᱸᱜᱳᱪ ᱟᱠᱟᱱᱟ",
+      "approvedCount": "{{approved}}/{{total}} ᱟᱸᱜᱳᱪ ᱟᱠᱟᱱᱟ",
+      "section": {
+        "purposes": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱩᱫᱽᱫᱮᱥ",
+        "authorizations": "ᱚᱛᱷᱚᱨᱟᱭᱤᱡᱮᱥᱚᱱ",
+        "lifecycle": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱞᱟᱭᱤᱯᱷᱥᱟᱭᱠᱮᱞ"
+      },
+      "table": {
+        "element": "ᱮᱞᱤᱢᱮᱱᱴ",
+        "approved": "ᱟᱸᱜᱳᱪ ᱟᱠᱟᱱᱟ",
+        "required": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ",
+        "description": "ᱵᱤᱵᱚᱨᱚᱱ",
+        "user": "ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "updated": "ᱟᱯᱰᱮᱴ ᱟᱠᱟᱱᱟ",
+        "resources": "ᱨᱤᱥᱳᱨᱥ",
+        "eventType": "ᱤᱵᱷᱮᱱᱴ ᱴᱟᱭᱤᱯ",
+        "date": "ᱢᱟᱹᱦᱤᱛ",
+        "time": "ᱚᱠᱛᱚ"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱞᱟᱭᱤᱯᱷᱥᱟᱭᱠᱮᱞ",
+        "empty": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱞᱟᱭᱤᱯᱷᱥᱟᱭᱠᱮᱞ ᱤᱵᱷᱮᱱᱴ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+        "noDescription": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱵᱤᱵᱚᱨᱚᱱ ᱵᱟᱹᱱᱩᱜᱼᱟ।"
+      },
+      "actions": {
+        "viewResources": "ᱨᱤᱥᱳᱨᱥ ᱧᱮᱞ ᱢᱮ",
+        "noResourcesTooltip": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱨᱤᱥᱳᱨᱥ ᱵᱟᱹᱱᱩᱜᱼᱟ"
+      },
+      "resourcesModal": {
+        "title": "ᱚᱛᱷᱚᱨᱟᱭᱤᱡᱮᱥᱚᱱ ᱨᱤᱥᱳᱨᱥ",
+        "authRef": "Auth",
+        "close": "ᱵᱚᱸᱫᱷ ᱢᱮ"
+      },
+      "values": {
+        "yes": "ᱦᱮᱸ",
+        "no": "ᱵᱟᱝ",
+        "required": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ",
+        "optional": "ᱚᱯᱥᱚᱱᱮᱞ"
+      }
+    },
+    "actions": {
+      "view": "ᱧᱮᱞ ᱢᱮ",
+      "revoke": "ᱨᱟᱹᱫᱽ ᱢᱮ (Revoke)",
+      "approve": "ᱟᱸᱜᱳᱪ ᱢᱮ",
+      "reject": "ᱵᱟᱹᱜᱤᱭᱟᱜ ᱢᱮ",
+      "copyConsentId": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID ᱠᱚᱯᱤ ᱢᱮ",
+      "copyConsentIdAriaLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID {{id}} ᱠᱚᱯᱤ ᱢᱮ"
+    },
+    "modals": {
+      "consentId": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID",
+      "actions": {
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+        "processing": "ᱯᱨᱳᱥᱮᱥ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ..."
+      },
+      "approval": {
+        "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱧᱮᱞ ᱟᱨ ᱟᱸᱜᱳᱪ ᱢᱮ",
+        "subtitle": "ᱟᱸᱜᱳᱪ ᱢᱟᱲᱟᱝ ᱨᱮ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ ᱧᱮᱞ ᱢᱮ।",
+        "mandatory": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱ ᱮᱞᱤᱢᱮᱱᱴ (Required)",
+        "optional": "ᱚᱯᱥᱚᱱᱮᱞ ᱮᱞᱤᱢᱮᱱᱴ",
+        "required": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ",
+        "toggle": "ᱟᱹᱭᱫᱟᱹᱨᱤ ᱵᱚᱫᱚᱞ ᱢᱮ (Toggle)",
+        "toggleWithDetails": "{{purposeLabel}} ᱨᱮ {{elementLabel}} ᱞᱟᱹᱜᱤᱫ ᱟᱹᱭᱫᱟᱹᱨᱤ ᱵᱚᱫᱚᱞ ᱢᱮ",
+        "loading": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱤᱵᱚᱨᱚᱱ ᱞᱳᱰ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+        "noMandatory": "ᱱᱚᱣᱟ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱞᱟᱹᱠᱛᱤᱭᱟᱱ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+        "confirm": "ᱟᱸᱜᱳᱪ ᱟᱨ ᱞᱟᱦᱟᱜ ᱢᱮ"
+      },
+      "rejection": {
+        "title": "ᱵᱟᱹᱜᱤᱭᱟᱜ ᱴᱷᱟᱹᱣᱠᱟᱹᱭ ᱢᱮ",
+        "message": "ᱪᱮᱫ ᱟᱢ ᱥᱟᱹᱨᱤ ᱜᱮ ᱱᱚᱣᱟ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱹᱜᱤᱭᱟᱜ ᱥᱟᱱᱟ ᱮᱫ ᱢᱮᱭᱟ?",
+        "note": "ᱱᱚᱣᱟ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱹᱜᱤᱭᱟᱜ ᱞᱮᱠᱷᱟᱱ ᱠᱷᱳᱡᱽ ᱟᱠᱟᱱ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱝ ᱮᱢ ᱦᱩᱭᱩᱜᱼᱟ।",
+        "confirm": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱹᱜᱤᱭᱟᱜ ᱢᱮ",
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ"
+      },
+      "revocation": {
+        "title": "ᱨᱟᱹᱫᱽ ᱴᱷᱟᱹᱣᱠᱟᱹᱭ ᱢᱮ (Revoke)",
+        "message": "ᱪᱮᱫ ᱟᱢ ᱥᱟᱹᱨᱤ ᱜᱮ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱟᱹᱫᱽ ᱥᱟᱱᱟ ᱮᱫ ᱢᱮᱭᱟ?",
+        "note": "ᱱᱚᱣᱟ ᱠᱟᱹᱢᱤ ᱫᱚ ᱡᱚᱛᱚ ᱡᱚᱲᱟᱣ ᱟᱠᱟᱱ ᱩᱫᱽᱫᱮᱥ ᱞᱟᱹᱜᱤᱫ ᱮᱢ ᱟᱠᱟᱱ ᱞᱟᱹᱠᱛᱤᱭᱟᱱ ᱟᱨ ᱚᱯᱥᱚᱱᱮᱞ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱟᱹᱫᱽ ᱟᱭ।",
+        "confirm": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱠᱚ ᱨᱟᱹᱫᱽ ᱢᱮ",
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ"
+      }
+    },
+    "status": {
+      "all": "ᱡᱚᱛᱚ",
+      "active": "ᱪᱟᱹᱞᱩ",
+      "pending": "ᱵᱟᱹᱠᱤ",
+      "created": "ᱵᱮᱱᱟᱣ ᱟᱠᱟᱱᱟ",
+      "approved": "ᱟᱸᱜᱳᱪ ᱟᱠᱟᱱᱟ",
+      "rejected": "ᱵᱟᱹᱜᱤᱭᱟᱜ ᱟᱠᱟᱱᱟ",
+      "revoked": "ᱨᱟᱹᱫᱽ ᱟᱠᱟᱱᱟ",
+      "expired": "ᱪᱟᱵᱟ ᱟᱠᱟᱱᱟ (Expired)",
+      "systemExpired": "ᱥᱤᱥᱴᱚᱢ ᱪᱟᱵᱟ ᱟᱠᱟᱱᱟ",
+      "systemRevoked": "ᱥᱤᱥᱴᱚᱢ ᱨᱟᱹᱫᱽ ᱟᱠᱟᱱᱟ"
+    },
+    "filters": {
+      "sectionAriaLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱯᱷᱤᱞᱴᱚᱨ",
+      "purposeSearchPlaceholder": "ᱩᱫᱽᱫᱮᱥ ᱧᱩᱛᱩᱢ ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+      "status": "ᱥᱴᱮᱴᱚᱥ",
+      "groupIds": "ᱜᱩᱴ ID",
+      "elementName": "ᱮᱞᱤᱢᱮᱱᱴ ᱧᱩᱛᱩᱢ",
+      "elementVersion": "ᱮᱞᱤᱢᱮᱱᱴ ᱵᱷᱚᱨᱥᱚᱱ",
+      "advanced": "ᱮᱰᱵᱷᱟᱱᱥ ᱯᱷᱤᱞᱴᱚᱨ",
+      "apply": "ᱞᱟᱹᱜᱩᱭ ᱢᱮ",
+      "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+      "startDate": "ᱮᱛᱚᱦᱚᱵ ᱢᱟᱹᱦᱤᱛ",
+      "startDateAriaLabel": "ᱮᱛᱚᱦᱚᱵ ᱢᱟᱹᱦᱤᱛ ᱯᱷᱤᱞᱴᱚᱨ",
+      "endDate": "ᱢᱩᱪᱟᱹᱫ ᱢᱟᱹᱦᱤᱛ",
+      "endDateAriaLabel": "ᱢᱩᱪᱟᱹᱫ ᱢᱟᱹᱦᱤᱛ ᱯᱷᱤᱞᱴᱚᱨ",
+      "clear": "ᱡᱚᱛᱚ ᱥᱟᱯᱷᱟᱭ ᱢᱮ",
+      "clearAriaLabel": "ᱡᱚᱛᱚ ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱯᱷᱟᱭ ᱢᱮ"
+    },
+    "messages": {
+      "loading": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱠᱚ ᱞᱳᱰ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "loadFailed": "ᱱᱤᱛᱚᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+      "emptyTitle": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+      "empty": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ।"
+    },
+    "table": {
+      "tableAriaLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱮᱡᱤᱥᱴᱨᱤ ᱴᱮᱵᱩᱞ",
+      "consentIdAriaLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID: {{id}}",
+      "groupLabel": "ᱜᱩᱴ ID: {{groupId}}",
+      "notApplicable": "ᱵᱟᱝ ᱞᱟᱹᱜᱩᱜᱼᱟ",
+      "purposes": {
+        "more": "+{{count}} ᱟᱨᱦᱚᱸ",
+        "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱩᱫᱽᱫᱮᱥ",
+        "hint": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱮᱱᱟᱜ ᱡᱚᱛᱚ ᱩᱫᱽᱫᱮᱥ ᱩᱫᱩᱜ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ"
+      },
+      "headers": {
+        "consentId": "ᱥᱟᱹᱢᱟᱹᱛᱤ ID",
+        "type": "ᱴᱟᱭᱤᱯ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "purposes": "ᱩᱫᱽᱫᱮᱥ",
+        "updated": "ᱟᱯᱰᱮᱴ ᱟᱠᱟᱱᱟ",
+        "expiration": "ᱪᱟᱵᱟᱜ ᱢᱟᱹᱦᱤᱛ",
+        "actions": "ᱠᱟᱹᱢᱤ ᱠᱚ"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "ᱮᱞᱤᱢᱮᱱᱴ ᱡᱚᱲᱟᱣ ᱢᱮ",
+      "addProperty": "ᱯᱨᱳᱯᱟᱨᱴᱤ ᱡᱚᱲᱟᱣ ᱢᱮ",
+      "apply": "ᱞᱟᱹᱜᱩᱭ ᱢᱮ",
+      "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+      "clear": "ᱥᱟᱯᱷᱟᱭ ᱢᱮ",
+      "clearAll": "ᱡᱚᱛᱚ ᱥᱟᱯᱷᱟᱭ ᱢᱮ",
+      "create": "ᱵᱮᱱᱟᱣ ᱢᱮ",
+      "delete": "ᱜᱮᱫ ᱚᱪᱚᱜ ᱢᱮ (Delete)",
+      "deleting": "ᱜᱮᱫ ᱚᱪᱚᱜ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "deleteVersion": "ᱵᱷᱚᱨᱥᱚᱱ ᱜᱮᱫ ᱚᱪᱚᱜ ᱢᱮ",
+      "filters": "ᱯᱷᱤᱞᱴᱚᱨ ᱠᱚ",
+      "removeElement": "ᱮᱞᱤᱢᱮᱱᱴ ᱚᱪᱚᱜ ᱢᱮ",
+      "removeProperty": "ᱯᱨᱳᱯᱟᱨᱴᱤ ᱚᱪᱚᱜ ᱢᱮ",
+      "retry": "ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟᱭ ᱢᱮ",
+      "saving": "ᱥᱟᱸᱪᱟᱣ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "view": "ᱧᱮᱞ ᱢᱮ",
+      "viewElement": "{{name}} ᱧᱮᱞ ᱢᱮ",
+      "viewPurpose": "{{name}} ᱧᱮᱞ ᱢᱮ"
+    },
+    "fields": {
+      "actions": "ᱠᱟᱹᱢᱤ ᱠᱚ",
+      "created": "ᱵᱮᱱᱟᱣ ᱟᱠᱟᱱᱟ",
+      "description": "ᱵᱤᱵᱚᱨᱚᱱ",
+      "displayName": "ᱩᱫᱩᱜ ᱧᱩᱛᱩᱢ",
+      "element": "ᱮᱞᱤᱢᱮᱱᱴ",
+      "elementId": "ᱮᱞᱤᱢᱮᱱᱴ ID",
+      "elementName": "ᱮᱞᱤᱢᱮᱱᱴ ᱧᱩᱛᱩᱢ",
+      "elementNamespace": "ᱮᱞᱤᱢᱮᱱᱴ ネームスペース",
+      "elements": "ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ",
+      "elementVersion": "ᱮᱞᱤᱢᱮᱱᱴ ᱵᱷᱚᱨᱥᱚᱱ",
+      "groupId": "ᱜᱩᱴ ID",
+      "groupIds": "ᱜᱩᱴ ID ᱠᱚ",
+      "mandatory": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ",
+      "name": "ᱧᱩᱛᱩᱢ",
+      "namespace": "ネームスペース",
+      "properties": "ᱯᱨᱳᱯᱟᱨᱴᱤ ᱠᱚ",
+      "propertyKey": "Key",
+      "propertyValue": "Value",
+      "purpose": "ᱩᱫᱽᱫᱮᱥ",
+      "purposeId": "ᱩᱫᱽᱫᱮᱥ ID",
+      "purposeName": "ᱩᱫᱽᱫᱮᱥ ᱧᱩᱛᱩᱢ",
+      "scope": "ᱥᱠᱳᱯ",
+      "purposeScope": "ᱩᱫᱽᱫᱮᱥ ᱥᱠᱳᱯ",
+      "purposeVersion": "ᱩᱫᱽᱫᱮᱥ ᱵᱷᱚᱨᱥᱚᱱ",
+      "requirement": "ᱞᱟᱹᱠᱛᱤ",
+      "schema": "ᱥᱠᱤᱢᱟ",
+      "type": "ᱴᱟᱭᱤᱯ",
+      "version": "ᱵᱷᱚᱨᱥᱚᱱ"
+    },
+    "help": {
+      "commaSeparatedGroups": "ᱟᱭᱢᱟ ᱜᱩᱴ ID ᱠᱚᱢᱟ (,) ᱛᱮ ᱵᱷᱮᱜᱟᱨ ᱢᱮ",
+      "defaultNamespace": "ᱠᱷᱟᱹᱞᱤ ᱛᱟᱦᱮᱸᱱ ᱨᱮ ᱰᱤᱯᱷᱳᱞᱴ ネームスペース ᱵᱮᱵᱷᱟᱨᱚᱜᱼᱟ",
+      "elementVersionRequiresIdentity": "ᱢᱟᱲᱟᱝ ᱨᱮ ᱮᱞᱤᱢᱮᱱᱴ ᱧᱩᱛᱩᱢ ᱮᱢ ᱢᱮ",
+      "organizationPurpose": "ᱚᱨᱜᱟᱱᱟᱭᱡᱮᱥᱚᱱ ᱞᱮᱵᱷᱮᱞ ᱩᱫᱽᱫᱮᱥ ᱵᱮᱱᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱠᱷᱟᱹᱞᱤ ᱛᱟᱦᱮᱸ ᱦᱚᱪᱚᱣᱟᱜ ᱢᱮ",
+      "purposeVersionRequiresName": "ᱢᱟᱲᱟᱝ ᱨᱮ ᱩᱫᱽᱫᱮᱥ ᱧᱩᱛᱩᱢ ᱮᱢ ᱢᱮ",
+      "schemaElementTypes": "ᱥᱠᱤᱢᱟ ᱫᱚ ᱠᱮᱣᱟᱞ JSON ᱟᱨ XML ᱮᱞᱤᱢᱮᱱᱴ ᱞᱟᱹᱜᱤᱫ ᱥᱟᱯᱳᱨᱴ ᱢᱮᱱᱟᱜᱼᱟ।",
+      "selectElementFirst": "ᱢᱟᱲᱟᱝ ᱨᱮ ᱢᱤᱫᱴᱟᱹᱝ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱪᱷᱟᱣ ᱢᱮ"
+    },
+    "values": {
+      "all": "ᱡᱚᱛᱚ",
+      "any": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱜᱮ",
+      "customNamespace": "Custom Namespace",
+      "defaultNamespace": "Default Namespace",
+      "mandatory": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ",
+      "matches": "ᱢᱮᱞᱚᱜ ᱠᱟᱱᱟ",
+      "noDescription": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱵᱤᱵᱚᱨᱚᱱ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+      "optional": "ᱚᱯᱥᱚᱱᱮᱞ",
+      "specificGroup": "ᱴᱷᱟᱹᱣᱠᱟᱹ ᱜᱩᱴ",
+      "itemCount": "{{count}} ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱᱟ",
+      "latest": "ᱱᱟᱶᱟ ᱟᱨ",
+      "viewing": "ᱧᱮᱞᱚᱜ ᱠᱟᱱᱟ"
+    },
+    "elements": {
+      "add": "ᱮᱞᱤᱢᱮᱱᱴ ᱡᱚᱲᱟᱣ ᱢᱮ",
+      "activeFilters": "ᱪᱟᱹᱞᱩ ᱯᱷᱤᱞᱴᱚᱨ ᱠᱚ",
+      "back": "ᱮᱞᱤᱢᱮᱱᱴ ᱛᱮ ᱨᱩᱣᱟᱹᱲ",
+      "createTitle": "ᱮᱞᱤᱢᱮᱱᱴ ᱵᱮᱱᱟᱣ ᱢᱮ",
+      "detailsSection": "ᱮᱞᱤᱢᱮᱱᱴ ᱵᱤᱵᱚᱨᱚᱱ",
+      "empty": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱶ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱝ ᱢᱮᱞᱚᱜ ᱠᱟᱱᱟ।",
+      "emptyTitle": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+      "filterTitle": "ᱮᱞᱤᱢᱮᱱᱴ ᱯᱷᱤᱞᱴᱚᱨ ᱢᱮ",
+      "loadFailed": "ᱱᱤᱛᱚᱜ ᱮᱞᱤᱢᱮᱱᱴ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+      "newVersion": "ᱱᱟᱶᱟ ᱵᱷᱚᱨᱥᱚᱱ ᱵᱮᱱᱟᱣ ᱢᱮ",
+      "refreshing": "ᱨᱤᱯᱷᱨᱮᱥ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "results": "{{count}} ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ",
+      "searchPlaceholder": "ᱮᱞᱤᱢᱮᱱᱴ ᱧᱩᱛᱩᱢ ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+      "subtitle": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ ᱪᱟᱞᱟᱣ ᱢᱮ।",
+      "tableLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ",
+      "title": "ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ"
+    },
+    "purposes": {
+      "add": "ᱩᱫᱽᱫᱮᱥ ᱡᱚᱲᱟᱣ ᱢᱮ",
+      "activeFilters": "ᱪᱟᱹᱞᱩ ᱯᱷᱤᱞᱴᱚᱨ ᱠᱚ",
+      "allPurposes": "ᱡᱚᱛᱚ ᱩᱫᱽᱫᱮᱥ",
+      "back": "ᱩᱫᱽᱫᱮᱥ ᱛᱮ ᱨᱩᱣᱟᱹᱲ",
+      "createTitle": "ᱩᱫᱽᱫᱮᱥ ᱵᱮᱱᱟᱣ ᱢᱮ",
+      "detailsSection": "ᱩᱫᱽᱫᱮᱥ ᱵᱤᱵᱚᱨᱚᱱ",
+      "empty": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱶ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱩᱫᱽᱫᱮᱥ ᱵᱟᱝ ᱢᱮᱞᱚᱜ ᱠᱟᱱᱟ।",
+      "emptyTitle": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱩᱫᱽᱫᱮᱥ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+      "filterTitle": "ᱩᱫᱽᱫᱮᱥ ᱯᱷᱤᱞᱴᱚᱨ ᱢᱮ",
+      "loadFailed": "ᱱᱤᱛᱚᱜ ᱩᱫᱽᱫᱮᱥ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+      "newVersion": "ᱱᱟᱶᱟ ᱵᱷᱚᱨᱥᱚᱱ ᱵᱮᱱᱟᱣ ᱢᱮ",
+      "orgWide": "ᱚᱨᱜᱟᱱᱟᱭᱡᱮᱥᱚᱱ ᱡᱟᱠᱟᱛ",
+      "refreshing": "ᱨᱤᱯᱷᱨᱮᱥ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "results": "{{count}} ᱩᱫᱽᱫᱮᱥ ᱠᱚ",
+      "searchLabel": "ᱩᱫᱽᱫᱮᱥ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+      "searchPlaceholder": "ᱩᱫᱽᱫᱮᱥ ᱧᱩᱛᱩᱢ ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+      "scopeFilter": "ᱩᱫᱽᱫᱮᱥ ᱥᱠᱳᱯ",
+      "subtitle": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱩᱫᱽᱫᱮᱥ ᱠᱚ ᱪᱟᱞᱟᱣ ᱢᱮ।",
+      "tableLabel": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱩᱫᱽᱫᱮᱥ ᱠᱚ",
+      "title": "ᱩᱫᱽᱫᱮᱥ ᱠᱚ"
+    },
+    "details": {
+      "definition": "ᱢᱮᱱᱮᱛ",
+      "elementIdentity": "ᱮᱞᱤᱢᱮᱱᱴ Identity",
+      "elements": "ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ",
+      "identity": "ᱩᱫᱽᱫᱮᱥ Identity",
+      "overview": "ᱥᱟᱢᱟᱝ ᱵᱤᱵᱚᱨᱚᱱ",
+      "versionDetails": "ᱵᱷᱚᱨᱥᱚᱱ ᱵᱤᱵᱚᱨᱚᱱ",
+      "versions": "ᱵᱷᱚᱨᱥᱚᱱ ᱱᱟᱜᱟᱢ (History)"
+    },
+    "messages": {
+      "createElementFirst": "ᱩᱫᱽᱫᱮᱥ ᱴᱷᱟᱹᱣᱠᱟᱹ ᱢᱟᱲᱟᱝ ᱨᱮ ᱢᱤᱫᱴᱟᱹᱝ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱮᱱᱟᱣ ᱢᱮ।",
+      "immutableElement": "{{namespace}}:{{name}} ᱫᱚ {{type}} ᱮᱞᱤᱢᱮᱱᱴ ᱜᱮ ᱛᱟᱦᱮᱸᱱᱟ।",
+      "immutablePurpose": "{{name}} ᱫᱚ {{groupId}} ᱨᱮᱱᱟᱜ ᱜᱮ ᱛᱟᱦᱮᱸᱱᱟ।",
+      "immutableOrganizationPurpose": "{{name}} ᱫᱚ ᱚᱨᱜᱟᱱᱟᱭᱡᱮᱥᱚᱱ ᱡᱟᱠᱟᱛ ᱠᱟᱱᱟ।",
+      "immutableGroupPurpose": "{{name}} ᱫᱚ ᱜᱩᱴ {{groupId}} ᱞᱟᱹᱜᱤᱫ ᱠᱟᱱᱟ।",
+      "loadingElements": "ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ ᱞᱳᱰ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "loadingVersions": "ᱵᱷᱚᱨᱥᱚᱱ ᱠᱚ ᱞᱳᱰ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "noElementsFound": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱢᱮᱞᱚᱜ ᱠᱟᱱ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+      "noElements": "ᱱᱚᱣᱟ ᱵᱷᱚᱨᱥᱚᱱ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+      "noProperties": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱠᱚᱥᱴᱚᱢ ᱯᱨᱳᱯᱟᱨᱴᱤ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+      "noSchema": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱥᱠᱤᱢᱟ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+      "noPurposeElements": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱝ ᱡᱚᱲᱟᱣ ᱟᱠᱟᱱᱟ।",
+      "noVersions": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱵᱷᱚᱨᱥᱚᱱ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+      "versionsLoadFailed": "ᱵᱷᱚᱨᱥᱚᱱ ᱱᱟᱜᱟᱢ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।"
+    },
+    "validation": {
+      "duplicateElements": "ᱢᱤᱫᱴᱟᱹᱝ ᱮᱞᱤᱢᱮᱱᱴ ᱢᱤᱫ ᱫᱷᱟᱣ ᱜᱮ ᱥᱮᱞᱮᱫ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ।",
+      "duplicatePropertyKeys": "Property key ᱠᱚ ᱵᱷᱮᱜᱟᱨ ᱵᱷᱮᱜᱟᱨ ᱛᱟᱦᱮᱸᱱ ᱞᱟᱹᱠᱛᱤᱭᱟ।",
+      "elementRequired": "ᱠᱚᱢ ᱠᱷᱚᱱ ᱠᱚᱢ ᱢᱤᱫᱴᱟᱹᱝ ᱮᱞᱤᱢᱮᱱᱴ ᱵᱟᱪᱷᱟᱣ ᱢᱮ।",
+      "groupIdRequired": "ᱜᱷᱟᱹᱲᱤᱭᱟᱹ ᱜᱩᱴ ᱩᱫᱽᱫᱮᱥ ᱞᱟᱹᱜᱤᱫ ᱜᱩᱴ ID ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ ᱠᱟᱱᱟ।",
+      "nameRequired": "ᱧᱩᱛᱩᱢ ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ ᱠᱟᱱᱟ।",
+      "namespaceRequired": "Namespace ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ ᱠᱟᱱᱟ।",
+      "schemaRequired": "JSON ᱟᱨ XML ᱞᱟᱹᱜᱤᱫ Schema ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ ᱠᱟᱱᱟ।"
+    },
+    "delete": {
+      "title": "ᱵᱷᱚᱨᱥᱚᱱ ᱜᱮᱫ ᱚᱪᱚᱜ ᱢᱮ",
+      "message": "ᱵᱷᱚᱨᱥᱚᱱ {{version}} ᱜᱮᱫ ᱚᱪᱚᱜᱟ (Delete)?",
+      "warning": "ᱱᱚᱣᱟ ᱫᱚ ᱫᱚᱲᱦᱟ ᱵᱟᱝ ᱨᱩᱣᱟᱹᱲ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ।"
+    }
+  },
+  "nominee": {
+    "title": "ᱱᱳᱢᱤᱱᱮᱥᱚᱱ",
+    "messages": {
+      "loadFailed": "ᱱᱤᱛᱚᱜ ᱱᱳᱢᱤᱱᱮᱥᱚᱱ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।"
+    },
+    "nominatedFor": {
+      "openAccount": "ᱮᱠᱟᱣᱩᱱᱴ ᱡᱷᱤᱡ ᱢᱮ →",
+      "accept": "ᱟᱸᱜᱳᱪ ᱢᱮ",
+      "reject": "ᱵᱟᱹᱜᱤᱭᱟᱜ ᱢᱮ",
+      "actionNeeded": "ᱠᱟᱹᱢᱤ ᱞᱟᱹᱠᱛᱤᱭᱟ",
+      "ariaLabel": "ᱱᱳᱢᱤᱱᱮᱴ ᱟᱠᱟᱱ ᱮᱠᱟᱣᱩᱱᱴ ᱠᱚ",
+      "empty": "ᱟᱹᱣᱨᱤ ᱜᱮ ᱡᱟᱦᱟᱸᱭ ᱦᱚᱸ ᱟᱢ ᱵᱟᱝ ᱠᱚ ᱱᱳᱢᱤᱱᱮᱴ ᱟᱠᱟᱫ ᱢᱮᱭᱟ।",
+      "title": "ᱱᱳᱢᱤᱱᱮᱴ ᱟᱠᱟᱱ ᱮᱠᱟᱣᱩᱱᱴ ᱠᱚ",
+      "table": {
+        "account": "ᱮᱠᱟᱣᱩᱱᱴ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "actions": "ᱠᱟᱹᱢᱤ ᱠᱚ"
+      }
+    },
+    "acting": {
+      "starting": "ᱮᱠᱟᱣᱩᱱᱴ ᱡᱷᱤᱡ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "startFailed": "ᱟᱢ ᱫᱚ ᱱᱚᱣᱟ ᱮᱠᱟᱣᱩᱱᱴ ᱨᱮᱱ ᱱᱳᱢᱤᱱᱤ ᱵᱟᱝ ᱠᱟᱱᱟᱢ।",
+      "startFailedHint": "ᱱᱳᱢᱤᱱᱮᱥᱚᱱ ᱛᱮ ᱨᱩᱣᱟᱹᱲ ᱢᱮ ᱟᱨ ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟᱭ ᱢᱮ।",
+      "blockedTitle": "ᱱᱳᱢᱤᱱᱤ ᱟᱠᱥᱮᱥ ᱨᱮ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+      "blockedFenced": "ᱮᱴᱟᱜ ᱦᱚᱲ ᱞᱟᱹᱜᱤᱫ ᱮᱠᱟᱣᱩᱱᱴ ᱥᱮᱴᱤᱝ ᱟᱨ ᱱᱳᱢᱤᱱᱮᱥᱚᱱ ᱵᱟᱝ ᱵᱮᱵᱷᱟᱨ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ।",
+      "blockedScope": "ᱢᱟᱹᱞᱤᱠ ᱟᱢ ᱱᱚᱣᱟ ᱴᱷᱟᱶ ᱞᱟᱹᱜᱤᱫ ᱟᱹᱭᱫᱟᱹᱨᱤ ᱵᱟᱝ ᱮ ᱮᱢ ᱟᱠᱟᱫ ᱢᱮᱭᱟ।",
+      "backToAllowed": "ᱤᱧ ᱡᱟᱦᱟᱸ ᱟᱠᱥᱮᱥ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱹᱧ ᱚᱱᱟ ᱛᱮ ᱪᱟᱞᱟᱜ ᱢᱮ",
+      "exit": "ᱚᱰᱳᱠᱚᱜ ᱢᱮ"
+    },
+    "permissions": {
+      "consentView": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱧᱮᱞ ᱢᱮ",
+      "consentRevoke": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱟᱹᱫᱽ ᱢᱮ",
+      "consentApprove": "ᱵᱟᱹᱠᱤ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱟᱸᱜᱳᱪ ᱢᱮ",
+      "accountView": "ᱱᱤᱡᱮᱨᱟᱜ ᱮᱠᱟᱣᱩᱱᱴ ᱧᱮᱞ ᱢᱮ",
+      "accountUpdate": "ᱱᱤᱡᱮᱨᱟᱜ ᱮᱠᱟᱣᱩᱱᱴ ᱟᱯᱰᱮᱴ ᱢᱮ",
+      "accountDelete": "ᱱᱤᱡᱮᱨᱟᱜ ᱮᱠᱟᱣᱩᱱᱴ ᱜᱮᱫ ᱚᱪᱚᱜ ᱢᱮ"
+    },
+    "mine": {
+      "add": "ᱱᱳᱢᱤᱱᱤ ᱡᱚᱲᱟᱣ ᱢᱮ",
+      "remove": "ᱚᱪᱚᱜ ᱢᱮ",
+      "empty": "ᱟᱹᱣᱨᱤ ᱜᱮ ᱡᱟᱦᱟᱸᱭ ᱦᱚᱸ ᱵᱟᱝ ᱮᱢ ᱱᱳᱢᱤᱱᱮᱴ ᱟᱠᱟᱫ ᱠᱚᱣᱟ।",
+      "status": {
+        "active": "ᱪᱟᱹᱞᱩ",
+        "pending": "ᱟᱸᱜᱳᱪ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+        "rejected": "ᱵᱟᱹᱜᱤᱭᱟᱜ ᱟᱠᱟᱱᱟ",
+        "accepted": "ᱵᱟᱦᱟᱞ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+        "deactivated": "ᱵᱚᱸᱫᱷ ᱟᱠᱟᱱᱟ"
+      },
+      "ariaLabel": "ᱱᱳᱢᱤᱱᱤ ᱠᱚ",
+      "title": "ᱱᱳᱢᱤᱱᱤ ᱠᱚ",
+      "table": {
+        "person": "ᱦᱚᱲ",
+        "permissions": "ᱟᱹᱭᱫᱟᱹᱨᱤ ᱠᱚ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "actions": "ᱠᱟᱹᱢᱤ ᱠᱚ",
+        "morePermissions": "+{{count}} ᱟᱨᱦᱚᱸ"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "ᱱᱳᱢᱤᱱᱤ ᱡᱚᱲᱟᱣ ᱢᱮ",
+        "editTitle": "ᱱᱳᱢᱤᱱᱤ ᱥᱟᱯᱲᱟᱣ ᱢᱮ",
+        "saveChanges": "ᱵᱚᱫᱚᱞ ᱥᱟᱸᱪᱟᱣ ᱢᱮ",
+        "emailLabel": "ᱱᱳᱢᱤᱱᱤ ᱭᱟᱜ ᱨᱮᱡᱤᱥᱴᱟᱨᱰ ᱤᱢᱮᱞ",
+        "permissionsTitle": "ᱱᱚᱣᱟ ᱱᱳᱢᱤᱱᱤ ᱪᱮᱫ ᱮ ᱪᱤᱠᱟᱹ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ?",
+        "permissionsSubtitle": "ᱟᱢ ᱡᱟᱦᱟᱸ ᱮᱢ ᱥᱟᱱᱟ ᱮᱫ ᱢᱮᱭᱟ ᱚᱱᱟ ᱜᱮ ᱴᱤᱠ ᱢᱮ।",
+        "sensitive": "ᱥᱮᱱᱥᱤᱴᱤᱵᱷ (Sensitive)",
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+        "processing": "ᱥᱟᱸᱪᱟᱣ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+        "confirm": "ᱱᱳᱢᱤᱱᱮᱥᱚᱱ ᱠᱷᱮᱡᱟᱭ ᱢᱮ",
+        "processingEdit": "ᱥᱟᱸᱪᱟᱣ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ..."
+      },
+      "removeDialog": {
+        "title": "ᱱᱳᱢᱤᱱᱤ ᱚᱪᱚᱜ ᱢᱮ",
+        "message": "{{nomineeEmail}} ᱟᱨ ᱟᱢᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱝ ᱮ ᱪᱟᱞᱟᱣ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ।",
+        "confirm": "ᱱᱳᱢᱤᱱᱤ ᱚᱪᱚᱜ ᱢᱮ",
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+        "processing": "ᱚᱪᱚᱜ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ..."
+      }
+    },
+    "manage": {
+      "title": "ᱢᱟᱹᱞᱤᱠ ᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱪᱟᱞᱟᱣ",
+      "back": "ᱱᱳᱢᱤᱱᱤ ᱵᱷᱤᱣ ᱠᱷᱚᱱ ᱚᱰᱳᱠᱚᱜ ᱢᱮ",
+      "consents": {
+        "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ",
+        "subtitle": "ᱱᱚᱣᱟ ᱮᱠᱟᱣᱩᱱᱴ ᱠᱷᱚᱱ ᱮᱢ ᱟᱠᱟᱱ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱧᱮᱞ ᱟᱨ ᱨᱟᱹᱫᱽ ᱢᱮ।"
+      },
+      "selectedCount": "{{count}} ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱᱟ",
+      "revokeSelected": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱᱟᱜ ᱨᱟᱹᱫᱽ ᱢᱮ",
+      "messages": {
+        "loadFailed": "ᱱᱤᱛᱚᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+        "empty": "ᱱᱚᱣᱟ ᱮᱠᱟᱣᱩᱱᱴ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ।"
+      },
+      "table": {
+        "ariaLabel": "ᱱᱳᱢᱤᱱᱤ-ᱪᱟᱞᱟᱣ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱴᱮᱵᱩᱞ",
+        "purposes": "ᱩᱫᱽᱫᱮᱥ",
+        "type": "ᱴᱟᱭᱤᱯ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "updated": "ᱟᱯᱰᱮᱴ ᱟᱠᱟᱱᱟ",
+        "actions": "ᱠᱟᱹᱢᱤ ᱠᱚ",
+        "revoke": "ᱨᱟᱹᱫᱽ ᱢᱮ",
+        "notRevokable": "ᱠᱮᱣᱟᱞ ᱪᱟᱹᱞᱩ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱜᱮ ᱨᱟᱹᱫᱽ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ",
+        "clientLabel": "ᱚᱨᱜᱟᱱᱟᱭᱡᱮᱥᱚᱱ: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "Bulk ᱨᱟᱹᱫᱽ ᱴᱷᱟᱹᱣᱠᱟᱹᱭ ᱢᱮ",
+        "message": "ᱱᱚᱣᱟ ᱫᱚ {{count}} ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱟᱹᱫᱽ ᱟᱭ।",
+        "note": "ᱡᱚᱛᱚ ᱨᱟᱹᱫᱽ ᱵᱷᱮᱜᱟᱨ ᱵᱷᱮᱜᱟᱨ ᱛᱮ ᱨᱮᱠᱳᱨᱰ ᱦᱩᱭᱩᱜᱼᱟ।",
+        "progress": "{{processed}} / {{count}} ᱨᱟᱹᱫᱽ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+        "confirm": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱᱟᱜ ᱨᱟᱹᱫᱽ ᱢᱮ",
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+        "processing": "ᱯᱨᱳᱥᱮᱥ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ..."
+      },
+      "subtitle": "ᱟᱢ ᱫᱚ ᱱᱚᱣᱟ ᱮᱠᱟᱣᱩᱱᱴ ᱧᱩᱛᱩᱢ ᱛᱮ ᱠᱟᱹᱢᱤ ᱮᱫ ᱟᱢ।",
+      "account": {
+        "title": "ᱮᱠᱟᱣᱩᱱᱴ ᱟᱠᱥᱮᱥ",
+        "subtitle": "ᱢᱟᱹᱞᱤᱠ ᱟᱢ ᱠᱟᱹᱢᱤ ᱞᱟᱹᱜᱤᱫ ᱮ ᱟᱹᱭᱫᱟᱹᱨᱤ ᱟᱠᱟᱫ ᱢᱮᱭᱟ।",
+        "notGranted": "ᱢᱟᱹᱞᱤᱠ ᱵᱟᱝ ᱮ ᱮᱢ ᱟᱠᱟᱫᱼᱟ"
+      }
+    },
+    "detail": {
+      "title": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱵᱤᱵᱚᱨᱚᱱ",
+      "back": "ᱨᱩᱣᱟᱹᱲ"
+    }
+  },
+  "admin": {
+    "title": "ᱱᱳᱢᱤᱱᱤ ᱮᱠᱴᱤᱵᱷᱮᱥᱚᱱ",
+    "status": {
+      "active": "ᱪᱟᱹᱞᱩ",
+      "accepted": "ᱟᱸᱜᱳᱪ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+      "pending": "ᱱᱳᱢᱤᱱᱤ ᱴᱷᱮᱱ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+      "rejected": "ᱵᱟᱹᱜᱤᱭᱟᱜ ᱟᱠᱟᱱᱟ",
+      "deactivated": "ᱵᱚᱸᱫᱷ ᱟᱠᱟᱱᱟ"
+    },
+    "pending": {
+      "title": "ᱟᱢᱟᱜ ᱟᱸᱜᱳᱪ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+      "empty": "ᱱᱤᱛᱚᱜ ᱟᱢ ᱴᱷᱮᱱ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱹᱠᱤ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+      "count": "{{count}} ᱟᱸᱜᱳᱪ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+      "appointed": "{{email}} ᱵᱟᱦᱟᱞ ᱟᱠᱟᱱᱟ",
+      "accepted": "{{date}} ᱨᱮ ᱟᱸᱜᱳᱪ ᱟᱠᱟᱱᱟ"
+    },
+    "search": {
+      "label": "ᱧᱩᱛᱩᱢ ᱮᱨ ᱤᱢᱮᱞ ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+      "empty": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱢᱮᱞᱚᱜ ᱠᱟᱱ ᱮᱠᱟᱣᱩᱱᱴ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ।",
+      "results": "ᱮᱠᱟᱣᱩᱱᱴ ᱠᱚ"
+    },
+    "table": {
+      "ariaLabel": "ᱱᱳᱢᱤᱱᱮᱥᱚᱱ ᱠᱚ",
+      "owner": "ᱮᱠᱟᱣᱩᱱᱴ",
+      "nominee": "ᱱᱳᱢᱤᱱᱤ",
+      "permissions": "ᱮᱢ ᱟᱠᱟᱱᱟ",
+      "status": "ᱥᱴᱮᱴᱚᱥ",
+      "nominated": "ᱱᱳᱢᱤᱱᱮᱴ ᱟᱠᱟᱱᱟ",
+      "actions": "ᱠᱟᱹᱢᱤ ᱠᱚ"
+    },
+    "controls": {
+      "title": "ᱱᱳᱢᱤᱱᱤ ᱠᱚ",
+      "titleNamed": "{{name}} ᱨᱮᱱ ᱱᱳᱢᱤᱱᱤ ᱠᱚ",
+      "nominated": "{{date}} ᱨᱮ ᱱᱳᱢᱤᱱᱮᱴ ᱟᱠᱟᱱᱟ",
+      "ticket": "ᱴᱤᱠᱮᱴ {{ticket}}",
+      "waitingNominee": "ᱱᱤᱛᱚᱜ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱹᱱᱩᱜᱼᱟ - ᱱᱳᱢᱤᱱᱤ ᱟᱹᱣᱨᱤ ᱮ ᱟᱸᱜᱳᱪᱟ।",
+      "activate": "ᱟᱠᱥᱮᱥ ᱮᱠᱴᱤᱵᱷ ᱢᱮ",
+      "noAction": "-",
+      "owner": "ᱮᱠᱟᱣᱩᱱᱴ",
+      "deactivate": "ᱟᱠᱥᱮᱥ ᱚᱪᱚᱜ ᱢᱮ",
+      "none": "ᱱᱚᱣᱟ ᱮᱠᱟᱣᱩᱱᱴ ᱡᱟᱦᱟᱸᱭ ᱦᱚᱸ ᱵᱟᱝ ᱮ ᱵᱟᱦᱟᱞ ᱟᱠᱟᱫ ᱠᱚᱣᱟ।"
+    },
+    "activateDialog": {
+      "title": "ᱱᱳᱢᱤᱱᱤ ᱟᱠᱥᱮᱥ ᱮᱠᱴᱤᱵᱷ ᱢᱮ",
+      "ticketLabel": "ᱞᱤᱜᱟᱞ/ᱥᱟᱯᱳᱨᱴ ᱴᱤᱠᱮᱴ ᱨᱮᱯᱷᱟᱨᱮᱱᱥ",
+      "confirm": "ᱟᱠᱥᱮᱥ ᱮᱠᱴᱤᱵᱷ ᱢᱮ",
+      "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+      "processing": "ᱮᱠᱴᱤᱵᱷ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "subtitle": "ᱱᱚᱣᱟ {{ownerName}} ᱞᱟᱹᱜᱤᱫ {{nomineeName}} ᱥᱟᱹᱢᱟᱹᱛᱤ ᱪᱟᱞᱟᱣ ᱨᱮᱱᱟᱜ ᱟᱠᱥᱮᱥ ᱮ ᱮᱢᱟᱭᱟ।"
+    },
+    "deactivateDialog": {
+      "title": "ᱱᱳᱢᱤᱱᱤ ᱟᱠᱥᱮᱥ ᱵᱚᱸᱫᱷ ᱢᱮ",
+      "reasonLabel": "ᱠᱟᱨᱚᱱ",
+      "confirm": "ᱟᱠᱥᱮᱥ ᱵᱚᱸᱫᱷ ᱢᱮ",
+      "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+      "processing": "ᱵᱚᱸᱫᱷ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+      "subtitle": "ᱱᱚᱣᱟ {{ownerName}} ᱟᱜ ᱥᱟᱹᱢᱟᱹᱛᱤ ᱠᱷᱚᱱ ᱱᱳᱢᱤᱱᱤ ᱭᱟᱜ ᱟᱠᱥᱮᱥ ᱞᱚᱜᱚᱱ ᱜᱮ ᱨᱟᱹᱫᱽ ᱟᱭ।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ᱰᱮᱴᱟ ᱵᱽᱨᱤᱪ (Data breach)",
+      "UNAUTHORIZED_DATA_SHARING": "ᱵᱟᱝ ᱚᱛᱷᱚᱨᱟᱭᱤᱡᱽᱰ ᱰᱮᱴᱟ ᱦᱟᱹᱴᱤᱧ",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱨᱩᱣᱟᱹᱲ ᱨᱮᱦᱚᱸ ᱰᱮᱴᱟ ᱵᱮᱵᱷᱟᱨᱚᱜ ᱠᱟᱱᱟ",
+      "PURPOSE_VIOLATION": "ᱩᱫᱽᱫᱮᱥ ᱵᱷᱟᱭᱳᱞᱮᱥᱚᱱ",
+      "DATA_ERASURE_NOT_COMPLETED": "ᱰᱮᱴᱟ ᱜᱮᱫ ᱚᱪᱚᱜ (Erasure) ᱠᱷᱳᱡᱽ ᱵᱟᱝ ᱯᱩᱨᱟᱹᱣ ᱟᱠᱟᱱᱟ",
+      "DATA_CORRECTION_NOT_COMPLETED": "ᱰᱮᱴᱟ ᱥᱟᱯᱲᱟᱣ ᱠᱷᱳᱡᱽ ᱵᱟᱝ ᱯᱩᱨᱟᱹᱣ ᱟᱠᱟᱱᱟ",
+      "CONSENT_LIFECYCLE_ISSUE": "ᱥᱟᱹᱢᱟᱹᱛᱤ ᱢᱮᱱᱮᱡᱚᱨ ᱮᱴᱠᱮᱴᱚᱬᱮ",
+      "DATA_ACCESS_DENIED": "ᱰᱮᱴᱟ ᱟᱠᱥᱮᱥ ᱠᱷᱳᱡᱽ ᱵᱟᱹᱜᱤᱭᱟᱜ ᱟᱠᱟᱱᱟ",
+      "EXCESSIVE_DATA_COLLECTION": "ᱵᱟᱹᱲᱛᱤ ᱰᱮᱴᱟ ᱡᱟᱣᱨᱟ",
+      "OTHER": "ᱮᱴᱟᱜᱟᱜ"
+    },
+    "status": {
+      "open": "ᱡᱷᱤᱡ ᱜᱮᱭᱟ",
+      "investigation": "ᱪᱟᱹᱞᱩ ᱢᱮᱱᱟᱜᱼᱟ",
+      "awaitingInfo": "ᱠᱞᱟᱭᱮᱱᱴ ᱴᱷᱮᱱ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+      "waitingOnDpo": "ᱵᱷᱤᱛᱨᱤ ᱧᱮᱞ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+      "resolved": "ᱥᱚᱞᱦᱮ ᱮᱱᱟ"
+    },
+    "priority": {
+      "CRITICAL": "ᱟᱹᱰᱤ ᱞᱟᱹᱠᱛᱤᱭᱟᱱ",
+      "HIGH": "ᱪᱮᱛᱟᱱ",
+      "MEDIUM": "ᱛᱟᱞᱟ",
+      "LOW": "ᱞᱟᱛᱟᱨ"
+    },
+    "sla": {
+      "dueDate": "{{date}} ᱦᱟᱹᱵᱤᱡ ᱚᱠᱛᱚ ᱢᱮᱱᱟᱜᱼᱟ",
+      "dueToday": "ᱛᱮᱦᱮᱧ ᱜᱮ ᱢᱩᱪᱟᱹᱫ ᱢᱟᱹᱦᱤᱛ",
+      "overdueSingular": "{{count}} ᱢᱟᱦᱟᱸ ᱯᱟᱨᱚᱢ ᱮᱱᱟ",
+      "overduePlural": "{{count}} ᱢᱟᱦᱟᱸ ᱯᱟᱨᱚᱢ ᱮᱱᱟ",
+      "daysLeftSingular": "{{count}} ᱢᱟᱦᱟᱸ ᱥᱟᱨᱮᱡ ᱢᱮᱱᱟᱜᱼᱟ",
+      "daysLeftPlural": "{{count}} ᱢᱟᱦᱟᱸ ᱥᱟᱨᱮᱡ ᱢᱮᱱᱟᱜᱼᱟ"
+    },
+    "timeline": {
+      "complaintReceived": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱧᱟᱢ ᱮᱱᱟ",
+      "statusChangePrefix": "ᱥᱴᱮᱴᱚᱥ ᱵᱚᱫᱚᱞ ᱮᱱᱟ",
+      "statusChangeJoiner": "ᱠᱷᱚᱱ"
+    },
+    "list": {
+      "title": "ᱤᱧᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ",
+      "subtitle": "ᱟᱢ ᱮᱢ ᱟᱠᱟᱫ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱟᱨ ᱚᱱᱟ ᱨᱮᱱᱟᱜ ᱞᱟᱦᱟᱱᱛᱤ ᱴᱨᱮᱠ ᱢᱮ।",
+      "submitNew": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱮᱢ ᱢᱮ",
+      "loadFailed": "ᱱᱤᱛᱚᱜ ᱟᱢᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+      "empty": "ᱟᱹᱣᱨᱤ ᱜᱮ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱟᱢ ᱮᱢ ᱟᱠᱟᱫᱼᱟ।",
+      "emptyFiltered": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ।",
+      "filters": {
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "all": "ᱡᱚᱛᱚ"
+      },
+      "table": {
+        "tableAriaLabel": "ᱤᱧᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱴᱮᱵᱩᱞ",
+        "headers": {
+          "referenceId": "Reference ID",
+          "category": "ᱠᱮᱴᱮᱜᱚᱨᱤ",
+          "status": "ᱥᱴᱮᱴᱚᱥ",
+          "submitted": "ᱮᱢ ᱟᱠᱟᱱᱟ",
+          "updated": "ᱟᱯᱰᱮᱴ ᱟᱠᱟᱱᱟ"
+        }
+      }
+    },
+    "detail": {
+      "back": "ᱤᱧᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱛᱮ ᱨᱩᱣᱟᱹᱲ",
+      "notFound": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+      "description": "ᱵᱤᱵᱚᱨᱚᱱ",
+      "submittedOn": "{{date}} ᱨᱮ ᱮᱢ ᱟᱠᱟᱱᱟ",
+      "awaitingInfo": {
+        "note": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱚᱯᱷᱤᱥᱚᱨ ᱟᱢ ᱴᱷᱮᱱ ᱠᱷᱚᱱ ᱟᱨᱦᱚᱸ ᱵᱤᱵᱚᱨᱚᱱ ᱮ ᱛᱟᱹᱝᱜᱤ ᱭᱮᱫᱼᱟ। ᱞᱟᱛᱟᱨ ᱨᱮ ᱨᱳᱲ ᱨᱩᱣᱟᱹᱲ ᱢᱮ।"
+      },
+      "resolved": {
+        "note": "ᱱᱚᱣᱟ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱥᱚᱞᱦᱮ ᱮᱱᱟ।"
+      }
+    },
+    "submit": {
+      "title": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱮᱢ ᱢᱮ",
+      "subtitle": "ᱪᱮᱫ ᱦᱩᱭ ᱟᱠᱟᱱᱟ ᱞᱟᱹᱭ ᱢᱮ, ᱟᱞᱮ ᱴᱷᱤᱠ ᱴᱤᱢ ᱴᱷᱮᱱ ᱵᱷᱮᱡᱟᱭᱟᱞᱮ।",
+      "submitFailed": "ᱱᱤᱛᱚᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱟᱝ ᱮᱢ ᱞᱮᱱᱟ। ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟᱭ ᱢᱮ।",
+      "fields": {
+        "category": "ᱠᱮᱴᱮᱜᱚᱨᱤ",
+        "categoryPlaceholder": "ᱢᱤᱫᱴᱟᱹᱝ ᱠᱮᱴᱮᱜᱚᱨᱤ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+        "categoryHelp": "ᱟᱢᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱞᱟᱹᱜᱤᱫ ᱡᱚᱛᱚ ᱠᱷᱚᱱ ᱴᱷᱤᱠ ᱚᱯᱥᱚᱱ ᱵᱟᱪᱷᱟᱣ ᱢᱮ।",
+        "categoriesLoadFailed": "ᱱᱤᱛᱚᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱠᱮᱴᱮᱜᱚᱨᱤ ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+        "description": "ᱵᱤᱵᱚᱨᱚᱱ",
+        "descriptionPlaceholder": "ᱟᱢᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱤᱥᱛᱟᱨ ᱛᱮ ᱞᱟᱹᱭ ᱢᱮ",
+        "descriptionHelp": "ᱞᱚᱜᱚᱱ ᱥᱚᱞᱦᱮ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸ ᱛᱤᱱᱟᱹᱜ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ ᱵᱤᱵᱚᱨᱚᱱ ᱮᱢ ᱢᱮ।",
+        "attachments": "ᱚᱴᱮᱪᱢᱮᱱᱴ (ᱚᱯᱥᱚᱱᱮᱞ)",
+        "attachmentsHelp": "PDF, DOCX, PNG, ᱮᱨ JPG ᱡᱚᱛᱚ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱛᱤ {{maxSize}} ᱦᱟᱹᱵᱤᱡ।",
+        "uploadButton": "ᱯᱷᱟᱭᱤᱞ ᱟᱯᱞᱳᱰ ᱢᱮ"
+      },
+      "validation": {
+        "categoryRequired": "ᱞᱟᱦᱟᱜ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫᱴᱟᱹᱝ ᱠᱮᱴᱮᱜᱚᱨᱤ ᱵᱟᱪᱷᱟᱣ ᱢᱮ।",
+        "descriptionRequired": "ᱞᱟᱦᱟᱜ ᱞᱟᱹᱜᱤᱫ ᱟᱢᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱞᱟᱹᱭ ᱢᱮ।",
+        "attachmentTooLarge": "{{fileNames}} ᱫᱚ {{maxSize}} ᱥᱤᱢᱟᱹ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱛᱤ ᱜᱮᱭᱟ।"
+      },
+      "success": {
+        "message": "ᱟᱢᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ {{referenceId}} ᱮᱢ ᱯᱩᱨᱟᱹᱣ ᱮᱱᱟ।",
+        "attachmentFailedMessage": "ᱟᱢᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ {{referenceId}} ᱮᱢ ᱮᱱᱟ, ᱢᱮᱱᱠᱷᱟᱱ ᱚᱴᱮᱪᱢᱮᱱᱴ ᱟᱯᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ। ᱟᱢ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱤᱵᱚᱨᱚᱱ ᱥᱟᱠᱟᱢ ᱠᱷᱚᱱ ᱡᱚᱲᱟᱣ ᱫᱟᱲᱮᱭᱟᱜᱼᱟᱢ।"
+      },
+      "actions": {
+        "cancel": "ᱵᱟᱹᱜᱤ ᱢᱮ",
+        "submit": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱮᱢ ᱢᱮ"
+      }
+    },
+    "activity": {
+      "title": "ᱠᱟᱹᱢᱤ (Activity)",
+      "send": "ᱵᱷᱮᱡᱟᱭ ᱢᱮ",
+      "sendOnly": "ᱠᱮᱣᱟᱞ ᱵᱷᱮᱡᱟᱭ ᱢᱮ",
+      "sendOptions": "ᱟᱨᱦᱚᱸ ᱵᱷᱮᱡᱟ ᱚᱯᱥᱚᱱ",
+      "sendAndChangeStatusTo": "ᱵᱷᱮᱡᱟᱭ ᱢᱮ ᱟᱨ ᱥᱴᱮᱴᱚᱥ ᱵᱚᱫᱚᱞ ᱢᱮ",
+      "sendAndUpdateStatus": "ᱵᱷᱮᱡᱟᱭ ᱢᱮ ᱟᱨ {{status}} ᱞᱮᱠᱟᱛᱮ ᱪᱤᱱᱦᱟᱹᱭ ᱢᱮ",
+      "publicReply": "ᱨᱳᱲ ᱨᱩᱣᱟᱹᱲ",
+      "internalNote": "ᱵᱷᱤᱛᱨᱤ ᱱᱳᱴ",
+      "internalTag": "ᱵᱷᱤᱛᱨᱤ (Internal)",
+      "dataPrincipalRoleLabel": "ᱠᱞᱟᱭᱮᱱᱴ (Data Principal)",
+      "officerRoleLabel": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱚᱯᱷᱤᱥᱚᱨ",
+      "composerPlaceholderPublic": "ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ ᱞᱟᱹᱜᱤᱫ ᱨᱳᱲ ᱨᱩᱣᱟᱹᱲ ᱚᱞ ᱢᱮ...",
+      "composerPlaceholderInternal": "ᱵᱷᱤᱛᱨᱤ ᱱᱳᱴ ᱚᱞ ᱢᱮ (ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ ᱵᱟᱝ ᱮ ᱧᱮᱞ ᱫᱟᱲᱮᱭᱟᱜᱼᱟ)...",
+      "attach": "ᱚᱴᱮᱪ ᱢᱮ",
+      "attachmentsHelp": "PDF, DOCX, PNG, ᱮᱨ JPG ᱡᱚᱛᱚ ᱯᱷᱟᱭᱤᱞ {{maxSize}} ᱦᱟᱹᱵᱤᱡ।",
+      "attachmentTooLarge": "{{fileNames}} ᱫᱚ {{maxSize}} ᱥᱤᱢᱟᱹ ᱠᱷᱚᱱ ᱵᱟᱹᱲᱛᱤ ᱜᱮᱭᱟ।",
+      "removeAttachment": "ᱚᱴᱮᱪᱢᱮᱱᱴ ᱚᱪᱚᱜ ᱢᱮ"
+    },
+    "attachments": {
+      "tabLabel": "ᱚᱴᱮᱪᱢᱮᱱᱴ",
+      "tabLabelWithCount": "ᱚᱴᱮᱪᱢᱮᱱᱴ ({{count}})",
+      "empty": "ᱱᱚᱣᱟ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱨᱮ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱚᱴᱮᱪᱢᱮᱱᱴ ᱵᱟᱝ ᱡᱚᱲᱟᱣ ᱟᱠᱟᱱᱟ।",
+      "initialSubmission": "ᱮᱛᱚᱦᱚᱵ ᱮᱢ",
+      "internalNote": "ᱵᱷᱤᱛᱨᱤ",
+      "overflowMore": "+{{count}} ᱟᱨᱦᱚᱸ"
+    },
+    "management": {
+      "queue": {
+        "title": "ᱚᱵᱷᱤᱡᱳᱜᱽ",
+        "loadFailed": "ᱱᱤᱛᱚᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ Queue ᱞᱳᱰ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।",
+        "empty": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱞᱟᱹᱜᱤᱫ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ।",
+        "stats": {
+          "open": "ᱡᱷᱤᱡ ᱜᱮᱭᱟ",
+          "awaitingInfo": "ᱨᱳᱲ ᱨᱩᱣᱟᱹᱲ ᱛᱟᱹᱝᱜᱤ ᱨᱮ",
+          "resolved": "ᱥᱚᱞᱦᱮ ᱮᱱᱟ",
+          "slaBreached": "SLA Breached"
+        },
+        "filters": {
+          "sectionAriaLabel": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱯᱷᱤᱞᱴᱚᱨ",
+          "status": "ᱥᱴᱮᱴᱚᱥ",
+          "priority": "ᱯᱨᱟᱭᱳᱨᱤᱴᱤ",
+          "search": "Reference ID ᱮᱨ ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+          "all": "ᱡᱚᱛᱚ",
+          "clear": "ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱯᱷᱟᱭ ᱢᱮ",
+          "clearAriaLabel": "ᱡᱚᱛᱚ ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱯᱷᱟᱭ ᱢᱮ"
+        },
+        "table": {
+          "tableAriaLabel": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱴᱮᱵᱩᱞ",
+          "headers": {
+            "referenceId": "Reference ID",
+            "dataPrincipal": "ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ (Data Principal)",
+            "category": "ᱠᱮᱴᱮᱜᱚᱨᱤ",
+            "priority": "ᱯᱨᱟᱭᱳᱨᱤᱴᱤ",
+            "status": "ᱥᱴᱮᱴᱚᱥ",
+            "sla": "SLA",
+            "updated": "ᱟᱯᱰᱮᱴ ᱟᱠᱟᱱᱟ"
+          }
+        }
+      },
+      "case": {
+        "back": "Queue ᱛᱮ ᱨᱩᱣᱟᱹᱲ",
+        "notFound": "ᱚᱵᱷᱤᱡᱳᱜᱽ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+        "dataPrincipal": "ᱵᱮᱵᱷᱟᱨᱤᱭᱟᱹ"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ ᱠᱚ",
+      "subtitle": "Event Notification Framework ᱨᱮᱱᱟᱜ ᱡᱚᱛᱚ ᱨᱮᱡᱤᱥᱴᱟᱨᱰ ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ।",
+      "addAction": "ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ ᱡᱚᱲᱟᱣ ᱢᱮ",
+      "filters": {
+        "sectionAriaLabel": "ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱠᱚ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "topic": "ᱴᱳᱯᱤᱠ",
+        "clear": "ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱯᱷᱟᱭ ᱢᱮ",
+        "statusOptions": {
+          "all": "ᱡᱚᱛᱚ ᱥᱴᱮᱴᱚᱥ",
+          "active": "ᱪᱟᱹᱞᱩ",
+          "pendingVerification": "ᱵᱟᱹᱠᱤ",
+          "stale": "Stale"
+        },
+        "topicOptions": {
+          "all": "ᱡᱚᱛᱚ ᱴᱳᱯᱤᱠ"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ ᱫᱚᱲᱦᱟ ᱴᱷᱤᱠ ᱮᱱᱟ। ᱥᱴᱮᱴᱚᱥ ᱱᱤᱛᱚᱜ ᱪᱟᱹᱞᱩ ᱜᱮᱭᱟ।",
+        "reverifyStillStale": "ᱴᱷᱤᱠ ᱠᱟᱹᱢᱤ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ। ᱥᱟᱵᱽᱥᱠᱨᱤᱯᱥᱚᱱ STALE ᱜᱮ ᱛᱟᱦᱮᱸ ᱮᱱᱟ।",
+        "reverifyFailed": "ᱫᱚᱲᱦᱟ Verification ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ।"
+      }
+    },
+    "events": {
+      "title": "ᱤᱵᱷᱮᱱᱴ ᱠᱚ",
+      "subtitle": "Event Notification Framework ᱨᱮᱱᱟᱜ ᱡᱚᱛᱚ ᱤᱵᱷᱮᱱᱴ Delivery।",
+      "filters": {
+        "sectionAriaLabel": "ᱤᱵᱷᱮᱱᱴ ᱯᱷᱤᱞᱴᱚᱨ ᱠᱚ",
+        "status": "ᱥᱴᱮᱴᱚᱥ",
+        "topic": "ᱴᱳᱯᱤᱠ",
+        "search": "ᱤᱵᱷᱮᱱᱴ ᱯᱟᱸᱡᱟᱭ ᱢᱮ",
+        "searchPlaceholder": "ᱩᱫᱽᱫᱮᱥ ᱮᱨ Subscriber ID ᱛᱮ ᱯᱟᱸᱡᱟᱭ ᱢᱮ...",
+        "clear": "ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱯᱷᱟᱭ ᱢᱮ",
+        "statusOptions": {
+          "all": "ᱡᱚᱛᱚ ᱥᱴᱮᱴᱚᱥ"
+        },
+        "topicOptions": {
+          "all": "ᱡᱚᱛᱚ ᱴᱳᱯᱤᱠ"
+        }
+      },
+      "emptyTitle": "ᱡᱟᱦᱟᱸᱱᱟᱜ ᱤᱵᱷᱮᱱᱴ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+      "emptyMessage": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱤᱞᱴᱚᱨ ᱥᱟᱶ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱤᱵᱷᱮᱱᱴ ᱵᱟᱝ ᱢᱮᱞᱚᱜ ᱠᱟᱱᱟ।",
+      "table": {
+        "eventId": "ᱤᱵᱷᱮᱱᱴ ID",
+        "topic": "ᱴᱳᱯᱤᱠ",
+        "purposes": "ᱩᱫᱽᱫᱮᱥ",
+        "deliveries": "Deliveries",
+        "occurredAt": "ᱦᱩᱭ ᱟᱠᱟᱱᱟ",
+        "action": "ᱠᱟᱹᱢᱤ",
+        "all": "ᱡᱚᱛᱚ",
+        "noSubscribers": "ᱡᱟᱦᱟᱸᱭ ᱥᱟᱵᱽᱥᱠᱨᱟᱭᱵᱚᱨ ᱵᱟᱹᱱᱩᱜ ᱠᱚᱣᱟ",
+        "viewEvent": "ᱤᱵᱷᱮᱱᱴ ᱧᱮᱞ ᱢᱮ",
+        "subscriberCount_one": "{{count}} ᱥᱟᱵᱽᱥᱠᱨᱟᱭᱵᱚᱨ",
+        "subscriberCount_other": "{{count}} ᱥᱟᱵᱽᱥᱠᱨᱟᱭᱵᱚᱨ"
+      },
+      "detail": {
+        "notFoundTitle": "ᱤᱵᱷᱮᱱᱴ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+        "notFoundMessage": "ID \"{{eventId}}\" ᱥᱟᱶ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱤᱵᱷᱮᱱᱴ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ।",
+        "backToEvents": "ᱤᱵᱷᱮᱱᱴ ᱛᱮ ᱨᱩᱣᱟᱹᱲ",
+        "topic": "ᱴᱳᱯᱤᱠ",
+        "purposes": "ᱩᱫᱽᱫᱮᱥ",
+        "occurredAt": "ᱦᱩᱭ ᱟᱠᱟᱱ ᱚᱠᱛᱚ",
+        "deliveries": "Deliveries",
+        "all": "ᱡᱚᱛᱚ",
+        "noSubscribers": "ᱡᱟᱦᱟᱸᱭ ᱥᱟᱵᱽᱥᱠᱨᱟᱭᱵᱚᱨ ᱵᱟᱹᱱᱩᱜ ᱠᱚᱣᱟ",
+        "subscriberCount_one": "{{count}} ᱥᱟᱵᱽᱥᱠᱨᱟᱭᱵᱚᱨ",
+        "subscriberCount_other": "{{count}} ᱥᱟᱵᱽᱥᱠᱨᱟᱭᱵᱚᱨ"
+      },
+      "dialog": {
+        "title": "ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟ ᱱᱟᱜᱟᱢ (Retry history)",
+        "deliveryId": "Delivery ID",
+        "loading": "ᱤᱵᱷᱮᱱᱴ Delivery ᱱᱟᱜᱟᱢ ᱞᱳᱰ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ...",
+        "noRetries": "ᱮᱛᱚᱦᱚᱵ ᱪᱮᱥᱴᱟ ᱯᱩᱨᱟᱹᱣ ᱮᱱᱟ। ᱡᱟᱦᱟᱸᱱᱟᱜ ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟ ᱨᱮᱠᱳᱨᱰ ᱵᱟᱹᱱᱩᱜᱼᱟ।",
+        "attempt": "ᱪᱮᱥᱴᱟ {{attempt}}",
+        "retrySuffix": "(ᱫᱚᱲᱦᱟ ᱪᱮᱥᱴᱟ)",
+        "webhookDescription": "HTTP Delivery ᱟᱨ Retry ᱨᱮᱱᱟᱜ ᱱᱟᱜᱟᱢ।",
+        "pollTitle": "Poll Completion Status ᱟᱨ Acknowledgment",
+        "completionStatus": "Completion Status",
+        "completionTimestamp": "Completion Timestamp",
+        "erasureMethod": "Erasure ᱰᱷᱟᱸᱪᱟ",
+        "recordsAffected": "ᱚᱨᱥᱚᱝ ᱟᱠᱟᱱ ᱨᱮᱠᱳᱨᱰ",
+        "referenceId": "Reference ID",
+        "submittedBy": "ᱮᱢ ᱟᱠᱟᱫ ᱦᱚᱲ",
+        "notes": "ᱱᱳᱴ ᱠᱚ",
+        "noAcknowledgment": "ᱟᱹᱣᱨᱤ ᱜᱮ ᱡᱟᱦᱟᱸᱱᱟᱜ ᱚᱵᱷᱤᱡᱳᱜᱽ Acknowledgment ᱮᱢ ᱦᱩᱭᱩᱜᱼᱟ।",
+        "close": "ᱵᱚᱸᱫᱷ ᱢᱮ"
+      }
+    }
+  }
+}

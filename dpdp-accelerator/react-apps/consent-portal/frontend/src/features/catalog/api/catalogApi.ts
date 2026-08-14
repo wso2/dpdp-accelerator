@@ -17,148 +17,156 @@
  */
 
 import type {
-  CatalogElement,
-  CursorPageParams,
-  ElementInput,
-  ElementListQueryParams,
+  ElementBulkCreateResponse,
+  ElementCreateRequest,
+  ElementFilters,
   ElementListResponse,
-  PurposeDetail,
-  PurposeInput,
-  PurposeListQueryParams,
+  ElementVersion,
+  ElementVersionCreateRequest,
+  ElementVersionList,
+  PurposeCreateRequest,
+  PurposeFilters,
   PurposeListResponse,
-  PurposeVersionInput,
-  PurposeVersionListResponse,
-  PurposeVersionSummary,
+  PurposeVersion,
+  PurposeVersionCreateRequest,
+  PurposeVersionList,
 } from '../../../types/catalog'
 import { apiRequest, apiRequestNoContent } from '../../../utils/apiClient'
 
 const jsonHeaders = { 'Content-Type': 'application/json' }
 
-function toCursorQuery(params: CursorPageParams): Record<string, string | number | undefined> {
-  return {
-    limit: params.limit,
-    after: params.after,
-    before: params.before,
-  }
-}
-
-/** Quotes and escapes a value for the Identity Server's SCIM-style filter grammar. */
-function escapeFilterValue(value: string): string {
-  return value.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-}
-
-/**
- * Builds a `name co "<term>"` filter for the Elements API. Values are quoted
- * so a search term containing spaces or quotes stays a single value rather
- * than being parsed as separate filter tokens.
- */
-export function buildElementNameFilter(term: string): string | undefined {
-  const trimmed = term.trim()
-  return trimmed ? `name co "${escapeFilterValue(trimmed)}"` : undefined
-}
-
-/**
- * Builds a `name co "<name>" and type eq "<type>"` filter for the Purposes
- * API (either clause may be omitted). `type` has no enum on the Identity
- * Server, so it's matched exactly rather than as a substring.
- */
-export function buildPurposeFilter(name: string, type: string): string | undefined {
-  const clauses: string[] = []
-  const trimmedName = name.trim()
-  const trimmedType = type.trim()
-  if (trimmedName) {
-    clauses.push(`name co "${escapeFilterValue(trimmedName)}"`)
-  }
-  if (trimmedType) {
-    clauses.push(`type eq "${escapeFilterValue(trimmedType)}"`)
-  }
-  return clauses.length > 0 ? clauses.join(' and ') : undefined
-}
-
-export function fetchElements(params: ElementListQueryParams): Promise<ElementListResponse> {
+export function fetchElements(
+  filters: ElementFilters,
+  limit: number,
+  offset: number,
+): Promise<ElementListResponse> {
   return apiRequest<ElementListResponse>('/api/consent-elements', {
     method: 'GET',
-    query: { ...toCursorQuery(params), filter: params.filter },
+    query: {
+      name: filters.name.trim() || undefined,
+      namespace: filters.namespace.trim() || undefined,
+      type: filters.type === 'All' ? undefined : filters.type,
+      version:
+        filters.name.trim() || filters.namespace.trim()
+          ? filters.version.trim() || undefined
+          : undefined,
+      limit,
+      offset,
+    },
   })
 }
 
-export function fetchElement(elementId: string): Promise<CatalogElement> {
-  return apiRequest<CatalogElement>(`/api/consent-elements/${encodeURIComponent(elementId)}`, {
+export function fetchElement(elementId: string): Promise<ElementVersion> {
+  return apiRequest<ElementVersion>(`/api/consent-elements/${encodeURIComponent(elementId)}`, {
     method: 'GET',
   })
 }
 
-export function createElement(payload: ElementInput): Promise<CatalogElement> {
-  return apiRequest<CatalogElement>('/api/consent-elements', {
+export function fetchElementVersions(elementId: string): Promise<ElementVersionList> {
+  return apiRequest<ElementVersionList>(
+    `/api/consent-elements/${encodeURIComponent(elementId)}/versions`,
+    { method: 'GET' },
+  )
+}
+
+export async function createElement(payload: ElementCreateRequest): Promise<ElementVersion> {
+  const response = await apiRequest<
+    ElementBulkCreateResponse | ElementBulkCreateResponse['results']
+  >('/api/consent-elements', {
     method: 'POST',
     headers: jsonHeaders,
-    body: JSON.stringify(payload),
+    body: JSON.stringify([payload]),
   })
+  const result = (Array.isArray(response) ? response : response.results)[0]
+  const element = result?.element ?? result?.data
+  const error = result?.error
+
+  if (!result || result.status === 'FAILED' || !element) {
+    throw new Error(
+      (typeof error === 'string' ? error : (error?.description ?? error?.message)) ??
+        'Element creation failed',
+    )
+  }
+
+  return element
 }
 
-export function deleteElement(elementId: string): Promise<void> {
-  return apiRequestNoContent(`/api/consent-elements/${encodeURIComponent(elementId)}`, {
-    method: 'DELETE',
-  })
+export function createElementVersion(
+  elementId: string,
+  payload: ElementVersionCreateRequest,
+): Promise<ElementVersion> {
+  return apiRequest<ElementVersion>(
+    `/api/consent-elements/${encodeURIComponent(elementId)}/versions`,
+    { method: 'POST', headers: jsonHeaders, body: JSON.stringify(payload) },
+  )
 }
 
-export function fetchPurposes(params: PurposeListQueryParams): Promise<PurposeListResponse> {
+export function deleteElementVersion(elementId: string, version: string): Promise<void> {
+  return apiRequestNoContent(
+    `/api/consent-elements/${encodeURIComponent(elementId)}/versions/${encodeURIComponent(version)}`,
+    { method: 'DELETE' },
+  )
+}
+
+export function fetchPurposes(
+  filters: PurposeFilters,
+  limit: number,
+  offset: number,
+): Promise<PurposeListResponse> {
   return apiRequest<PurposeListResponse>('/api/consent-purposes', {
     method: 'GET',
-    query: { ...toCursorQuery(params), filter: params.filter },
+    query: {
+      purposeName: filters.purposeName.trim() || undefined,
+      elementName: filters.elementName.trim() || undefined,
+      elementNamespace: filters.elementNamespace.trim() || undefined,
+      elementVersion:
+        filters.elementName.trim() || filters.elementNamespace.trim()
+          ? filters.elementVersion.trim() || undefined
+          : undefined,
+      groupIds: filters.groupIds.trim() || undefined,
+      limit,
+      offset,
+    },
   })
 }
 
-export function fetchPurpose(purposeId: string): Promise<PurposeDetail> {
-  return apiRequest<PurposeDetail>(`/api/consent-purposes/${encodeURIComponent(purposeId)}`, {
+export function fetchPurpose(purposeId: string): Promise<PurposeVersion> {
+  return apiRequest<PurposeVersion>(`/api/consent-purposes/${encodeURIComponent(purposeId)}`, {
     method: 'GET',
   })
 }
 
-export function createPurpose(payload: PurposeInput): Promise<PurposeDetail> {
-  return apiRequest<PurposeDetail>('/api/consent-purposes', {
+export function fetchPurposeVersions(purposeId: string): Promise<PurposeVersionList> {
+  return apiRequest<PurposeVersionList>(
+    `/api/consent-purposes/${encodeURIComponent(purposeId)}/versions`,
+    { method: 'GET' },
+  )
+}
+
+export function createPurpose(
+  payload: PurposeCreateRequest,
+  groupId?: string,
+): Promise<PurposeVersion> {
+  return apiRequest<PurposeVersion>('/api/consent-purposes', {
     method: 'POST',
-    headers: jsonHeaders,
+    headers: { ...jsonHeaders, ...(groupId ? { 'group-id': groupId } : {}) },
     body: JSON.stringify(payload),
   })
-}
-
-export function deletePurpose(purposeId: string): Promise<void> {
-  return apiRequestNoContent(`/api/consent-purposes/${encodeURIComponent(purposeId)}`, {
-    method: 'DELETE',
-  })
-}
-
-export function fetchPurposeVersions(
-  purposeId: string,
-  params: CursorPageParams,
-): Promise<PurposeVersionListResponse> {
-  return apiRequest<PurposeVersionListResponse>(
-    `/api/consent-purposes/${encodeURIComponent(purposeId)}/versions`,
-    { method: 'GET', query: toCursorQuery(params) },
-  )
 }
 
 export function createPurposeVersion(
   purposeId: string,
-  payload: PurposeVersionInput,
-): Promise<PurposeVersionSummary> {
-  return apiRequest<PurposeVersionSummary>(
+  payload: PurposeVersionCreateRequest,
+): Promise<PurposeVersion> {
+  return apiRequest<PurposeVersion>(
     `/api/consent-purposes/${encodeURIComponent(purposeId)}/versions`,
     { method: 'POST', headers: jsonHeaders, body: JSON.stringify(payload) },
   )
 }
 
-export function setLatestPurposeVersion(purposeId: string, versionId: string): Promise<void> {
+export function deletePurposeVersion(purposeId: string, version: string): Promise<void> {
   return apiRequestNoContent(
-    `/api/consent-purposes/${encodeURIComponent(purposeId)}/versions/latest`,
-    { method: 'PUT', headers: jsonHeaders, body: JSON.stringify({ id: versionId }) },
-  )
-}
-
-export function deletePurposeVersion(purposeId: string, versionId: string): Promise<void> {
-  return apiRequestNoContent(
-    `/api/consent-purposes/${encodeURIComponent(purposeId)}/versions/${encodeURIComponent(versionId)}`,
+    `/api/consent-purposes/${encodeURIComponent(purposeId)}/versions/${encodeURIComponent(version)}`,
     { method: 'DELETE' },
   )
 }

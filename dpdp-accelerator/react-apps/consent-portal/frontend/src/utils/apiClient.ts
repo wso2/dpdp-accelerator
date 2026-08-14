@@ -17,6 +17,7 @@
  */
 
 import { getAccessTokenPart1, isAuthEnabled, login, refreshSession } from './authClient'
+import { readStoredSession } from '../features/nominee/actingAs/actingAsContext'
 
 export interface APIErrorPayload {
   code?: string
@@ -38,9 +39,22 @@ export class APIError extends Error {
 
 interface RequestOptions extends RequestInit {
   query?: Record<string, string | number | boolean | undefined>
+  /**
+   * Overrides VITE_API_BASE_URL for calls that do not go to the portal backend.
+   *
+   * Nomination management is served by Nominee Service on its own port, which
+   * authenticates the same split token itself rather than being proxied.
+   */
+  baseURL?: string
 }
 
-function buildHeaders(headers?: HeadersInit): Headers {
+// Matches actingOwnerHeader in the backend. A browser holds one acting session
+// across all its tabs, so opening a second owner replaces the first; naming the
+// owner this tab believes it is acting for lets the server refuse rather than
+// answer as somebody else.
+const ACTING_OWNER_HEADER = 'X-Acting-Owner'
+
+function buildHeaders(path: string, headers?: HeadersInit): Headers {
   const normalizedHeaders = new Headers(headers)
 
   if (!normalizedHeaders.has('Accept')) {
@@ -52,17 +66,27 @@ function buildHeaders(headers?: HeadersInit): Headers {
     normalizedHeaders.set('Authorization', `Bearer ${accessTokenPart}`)
   }
 
+  // Attached here rather than at each call site so an acting endpoint added
+  // later cannot be the one that forgets it.
+  if (path.startsWith('/acting-api/') && !normalizedHeaders.has(ACTING_OWNER_HEADER)) {
+    const ownerId = readStoredSession()?.ownerId
+    if (ownerId) {
+      normalizedHeaders.set(ACTING_OWNER_HEADER, ownerId)
+    }
+  }
+
   return normalizedHeaders
 }
 
 /**
  * Builds an absolute request URL from the configured API base URL and query params.
- *
- * The base URL may be absolute (cross-origin BFF) or a same-origin path such as
- * "/consent-portal" when the portal is served from the same webapp as the BFF.
  */
-function buildURL(path: string, query?: RequestOptions['query']): string {
-  const baseURL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
+function buildURL(path: string, query?: RequestOptions['query'], baseURLOverride?: string): string {
+  const baseURL = baseURLOverride ?? import.meta.env.VITE_API_BASE_URL
+
+  if (!baseURL) {
+    throw new Error('VITE_API_BASE_URL is required to send API requests.')
+  }
 
   if (/^https?:\/\//i.test(path)) {
     throw new Error(`apiClient path must be relative, received: "${path}"`)
@@ -70,6 +94,9 @@ function buildURL(path: string, query?: RequestOptions['query']): string {
 
   const normalizedBase = baseURL.endsWith('/') ? baseURL.slice(0, -1) : baseURL
   const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  // Resolved against the page origin so a same-origin base such as
+  // "/consent-portal" works as well as an absolute one; a path on its own is
+  // not a valid URL.
   const url = new URL(`${normalizedBase}${normalizedPath}`, window.location.origin)
 
   if (query) {
@@ -110,11 +137,11 @@ async function apiRequestInternal<T>(
   options: RequestOptions,
   allowRefresh: boolean,
 ): Promise<T> {
-  const { query, headers, ...requestInit } = options
-  const response = await fetch(buildURL(path, query), {
+  const { query, headers, baseURL, ...requestInit } = options
+  const response = await fetch(buildURL(path, query, baseURL), {
     credentials: 'include',
     ...requestInit,
-    headers: buildHeaders(headers),
+    headers: buildHeaders(path, headers),
   })
 
   if (response.status === 401 && allowRefresh && isAuthEnabled()) {
@@ -159,11 +186,11 @@ async function apiRequestNoContentInternal(
   options: RequestOptions,
   allowRefresh: boolean,
 ): Promise<void> {
-  const { query, headers, ...requestInit } = options
-  const response = await fetch(buildURL(path, query), {
+  const { query, headers, baseURL, ...requestInit } = options
+  const response = await fetch(buildURL(path, query, baseURL), {
     credentials: 'include',
     ...requestInit,
-    headers: buildHeaders(headers),
+    headers: buildHeaders(path, headers),
   })
 
   if (response.status === 401 && allowRefresh && isAuthEnabled()) {

@@ -17,10 +17,11 @@
  */
 
 import { readFileSync, readdirSync, statSync } from 'node:fs'
-import { join, relative, resolve } from 'node:path'
+import { join, relative, resolve, sep } from 'node:path'
 
 const root = resolve(import.meta.dirname, '..')
 const html = readFileSync(join(root, 'dist', 'index.html'), 'utf8')
+const headers = readFileSync(join(root, 'dist', '_headers'), 'utf8')
 
 const failures = []
 const assertAbsent = (value, pattern, message) => {
@@ -32,17 +33,11 @@ assertAbsent(html, /\son[a-z]+\s*=/i, 'production HTML contains an inline event 
 assertAbsent(html, /\sstyle\s*=/i, 'production HTML contains an inline style attribute')
 assertAbsent(html, /<style\b/i, 'production HTML contains an inline style element')
 
-// The portal ships its CSP as a meta element because it is served by the
-// Identity Server's Tomcat rather than a static host with a _headers file.
-const metaMatch = html.match(
-  /<meta[^>]*http-equiv="Content-Security-Policy"[^>]*content="([^"]*)"/i,
-)
-// Vite HTML-escapes the attribute value, so unescape quotes before matching.
-const metaPolicy = (metaMatch?.[1] ?? '').replace(/&#39;|&apos;/g, "'").replace(/&amp;/g, '&')
-if (!metaPolicy) failures.push('CSP meta element is missing from production HTML')
-if (!metaPolicy.includes("script-src 'self'")) failures.push('script-src is not restricted to self')
-assertAbsent(metaPolicy, /script-src[^;]*'unsafe-inline'/i, 'inline scripts are allowed by CSP')
-assertAbsent(metaPolicy, /'unsafe-eval'/i, 'string-to-code execution is allowed by CSP')
+if (!headers.includes('Content-Security-Policy:')) failures.push('CSP header artifact is missing')
+if (!headers.includes("script-src 'self'")) failures.push('script-src is not restricted to self')
+if (!headers.includes("frame-ancestors 'none'")) failures.push('frame-ancestors is not denied')
+assertAbsent(headers, /script-src[^;]*'unsafe-inline'/i, 'inline scripts are allowed by CSP')
+assertAbsent(headers, /'unsafe-eval'/i, 'string-to-code execution is allowed by CSP')
 
 const productionSources = []
 const collect = (directory) => {
@@ -73,11 +68,37 @@ const forbiddenSinks = [
   [/\bsessionStorage\b/, 'sessionStorage'],
 ]
 
+/**
+ * Web storage is forbidden because anything in it is readable by any script that
+ * runs on the page, so a token placed there is a token an XSS can take.
+ *
+ * These files are exempt for that sink only. None of them stores a credential:
+ * the delegated token lives in an HttpOnly cookie precisely so JavaScript cannot
+ * reach it, and what is kept here is the id of the account being acted for and
+ * the chosen language.
+ *
+ * The acting id has to be per tab and has to survive the sign-in redirect, which
+ * is exactly what sessionStorage is and what a cookie is not - a cookie is
+ * shared by every tab, so one tab starting a session would silently change who
+ * the others were acting as.
+ *
+ * Every other sink still applies to these files, and this sink still applies to
+ * every other file.
+ */
+const storageSinkExemptions = new Map([
+  ['src/features/nominee/actingAs/actingAsContext.ts', ['sessionStorage']],
+  ['src/features/nominee/actingAs/ActingAsProvider.tsx', ['sessionStorage']],
+  ['src/utils/queryClient.ts', ['sessionStorage']],
+  ['src/i18n/languages.ts', ['localStorage']],
+])
+
 for (const path of productionSources) {
   const source = readFileSync(path, 'utf8')
+  const key = relative(root, path).split(sep).join('/')
+  const allowed = storageSinkExemptions.get(key) ?? []
   for (const [pattern, sink] of forbiddenSinks) {
-    if (pattern.test(source)) {
-      failures.push(`${relative(root, path)} contains forbidden sink ${sink}`)
+    if (pattern.test(source) && !allowed.includes(sink)) {
+      failures.push(`${key} contains forbidden sink ${sink}`)
     }
   }
 }

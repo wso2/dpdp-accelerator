@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "ସମ୍ମତି ପୋର୍ଟାଲ୍"
+  },
+  "language": {
+    "label": "ଭାଷା",
+    "selectAria": "ଭାଷା ବାଛନ୍ତୁ"
+  },
+  "authorization": {
+    "loading": "ଆପଣଙ୍କର ସେସନ୍ ଲୋଡ୍ ହେଉଛି",
+    "loadFailed": "ଆପଣଙ୍କର ସେସନ୍ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+    "tryAgain": "ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ",
+    "noAccessTitle": "ପୋର୍ଟାଲ୍ ଆକ୍ସେସ୍ ନାହିଁ",
+    "noAccessDescription": "କୌଣସି ପୋର୍ଟାଲ୍ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିବାକୁ ଆପଣଙ୍କ ଆକାଉଣ୍ଟର ଅନୁମତି ନାହିଁ."
+  },
+  "copyableText": {
+    "copy": "କପି କରନ୍ତୁ",
+    "copied": "କପି ହୋଇଛି",
+    "copyLabel": "{{label}} କପି କରନ୍ତୁ",
+    "copyValue": "{{label}} {{value}} କପି କରନ୍ତୁ",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "ପ୍ରାଥମିକ ନେଭିଗେସନ୍",
+    "dashboard": "ଡ୍ୟାସବୋର୍ଡ",
+    "consent": "ସମ୍ମତି",
+    "allConsents": "ସମସ୍ତ ସମ୍ମତି",
+    "pendingConsents": "ବକେୟା ସମ୍ମତି",
+    "catalog": "ବ୍ୟାଖ୍ୟାଗୁଡ଼ିକ",
+    "purposes": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+    "elements": "ଉପାଦାନଗୁଡ଼ିକ",
+    "administration": "ପ୍ରଶାସନ",
+    "adminConsents": "ସମ୍ମତିଗୁଡ଼ିକ",
+    "nominations": "ନାମାଙ୍କନ",
+    "nomineeActivation": "ନୋମିନୀ ସକ୍ରିୟକରଣ",
+    "myComplaints": "ମୋର ଅଭିଯୋଗ",
+    "complaintManagement": "ଅଭିଯୋଗଗୁଡ଼ିକ",
+    "dataProcessors": "ଡାଟା ପ୍ରୋସେସର୍",
+    "dataProcessorTopics": "ବିଷୟଗୁଡ଼ିକ",
+    "dataProcessorSubscriptions": "ସବସ୍କ୍ରିପସନ୍",
+    "dataProcessorEvents": "ଇଭେଣ୍ଟଗୁଡ଼ିକ"
+  },
+  "layout": {
+    "home": "ହୋମ୍",
+    "breadcrumbAriaLabel": "ବ୍ରେଡକ୍ରମ୍ବ",
+    "userMenu": {
+      "unknownUser": "ଅଜ୍ଞାତ ଉପଯୋଗକର୍ତ୍ତା",
+      "noEmail": "କୌଣସି ଇମେଲ୍ ଉପଲବ୍ଧ ନାହିଁ",
+      "signOut": "ସାଇନ୍ ଆଉଟ୍ କରନ୍ତୁ",
+      "signOutError": "ସାଇନ୍ ଆଉଟ୍ କରିବାରେ ଅସମର୍ଥ. ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ.",
+      "tryAgain": "ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ"
+    }
+  },
+  "dashboard": {
+    "active": "ସକ୍ରିୟ ସମ୍ମତି",
+    "attention": "ଆପଣଙ୍କ ଧ୍ୟାନ ଆବଶ୍ୟକ",
+    "commonPurposes": "ସର୍ବାଧିକ ଅଂଶୀଦାର ହୋଇଥିବା ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+    "commonPurposesSubtitle": "ଆପଣଙ୍କର ସକ୍ରିୟ ସମ୍ମତିରେ ଅନ୍ତର୍ଭୁକ୍ତ ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+    "consentCount": "{{count}} ସମ୍ମତି",
+    "consentCount_one": "{{count}} ସମ୍ମତି",
+    "consentCount_other": "{{count}} ସମ୍ମତି",
+    "expiringSoon": "ଶୀଘ୍ର ମିଆଦ ଶେଷ ହେଉଛି",
+    "loadFailed": "ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ଡ୍ୟାସବୋର୍ଡ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+    "noExpiring": "ଆଗାମୀ {{days}} ଦିନ ମଧ୍ୟରେ କୌଣସି ସକ୍ରିୟ ସମ୍ମତିର ମିଆଦ ଶେଷ ହେଉନାହିଁ.",
+    "noPending": "ସମୀକ୍ଷା କରିବାକୁ ଆପଣଙ୍କ ପାଖରେ କୌଣସି ବକେୟା ସମ୍ମତି ନାହିଁ.",
+    "noPurposes": "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଅଂଶୀଦାର ଉଦ୍ଦେଶ୍ୟ ଉପଲବ୍ଧ ନାହିଁ.",
+    "pending": "ବକେୟା ସମ୍ମତି",
+    "pendingConsents": "ବକେୟା ସମ୍ମତି",
+    "subtitle": "ଆପଣଙ୍କର ସମ୍ମତି କାର୍ଯ୍ୟକଳାପ ଏବଂ ଆଗାମୀ ପଦକ୍ଷେପଗୁଡ଼ିକର ଏକ ସମୀକ୍ଷା.",
+    "title": "ଡ୍ୟାସବୋର୍ଡ",
+    "typeBreakdown": "ସମ୍ମତି ପ୍ରକାରର ବିବରଣୀ",
+    "typeBreakdownSubtitle": "ଆପଣଙ୍କର ସମସ୍ତ ସମ୍ମତି ପ୍ରକାର ଅନୁଯାୟୀ ବର୍ଗୀକୃତ",
+    "noTypes": "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ସମ୍ମତି ପ୍ରକାର ଉପଲବ୍ଧ ନାହିଁ.",
+    "viewPending": "ସମସ୍ତ ବକେୟା ସମ୍ମତି ଦେଖନ୍ତୁ"
+  },
+  "adminConsents": {
+    "title": "ସମ୍ମତିଗୁଡ଼ିକ",
+    "filters": {
+      "sectionAriaLabel": "ପ୍ରଶାସନିକ ସମ୍ମତି ଫିଲ୍ଟର୍",
+      "consentIdSearchPlaceholder": "ସମ୍ମତି ID ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ",
+      "removeConsentIdForAdvanced": "ଉନ୍ନତ ଫିଲ୍ଟର୍ ବ୍ୟବହାର କରିବାକୁ ସମ୍ମତି ID ଫିଲ୍ଟର୍ କାଢ଼ନ୍ତୁ.",
+      "removeConsentIdForStatus": "ସ୍ଥିତି ଫିଲ୍ଟର୍ ବ୍ୟବହାର କରିବାକୁ ସମ୍ମତି ID ଫିଲ୍ଟର୍ କାଢ଼ନ୍ତୁ.",
+      "userIds": "ଉପଯୋଗକର୍ତ୍ତା ID ଗୁଡ଼ିକ",
+      "groupIds": "ଗ୍ରୁପ୍ ID ଗୁଡ଼ିକ",
+      "commaSeparatedUsers": "ଏକାଧିକ ଉପଯୋଗକର୍ତ୍ତା ID କୁ କମା ଦ୍ୱାରା ଅଲଗା କରନ୍ତୁ",
+      "active": "ସକ୍ରିୟ ଫିଲ୍ଟର୍"
+    }
+  },
+  "consentRegistry": {
+    "title": "ସମସ୍ତ ସମ୍ମତି",
+    "details": {
+      "title": "ସମ୍ମତି ବିବରଣୀ",
+      "consentId": "ସମ୍ମତି ID",
+      "status": "ସ୍ଥିତି",
+      "type": "ସମ୍ମତି ପ୍ରକାର",
+      "frequency": "ଆକ୍ସେସ୍ ସୀମା",
+      "frequencyHelp": "ଦିନକୁ କେତେ ଥର ଏହି ସମ୍ମତି ଆକ୍ସେସ୍ କରାଯାଇପାରିବ ତାହା ଏହା ସୂଚାଏ.",
+      "frequencyUnitSingular": "ଦିନକୁ ଥରେ",
+      "frequencyUnitPlural": "ଦିନକୁ ଥର",
+      "purposes": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+      "duration": "ଲୁକବ୍ୟାକ୍ ଅବଧି",
+      "durationHelp": "କେତେ ପୁରୁଣା ଡାଟା ଆକ୍ସେସ୍ କରାଯାଇପାରିବ ତାହା ଏହା ନିର୍ଦ୍ଧାରଣ କରେ. ଉଦାହରଣ ସ୍ୱରୂପ, ଯଦି 6 ମାସ ସେଟ୍ କରାଯାଏ, ତେବେ 6 ମାସ ପୂର୍ବର ଡାଟା ଆକ୍ସେସ୍ ଯୋଗ୍ୟ ଅଟେ.",
+      "durationUnitHourSingular": "ଘଣ୍ଟା",
+      "durationUnitHourPlural": "ଘଣ୍ଟା",
+      "durationUnitDaySingular": "ଦିନ",
+      "durationUnitDayPlural": "ଦିନଗୁଡ଼ିକ",
+      "durationUnitYearSingular": "ବର୍ଷ",
+      "durationUnitYearPlural": "ବର୍ଷଗୁଡ଼ିକ",
+      "created": "ସୃଷ୍ଟି ହୋଇଛି",
+      "updated": "ଅପଡେଟ୍ ହୋଇଛି",
+      "validUntil": "ପର୍ଯ୍ୟନ୍ତ ବୈଧ",
+      "groupId": "ଗ୍ରୁପ୍ ID",
+      "recurring": "ପୁନରାବୃତ୍ତି",
+      "back": "ରେଜିଷ୍ଟ୍ରିକୁ ଫେରନ୍ତୁ",
+      "notFound": "ସମ୍ମତି ରେକର୍ଡ ମିଳିଲା ନାହିଁ",
+      "approved": "ଅନୁମୋଦିତ",
+      "notApproved": "ଅନୁମୋଦିତ ନୁହେଁ",
+      "approvedCount": "{{approved}}/{{total}} ଅନୁମୋଦିତ",
+      "section": {
+        "purposes": "ସମ୍ମତି ଉଦ୍ଦେଶ୍ୟ",
+        "authorizations": "ପ୍ରାଧିକରଣ",
+        "lifecycle": "ସମ୍ମତି ଜୀବନଚକ୍ର"
+      },
+      "table": {
+        "element": "ଉପାଦାନ",
+        "approved": "ଅନୁମୋଦିତ",
+        "required": "ଆବଶ୍ୟକ",
+        "description": "ବିବରଣୀ",
+        "user": "ଉପଯୋଗକର୍ତ୍ତା",
+        "status": "ସ୍ଥିତି",
+        "updated": "ଅପଡେଟ୍ ହୋଇଛି",
+        "resources": "ସମ୍ବଳଗୁଡ଼ିକ",
+        "eventType": "ଇଭେଣ୍ଟ ପ୍ରକାର",
+        "date": "ତାରିଖ",
+        "time": "ସମୟ"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "ସମ୍ମତି ଜୀବନଚକ୍ର",
+        "empty": "କୌଣସି ଜୀବନଚକ୍ର ଇଭେଣ୍ଟ ଉପଲବ୍ଧ ନାହିଁ.",
+        "noDescription": "କୌଣସି ବିବରଣୀ ଉପଲବ୍ଧ ନାହିଁ."
+      },
+      "actions": {
+        "viewResources": "ସମ୍ବଳ ଦେଖନ୍ତୁ",
+        "noResourcesTooltip": "କୌଣସି ସମ୍ବଳ ଉପଲବ୍ଧ ନାହିଁ"
+      },
+      "resourcesModal": {
+        "title": "ପ୍ରାଧିକରଣ ସମ୍ବଳ",
+        "authRef": "ଅଥ୍ (Auth)",
+        "close": "ବନ୍ଦ କରନ୍ତୁ"
+      },
+      "values": {
+        "yes": "ହଁ",
+        "no": "ନା",
+        "required": "ଆବଶ୍ୟକ",
+        "optional": "ଇଚ୍ଛାଧୀନ"
+      }
+    },
+    "actions": {
+      "view": "ଦେଖନ୍ତୁ",
+      "revoke": "ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+      "approve": "ଅନୁମୋଦନ କରନ୍ତୁ",
+      "reject": "ପ୍ରତ୍ୟାଖ୍ୟାନ କରନ୍ତୁ",
+      "copyConsentId": "ସମ୍ମତି ID କପି କରନ୍ତୁ",
+      "copyConsentIdAriaLabel": "ସମ୍ମତି ID {{id}} କପି କରନ୍ତୁ"
+    },
+    "modals": {
+      "consentId": "ସମ୍ମତି ID",
+      "actions": {
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+        "processing": "ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି..."
+      },
+      "approval": {
+        "title": "ସମ୍ମତି ସମୀକ୍ଷା ଏବଂ ଅନୁମୋଦନ କରନ୍ତୁ",
+        "subtitle": "ଦୟାକରି ଅନୁମୋଦନ ପୂର୍ବରୁ ସମ୍ମତି ଉପାଦାନଗୁଡ଼ିକର ସମୀକ୍ଷା କରନ୍ତୁ.",
+        "mandatory": "ବାଧ୍ୟତାମୂଳକ ଉପାଦାନ (ଆବଶ୍ୟକ)",
+        "optional": "ଇଚ୍ଛାଧୀନ ଉପାଦାନ",
+        "required": "ଆବଶ୍ୟକ",
+        "toggle": "ଅନୁମତି ଟୋଗଲ୍ କରନ୍ତୁ",
+        "toggleWithDetails": "{{purposeLabel}} ରେ {{elementLabel}} ପାଇଁ ଅନୁମତି ଟୋଗଲ୍ କରନ୍ତୁ",
+        "loading": "ସମ୍ମତି ବିବରଣୀ ଲୋଡ୍ ହେଉଛି...",
+        "noMandatory": "ଏହି ସମ୍ମତି ପାଇଁ କୌଣସି ବାଧ୍ୟତାମୂଳକ ଆବଶ୍ୟକତା ନାହିଁ.",
+        "confirm": "ଅନୁମୋଦନ ଏବଂ ଜାରି ରଖନ୍ତୁ"
+      },
+      "rejection": {
+        "title": "ପ୍ରତ୍ୟାଖ୍ୟାନ ନିଶ୍ଚିତ କରନ୍ତୁ",
+        "message": "ଆପଣ ନିଶ୍ଚିତ କି ଆପଣ ଏହି ସମ୍ମତିକୁ ପ୍ରତ୍ୟାଖ୍ୟାନ କରିବାକୁ ଚାହୁଁଛନ୍ତି?",
+        "note": "ଏହି ସମ୍ମତିକୁ ପ୍ରତ୍ୟାଖ୍ୟାନ କରିବା ଅର୍ଥ ଅନୁରୋଧ କରାଯାଇଥିବା ସମ୍ମତିଗୁଡ଼ିକ ପ୍ରଦାନ କରାଯିବ ନାହିଁ.",
+        "confirm": "ସମ୍ମତି ପ୍ରତ୍ୟାଖ୍ୟାନ କରନ୍ତୁ",
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ"
+      },
+      "revocation": {
+        "title": "ପ୍ରତ୍ୟାହାର ନିଶ୍ଚିତ କରନ୍ତୁ",
+        "message": "ଆପଣ ନିଶ୍ଚିତ କି ଆପଣ ସମ୍ମତି ପ୍ରତ୍ୟାହାର କରିବାକୁ ଚାହୁଁଛନ୍ତି?",
+        "note": "ଏହି କାର୍ଯ୍ୟ ସମସ୍ତ ସମ୍ପୃକ୍ତ ଉଦ୍ଦେଶ୍ୟ ପାଇଁ ପ୍ରଦାନ କରାଯାଇଥିବା ବାଧ୍ୟତାମୂଳକ ଏବଂ ଇଚ୍ଛାଧୀନ ସମ୍ମତି ଉଭୟକୁ ପ୍ରତ୍ୟାହାର କରେ.",
+        "confirm": "ସମ୍ମତି ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ"
+      }
+    },
+    "status": {
+      "all": "ସମସ୍ତ",
+      "active": "ସକ୍ରିୟ",
+      "pending": "ବକେୟା",
+      "created": "ସୃଷ୍ଟି ହୋଇଛି",
+      "approved": "ଅନୁମୋଦିତ",
+      "rejected": "ପ୍ରତ୍ୟାଖ୍ୟାତ",
+      "revoked": "ପ୍ରତ୍ୟାହାର କରାଯାଇଛି",
+      "expired": "ମିଆଦ ଶେଷ ହୋଇଛି",
+      "systemExpired": "ସିଷ୍ଟମ୍ ମିଆଦ ଶେଷ ହୋଇଛି",
+      "systemRevoked": "ସିଷ୍ଟମ୍ ପ୍ରତ୍ୟାହାର କରାଯାଇଛି"
+    },
+    "filters": {
+      "sectionAriaLabel": "ସମ୍ମତି ଫିଲ୍ଟର୍",
+      "purposeSearchPlaceholder": "ଉଦ୍ଦେଶ୍ୟ ନାମ ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ",
+      "status": "ସ୍ଥିତି",
+      "groupIds": "ଗ୍ରୁପ୍ ID",
+      "elementName": "ଉପାଦାନ ନାମ",
+      "elementVersion": "ଉପାଦାନ ସଂସ୍କରଣ",
+      "advanced": "ଉନ୍ନତ ଫିଲ୍ଟର୍",
+      "apply": "ଲାଗୁ କରନ୍ତୁ",
+      "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+      "startDate": "ଆରମ୍ଭ ତାରିଖ",
+      "startDateAriaLabel": "ଆରମ୍ଭ ତାରିଖ ଫିଲ୍ଟର୍",
+      "endDate": "ଶେଷ ତାରିଖ",
+      "endDateAriaLabel": "ଶେଷ ତାରିଖ ଫିଲ୍ଟର୍",
+      "clear": "ସବୁ ସଫା କରନ୍ତୁ",
+      "clearAriaLabel": "ସମସ୍ତ ଫିଲ୍ଟର୍ ସଫା କରନ୍ତୁ"
+    },
+    "messages": {
+      "loading": "ସମ୍ମତିଗୁଡ଼ିକ ଲୋଡ୍ ହେଉଛି...",
+      "loadFailed": "ବର୍ତ୍ତମାନ ସମ୍ମତିଗୁଡ଼ିକ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+      "emptyTitle": "କୌଣସି ସମ୍ମତି ମିଳିଲା ନାହିଁ",
+      "empty": "ଚୟନ କରାଯାଇଥିବା ଫିଲ୍ଟର୍ ପାଇଁ କୌଣସି ସମ୍ମତି ମିଳିଲା ନାହିଁ."
+    },
+    "table": {
+      "tableAriaLabel": "ସମ୍ମତି ରେଜିଷ୍ଟ୍ରି ଟେବୁଲ୍",
+      "consentIdAriaLabel": "ସମ୍ମତି ID: {{id}}",
+      "groupLabel": "ଗ୍ରୁପ୍ ID: {{groupId}}",
+      "notApplicable": "ପ୍ରଯୁଜ୍ୟ ନୁହେଁ",
+      "purposes": {
+        "more": "+{{count}} ଅଧିକ",
+        "title": "ସମ୍ମତି ଉଦ୍ଦେଶ୍ୟ",
+        "hint": "ସମ୍ମତିର ସମସ୍ତ ଉଦ୍ଦେଶ୍ୟ ଦେଖାଉଛି"
+      },
+      "headers": {
+        "consentId": "ସମ୍ମତି ID",
+        "type": "ପ୍ରକାର",
+        "status": "ସ୍ଥିତି",
+        "purposes": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+        "updated": "ଅପଡେଟ୍ ହୋଇଛି",
+        "expiration": "ମିଆଦ ଶେଷ",
+        "actions": "କାର୍ଯ୍ୟଗୁଡ଼ିକ"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "ଉପାଦାନ ଯୋଡନ୍ତୁ",
+      "addProperty": "ବିଶେଷତ୍ୱ ଯୋଡନ୍ତୁ",
+      "apply": "ଲାଗୁ କରନ୍ତୁ",
+      "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+      "clear": "ସଫା କରନ୍ତୁ",
+      "clearAll": "ସବୁ ସଫା କରନ୍ତୁ",
+      "create": "ସୃଷ୍ଟି କରନ୍ତୁ",
+      "delete": "ଡିଲିଟ୍ କରନ୍ତୁ",
+      "deleting": "ଡିଲିଟ୍ ହେଉଛି...",
+      "deleteVersion": "ସଂସ୍କରଣ ଡିଲିଟ୍ କରନ୍ତୁ",
+      "filters": "ଫିଲ୍ଟର୍ ଗୁଡିକ",
+      "removeElement": "ଉପାଦାନ ହଟାନ୍ତୁ",
+      "removeProperty": "ବିଶେଷତ୍ୱ ହଟାନ୍ତୁ",
+      "retry": "ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ",
+      "saving": "ସେଭ୍ ହେଉଛି...",
+      "view": "ଦେଖନ୍ତୁ",
+      "viewElement": "{{name}} ଦେଖନ୍ତୁ",
+      "viewPurpose": "{{name}} ଦେଖନ୍ତୁ"
+    },
+    "fields": {
+      "actions": "କାର୍ଯ୍ୟଗୁଡ଼ିକ",
+      "created": "ସୃଷ୍ଟି ହୋଇଛି",
+      "description": "ବିବରଣୀ",
+      "displayName": "ପ୍ରଦର୍ଶନ ନାମ",
+      "element": "ଉପାଦାନ",
+      "elementId": "ଉପାଦାନ ID",
+      "elementName": "ଉପାଦାନ ନାମ",
+      "elementNamespace": "ଉପାଦାନ ନେମସ୍ପେସ୍",
+      "elements": "ଉପାଦାନଗୁଡ଼ିକ",
+      "elementVersion": "ଉପାଦାନ ସଂସ୍କରଣ",
+      "groupId": "ଗ୍ରୁପ୍ ID",
+      "groupIds": "ଗ୍ରୁପ୍ ID ଗୁଡ଼ିକ",
+      "mandatory": "ବାଧ୍ୟତାମୂଳକ",
+      "name": "ନାମ",
+      "namespace": "ନେମସ୍ପେସ୍",
+      "properties": "ବିଶେଷତ୍ୱଗୁଡ଼ିକ",
+      "propertyKey": "କି (Key)",
+      "propertyValue": "ମୂଲ୍ୟ",
+      "purpose": "ଉଦ୍ଦେଶ୍ୟ",
+      "purposeId": "ଉଦ୍ଦେଶ୍ୟ ID",
+      "purposeName": "ଉଦ୍ଦେଶ୍ୟ ନାମ",
+      "scope": "ସ୍କୋପ୍ (Scope)",
+      "purposeScope": "ଉଦ୍ଦେଶ୍ୟ ସ୍କୋପ୍",
+      "purposeVersion": "ଉଦ୍ଦେଶ୍ୟ ସଂସ୍କରଣ",
+      "requirement": "ଆବଶ୍ୟକତା",
+      "schema": "ସ୍କିମା (Schema)",
+      "type": "ପ୍ରକାର",
+      "version": "ସଂସ୍କରଣ"
+    },
+    "help": {
+      "commaSeparatedGroups": "ଏକାଧିକ ଗ୍ରୁପ୍ ID କୁ କମା ଦ୍ୱାରା ଅଲଗା କରନ୍ତୁ",
+      "defaultNamespace": "ଖାଲି ଥିବାବେଳେ ଡିଫଲ୍ଟ ନେମସ୍ପେସ୍ ବ୍ୟବହାର କରେ",
+      "elementVersionRequiresIdentity": "ପ୍ରଥମେ ଏକ ଉପାଦାନ ନାମ କିମ୍ବା ନେମସ୍ପେସ୍ ପ୍ରବେଶ କରନ୍ତୁ",
+      "organizationPurpose": "ଏକ ସଂଗଠନ-ସ୍ତରର ଉଦ୍ଦେଶ୍ୟ ସୃଷ୍ଟି କରିବାକୁ ଖାଲି ଛାଡନ୍ତୁ",
+      "purposeVersionRequiresName": "ପ୍ରଥମେ ଏକ ଉଦ୍ଦେଶ୍ୟ ନାମ ପ୍ରବେଶ କରନ୍ତୁ",
+      "schemaElementTypes": "ସ୍କିମାଗୁଡ଼ିକ କେବଳ JSON ଏବଂ XML ଉପାଦାନଗୁଡ଼ିକ ପାଇଁ ସମର୍ଥିତ.",
+      "selectElementFirst": "ପ୍ରଥମେ ଏକ ଉପାଦାନ ବାଛନ୍ତୁ"
+    },
+    "values": {
+      "all": "ସମସ୍ତ",
+      "any": "ଯେକୌଣସି",
+      "customNamespace": "କଷ୍ଟମ୍ ନେମସ୍ପେସ୍",
+      "defaultNamespace": "ଡିଫଲ୍ଟ ନେମସ୍ପେସ୍",
+      "mandatory": "ବାଧ୍ୟତାମୂଳକ",
+      "matches": "ମେଳ ଖାଉଛି",
+      "noDescription": "କୌଣସି ବିବରଣୀ ନାହିଁ",
+      "optional": "ଇଚ୍ଛାଧୀନ",
+      "specificGroup": "ନିର୍ଦ୍ଦିଷ୍ଟ ଗ୍ରୁପ୍",
+      "itemCount": "{{count}} ମନୋନୀତ",
+      "latest": "ନୂତନ",
+      "viewing": "ଦେଖାଯାଉଛି"
+    },
+    "elements": {
+      "add": "ଉପାଦାନ ଯୋଡନ୍ତୁ",
+      "activeFilters": "ସକ୍ରିୟ ଫିଲ୍ଟର୍",
+      "back": "ଉପାଦାନଗୁଡ଼ିକୁ ଫେରନ୍ତୁ",
+      "createTitle": "ଉପାଦାନ ସୃଷ୍ଟି କରନ୍ତୁ",
+      "detailsSection": "ଉପାଦାନ ବିବରଣୀ",
+      "empty": "ଚୟନ କରାଯାଇଥିବା ଫିଲ୍ଟର୍ ସହିତ କୌଣସି ଉପାଦାନ ମେଳ ଖାଉନାହିଁ.",
+      "emptyTitle": "କୌଣସି ଉପାଦାନ ମିଳିଲା ନାହିଁ",
+      "filterTitle": "ଉପାଦାନ ଫିଲ୍ଟର୍ କରନ୍ତୁ",
+      "loadFailed": "ବର୍ତ୍ତମାନ ଉପାଦାନ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+      "newVersion": "ନୂତନ ସଂସ୍କରଣ ସୃଷ୍ଟି କରନ୍ତୁ",
+      "refreshing": "ରିଫ୍ରେସ୍ ହେଉଛି...",
+      "results": "{{count}} ଉପାଦାନଗୁଡ଼ିକ",
+      "searchPlaceholder": "ଉପାଦାନ ନାମ ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ",
+      "subtitle": "ପୁନଃବ୍ୟବହାର ଯୋଗ୍ୟ ସମ୍ମତି ଉପାଦାନ ଏବଂ ସେଗୁଡ଼ିକର ସଂସ୍କରଣ ବ୍ୟାଖ୍ୟାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ.",
+      "tableLabel": "ସମ୍ମତି ଉପାଦାନଗୁଡ଼ିକ",
+      "title": "ଉପାଦାନଗୁଡ଼ିକ"
+    },
+    "purposes": {
+      "add": "ଉଦ୍ଦେଶ୍ୟ ଯୋଡନ୍ତୁ",
+      "activeFilters": "ସକ୍ରିୟ ଫିଲ୍ଟର୍",
+      "allPurposes": "ସମସ୍ତ ଉଦ୍ଦେଶ୍ୟ",
+      "back": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକୁ ଫେରନ୍ତୁ",
+      "createTitle": "ଉଦ୍ଦେଶ୍ୟ ସୃଷ୍ଟି କରନ୍ତୁ",
+      "detailsSection": "ଉଦ୍ଦେଶ୍ୟ ବିବରଣୀ",
+      "empty": "ଚୟନ କରାଯାଇଥିବା ଫିଲ୍ଟର୍ ସହିତ କୌଣସି ଉଦ୍ଦେଶ୍ୟ ମେଳ ଖାଉନାହିଁ.",
+      "emptyTitle": "କୌଣସି ଉଦ୍ଦେଶ୍ୟ ମିଳିଲା ନାହିଁ",
+      "filterTitle": "ଉଦ୍ଦେଶ୍ୟ ଫିଲ୍ଟର୍ କରନ୍ତୁ",
+      "loadFailed": "ବର୍ତ୍ତମାନ ଉଦ୍ଦେଶ୍ୟ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+      "newVersion": "ନୂତନ ସଂସ୍କରଣ ସୃଷ୍ଟି କରନ୍ତୁ",
+      "orgWide": "ସଂଗଠନ-ବ୍ୟାପୀ",
+      "refreshing": "ରିଫ୍ରେସ୍ ହେଉଛି...",
+      "results": "{{count}} ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+      "searchLabel": "ଉଦ୍ଦେଶ୍ୟ ସନ୍ଧାନ କରନ୍ତୁ",
+      "searchPlaceholder": "ଉଦ୍ଦେଶ୍ୟ ନାମ ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ",
+      "scopeFilter": "ଉଦ୍ଦେଶ୍ୟ ସ୍କୋପ୍",
+      "subtitle": "ପୁନଃବ୍ୟବହାର ଯୋଗ୍ୟ ସମ୍ମତି ଉଦ୍ଦେଶ୍ୟ ଏବଂ ସେଗୁଡ଼ିକର ଉପାଦାନ ବ୍ୟାଖ୍ୟାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ.",
+      "tableLabel": "ସମ୍ମତି ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+      "title": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ"
+    },
+    "details": {
+      "definition": "ବ୍ୟାଖ୍ୟା",
+      "elementIdentity": "ଉପାଦାନ ପରିଚୟ",
+      "elements": "ଉପାଦାନଗୁଡ଼ିକ",
+      "identity": "ଉଦ୍ଦେଶ୍ୟ ପରିଚୟ",
+      "overview": "ସମୀକ୍ଷା",
+      "versionDetails": "ସଂସ୍କରଣ ବିବରଣୀ",
+      "versions": "ସଂସ୍କରଣ ଇତିହାସ"
+    },
+    "messages": {
+      "createElementFirst": "ଏକ ଉଦ୍ଦେଶ୍ୟ ବ୍ୟାଖ୍ୟା କରିବା ପୂର୍ବରୁ ଏକ ଉପାଦାନ ସୃଷ୍ଟି କରନ୍ତୁ.",
+      "immutableElement": "{{namespace}}:{{name}} ଏକ {{type}} ଉପାଦାନ ରହିଥାଏ. ସଂସ୍କରଣଗୁଡ଼ିକ ମଧ୍ୟରେ ପରିଚୟ ଫିଲ୍ଡ ବଦଳି ପାରିବ ନାହିଁ.",
+      "immutablePurpose": "{{name}} {{groupId}} ର ମାଲିକାନାରେ ରହିଥାଏ. ସଂସ୍କରଣଗୁଡ଼ିକ ମଧ୍ୟରେ ପରିଚୟ ଫିଲ୍ଡ ବଦଳି ପାରିବ ନାହିଁ.",
+      "immutableOrganizationPurpose": "{{name}} ସଂଗଠନ-ବ୍ୟାପୀ ଅଟେ. ଏହାର ପରିଚୟ ଏବଂ ସ୍କୋପ୍ ସଂସ୍କରଣ ମଧ୍ୟରେ ବଦଳି ପାରିବ ନାହିଁ.",
+      "immutableGroupPurpose": "{{name}} ଗ୍ରୁପ୍ {{groupId}} କୁ ସ୍କୋପ୍ କରାଯାଇଛି. ଏହାର ପରିଚୟ ଏବଂ ସ୍କୋପ୍ ସଂସ୍କରଣ ମଧ୍ୟରେ ବଦଳି ପାରିବ ନାହିଁ.",
+      "loadingElements": "ଉପଲବ୍ଧ ଉପାଦାନଗୁଡ଼ିକ ଲୋଡ୍ ହେଉଛି...",
+      "loadingVersions": "ଉପାଦାନ ସଂସ୍କରଣ ଲୋଡ୍ ହେଉଛି...",
+      "noElementsFound": "କୌଣସି ମେଳ ଖାଉଥିବା ଉପାଦାନ ନାହିଁ",
+      "noElements": "ଏହି ସଂସ୍କରଣ ପାଇଁ କୌଣସି ଉପାଦାନ କନଫିଗର୍ କରାଯାଇ ନାହିଁ.",
+      "noProperties": "କୌଣସି କଷ୍ଟମ୍ ବିଶେଷତ୍ୱ ନାହିଁ.",
+      "noSchema": "ଏହି ସଂସ୍କରଣ ପାଇଁ କୌଣସି ସ୍କିମା କନଫିଗର୍ କରାଯାଇ ନାହିଁ.",
+      "noPurposeElements": "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଉପାଦାନ ଯୋଡା ଯାଇନାହିଁ. ଉଦ୍ଦେଶ୍ୟ ସୃଷ୍ଟି କରିବାକୁ ଅତିକମରେ ଗୋଟିଏ ଉପାଦାନ ଯୋଡନ୍ତୁ.",
+      "noVersions": "କୌଣସି ସଂସ୍କରଣ ଉପଲବ୍ଧ ନାହିଁ.",
+      "versionsLoadFailed": "ବର୍ତ୍ତମାନ ସଂସ୍କରଣ ଇତିହାସ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ."
+    },
+    "validation": {
+      "duplicateElements": "ପ୍ରତ୍ୟେକ ଉପାଦାନ କେବଳ ଥରେ ଅନ୍ତର୍ଭୁକ୍ତ କରାଯାଇପାରିବ.",
+      "duplicatePropertyKeys": "ବିଶେଷତ୍ୱ କି ଗୁଡିକ ଅନନ୍ୟ ହେବା ଆବଶ୍ୟକ.",
+      "elementRequired": "ଅତିକମରେ ଗୋଟିଏ ଉପାଦାନ ବାଛନ୍ତୁ.",
+      "groupIdRequired": "ଏକ ଗ୍ରୁପ୍-ନିର୍ଦ୍ଦିଷ୍ଟ ଉଦ୍ଦେଶ୍ୟ ପାଇଁ ଗ୍ରୁପ୍ ID ଆବଶ୍ୟକ.",
+      "nameRequired": "ନାମ ଆବଶ୍ୟକ ଅଟେ.",
+      "namespaceRequired": "କଷ୍ଟମ୍ ଚୟନ ହେଲେ ନେମସ୍ପେସ୍ ଆବଶ୍ୟକ ଅଟେ.",
+      "schemaRequired": "JSON ଏବଂ XML ଉପାଦାନଗୁଡ଼ିକ ପାଇଁ ସ୍କିମା ଆବଶ୍ୟକ."
+    },
+    "delete": {
+      "title": "ସଂସ୍କରଣ ଡିଲିଟ୍ କରନ୍ତୁ",
+      "message": "ସଂସ୍କରଣ {{version}} ଡିଲିଟ୍ କରିବେ କି?",
+      "warning": "ଏହାକୁ ପରିବର୍ତ୍ତନ କରାଯାଇପାରିବ ନାହିଁ. ରେଫରେନ୍ସ କରାଯାଇଥିବା ସଂସ୍କରଣଗୁଡିକ ଡିଲିଟ୍ ହୋଇପାରିବ ନାହିଁ, ଏବଂ ଚୂଡ଼ାନ୍ତ ସଂସ୍କରଣ ଡିଲିଟ୍ କଲେ ସମ୍ପୂର୍ଣ୍ଣ ଏଣ୍ଟ୍ରି ଡିଲିଟ୍ ହୋଇଯିବ."
+    }
+  },
+  "nominee": {
+    "title": "ନାମାଙ୍କନ",
+    "messages": {
+      "loadFailed": "ବର୍ତ୍ତମାନ ନାମାଙ୍କନ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ."
+    },
+    "nominatedFor": {
+      "openAccount": "ଆକାଉଣ୍ଟ ଖୋଲନ୍ତୁ →",
+      "accept": "ଗ୍ରହଣ କରନ୍ତୁ",
+      "reject": "ପ୍ରତ୍ୟାଖ୍ୟାନ କରନ୍ତୁ",
+      "actionNeeded": "ପଦକ୍ଷେପ ଆବଶ୍ୟକ",
+      "ariaLabel": "ମନୋନୀତ ଆକାଉଣ୍ଟଗୁଡ଼ିକ",
+      "empty": "ଏପର୍ଯ୍ୟନ୍ତ କେହି ଆପଣଙ୍କୁ ମନୋନୀତ କରିନାହାଁନ୍ତି.",
+      "title": "ମନୋନୀତ ଆକାଉଣ୍ଟଗୁଡ଼ିକ",
+      "table": {
+        "account": "ଆକାଉଣ୍ଟ",
+        "status": "ସ୍ଥିତି",
+        "actions": "କାର୍ଯ୍ୟଗୁଡ଼ିକ"
+      }
+    },
+    "acting": {
+      "starting": "ଆକାଉଣ୍ଟ ଖୋଲାଯାଉଛି...",
+      "startFailed": "ଆପଣ ଏହି ଆକାଉଣ୍ଟ ପାଇଁ ଜଣେ ନୋମିନୀ ନୁହଁନ୍ତି.",
+      "startFailedHint": "ନାମାଙ୍କନକୁ ଫେରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ.",
+      "blockedTitle": "ନୋମିନୀ ଆକ୍ସେସ୍ ରେ ଉପଲବ୍ଧ ନାହିଁ",
+      "blockedFenced": "ଆକାଉଣ୍ଟ ସେଟିଂସ, କ୍ରେଡେନସିଆଲ୍ସ ଏବଂ ନାମାଙ୍କନ କେବେବି ଅନ୍ୟ ବ୍ୟକ୍ତିଙ୍କ ତରଫରୁ ବ୍ୟବହାର କରାଯାଇପାରିବ ନାହିଁ.",
+      "blockedScope": "ଏହି କ୍ଷେତ୍ର ପାଇଁ ମାଲିକ ଆପଣଙ୍କୁ ଅନୁମତି ଦେଇନାହାଁନ୍ତି.",
+      "backToAllowed": "ମୁଁ ଯାହା ଆକ୍ସେସ୍ କରିପାରିବି ସେଠାକୁ ଯାଆନ୍ତୁ",
+      "exit": "ବାହାରନ୍ତୁ"
+    },
+    "permissions": {
+      "consentView": "ସମ୍ମତି ଦେଖନ୍ତୁ",
+      "consentRevoke": "ସମ୍ମତି ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+      "consentApprove": "ବକେୟା ସମ୍ମତି ଅନୁମୋଦନ କରନ୍ତୁ",
+      "accountView": "ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟ ଦେଖନ୍ତୁ",
+      "accountUpdate": "ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟ ଅପଡେଟ୍ କରନ୍ତୁ",
+      "accountDelete": "ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟ ଡିଲିଟ୍ କରନ୍ତୁ"
+    },
+    "mine": {
+      "add": "ନୋମିନୀ ଯୋଡନ୍ତୁ",
+      "remove": "ହଟାନ୍ତୁ",
+      "empty": "ଆପଣ ଏପର୍ଯ୍ୟନ୍ତ କାହାକୁ ମନୋନୀତ କରିନାହାଁନ୍ତି.",
+      "status": {
+        "active": "ସକ୍ରିୟ",
+        "pending": "ଗ୍ରହଣ ପାଇଁ ଅପେକ୍ଷା କରାଯାଇଛି",
+        "rejected": "ପ୍ରତ୍ୟାଖ୍ୟାତ",
+        "accepted": "ଅନୁମୋଦନ ପାଇଁ ଅପେକ୍ଷା କରାଯାଇଛି",
+        "deactivated": "ସ୍ଥଗିତ କରାଯାଇଛି"
+      },
+      "ariaLabel": "ନୋମିନୀଗୁଡ଼ିକ",
+      "title": "ନୋମିନୀଗୁଡ଼ିକ",
+      "table": {
+        "person": "ବ୍ୟକ୍ତି",
+        "permissions": "ଅନୁମତିଗୁଡ଼ିକ",
+        "status": "ସ୍ଥିତି",
+        "actions": "କାର୍ଯ୍ୟଗୁଡ଼ିକ",
+        "morePermissions": "+{{count}} ଅଧିକ"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "ନୋମିନୀ ଯୋଡନ୍ତୁ",
+        "editTitle": "ନୋମିନୀ ଏଡିଟ୍ କରନ୍ତୁ",
+        "saveChanges": "ପରିବର୍ତ୍ତନ ସେଭ୍ କରନ୍ତୁ",
+        "emailLabel": "ନୋମିନୀଙ୍କ ପଞ୍ଜିକୃତ ଇମେଲ୍",
+        "permissionsTitle": "ଏହି ନୋମିନୀ କଣ କରିପାରିବେ?",
+        "permissionsSubtitle": "କେବଳ ଯାହା ଆପଣ ପ୍ରଦାନ କରିବାକୁ ଚାହୁଁଛନ୍ତି ତାହା ଟିକ୍ କରନ୍ତୁ.",
+        "sensitive": "ସମ୍ବେଦନଶୀଳ",
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+        "processing": "ସେଭ୍ ହେଉଛି...",
+        "confirm": "ନାମାଙ୍କନ ପଠାନ୍ତୁ",
+        "processingEdit": "ସେଭ୍ ହେଉଛି…"
+      },
+      "removeDialog": {
+        "title": "ନୋମିନୀ ହଟାନ୍ତୁ",
+        "message": "{{nomineeEmail}} ଆଉ ଆପଣଙ୍କ ସମ୍ମତି ପରିଚାଳନା କରିପାରିବେ ନାହିଁ.",
+        "confirm": "ନୋମିନୀ ହଟାନ୍ତୁ",
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+        "processing": "ହଟାଯାଉଛି..."
+      }
+    },
+    "manage": {
+      "title": "ମାଲିକଙ୍କ ସମ୍ମତି ପରିଚାଳନା କରାଯାଉଛି",
+      "back": "ନୋମିନୀ ଭ୍ୟୁ ରୁ ବାହାରନ୍ତୁ",
+      "consents": {
+        "title": "ସମ୍ମତିଗୁଡ଼ିକ",
+        "subtitle": "ଏହି ଆକାଉଣ୍ଟ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା ସମ୍ମତି ଦେଖନ୍ତୁ ଏବଂ ଯେଉଁଠି ଅନୁମତି ଅଛି ପ୍ରତ୍ୟାହାର କରନ୍ତୁ."
+      },
+      "selectedCount": "{{count}} ମନୋନୀତ",
+      "revokeSelected": "ମନୋନୀତକୁ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+      "messages": {
+        "loadFailed": "ବର୍ତ୍ତମାନ ସମ୍ମତିଗୁଡ଼ିକ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+        "empty": "ଏହି ଆକାଉଣ୍ଟ ପାଇଁ କୌଣସି ସମ୍ମତି ମିଳିଲା ନାହିଁ."
+      },
+      "table": {
+        "ariaLabel": "ନୋମିନୀ-ପରିଚାଳିତ ସମ୍ମତି ଟେବୁଲ୍",
+        "purposes": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+        "type": "ପ୍ରକାର",
+        "status": "ସ୍ଥିତି",
+        "updated": "ଅପଡେଟ୍ ହୋଇଛି",
+        "actions": "କାର୍ଯ୍ୟଗୁଡ଼ିକ",
+        "revoke": "ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+        "notRevokable": "କେବଳ ସକ୍ରିୟ ସମ୍ମତି ପ୍ରତ୍ୟାହାର କରାଯାଇପାରିବ",
+        "clientLabel": "ସଂଗଠନ: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "ବଲ୍କ ପ୍ରତ୍ୟାହାର ନିଶ୍ଚିତ କରନ୍ତୁ",
+        "message": "ଏହା {{count}} ଟି ସମ୍ମତି ପ୍ରତ୍ୟାହାର କରିବ. ଏହାକୁ ବଦଳାଯାଇପାରିବ ନାହିଁ.",
+        "note": "ଆପଣ ମାଲିକଙ୍କ ତରଫରୁ କରିଥିବା ପ୍ରତ୍ୟେକ କାର୍ଯ୍ୟ ଅଲଗା ଭାବରେ ରେକର୍ଡ ହୁଏ.",
+        "progress": "{{count}} ରୁ {{processed}} ପ୍ରତ୍ୟାହାର ହେଉଛି...",
+        "confirm": "ମନୋନୀତକୁ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+        "processing": "ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି..."
+      },
+      "subtitle": "ଆପଣ ଏହି ଆକାଉଣ୍ଟ ତରଫରୁ କାର୍ଯ୍ୟ କରୁଛନ୍ତି. ମାଲିକ ଯାହା ଅନୁମତି ଦେଇଛନ୍ତି କେବଳ ତାହା ଆପଣ କରିପାରିବେ.",
+      "account": {
+        "title": "ଆକାଉଣ୍ଟ ଆକ୍ସେସ୍",
+        "subtitle": "ମାଲିକ ଆପଣଙ୍କୁ ତାଙ୍କ ଆକାଉଣ୍ଟରେ କରିବାକୁ ଅନୁମତି ଦେଇଥିବା କାର୍ଯ୍ୟଗୁଡ଼ିକ.",
+        "notGranted": "ମାଲିକଙ୍କ ଦ୍ୱାରା ଅନୁମତି ପ୍ରାପ୍ତ ନୁହେଁ"
+      }
+    },
+    "detail": {
+      "title": "ସମ୍ମତି ବିବରଣୀ",
+      "back": "ପଛକୁ"
+    }
+  },
+  "admin": {
+    "title": "ନୋମିନୀ ସକ୍ରିୟକରଣ",
+    "status": {
+      "active": "ସକ୍ରିୟ",
+      "accepted": "ଅନୁମୋଦନ ପାଇଁ ଅପେକ୍ଷା କରାଯାଇଛି",
+      "pending": "ନୋମିନୀ ଉପରେ ଅପେକ୍ଷା କରାଯାଇଛି",
+      "rejected": "ପ୍ରତ୍ୟାଖ୍ୟାତ",
+      "deactivated": "ନିଷ୍କ୍ରିୟ କରାଯାଇଛି"
+    },
+    "pending": {
+      "title": "ଆପଣଙ୍କର ଅନୁମୋଦନ ପାଇଁ ଅପେକ୍ଷା କରାଯାଇଛି",
+      "empty": "ବର୍ତ୍ତମାନ ଆପଣଙ୍କ ପାଇଁ କିଛି ବି ଅପେକ୍ଷା କରିନାହିଁ.",
+      "count": "{{count}} ଅନୁମୋଦନ ପାଇଁ ଅପେକ୍ଷା କରାଯାଇଛି",
+      "appointed": "{{email}} କୁ ନିଯୁକ୍ତ କରାଯାଇଛି",
+      "accepted": "{{date}} ରେ ଗ୍ରହଣ କରାଯାଇଛି"
+    },
+    "search": {
+      "label": "ନାମ କିମ୍ବା ଇମେଲ୍ ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ",
+      "empty": "କୌଣସି ମେଳ ଖାଉଥିବା ଆକାଉଣ୍ଟ ମିଳିଲା ନାହିଁ.",
+      "results": "ଆକାଉଣ୍ଟଗୁଡ଼ିକ"
+    },
+    "table": {
+      "ariaLabel": "ନାମାଙ୍କନଗୁଡ଼ିକ",
+      "owner": "ଆକାଉଣ୍ଟ",
+      "nominee": "ନୋମିନୀ",
+      "permissions": "ଅନୁମୋଦିତ",
+      "status": "ସ୍ଥିତି",
+      "nominated": "ମନୋନୀତ",
+      "actions": "କାର୍ଯ୍ୟଗୁଡ଼ିକ"
+    },
+    "controls": {
+      "title": "ନୋମିନୀଗୁଡ଼ିକ",
+      "titleNamed": "{{name}} ଙ୍କର ନୋମିନୀଗୁଡ଼ିକ",
+      "nominated": "{{date}} ରେ ମନୋନୀତ",
+      "ticket": "ଟିକେଟ୍ {{ticket}}",
+      "waitingNominee": "କିଛି କରିବାକୁ ନାହିଁ - ନୋମିନୀ ଗ୍ରହଣ କରିନାହାଁନ୍ତି.",
+      "activate": "ଆକ୍ସେସ୍ ସକ୍ରିୟ କରନ୍ତୁ",
+      "noAction": "-",
+      "owner": "ଆକାଉଣ୍ଟ",
+      "deactivate": "ଆକ୍ସେସ୍ ପ୍ରତ୍ୟାହାର କରନ୍ତୁ",
+      "none": "ଏହି ଆକାଉଣ୍ଟ କାହାକୁ ନିଯୁକ୍ତ କରିନାହିଁ."
+    },
+    "activateDialog": {
+      "title": "ନୋମିନୀ ଆକ୍ସେସ୍ ସକ୍ରିୟ କରନ୍ତୁ",
+      "ticketLabel": "ଆଇନଗତ/ସମର୍ଥନ ଟିକେଟ୍ ରେଫରେନ୍ସ",
+      "confirm": "ଆକ୍ସେସ୍ ସକ୍ରିୟ କରନ୍ତୁ",
+      "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+      "processing": "ସକ୍ରିୟ ହେଉଛି...",
+      "subtitle": "ଏହା {{nomineeName}} କୁ {{ownerName}} ଙ୍କର ସମ୍ମତି ପରିଚାଳନା ପାଇଁ ଆକ୍ସେସ୍ ଦିଏ."
+    },
+    "deactivateDialog": {
+      "title": "ନୋମିନୀ ଆକ୍ସେସ୍ ନିଷ୍କ୍ରିୟ କରନ୍ତୁ",
+      "reasonLabel": "କାରଣ",
+      "confirm": "ଆକ୍ସେସ୍ ନିଷ୍କ୍ରିୟ କରନ୍ତୁ",
+      "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+      "processing": "ନିଷ୍କ୍ରିୟ ହେଉଛି...",
+      "subtitle": "ଏହା ତୁରନ୍ତ {{ownerName}} ଙ୍କ ସମ୍ମତି ପାଇଁ ନୋମିନୀଙ୍କ ଆକ୍ସେସ୍ ପ୍ରତ୍ୟାହାର କରେ."
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ଡାଟା ଉଲ୍ଲଂଘନ (Data breach)",
+      "UNAUTHORIZED_DATA_SHARING": "ଅନଧିକୃତ ଡାଟା ଅଂଶୀଦାର",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "ସମ୍ମତି ପ୍ରତ୍ୟାହାର ସମସ୍ୟା",
+      "PURPOSE_VIOLATION": "ଉଦ୍ଦେଶ୍ୟ ଉଲ୍ଲଂଘନ",
+      "DATA_ERASURE_NOT_COMPLETED": "ଡାଟା ଲିଭାଇବା ଅନୁରୋଧ ପୂରଣ ହୋଇନାହିଁ",
+      "DATA_CORRECTION_NOT_COMPLETED": "ଡାଟା ସଂଶୋଧନ ଅନୁରୋଧ ପୂରଣ ହୋଇନାହିଁ",
+      "CONSENT_LIFECYCLE_ISSUE": "ସମ୍ମତି ପରିଚାଳକ (Consent manager) ସମସ୍ୟା",
+      "DATA_ACCESS_DENIED": "ଡାଟା ଆକ୍ସେସ୍ ଅନୁରୋଧ ପ୍ରତ୍ୟାଖ୍ୟାନ",
+      "EXCESSIVE_DATA_COLLECTION": "ଅତ୍ୟଧିକ ଡାଟା ସଂଗ୍ରହ",
+      "OTHER": "ଅନ୍ୟାନ୍ୟ"
+    },
+    "status": {
+      "open": "ଖୋଲା",
+      "investigation": "ପ୍ରକ୍ରିୟାଧୀନ",
+      "awaitingInfo": "ଗ୍ରାହକଙ୍କୁ ଅପେକ୍ଷା କରାଯାଇଛି",
+      "waitingOnDpo": "ଆଭ୍ୟନ୍ତରୀଣ ସମୀକ୍ଷାକୁ ଅପେକ୍ଷା",
+      "resolved": "ସମାଧାନ ହୋଇଛି"
+    },
+    "priority": {
+      "CRITICAL": "ଅତି ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ",
+      "HIGH": "ଉଚ୍ଚ",
+      "MEDIUM": "ମଧ୍ୟମ",
+      "LOW": "ନିମ୍ନ"
+    },
+    "sla": {
+      "dueDate": "ଦେୟ {{date}}",
+      "dueToday": "ଆଜି ଦେୟ",
+      "overdueSingular": "{{count}} ଦିନ ବିଳମ୍ବ",
+      "overduePlural": "{{count}} ଦିନ ବିଳମ୍ବ",
+      "daysLeftSingular": "{{count}} ଦିନ ବାକି",
+      "daysLeftPlural": "{{count}} ଦିନ ବାକି"
+    },
+    "timeline": {
+      "complaintReceived": "ଅଭିଯୋଗ ଗ୍ରହଣ କରାଗଲା",
+      "statusChangePrefix": "ରୁ ସ୍ଥିତି ପରିବର୍ତ୍ତନ ହୋଇଛି",
+      "statusChangeJoiner": "ରୁ"
+    },
+    "list": {
+      "title": "ମୋର ଅଭିଯୋଗ",
+      "subtitle": "ଆପଣ ଦାଖଲ କରିଥିବା ଅଭିଯୋଗଗୁଡିକ ଏବଂ ସେଗୁଡ଼ିକର ଅଗ୍ରଗତି ଟ୍ରାକ୍ କରନ୍ତୁ.",
+      "submitNew": "ଏକ ଅଭିଯୋଗ ଦାଖଲ କରନ୍ତୁ",
+      "loadFailed": "ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ଅଭିଯୋଗ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+      "empty": "ଆପଣ ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ଅଭିଯୋଗ ଦାଖଲ କରିନାହାଁନ୍ତି.",
+      "emptyFiltered": "ଚୟନ କରାଯାଇଥିବା ଫିଲ୍ଟର୍ ସହିତ କୌଣସି ଅଭିଯୋଗ ମେଳ ଖାଉନାହିଁ.",
+      "filters": {
+        "status": "ସ୍ଥିତି",
+        "all": "ସମସ୍ତ"
+      },
+      "table": {
+        "tableAriaLabel": "ମୋର ଅଭିଯୋଗ ଟେବୁଲ୍",
+        "headers": {
+          "referenceId": "ରେଫରେନ୍ସ ID",
+          "category": "ବର୍ଗ",
+          "status": "ସ୍ଥିତି",
+          "submitted": "ଦାଖଲ ହୋଇଛି",
+          "updated": "ଅପଡେଟ୍ ହୋଇଛି"
+        }
+      }
+    },
+    "detail": {
+      "back": "ମୋର ଅଭିଯୋଗଗୁଡ଼ିକୁ ଫେରନ୍ତୁ",
+      "notFound": "ଅଭିଯୋଗ ମିଳିଲା ନାହିଁ",
+      "description": "ବିବରଣୀ",
+      "submittedOn": "{{date}} ରେ ଦାଖଲ ହୋଇଛି",
+      "awaitingInfo": {
+        "note": "ଅଭିଯୋଗ ଅଧିକାରୀ ଆପଣଙ୍କଠାରୁ ଅଧିକ ସୂଚନାକୁ ଅପେକ୍ଷା କରିଛନ୍ତି. ଦୟାକରି ତଳେ ଉତ୍ତର ଦିଅନ୍ତୁ."
+      },
+      "resolved": {
+        "note": "ଏହି ଅଭିଯୋଗର ସମାଧାନ ହୋଇଛି."
+      }
+    },
+    "submit": {
+      "title": "ଏକ ଅଭିଯୋଗ ଦାଖଲ କରନ୍ତୁ",
+      "subtitle": "କଣ ଘଟିଲା ଆମକୁ କୁହନ୍ତୁ ଏବଂ ଆମେ ଏହାକୁ ଠିକ୍ ଟିମ୍ ପାଖକୁ ପଠାଇବୁ.",
+      "submitFailed": "ବର୍ତ୍ତମାନ ଆପଣଙ୍କର ଅଭିଯୋଗ ଦାଖଲ କରିବାରେ ଅସମର୍ଥ. ଦୟାକରି ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ.",
+      "fields": {
+        "category": "ବର୍ଗ",
+        "categoryPlaceholder": "ଏକ ବର୍ଗ ବାଛନ୍ତୁ",
+        "categoryHelp": "ଆପଣଙ୍କର ଅଭିଯୋଗକୁ ସର୍ବୋତ୍ତମ ବର୍ଣ୍ଣନା କରୁଥିବା ବିକଳ୍ପ ବାଛନ୍ତୁ.",
+        "categoriesLoadFailed": "ବର୍ତ୍ତମାନ ଅଭିଯୋଗ ବର୍ଗ ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+        "description": "ବିବରଣୀ",
+        "descriptionPlaceholder": "ଆପଣଙ୍କର ଅଭିଯୋଗ ବିସ୍ତୃତ ଭାବରେ ବର୍ଣ୍ଣନା କରନ୍ତୁ",
+        "descriptionHelp": "ଏହାକୁ ଶୀଘ୍ର ସମାଧାନ କରିବାରେ ଆମକୁ ସାହାଯ୍ୟ କରିବାକୁ ଯଥାସମ୍ଭବ ବିବରଣୀ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ.",
+        "attachments": "ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକ (ଇଚ୍ଛାଧୀନ)",
+        "attachmentsHelp": "PDF, DOCX, PNG, କିମ୍ବା JPG ପ୍ରତ୍ୟେକ {{maxSize}} ପର୍ଯ୍ୟନ୍ତ.",
+        "uploadButton": "ଫାଇଲ୍ ଅପଲୋଡ୍ କରନ୍ତୁ"
+      },
+      "validation": {
+        "categoryRequired": "ଜାରି ରଖିବାକୁ ଏକ ବର୍ଗ ବାଛନ୍ତୁ.",
+        "descriptionRequired": "ଜାରି ରଖିବାକୁ ଆପଣଙ୍କର ଅଭିଯୋଗ ବର୍ଣ୍ଣନା କରନ୍ତୁ.",
+        "attachmentTooLarge": "{{fileNames}} ଗୁଡିକ {{maxSize}} ଆଟାଚମେଣ୍ଟ ଆକାର ସୀମା ଅତିକ୍ରମ କରେ."
+      },
+      "success": {
+        "message": "ଆପଣଙ୍କର ଅଭିଯୋଗ {{referenceId}} ଦାଖଲ କରାଯାଇଛି.",
+        "attachmentFailedMessage": "ଆପଣଙ୍କର ଅଭିଯୋଗ {{referenceId}} ଦାଖଲ ହୋଇଛି, କିନ୍ତୁ ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକ ଅପଲୋଡ୍ ହୋଇପାରିଲା ନାହିଁ. ଆପଣ ସେଗୁଡ଼ିକୁ ଅଭିଯୋଗ ବିବରଣୀ ପୃଷ୍ଠାରୁ ଯୋଡି ପାରିବେ."
+      },
+      "actions": {
+        "cancel": "ବାତିଲ୍ କରନ୍ତୁ",
+        "submit": "ଅଭିଯୋଗ ଦାଖଲ କରନ୍ତୁ"
+      }
+    },
+    "activity": {
+      "title": "କାର୍ଯ୍ୟକଳାପ",
+      "send": "ପଠାନ୍ତୁ",
+      "sendOnly": "କେବଳ ପଠାନ୍ତୁ",
+      "sendOptions": "ଅଧିକ ପଠାଇବା ବିକଳ୍ପଗୁଡ଼ିକ",
+      "sendAndChangeStatusTo": "ପଠାନ୍ତୁ ଏବଂ ସ୍ଥିତିକୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ",
+      "sendAndUpdateStatus": "ପଠାନ୍ତୁ ଏବଂ {{status}} ଭାବରେ ଚିହ୍ନିତ କରନ୍ତୁ",
+      "publicReply": "ଉତ୍ତର ଦିଅନ୍ତୁ",
+      "internalNote": "ଆଭ୍ୟନ୍ତରୀଣ ନୋଟ୍",
+      "internalTag": "ଆଭ୍ୟନ୍ତରୀଣ",
+      "dataPrincipalRoleLabel": "ଗ୍ରାହକ",
+      "officerRoleLabel": "ଅଭିଯୋଗ ଅଧିକାରୀ",
+      "composerPlaceholderPublic": "ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଏକ ଉତ୍ତର ଲେଖନ୍ତୁ...",
+      "composerPlaceholderInternal": "ଏକ ଆଭ୍ୟନ୍ତରୀଣ ନୋଟ୍ ଲେଖନ୍ତୁ (ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଦୃଶ୍ୟମାନ ନୁହେଁ)...",
+      "attach": "ସଂଲଗ୍ନ କରନ୍ତୁ",
+      "attachmentsHelp": "PDF, DOCX, PNG, କିମ୍ବା JPG ପ୍ରତି ଫାଇଲ୍ {{maxSize}} ପର୍ଯ୍ୟନ୍ତ.",
+      "attachmentTooLarge": "{{fileNames}} ଗୁଡିକ {{maxSize}} ଆଟାଚମେଣ୍ଟ ଆକାର ସୀମା ଅତିକ୍ରମ କରେ.",
+      "removeAttachment": "ଆଟାଚମେଣ୍ଟ ହଟାନ୍ତୁ"
+    },
+    "attachments": {
+      "tabLabel": "ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକ",
+      "tabLabelWithCount": "ଆଟାଚମେଣ୍ଟଗୁଡ଼ିକ ({{count}})",
+      "empty": "ଏହି ଅଭିଯୋଗରେ କୌଣସି ଆଟାଚମେଣ୍ଟ ଯୋଡା ଯାଇନାହିଁ.",
+      "initialSubmission": "ପ୍ରାରମ୍ଭିକ ଦାଖଲ",
+      "internalNote": "ଆଭ୍ୟନ୍ତରୀଣ",
+      "overflowMore": "+{{count}} ଅଧିକ"
+    },
+    "management": {
+      "queue": {
+        "title": "ଅଭିଯୋଗଗୁଡ଼ିକ",
+        "loadFailed": "ବର୍ତ୍ତମାନ ଅଭିଯୋଗ ଧାଡି ଲୋଡ୍ କରିବାରେ ଅସମର୍ଥ.",
+        "empty": "ଚୟନ କରାଯାଇଥିବା ଫିଲ୍ଟର୍ ସହିତ କୌଣସି ଅଭିଯୋଗ ମେଳ ଖାଉନାହିଁ.",
+        "stats": {
+          "open": "ଖୋଲା",
+          "awaitingInfo": "ପ୍ରତିକ୍ରିୟା ଅପେକ୍ଷାରେ",
+          "resolved": "ସମାଧାନ ହୋଇଛି",
+          "slaBreached": "SLA ଉଲ୍ଲଂଘନ ହୋଇଛି"
+        },
+        "filters": {
+          "sectionAriaLabel": "ଅଭିଯୋଗ ଧାଡି ଫିଲ୍ଟର୍",
+          "status": "ସ୍ଥିତି",
+          "priority": "ପ୍ରାଥମିକତା",
+          "search": "ରେଫରେନ୍ସ ID କିମ୍ବା ଉପଯୋଗକର୍ତ୍ତା ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ",
+          "all": "ସମସ୍ତ",
+          "clear": "ଫିଲ୍ଟର୍ ସଫା କରନ୍ତୁ",
+          "clearAriaLabel": "ସମସ୍ତ ଫିଲ୍ଟର୍ ସଫା କରନ୍ତୁ"
+        },
+        "table": {
+          "tableAriaLabel": "ଅଭିଯୋଗ ଧାଡି ଟେବୁଲ୍",
+          "headers": {
+            "referenceId": "ରେଫରେନ୍ସ ID",
+            "dataPrincipal": "ଉପଯୋଗକର୍ତ୍ତା",
+            "category": "ବର୍ଗ",
+            "priority": "ପ୍ରାଥମିକତା",
+            "status": "ସ୍ଥିତି",
+            "sla": "SLA",
+            "updated": "ଅପଡେଟ୍ ହୋଇଛି"
+          }
+        }
+      },
+      "case": {
+        "back": "ଧାଡିକୁ ଫେରନ୍ତୁ",
+        "notFound": "ଅଭିଯୋଗ ମିଳିଲା ନାହିଁ",
+        "dataPrincipal": "ଉପଯୋଗକର୍ତ୍ତା"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "ସବସ୍କ୍ରିପସନ୍",
+      "subtitle": "ଇଭେଣ୍ଟ ବିଜ୍ଞପ୍ତି ଫ୍ରେମୱାର୍କ (Event Notification Framework) ମାଧ୍ୟମରେ ସମସ୍ତ ପଞ୍ଜିକୃତ ସବସ୍କ୍ରିପସନ୍.",
+      "addAction": "ସବସ୍କ୍ରିପସନ୍ ଯୋଡନ୍ତୁ",
+      "filters": {
+        "sectionAriaLabel": "ସବସ୍କ୍ରିପସନ୍ ଫିଲ୍ଟର୍",
+        "status": "ସ୍ଥିତି",
+        "topic": "ବିଷୟ",
+        "clear": "ଫିଲ୍ଟର୍ ସଫା କରନ୍ତୁ",
+        "statusOptions": {
+          "all": "ସମସ୍ତ ସ୍ଥିତି",
+          "active": "ସକ୍ରିୟ",
+          "pendingVerification": "ବକେୟା",
+          "stale": "ପୁରୁଣା (Stale)"
+        },
+        "topicOptions": {
+          "all": "ସମସ୍ତ ବିଷୟ"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "ସବସ୍କ୍ରିପସନ୍ ସଫଳତାର ସହ ପୁନଃ-ଯାଞ୍ଚ ହୋଇଛି. ସ୍ଥିତି ବର୍ତ୍ତମାନ ସକ୍ରିୟ ଅଟେ.",
+        "reverifyStillStale": "ଯାଞ୍ଚ ପୁଣି ବିଫଳ ହେଲା. ସବସ୍କ୍ରିପସନ୍ ପୁରୁଣା (STALE) ରହିଥାଏ.",
+        "reverifyFailed": "ପୁନଃ-ଯାଞ୍ଚ ବିଫଳ ହେଲା."
+      }
+    },
+    "events": {
+      "title": "ଇଭେଣ୍ଟଗୁଡ଼ିକ",
+      "subtitle": "ଇଭେଣ୍ଟ ବିଜ୍ଞପ୍ତି ଫ୍ରେମୱାର୍କରେ ସମସ୍ତ ଇଭେଣ୍ଟ ବିତରଣ.",
+      "filters": {
+        "sectionAriaLabel": "ଇଭେଣ୍ଟ ଫିଲ୍ଟର୍",
+        "status": "ସ୍ଥିତି",
+        "topic": "ବିଷୟ",
+        "search": "ଇଭେଣ୍ଟ ସନ୍ଧାନ କରନ୍ତୁ",
+        "searchPlaceholder": "ଉଦ୍ଦେଶ୍ୟ କିମ୍ବା ସବସ୍କ୍ରାଇବର ID ଦ୍ୱାରା ସନ୍ଧାନ କରନ୍ତୁ...",
+        "clear": "ଫିଲ୍ଟର୍ ସଫା କରନ୍ତୁ",
+        "statusOptions": {
+          "all": "ସମସ୍ତ ସ୍ଥିତି"
+        },
+        "topicOptions": {
+          "all": "ସମସ୍ତ ବିଷୟ"
+        }
+      },
+      "emptyTitle": "କୌଣସି ଇଭେଣ୍ଟ ମିଳିଲା ନାହିଁ",
+      "emptyMessage": "କୌଣସି ପ୍ରକାଶିତ ଇଭେଣ୍ଟ ମନୋନୀତ ମାନଦଣ୍ଡ ସହିତ ମେଳ ଖାଉନାହିଁ.",
+      "table": {
+        "eventId": "ଇଭେଣ୍ଟ ID",
+        "topic": "ବିଷୟ",
+        "purposes": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+        "deliveries": "ବିତରଣ",
+        "occurredAt": "ଘଟିଥିବା ସମୟ",
+        "action": "କାର୍ଯ୍ୟ",
+        "all": "ସମସ୍ତ",
+        "noSubscribers": "କୌଣସି ସବସ୍କ୍ରାଇବର ନାହାଁନ୍ତି",
+        "viewEvent": "ଇଭେଣ୍ଟ ଦେଖନ୍ତୁ",
+        "subscriberCount_one": "{{count}} ସବସ୍କ୍ରାଇବର",
+        "subscriberCount_other": "{{count}} ସବସ୍କ୍ରାଇବର"
+      },
+      "detail": {
+        "notFoundTitle": "ଇଭେଣ୍ଟ ମିଳିଲା ନାହିଁ",
+        "notFoundMessage": "ID \"{{eventId}}\" ସହିତ କୌଣସି ଇଭେଣ୍ଟ ମିଳିଲା ନାହିଁ.",
+        "backToEvents": "ଇଭେଣ୍ଟଗୁଡ଼ିକୁ ଫେରନ୍ତୁ",
+        "topic": "ବିଷୟ",
+        "purposes": "ଉଦ୍ଦେଶ୍ୟଗୁଡ଼ିକ",
+        "occurredAt": "ଘଟିଥିବା ସମୟ",
+        "deliveries": "ବିତରଣଗୁଡ଼ିକ",
+        "all": "ସମସ୍ତ",
+        "noSubscribers": "କୌଣସି ସବସ୍କ୍ରାଇବର ନାହାଁନ୍ତି",
+        "subscriberCount_one": "{{count}} ସବସ୍କ୍ରାଇବର",
+        "subscriberCount_other": "{{count}} ସବସ୍କ୍ରାଇବର"
+      },
+      "dialog": {
+        "title": "ପୁଣି ଚେଷ୍ଟା ଇତିହାସ",
+        "deliveryId": "ବିତରଣ ID",
+        "loading": "ଇଭେଣ୍ଟ ବିତରଣ ଇତିହାସ ଲୋଡ୍ ହେଉଛି…",
+        "noRetries": "ପ୍ରାରମ୍ଭିକ ପ୍ରୟାସ ସମ୍ପୂର୍ଣ୍ଣ ହେଲା. କୌଣସି ପୁନଃ-ପ୍ରୟାସ ରେକର୍ଡ ହୋଇନାହିଁ.",
+        "attempt": "ପ୍ରୟାସ {{attempt}}",
+        "retrySuffix": " (ପୁଣି ଚେଷ୍ଟା)",
+        "webhookDescription": "HTTP ବିତରଣ ପ୍ରୟାସ ଏବଂ ପୁନଃ-ପ୍ରୟାସର କ୍ରମାନୁସାର ଇତିହାସ.",
+        "pollTitle": "ପୋଲ୍ ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି ଏବଂ ସ୍ୱୀକୃତି",
+        "completionStatus": "ସମ୍ପୂର୍ଣ୍ଣ ସ୍ଥିତି",
+        "completionTimestamp": "ସମ୍ପୂର୍ଣ୍ଣ ଟାଇମଷ୍ଟାମ୍ପ",
+        "erasureMethod": "ଲିଭାଇବା ପଦ୍ଧତି",
+        "recordsAffected": "ପ୍ରଭାବିତ ରେକର୍ଡଗୁଡିକ",
+        "referenceId": "ରେଫରେନ୍ସ ID",
+        "submittedBy": "ଦ୍ୱାରା ଦାଖଲ ହୋଇଛି",
+        "notes": "ନୋଟ୍",
+        "noAcknowledgment": "ଏପର୍ଯ୍ୟନ୍ତ କୌଣସି ପୋଲ୍ ସମ୍ପୂର୍ଣ୍ଣ ସ୍ୱୀକୃତି ଦାଖଲ କରାଯାଇ ନାହିଁ.",
+        "close": "ବନ୍ଦ କରନ୍ତୁ"
+      }
+    }
+  }
+}

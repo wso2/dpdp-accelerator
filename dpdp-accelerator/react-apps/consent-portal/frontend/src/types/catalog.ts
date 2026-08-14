@@ -16,117 +16,181 @@
  * under the License.
  */
 
-/** Pagination link returned by the Identity Server catalog and consent APIs. */
-export interface CursorLink {
-  rel: 'next' | 'previous' | string
-  href: string
-}
+export type ElementType = 'basic' | 'json' | 'xml'
 
-/** Cursor page envelope shared by every administrative and catalog listing. */
-export interface CursorPage {
-  totalResults: number
-  links: CursorLink[]
-}
-
-export interface CursorPageParams {
+export interface PaginationMetadata {
+  total: number
+  offset: number
+  count: number
   limit: number
-  after?: string
-  before?: string
 }
 
-/** Element listing adds the Identity Server's SCIM-style `filter` parameter. */
-export interface ElementListQueryParams extends CursorPageParams {
-  filter?: string
-}
-
-/** Purpose listing supports the same `filter` grammar, over `name` and `type`. */
-export interface PurposeListQueryParams extends CursorPageParams {
-  filter?: string
-}
-
-export interface PurposeVersionRef {
-  id: string
+export interface ElementVersion {
+  elementId: string
+  name: string
+  namespace: string
   version: string
+  type: ElementType
+  displayName?: string
+  description?: string
+  schema?: string
+  properties?: Record<string, string>
+  createdTime: number
+}
+
+export type ElementSummary = ElementVersion
+
+export interface ElementVersionItem {
+  version: string
+  displayName?: string
+  description?: string
+  schema?: string
+  properties?: Record<string, string>
+  createdTime: number
+}
+
+export interface ElementVersionList {
+  elementId: string
+  name: string
+  namespace: string
+  type: ElementType
+  versions: ElementVersionItem[]
+}
+
+export interface ElementListResponse {
+  data: ElementSummary[]
+  metadata: PaginationMetadata
+}
+
+export interface ElementFilters {
+  name: string
+  namespace: string
+  type: ElementType | 'All'
+  version: string
+}
+
+export interface ElementCreateRequest {
+  name: string
+  namespace?: string
+  type: ElementType
+  displayName?: string
+  description?: string
+  schema?: string
+  properties?: Record<string, string>
+}
+
+export interface ElementVersionCreateRequest {
+  displayName?: string
+  description?: string
+  schema?: string
+  properties?: Record<string, string>
+}
+
+export interface ElementBulkCreateResult {
+  index?: number
+  status: 'SUCCESS' | 'FAILED'
+  data?: ElementVersion
+  element?: ElementVersion
+  error?:
+    | string
+    | {
+        code?: string
+        message?: string
+        description?: string
+      }
+}
+
+export interface ElementBulkCreateResponse {
+  metadata?: {
+    traceId: string
+    total: number
+    succeeded: number
+    failed: number
+  }
+  results: ElementBulkCreateResult[]
+}
+
+export interface PurposeElement {
+  elementId: string
+  name: string
+  namespace: string
+  version: string
+  displayName?: string | null
+  description?: string | null
+  mandatory: boolean
+}
+
+export interface PurposeVersion {
+  purposeId: string
+  name: string
+  groupId: string
+  version: string
+  displayName?: string
+  description?: string
+  properties?: Record<string, string>
+  elements: PurposeElement[]
+  createdTime: number
 }
 
 export interface PurposeSummary {
-  id: string
+  purposeId: string
   name: string
-  description?: string
-  type: string
-  latestVersion?: PurposeVersionRef
-  tenantDomain?: string
-}
-
-/** Purpose definition elements DO carry a `mandatory` flag. */
-export interface PurposeElement {
-  id: string
-  name: string
+  groupId: string
+  version: string
   displayName?: string
   description?: string
-  mandatory: boolean
+  createdTime: number
+  elements?: PurposeElement[]
+  properties?: Record<string, string>
 }
 
-export interface PurposeDetail extends PurposeSummary {
+export interface PurposeVersionItem {
+  version: string
+  displayName?: string
+  description?: string
+  properties?: Record<string, string>
   elements: PurposeElement[]
-  properties?: Record<string, string>
+  createdTime: number
 }
 
-export interface PurposeVersionSummary {
-  id: string
-  version: string
-  description?: string
+export interface PurposeVersionList {
+  purposeId: string
+  name: string
+  groupId: string
+  versions: PurposeVersionItem[]
 }
 
-export interface PurposeListResponse extends CursorPage {
-  Purposes: PurposeSummary[]
+export interface PurposeListResponse {
+  data: PurposeSummary[]
+  metadata: PaginationMetadata
 }
 
-export interface PurposeVersionListResponse extends CursorPage {
-  Versions: PurposeVersionSummary[]
+export interface PurposeFilters {
+  purposeName: string
+  elementName: string
+  elementNamespace: string
+  elementVersion: string
+  groupIds: string
 }
 
-export interface PurposeElementInput {
-  id: string
+export interface PurposeElementRequest {
+  name: string
+  namespace?: string
+  version?: string
   mandatory: boolean
 }
 
-/**
- * Payload for a purpose version. The Identity Server does not carry a new
- * version's description/elements/properties over from the version it was
- * created from -- the dialog has to copy them explicitly if that's wanted.
- */
-export interface PurposeVersionInput {
-  version: string
-  setAsLatest?: boolean
-  description?: string
-  elements?: PurposeElementInput[]
-  properties?: Record<string, string>
-}
-
-/** Payload for creating a purpose. IS has no element/type enum -- both are free text. */
-export interface PurposeInput extends PurposeVersionInput {
-  name: string
-  type: string
-}
-
-export interface CatalogElement {
-  id: string
-  name: string
-  displayName?: string
-  description?: string
-  tenantDomain?: string
-  properties?: Record<string, string>
-}
-
-export interface ElementListResponse extends CursorPage {
-  Elements: CatalogElement[]
-}
-
-/** Payload for creating an element. The Identity Server has no type, namespace or schema fields. */
-export interface ElementInput {
+export interface PurposeCreateRequest {
   name: string
   displayName?: string
   description?: string
   properties?: Record<string, string>
+  elements: PurposeElementRequest[]
+}
+
+export interface PurposeVersionCreateRequest {
+  displayName?: string
+  description?: string
+  properties?: Record<string, string>
+  elements: PurposeElementRequest[]
 }

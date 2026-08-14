@@ -16,102 +16,127 @@
  * under the License.
  */
 
-import type { CursorLink } from './catalog'
+export type ConsentStatus = 'Active' | 'Pending' | 'Rejected' | 'Revoked' | 'Expired'
 
-export const CONSENT_STATES = ['PENDING', 'ACTIVE', 'REJECTED', 'REVOKED', 'EXPIRED'] as const
+export const CONSENT_API_STATUSES = ['CREATED', 'ACTIVE', 'REJECTED', 'REVOKED', 'EXPIRED'] as const
 
-export type ConsentState = (typeof CONSENT_STATES)[number]
+export type ConsentAPIStatus = (typeof CONSENT_API_STATUSES)[number]
 
-export function isConsentState(state: string): state is ConsentState {
-  return CONSENT_STATES.includes(state as ConsentState)
+export function isConsentAPIStatus(status: string): status is ConsentAPIStatus {
+  return CONSENT_API_STATUSES.includes(status as ConsentAPIStatus)
 }
 
-export const CONSENT_AUTHORIZATION_STATES = ['APPROVED', 'REJECTED', 'REVOKED', 'EXPIRED'] as const
-
-export type ConsentAuthorizationState = (typeof CONSENT_AUTHORIZATION_STATES)[number]
-
-/**
- * An element referenced by a consented purpose.
- *
- * Consent level elements carry no approval or requirement flags in WSO2
- * Identity Server 7.3; those live on the purpose definition instead.
- */
-export interface ConsentPurposeElement {
-  id: string
-  name: string
-  displayName?: string
-}
-
-export interface ConsentPurpose {
-  id: string
-  name: string
-  type: string
-  versionId: string
-  version: string
-  elements: ConsentPurposeElement[]
-  properties?: Record<string, string>
-}
-
-/** `userId` is a username (for example "admin"), not an identifier. */
-export interface ConsentAuthorization {
-  userId: string
-  state: ConsentAuthorizationState | string
-  updatedTime: number
-}
-
-export interface ConsentDetail {
-  id: string
-  /** Username of the data subject, not an identifier. */
-  subjectId: string
-  serviceId: string
-  state: ConsentState | string
-  language?: string
-  timestamp: number
-  expiryTime?: number
-  purposes: ConsentPurpose[]
-  authorizations?: ConsentAuthorization[]
-  properties?: Record<string, string>
-}
-
-/** Consents returned by the administrative list endpoint carry no purposes. */
-export interface ConsentSummary {
-  id: string
-  subjectId: string
-  serviceId: string
-  state: ConsentState | string
-  timestamp: number
-}
-
-/**
- * Row model shared by the self-service and administrative consent tables.
- *
- * `purposes` is undefined when the source endpoint does not return them.
- */
 export interface ConsentRecord {
   id: string
-  subjectId: string
-  serviceId: string
-  state: ConsentState
-  timestamp: number
-  purposes?: string[]
+  groupId: string
+  type: string
+  status: ConsentAPIStatus
+  purposes: string[]
+  updatedAt: string
+  expirationTime?: number
+  canRevoke: boolean
+  canApprove: boolean
 }
 
 export interface ConsentRegistryFilters {
-  state: 'All' | ConsentState
-  serviceId: string
+  status: 'All' | ConsentStatus
+  purposeName: string
+  groupIds: string
+  startDate: string
+  endDate: string
 }
 
 export interface AdminConsentRegistryFilters extends ConsentRegistryFilters {
   consentId: string
-  subjectId: string
+  userIds: string
+  purposeVersion: string
+  elementName: string
+  elementNamespace: string
+  elementVersion: string
 }
 
-/**
- * Self-service search metadata.
- *
- * `total` only counts the records seen so far because the upstream API is
- * cursor based and reports no grand total. Never render it as an exact count.
- */
+export type ConsentRegistrySortField = 'status' | 'updatedTime' | 'validityTime'
+export type ConsentRegistrySortDirection = 'asc' | 'desc'
+
+export interface ConsentListQueryParams {
+  consentStatuses?: string
+  userIds?: string
+  purposeName?: string
+  purposeVersion?: string
+  groupIds?: string
+  elementName?: string
+  elementNamespace?: string
+  elementVersion?: string
+  sort?: string
+  fromTime?: number
+  toTime?: number
+  limit: number
+  offset: number
+}
+
+export interface ConsentElementApprovalItem {
+  elementId: string
+  name: string
+  namespace: string
+  version: string
+  displayName?: string
+  approved: boolean
+  mandatory: boolean
+  value?: unknown
+  description?: string
+}
+
+export interface ConsentApprovalSelection {
+  purposeId: string
+  purposeVersion: string
+  elementId: string
+  elementVersion: string
+}
+
+export interface ConsentPurposeItem {
+  purposeId: string
+  name: string
+  version: string
+  displayName?: string
+  description?: string
+  elements: ConsentElementApprovalItem[]
+}
+
+export interface ConsentAuthorizationResource {
+  id: string
+  userId?: string
+  type: string
+  status: string
+  updatedTime: number
+  resources?: unknown
+}
+
+export interface ConsentStatusAuditItem {
+  statusAuditId: string
+  previousStatus?: string
+  currentStatus: ConsentAPIStatus | string
+  actionTime: number
+  actionBy?: string | null
+  reason?: string | null
+}
+
+export interface ConsentDetailAPI {
+  id: string
+  groupId: string
+  type: string
+  status: ConsentAPIStatus | string
+  createdTime: number
+  updatedTime: number
+  expirationTime?: number
+  recurringIndicator?: boolean
+  frequency?: number
+  dataAccessValidityDuration?: number
+  purposes: ConsentPurposeItem[]
+  attributes?: Record<string, string>
+  authorizations?: ConsentAuthorizationResource[]
+  statusHistory?: ConsentStatusAuditItem[]
+}
+
 export interface ConsentSearchMetadata {
   total: number
   offset: number
@@ -120,28 +145,6 @@ export interface ConsentSearchMetadata {
 }
 
 export interface ConsentSearchResponse {
-  data: ConsentDetail[]
+  data: ConsentDetailAPI[]
   metadata: ConsentSearchMetadata
-}
-
-export interface ConsentListQueryParams {
-  limit: number
-  offset: number
-  consentStatuses?: string
-  serviceId?: string
-}
-
-export interface AdminConsentListQueryParams {
-  limit: number
-  after?: string
-  before?: string
-  subjectId?: string
-  serviceId?: string
-  state?: string
-}
-
-export interface AdminConsentListResponse {
-  totalResults: number
-  links: CursorLink[]
-  Consents: ConsentSummary[]
 }

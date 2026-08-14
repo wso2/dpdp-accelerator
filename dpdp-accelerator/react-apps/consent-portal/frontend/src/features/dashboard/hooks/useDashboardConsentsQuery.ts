@@ -17,38 +17,35 @@
  */
 
 import { type UseQueryResult, useQuery } from '@tanstack/react-query'
-import type { ConsentDetail } from '../../../types/consent'
+import type { ConsentDetailAPI } from '../../../types/consent'
 import { fetchMyConsents } from '../../consent-registry/api/consentsApi'
 
 const DASHBOARD_PAGE_SIZE = 100
-const DASHBOARD_MAX_PAGES = 20
 
-/**
- * Walks the self-service pages until a short page arrives.
- *
- * `metadata.total` only counts the records seen so far, so a full page is the
- * only reliable signal that more consents may exist.
- */
 async function fetchConsentPage(
   offset: number,
-  collected: ConsentDetail[],
-  remainingPages: number,
-): Promise<ConsentDetail[]> {
-  const response = await fetchMyConsents({ limit: DASHBOARD_PAGE_SIZE, offset })
+  collected: ConsentDetailAPI[],
+): Promise<ConsentDetailAPI[]> {
+  const response = await fetchMyConsents({
+    limit: DASHBOARD_PAGE_SIZE,
+    offset,
+  })
   const consents = [...collected, ...response.data]
+  const received = response.metadata.count || response.data.length
+  const nextOffset = offset + received
 
-  if (response.data.length < DASHBOARD_PAGE_SIZE || remainingPages <= 1) {
+  if (received === 0 || nextOffset >= response.metadata.total) {
     return consents
   }
 
-  return fetchConsentPage(offset + response.data.length, consents, remainingPages - 1)
+  return fetchConsentPage(nextOffset, consents)
 }
 
-async function fetchAllMyConsents(): Promise<ConsentDetail[]> {
-  return fetchConsentPage(0, [], DASHBOARD_MAX_PAGES)
+async function fetchAllMyConsents(): Promise<ConsentDetailAPI[]> {
+  return fetchConsentPage(0, [])
 }
 
-export default function useDashboardConsentsQuery(): UseQueryResult<ConsentDetail[]> {
+export default function useDashboardConsentsQuery(): UseQueryResult<ConsentDetailAPI[]> {
   return useQuery({
     queryKey: ['consents', 'dashboard'],
     queryFn: fetchAllMyConsents,

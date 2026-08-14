@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "ਸਹਿਮਤੀ ਪੋਰਟਲ"
+  },
+  "language": {
+    "label": "ਭਾਸ਼ਾ",
+    "selectAria": "ਭਾਸ਼ਾ ਚੁਣੋ"
+  },
+  "authorization": {
+    "loading": "ਤੁਹਾਡਾ ਸੈਸ਼ਨ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ",
+    "loadFailed": "ਤੁਹਾਡਾ ਸੈਸ਼ਨ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+    "tryAgain": "ਦੋਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+    "noAccessTitle": "ਪੋਰਟਲ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੈ",
+    "noAccessDescription": "ਤੁਹਾਡੇ ਖਾਤੇ ਕੋਲ ਕਿਸੇ ਵੀ ਪੋਰਟਲ ਪੰਨੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ।"
+  },
+  "copyableText": {
+    "copy": "ਕਾਪੀ ਕਰੋ",
+    "copied": "ਕਾਪੀ ਕੀਤਾ ਗਿਆ",
+    "copyLabel": "{{label}} ਕਾਪੀ ਕਰੋ",
+    "copyValue": "{{label}} {{value}} ਕਾਪੀ ਕਰੋ",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "ਮੁੱਖ ਨੈਵੀਗੇਸ਼ਨ",
+    "dashboard": "ਡੈਸ਼ਬੋਰਡ",
+    "consent": "ਸਹਿਮਤੀ",
+    "allConsents": "ਸਾਰੀਆਂ ਸਹਿਮਤੀਆਂ",
+    "pendingConsents": "ਬਕਾਇਆ ਸਹਿਮਤੀਆਂ",
+    "catalog": "ਪਰਿਭਾਸ਼ਾਵਾਂ",
+    "purposes": "ਉਦੇਸ਼",
+    "elements": "ਤੱਤ",
+    "administration": "ਪ੍ਰਸ਼ਾਸਨ",
+    "adminConsents": "ਸਹਿਮਤੀਆਂ",
+    "nominations": "ਨਾਮਜ਼ਦਗੀਆਂ",
+    "nomineeActivation": "ਨਾਮਜ਼ਦ ਦੀ ਸਰਗਰਮੀ",
+    "myComplaints": "ਮੇਰੀਆਂ ਸ਼ਿਕਾਇਤਾਂ",
+    "complaintManagement": "ਸ਼ਿਕਾਇਤਾਂ",
+    "dataProcessors": "ਡਾਟਾ ਪ੍ਰੋਸੈਸਰ",
+    "dataProcessorTopics": "ਵਿਸ਼ੇ",
+    "dataProcessorSubscriptions": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ",
+    "dataProcessorEvents": "ਘਟਨਾਵਾਂ"
+  },
+  "layout": {
+    "home": "ਹੋਮ",
+    "breadcrumbAriaLabel": "ਬ੍ਰੈੱਡਕ੍ਰੰਬ",
+    "userMenu": {
+      "unknownUser": "ਅਣਪਛਾਤਾ ਵਰਤੋਂਕਾਰ",
+      "noEmail": "ਕੋਈ ਈਮੇਲ ਉਪਲਬਧ ਨਹੀਂ",
+      "signOut": "ਸਾਈਨ ਆਊਟ",
+      "signOutError": "ਸਾਈਨ ਆਊਟ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਕਿਰਪਾ ਕਰਕੇ ਦੋਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "tryAgain": "ਦੋਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ"
+    }
+  },
+  "dashboard": {
+    "active": "ਸਰਗਰਮ ਸਹਿਮਤੀਆਂ",
+    "attention": "ਤੁਹਾਡੇ ਧਿਆਨ ਦੀ ਲੋੜ ਹੈ",
+    "commonPurposes": "ਸਭ ਤੋਂ ਆਮ ਸਾਂਝੇ ਕੀਤੇ ਉਦੇਸ਼",
+    "commonPurposesSubtitle": "ਤੁਹਾਡੀਆਂ ਸਰਗਰਮ ਸਹਿਮਤੀਆਂ ਵਿੱਚ ਸ਼ਾਮਲ ਉਦੇਸ਼",
+    "consentCount": "{{count}} ਸਹਿਮਤੀਆਂ",
+    "consentCount_one": "{{count}} ਸਹਿਮਤੀ",
+    "consentCount_other": "{{count}} ਸਹਿਮਤੀਆਂ",
+    "expiringSoon": "ਜਲਦੀ ਮਿਆਦ ਪੁੱਗਣ ਵਾਲੀ ਹੈ",
+    "loadFailed": "ਇਸ ਵੇਲੇ ਤੁਹਾਡਾ ਡੈਸ਼ਬੋਰਡ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+    "noExpiring": "ਅਗਲੇ {{days}} ਦਿਨਾਂ ਵਿੱਚ ਕੋਈ ਵੀ ਸਰਗਰਮ ਸਹਿਮਤੀ ਖਤਮ ਨਹੀਂ ਹੋ ਰਹੀ ਹੈ।",
+    "noPending": "ਸਮੀਖਿਆ ਕਰਨ ਲਈ ਤੁਹਾਡੇ ਕੋਲ ਕੋਈ ਬਕਾਇਆ ਸਹਿਮਤੀ ਨਹੀਂ ਹੈ।",
+    "noPurposes": "ਅਜੇ ਕੋਈ ਸਾਂਝੇ ਕੀਤੇ ਉਦੇਸ਼ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+    "pending": "ਬਕਾਇਆ ਸਹਿਮਤੀਆਂ",
+    "pendingConsents": "ਬਕਾਇਆ ਸਹਿਮਤੀਆਂ",
+    "subtitle": "ਤੁਹਾਡੀ ਸਹਿਮਤੀ ਗਤੀਵਿਧੀ ਅਤੇ ਆਉਣ ਵਾਲੀਆਂ ਕਾਰਵਾਈਆਂ ਦਾ ਵੇਰਵਾ।",
+    "title": "ਡੈਸ਼ਬੋਰਡ",
+    "typeBreakdown": "ਸਹਿਮਤੀ ਕਿਸਮ ਦਾ ਵੇਰਵਾ",
+    "typeBreakdownSubtitle": "ਤੁਹਾਡੀਆਂ ਸਾਰੀਆਂ ਸਹਿਮਤੀਆਂ ਕਿਸਮ ਅਨੁਸਾਰ ਸਮੂਹਬੱਧ ਹਨ",
+    "noTypes": "ਅਜੇ ਕੋਈ ਸਹਿਮਤੀ ਕਿਸਮਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+    "viewPending": "ਸਾਰੀਆਂ ਬਕਾਇਆ ਸਹਿਮਤੀਆਂ ਵੇਖੋ"
+  },
+  "adminConsents": {
+    "title": "ਸਹਿਮਤੀਆਂ",
+    "filters": {
+      "sectionAriaLabel": "ਪ੍ਰਸ਼ਾਸਕੀ ਸਹਿਮਤੀ ਫਿਲਟਰ",
+      "consentIdSearchPlaceholder": "ਸਹਿਮਤੀ ID ਦੁਆਰਾ ਖੋਜੋ",
+      "removeConsentIdForAdvanced": "ਉੱਨਤ ਫਿਲਟਰਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਸਹਿਮਤੀ ID ਫਿਲਟਰ ਹਟਾਓ।",
+      "removeConsentIdForStatus": "ਸਥਿਤੀ ਫਿਲਟਰ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਸਹਿਮਤੀ ID ਫਿਲਟਰ ਹਟਾਓ।",
+      "userIds": "ਵਰਤੋਂਕਾਰ ID",
+      "groupIds": "ਗਰੁੱਪ ID",
+      "commaSeparatedUsers": "ਮਲਟੀਪਲ ਵਰਤੋਂਕਾਰ IDs ਨੂੰ ਕਾਮਾ (comma) ਨਾਲ ਵੱਖ ਕਰੋ",
+      "active": "ਸਰਗਰਮ ਫਿਲਟਰ"
+    }
+  },
+  "consentRegistry": {
+    "title": "ਸਾਰੀਆਂ ਸਹਿਮਤੀਆਂ",
+    "details": {
+      "title": "ਸਹਿਮਤੀ ਦਾ ਵੇਰਵਾ",
+      "consentId": "ਸਹਿਮਤੀ ID",
+      "status": "ਸਥਿਤੀ",
+      "type": "ਸਹਿਮਤੀ ਦੀ ਕਿਸਮ",
+      "frequency": "ਪਹੁੰਚ ਦੀ ਸੀਮਾ",
+      "frequencyHelp": "ਇਹ ਦਰਸਾਉਂਦਾ ਹੈ ਕਿ ਇਸ ਸਹਿਮਤੀ ਤੱਕ ਪ੍ਰਤੀ ਦਿਨ ਕਿੰਨੀ ਵਾਰ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।",
+      "frequencyUnitSingular": "ਵਾਰ ਪ੍ਰਤੀ ਦਿਨ",
+      "frequencyUnitPlural": "ਵਾਰ ਪ੍ਰਤੀ ਦਿਨ",
+      "purposes": "ਉਦੇਸ਼",
+      "duration": "ਪਿਛਲੇ ਡਾਟੇ ਦੀ ਪਹੁੰਚ ਅਵਧੀ",
+      "durationHelp": "ਇਹ ਪਰਿਭਾਸ਼ਿਤ ਕਰਦਾ ਹੈ ਕਿ ਕਿੰਨੇ ਪੁਰਾਣੇ ਡਾਟੇ ਤੱਕ ਪਹੁੰਚ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਉਦਾਹਰਨ ਲਈ, ਜੇ 6 ਮਹੀਨੇ ਸੈੱਟ ਕੀਤਾ ਗਿਆ ਹੈ, ਤਾਂ 6 ਮਹੀਨੇ ਪੁਰਾਣਾ ਡਾਟਾ ਪਹੁੰਚਯੋਗ ਹੈ।",
+      "durationUnitHourSingular": "ਘੰਟਾ",
+      "durationUnitHourPlural": "ਘੰਟੇ",
+      "durationUnitDaySingular": "ਦਿਨ",
+      "durationUnitDayPlural": "ਦਿਨ",
+      "durationUnitYearSingular": "ਸਾਲ",
+      "durationUnitYearPlural": "ਸਾਲ",
+      "created": "ਬਣਾਇਆ ਗਿਆ",
+      "updated": "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ",
+      "validUntil": "ਇਸ ਤਾਰੀਖ ਤੱਕ ਵੈਧ",
+      "groupId": "ਗਰੁੱਪ ID",
+      "recurring": "ਆਵਰਤੀ",
+      "back": "ਰਜਿਸਟਰੀ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+      "notFound": "ਸਹਿਮਤੀ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ",
+      "approved": "ਮਨਜ਼ੂਰਸ਼ੁਦਾ",
+      "notApproved": "ਮਨਜ਼ੂਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ",
+      "approvedCount": "{{approved}}/{{total}} ਮਨਜ਼ੂਰਸ਼ੁਦਾ",
+      "section": {
+        "purposes": "ਸਹਿਮਤੀ ਦੇ ਉਦੇਸ਼",
+        "authorizations": "ਅਧਿਕਾਰ",
+        "lifecycle": "ਸਹਿਮਤੀ ਦਾ ਜੀਵਨ ਚੱਕਰ"
+      },
+      "table": {
+        "element": "ਤੱਤ",
+        "approved": "ਮਨਜ਼ੂਰਸ਼ੁਦਾ",
+        "required": "ਲਾਜ਼ਮੀ",
+        "description": "ਵੇਰਵਾ",
+        "user": "ਵਰਤੋਂਕਾਰ",
+        "status": "ਸਥਿਤੀ",
+        "updated": "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ",
+        "resources": "ਸਰੋਤ",
+        "eventType": "ਘਟਨਾ ਦੀ ਕਿਸਮ",
+        "date": "ਤਾਰੀਖ",
+        "time": "ਸਮਾਂ"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "ਸਹਿਮਤੀ ਜੀਵਨ ਚੱਕਰ",
+        "empty": "ਕੋਈ ਜੀਵਨ ਚੱਕਰ ਘਟਨਾਵਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+        "noDescription": "ਕੋਈ ਵੇਰਵਾ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।"
+      },
+      "actions": {
+        "viewResources": "ਸਰੋਤ ਵੇਖੋ",
+        "noResourcesTooltip": "ਕੋਈ ਸਰੋਤ ਉਪਲਬਧ ਨਹੀਂ ਹਨ"
+      },
+      "resourcesModal": {
+        "title": "ਅਧਿਕਾਰ ਸਰੋਤ",
+        "authRef": "ਅਧਿਕਾਰ",
+        "close": "ਬੰਦ ਕਰੋ"
+      },
+      "values": {
+        "yes": "ਹਾਂ",
+        "no": "ਨਹੀਂ",
+        "required": "ਲਾਜ਼ਮੀ",
+        "optional": "ਵਿਕਲਪਿਕ"
+      }
+    },
+    "actions": {
+      "view": "ਵੇਖੋ",
+      "revoke": "ਵਾਪਸ ਲਵੋ",
+      "approve": "ਮਨਜ਼ੂਰ ਕਰੋ",
+      "reject": "ਅਸਵੀਕਾਰ ਕਰੋ",
+      "copyConsentId": "ਸਹਿਮਤੀ ID ਕਾਪੀ ਕਰੋ",
+      "copyConsentIdAriaLabel": "ਸਹਿਮਤੀ ID {{id}} ਕਾਪੀ ਕਰੋ"
+    },
+    "modals": {
+      "consentId": "ਸਹਿਮਤੀ ID",
+      "actions": {
+        "cancel": "ਰੱਦ ਕਰੋ",
+        "processing": "ਪ੍ਰਕਿਰਿਆ ਚੱਲ ਰਹੀ ਹੈ..."
+      },
+      "approval": {
+        "title": "ਸਹਿਮਤੀ ਦੀ ਸਮੀਖਿਆ ਅਤੇ ਮਨਜ਼ੂਰੀ",
+        "subtitle": "ਕਿਰਪਾ ਕਰਕੇ ਮਨਜ਼ੂਰੀ ਦੇਣ ਤੋਂ ਪਹਿਲਾਂ ਸਹਿਮਤੀ ਦੇ ਤੱਤਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ।",
+        "mandatory": "ਲਾਜ਼ਮੀ ਤੱਤ (ਜ਼ਰੂਰੀ)",
+        "optional": "ਵਿਕਲਪਿਕ ਤੱਤ",
+        "required": "ਲਾਜ਼ਮੀ",
+        "toggle": "ਇਜਾਜ਼ਤ ਬਦਲੋ",
+        "toggleWithDetails": "{{purposeLabel}} ਵਿੱਚ {{elementLabel}} ਲਈ ਇਜਾਜ਼ਤ ਬਦਲੋ",
+        "loading": "ਸਹਿਮਤੀ ਦਾ ਵੇਰਵਾ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...",
+        "noMandatory": "ਇਸ ਸਹਿਮਤੀ ਲਈ ਕੋਈ ਲਾਜ਼ਮੀ ਸ਼ਰਤਾਂ ਨਹੀਂ ਹਨ।",
+        "confirm": "ਮਨਜ਼ੂਰ ਕਰੋ ਅਤੇ ਜਾਰੀ ਰੱਖੋ"
+      },
+      "rejection": {
+        "title": "ਅਸਵੀਕਾਰਤਾ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+        "message": "ਕੀ ਤੁਸੀਂ ਨਿਸ਼ਚਿਤ ਤੌਰ 'ਤੇ ਇਸ ਸਹਿਮਤੀ ਨੂੰ ਅਸਵੀਕਾਰ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+        "note": "ਇਸ ਸਹਿਮਤੀ ਨੂੰ ਅਸਵੀਕਾਰ ਕਰਨ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਬੇਨਤੀ ਕੀਤੀਆਂ ਸਹਿਮਤੀਆਂ ਨਹੀਂ ਦਿੱਤੀਆਂ ਜਾਣਗੀਆਂ।",
+        "confirm": "ਸਹਿਮਤੀ ਅਸਵੀਕਾਰ ਕਰੋ",
+        "cancel": "ਰੱਦ ਕਰੋ"
+      },
+      "revocation": {
+        "title": "ਸਹਿਮਤੀ ਵਾਪਸੀ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+        "message": "ਕੀ ਤੁਸੀਂ ਨਿਸ਼ਚਿਤ ਤੌਰ 'ਤੇ ਸਹਿਮਤੀ ਵਾਪਸ ਲੈਣਾ ਚਾਹੁੰਦੇ ਹੋ?",
+        "note": "ਇਹ ਕਾਰਵਾਈ ਸਾਰੇ ਸੰਬੰਧਿਤ ਉਦੇਸ਼ਾਂ ਲਈ ਦਿੱਤੀਆਂ ਗਈਆਂ ਲਾਜ਼ਮੀ ਅਤੇ ਵਿਕਲਪਿਕ ਦੋਵਾਂ ਸਹਿਮਤੀਆਂ ਨੂੰ ਰੱਦ ਕਰ ਦੇਵੇਗੀ।",
+        "confirm": "ਸਹਿਮਤੀਆਂ ਵਾਪਸ ਲਵੋ",
+        "cancel": "ਰੱਦ ਕਰੋ"
+      }
+    },
+    "status": {
+      "all": "ਸਭ",
+      "active": "ਸਰਗਰਮ",
+      "pending": "ਬਕਾਇਆ",
+      "created": "ਬਣਾਇਆ ਗਿਆ",
+      "approved": "ਮਨਜ਼ੂਰਸ਼ੁਦਾ",
+      "rejected": "ਅਸਵੀਕਾਰਿਤ",
+      "revoked": "ਵਾਪਸ ਲਿਆ ਗਿਆ",
+      "expired": "ਮਿਆਦ ਪੁੱਗੀ",
+      "systemExpired": "ਸਿਸਟਮ ਦੁਆਰਾ ਮਿਆਦ ਪੁੱਗੀ",
+      "systemRevoked": "ਸਿਸਟਮ ਦੁਆਰਾ ਵਾਪਸ ਲਿਆ ਗਿਆ"
+    },
+    "filters": {
+      "sectionAriaLabel": "ਸਹਿਮਤੀ ਫਿਲਟਰ",
+      "purposeSearchPlaceholder": "ਉਦੇਸ਼ ਦੇ ਨਾਮ ਦੁਆਰਾ ਖੋਜੋ",
+      "status": "ਸਥਿਤੀ",
+      "groupIds": "ਗਰੁੱਪ ID",
+      "elementName": "ਤੱਤ ਦਾ ਨਾਮ",
+      "elementVersion": "ਤੱਤ ਦਾ ਸੰਸਕਰਣ",
+      "advanced": "ਉੱਨਤ ਫਿਲਟਰ",
+      "apply": "ਲਾਗੂ ਕਰੋ",
+      "cancel": "ਰੱਦ ਕਰੋ",
+      "startDate": "ਸ਼ੁਰੂਆਤੀ ਤਾਰੀਖ",
+      "startDateAriaLabel": "ਸ਼ੁਰੂਆਤੀ ਤਾਰੀਖ ਫਿਲਟਰ",
+      "endDate": "ਅੰਤਿਮ ਤਾਰੀਖ",
+      "endDateAriaLabel": "ਅੰਤਿਮ ਤਾਰੀਖ ਫਿਲਟਰ",
+      "clear": "ਸਭ ਸਾਫ਼ ਕਰੋ",
+      "clearAriaLabel": "ਸਾਰੇ ਫਿਲਟਰ ਸਾਫ਼ ਕਰੋ"
+    },
+    "messages": {
+      "loading": "ਸਹਿਮਤੀਆਂ ਲੋਡ ਹੋ ਰਹੀਆਂ ਹਨ...",
+      "loadFailed": "ਇਸ ਵੇਲੇ ਸਹਿਮਤੀਆਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+      "emptyTitle": "ਕੋਈ ਸਹਿਮਤੀ ਨਹੀਂ ਮਿਲੀ",
+      "empty": "ਚੁਣੇ ਗਏ ਫਿਲਟਰਾਂ ਲਈ ਕੋਈ ਸਹਿਮਤੀ ਨਹੀਂ ਮਿਲੀ।"
+    },
+    "table": {
+      "tableAriaLabel": "ਸਹਿਮਤੀ ਰਜਿਸਟਰੀ ਸਾਰਣੀ",
+      "consentIdAriaLabel": "ਸਹਿਮਤੀ ID: {{id}}",
+      "groupLabel": "ਗਰੁੱਪ ID: {{groupId}}",
+      "notApplicable": "ਲਾਗੂ ਨਹੀਂ",
+      "purposes": {
+        "more": "+{{count}} ਹੋਰ",
+        "title": "ਸਹਿਮਤੀ ਦੇ ਉਦੇਸ਼",
+        "hint": "ਸਹਿਮਤੀ ਦੇ ਸਾਰੇ ਉਦੇਸ਼ ਦਿਖਾ ਰਿਹਾ ਹੈ"
+      },
+      "headers": {
+        "consentId": "ਸਹਿਮਤੀ ID",
+        "type": "ਕਿਸਮ",
+        "status": "ਸਥਿਤੀ",
+        "purposes": "ਉਦੇਸ਼",
+        "updated": "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ",
+        "expiration": "ਮਿਆਦ ਪੁੱਗਣ ਦੀ ਤਾਰੀਖ",
+        "actions": "ਕਾਰਵਾਈਆਂ"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "ਤੱਤ ਜੋੜੋ",
+      "addProperty": "ਵਿਸ਼ੇਸ਼ਤਾ ਜੋੜੋ",
+      "apply": "ਲਾਗੂ ਕਰੋ",
+      "cancel": "ਰੱਦ ਕਰੋ",
+      "clear": "ਸਾਫ਼ ਕਰੋ",
+      "clearAll": "ਸਭ ਸਾਫ਼ ਕਰੋ",
+      "create": "ਬਣਾਓ",
+      "delete": "ਹਟਾਓ",
+      "deleting": "ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ...",
+      "deleteVersion": "ਸੰਸਕਰਣ ਹਟਾਓ",
+      "filters": "ਫਿਲਟਰ",
+      "removeElement": "ਤੱਤ ਹਟਾਓ",
+      "removeProperty": "ਵਿਸ਼ੇਸ਼ਤਾ ਹਟਾਓ",
+      "retry": "ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ",
+      "saving": "ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
+      "view": "ਵੇਖੋ",
+      "viewElement": "{{name}} ਵੇਖੋ",
+      "viewPurpose": "{{name}} ਵੇਖੋ"
+    },
+    "fields": {
+      "actions": "ਕਾਰਵਾਈਆਂ",
+      "created": "ਬਣਾਇਆ ਗਿਆ",
+      "description": "ਵੇਰਵਾ",
+      "displayName": "ਦਿਖਾਇਆ ਜਾਣ ਵਾਲਾ ਨਾਮ",
+      "element": "ਤੱਤ",
+      "elementId": "ਤੱਤ ID",
+      "elementName": "ਤੱਤ ਦਾ ਨਾਮ",
+      "elementNamespace": "ਤੱਤ ਦਾ ਨੇਮਸਪੇਸ",
+      "elements": "ਤੱਤ",
+      "elementVersion": "ਤੱਤ ਦਾ ਸੰਸਕਰਣ",
+      "groupId": "ਗਰੁੱਪ ID",
+      "groupIds": "ਗਰੁੱਪ IDs",
+      "mandatory": "ਲਾਜ਼ਮੀ",
+      "name": "ਨਾਮ",
+      "namespace": "ਨੇਮਸਪੇਸ",
+      "properties": "ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ",
+      "propertyKey": "ਕੁੰਜੀ",
+      "propertyValue": "ਮੁੱਲ",
+      "purpose": "ਉਦੇਸ਼",
+      "purposeId": "ਉਦੇਸ਼ ID",
+      "purposeName": "ਉਦੇਸ਼ ਦਾ ਨਾਮ",
+      "scope": "ਖੇਤਰ",
+      "purposeScope": "ਉਦੇਸ਼ ਦਾ ਖੇਤਰ",
+      "purposeVersion": "ਉਦੇਸ਼ ਦਾ ਸੰਸਕਰਣ",
+      "requirement": "ਜ਼ਰੂਰਤ",
+      "schema": "ਸਕੀਮਾ",
+      "type": "ਕਿਸਮ",
+      "version": "ਸੰਸਕਰਣ"
+    },
+    "help": {
+      "commaSeparatedGroups": "ਮਲਟੀਪਲ ਗਰੁੱਪ IDs ਨੂੰ ਕਾਮਾ (comma) ਨਾਲ ਵੱਖ ਕਰੋ",
+      "defaultNamespace": "ਖਾਲੀ ਹੋਣ 'ਤੇ ਡਿਫਾਲਟ ਨੇਮਸਪੇਸ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ",
+      "elementVersionRequiresIdentity": "ਪਹਿਲਾਂ ਇੱਕ ਤੱਤ ਦਾ ਨਾਮ ਜਾਂ ਨੇਮਸਪੇਸ ਦਰਜ ਕਰੋ",
+      "organizationPurpose": "ਸੰਸਥਾ-ਪੱਧਰੀ ਉਦੇਸ਼ ਬਣਾਉਣ ਲਈ ਖਾਲੀ ਛੱਡੋ",
+      "purposeVersionRequiresName": "ਪਹਿਲਾਂ ਇੱਕ ਉਦੇਸ਼ ਦਾ ਨਾਮ ਦਰਜ ਕਰੋ",
+      "schemaElementTypes": "ਸਕੀਮਾ ਸਿਰਫ਼ JSON ਅਤੇ XML ਤੱਤਾਂ ਲਈ ਸਮਰਥਿਤ ਹਨ।",
+      "selectElementFirst": "ਪਹਿਲਾਂ ਇੱਕ ਤੱਤ ਚੁਣੋ"
+    },
+    "values": {
+      "all": "ਸਭ",
+      "any": "ਕੋਈ ਵੀ",
+      "customNamespace": "ਕਸਟਮ ਨੇਮਸਪੇਸ",
+      "defaultNamespace": "ਡਿਫਾਲਟ ਨੇਮਸਪੇਸ",
+      "mandatory": "ਲਾਜ਼ਮੀ",
+      "matches": "ਮੇਲ ਖਾਂਦਾ ਹੈ",
+      "noDescription": "ਕੋਈ ਵੇਰਵਾ ਨਹੀਂ",
+      "optional": "ਵਿਕਲਪਿਕ",
+      "specificGroup": "ਖਾਸ ਗਰੁੱਪ",
+      "itemCount": "{{count}} ਚੁਣੇ ਗਏ",
+      "latest": "ਨਵੀਨਤਮ",
+      "viewing": "ਵੇਖ ਰਹੇ ਹੋ"
+    },
+    "elements": {
+      "add": "ਤੱਤ ਜੋੜੋ",
+      "activeFilters": "ਸਰਗਰਮ ਫਿਲਟਰ",
+      "back": "ਤੱਤਾਂ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+      "createTitle": "ਤੱਤ ਬਣਾਓ",
+      "detailsSection": "ਤੱਤ ਦਾ ਵੇਰਵਾ",
+      "empty": "ਚੁਣੇ ਗਏ ਫਿਲਟਰਾਂ ਨਾਲ ਕੋਈ ਤੱਤ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ।",
+      "emptyTitle": "ਕੋਈ ਤੱਤ ਨਹੀਂ ਮਿਲਿਆ",
+      "filterTitle": "ਤੱਤਾਂ ਨੂੰ ਫਿਲਟਰ ਕਰੋ",
+      "loadFailed": "ਇਸ ਵੇਲੇ ਤੱਤਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+      "newVersion": "ਨਵਾਂ ਸੰਸਕਰਣ ਬਣਾਓ",
+      "refreshing": "ਤਾਜ਼ਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "results": "{{count}} ਤੱਤ",
+      "searchPlaceholder": "ਤੱਤ ਦੇ ਨਾਮ ਦੁਆਰਾ ਖੋਜੋ",
+      "subtitle": "ਮੁੜ-ਵਰਤੋਂਯੋਗ ਸਹਿਮਤੀ ਤੱਤਾਂ ਅਤੇ ਉਹਨਾਂ ਦੀਆਂ ਸੰਸਕਰਣ ਪਰਿਭਾਸ਼ਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।",
+      "tableLabel": "ਸਹਿਮਤੀ ਤੱਤ",
+      "title": "ਤੱਤ"
+    },
+    "purposes": {
+      "add": "ਉਦੇਸ਼ ਜੋੜੋ",
+      "activeFilters": "ਸਰਗਰਮ ਫਿਲਟਰ",
+      "allPurposes": "ਸਾਰੇ ਉਦੇਸ਼",
+      "back": "ਉਦੇਸ਼ਾਂ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+      "createTitle": "ਉਦੇਸ਼ ਬਣਾਓ",
+      "detailsSection": "ਉਦੇਸ਼ ਦਾ ਵੇਰਵਾ",
+      "empty": "ਚੁਣੇ ਗਏ ਫਿਲਟਰਾਂ ਨਾਲ ਕੋਈ ਉਦੇਸ਼ ਮੇਲ ਨਹੀਂ ਖਾਂਦਾ।",
+      "emptyTitle": "ਕੋਈ ਉਦੇਸ਼ ਨਹੀਂ ਮਿਲਿਆ",
+      "filterTitle": "ਉਦੇਸ਼ਾਂ ਨੂੰ ਫਿਲਟਰ ਕਰੋ",
+      "loadFailed": "ਇਸ ਵੇਲੇ ਉਦੇਸ਼ਾਂ ਨੂੰ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+      "newVersion": "ਨਵਾਂ ਸੰਸਕਰਣ ਬਣਾਓ",
+      "orgWide": "ਪੂਰੀ ਸੰਸਥਾ ਵਿੱਚ",
+      "refreshing": "ਤਾਜ਼ਾ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "results": "{{count}} ਉਦੇਸ਼",
+      "searchLabel": "ਉਦੇਸ਼ਾਂ ਦੀ ਖੋਜ ਕਰੋ",
+      "searchPlaceholder": "ਉਦੇਸ਼ ਦੇ ਨਾਮ ਦੁਆਰਾ ਖੋਜੋ",
+      "scopeFilter": "ਉਦੇਸ਼ ਦਾ ਖੇਤਰ",
+      "subtitle": "ਮੁੜ-ਵਰਤੋਂਯੋਗ ਸਹਿਮਤੀ ਉਦੇਸ਼ਾਂ ਅਤੇ ਉਹਨਾਂ ਦੇ ਤੱਤ ਪਰਿਭਾਸ਼ਾਵਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ।",
+      "tableLabel": "ਸਹਿਮਤੀ ਉਦੇਸ਼",
+      "title": "ਉਦੇਸ਼"
+    },
+    "details": {
+      "definition": "ਪਰਿਭਾਸ਼ਾ",
+      "elementIdentity": "ਤੱਤ ਦੀ ਪਛਾਣ",
+      "elements": "ਤੱਤ",
+      "identity": "ਉਦੇਸ਼ ਦੀ ਪਛਾਣ",
+      "overview": "ਸੰਖੇਪ ਜਾਣਕਾਰੀ",
+      "versionDetails": "ਸੰਸਕਰਣ ਵੇਰਵਾ",
+      "versions": "ਸੰਸਕਰਣ ਇਤਿਹਾਸ"
+    },
+    "messages": {
+      "createElementFirst": "ਉਦੇਸ਼ ਪਰਿਭਾਸ਼ਿਤ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਇੱਕ ਤੱਤ ਬਣਾਓ।",
+      "immutableElement": "{{namespace}}:{{name}} ਇੱਕ {{type}} ਤੱਤ ਰਹਿੰਦਾ ਹੈ। ਪਛਾਣ ਖੇਤਰ ਸੰਸਕਰਣਾਂ ਵਿਚਕਾਰ ਨਹੀਂ ਬਦਲ ਸਕਦੇ।",
+      "immutablePurpose": "{{name}} ਦਾ ਮਾਲਕ {{groupId}} ਹੀ ਰਹੇਗਾ। ਪਛਾਣ ਖੇਤਰ ਸੰਸਕਰਣਾਂ ਵਿਚਕਾਰ ਨਹੀਂ ਬਦਲ ਸਕਦੇ।",
+      "immutableOrganizationPurpose": "{{name}} ਪੂਰੀ ਸੰਸਥਾ ਪੱਧਰੀ ਹੈ। ਇਸਦੀ ਪਛਾਣ ਅਤੇ ਖੇਤਰ ਸੰਸਕਰਣਾਂ ਵਿਚਕਾਰ ਨਹੀਂ ਬਦਲ ਸਕਦੇ।",
+      "immutableGroupPurpose": "{{name}} ਗਰੁੱਪ {{groupId}} ਤੱਕ ਸੀਮਿਤ ਹੈ। ਇਸਦੀ ਪਛਾਣ ਅਤੇ ਖੇਤਰ ਸੰਸਕਰਣਾਂ ਵਿਚਕਾਰ ਨਹੀਂ ਬਦਲ ਸਕਦੇ।",
+      "loadingElements": "ਉਪਲਬਧ ਤੱਤ ਲੋਡ ਹੋ ਰਹੇ ਹਨ...",
+      "loadingVersions": "ਤੱਤ ਦੇ ਸੰਸਕਰਣ ਲੋਡ ਹੋ ਰਹੇ ਹਨ...",
+      "noElementsFound": "ਕੋਈ ਮੇਲ ਖਾਂਦੇ ਤੱਤ ਨਹੀਂ ਮਿਲੇ",
+      "noElements": "ਇਸ ਸੰਸਕਰਣ ਲਈ ਕੋਈ ਤੱਤ ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤੇ ਗਏ ਹਨ।",
+      "noProperties": "ਕੋਈ ਕਸਟਮ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨਹੀਂ ਹਨ।",
+      "noSchema": "ਇਸ ਸੰਸਕਰਣ ਲਈ ਕੋਈ ਸਕੀਮਾ ਕੌਂਫਿਗਰ ਨਹੀਂ ਕੀਤਾ ਗਿਆ ਹੈ।",
+      "noPurposeElements": "ਅਜੇ ਤੱਕ ਕੋਈ ਤੱਤ ਨਹੀਂ ਜੋੜਿਆ ਗਿਆ। ਉਦੇਸ਼ ਬਣਾਉਣ ਲਈ ਘੱਟੋ-ਘੱਟ ਇੱਕ ਤੱਤ ਜੋੜੋ।",
+      "noVersions": "ਕੋਈ ਸੰਸਕਰਣ ਉਪਲਬਧ ਨਹੀਂ ਹਨ।",
+      "versionsLoadFailed": "ਇਸ ਵੇਲੇ ਸੰਸਕਰਣ ਇਤਿਹਾਸ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।"
+    },
+    "validation": {
+      "duplicateElements": "ਹਰੇਕ ਤੱਤ ਨੂੰ ਸਿਰਫ਼ ਇੱਕ ਵਾਰ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।",
+      "duplicatePropertyKeys": "ਵਿਸ਼ੇਸ਼ਤਾ ਕੁੰਜੀਆਂ ਵਿਲੱਖਣ ਹੋਣੀਆਂ ਚਾਹੀਦੀਆਂ ਹਨ।",
+      "elementRequired": "ਘੱਟੋ-ਘੱਟ ਇੱਕ ਤੱਤ ਚੁਣੋ।",
+      "groupIdRequired": "ਗਰੁੱਪ-ਵਿਸ਼ੇਸ਼ ਉਦੇਸ਼ ਲਈ ਗਰੁੱਪ ID ਲਾਜ਼ਮੀ ਹੈ।",
+      "nameRequired": "ਨਾਮ ਲਾਜ਼ਮੀ ਹੈ।",
+      "namespaceRequired": "ਜਦੋਂ ਕਸਟਮ ਚੁਣਿਆ ਜਾਂਦਾ ਹੈ ਤਾਂ ਨੇਮਸਪੇਸ ਲਾਜ਼ਮੀ ਹੁੰਦਾ ਹੈ।",
+      "schemaRequired": "JSON ਅਤੇ XML ਤੱਤਾਂ ਲਈ ਸਕੀਮਾ ਲਾਜ਼ਮੀ ਹੈ।"
+    },
+    "delete": {
+      "title": "ਸੰਸਕਰਣ ਹਟਾਓ",
+      "message": "ਕੀ ਸੰਸਕਰਣ {{version}} ਹਟਾਉਣਾ ਹੈ?",
+      "warning": "ਇਹ ਵਾਪਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ। ਹਵਾਲਾ ਦਿੱਤੇ ਸੰਸਕਰਣਾਂ ਨੂੰ ਹਟਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ, ਅਤੇ ਅੰਤਿਮ ਸੰਸਕਰਣ ਨੂੰ ਹਟਾਉਣ ਨਾਲ ਪੂਰੀ ਐਂਟਰੀ ਹਟ ਜਾਵੇਗੀ।"
+    }
+  },
+  "nominee": {
+    "title": "ਨਾਮਜ਼ਦਗੀਆਂ",
+    "messages": {
+      "loadFailed": "ਇਸ ਵੇਲੇ ਨਾਮਜ਼ਦਗੀਆਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।"
+    },
+    "nominatedFor": {
+      "openAccount": "ਖਾਤਾ ਖੋਲ੍ਹੋ →",
+      "accept": "ਸਵੀਕਾਰ ਕਰੋ",
+      "reject": "ਅਸਵੀਕਾਰ ਕਰੋ",
+      "actionNeeded": "ਕਾਰਵਾਈ ਦੀ ਲੋੜ ਹੈ",
+      "ariaLabel": "ਨਾਮਜ਼ਦ ਕੀਤੇ ਖਾਤੇ",
+      "empty": "ਅਜੇ ਤੱਕ ਕਿਸੇ ਨੇ ਵੀ ਤੁਹਾਨੂੰ ਨਾਮਜ਼ਦ ਨਹੀਂ ਕੀਤਾ ਹੈ।",
+      "title": "ਨਾਮਜ਼ਦ ਕੀਤੇ ਖਾਤੇ",
+      "table": {
+        "account": "ਖਾਤਾ",
+        "status": "ਸਥਿਤੀ",
+        "actions": "ਕਾਰਵਾਈਆਂ"
+      }
+    },
+    "acting": {
+      "starting": "ਖਾਤਾ ਖੋਲ੍ਹਿਆ ਜਾ ਰਿਹਾ ਹੈ…",
+      "startFailed": "ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਲਈ ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਨਹੀਂ ਹੋ।",
+      "startFailedHint": "ਨਾਮਜ਼ਦਗੀਆਂ 'ਤੇ ਵਾਪਸ ਜਾਓ ਅਤੇ ਦੋਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "blockedTitle": "ਨਾਮਜ਼ਦ ਪਹੁੰਚ ਵਿੱਚ ਉਪਲਬਧ ਨਹੀਂ ਹੈ",
+      "blockedFenced": "ਖਾਤੇ ਦੀਆਂ ਸੈਟਿੰਗਾਂ, ਪ੍ਰਮਾਣ-ਪੱਤਰ ਅਤੇ ਨਾਮਜ਼ਦਗੀਆਂ ਦੀ ਵਰਤੋਂ ਕਦੇ ਵੀ ਕਿਸੇ ਹੋਰ ਵਿਅਕਤੀ ਵੱਲੋਂ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ।",
+      "blockedScope": "ਮਾਲਕ ਨੇ ਤੁਹਾਨੂੰ ਇਸ ਖੇਤਰ ਲਈ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ ਹੈ।",
+      "backToAllowed": "ਜਿਸ ਤੱਕ ਮੈਂ ਪਹੁੰਚ ਕਰ ਸਕਦਾ ਹਾਂ ਉੱਥੇ ਜਾਓ",
+      "exit": "ਬਾਹਰ ਨਿਕਲੋ"
+    },
+    "permissions": {
+      "consentView": "ਸਹਿਮਤੀਆਂ ਵੇਖੋ",
+      "consentRevoke": "ਸਹਿਮਤੀਆਂ ਵਾਪਸ ਲਵੋ",
+      "consentApprove": "ਬਕਾਇਆ ਸਹਿਮਤੀਆਂ ਮਨਜ਼ੂਰ ਕਰੋ",
+      "accountView": "ਨਿੱਜੀ ਖਾਤਾ ਵੇਖੋ",
+      "accountUpdate": "ਨਿੱਜੀ ਖਾਤਾ ਅੱਪਡੇਟ ਕਰੋ",
+      "accountDelete": "ਨਿੱਜੀ ਖਾਤਾ ਹਟਾਓ"
+    },
+    "mine": {
+      "add": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਜੋੜੋ",
+      "remove": "ਹਟਾਓ",
+      "empty": "ਤੁਸੀਂ ਅਜੇ ਤੱਕ ਕਿਸੇ ਨੂੰ ਵੀ ਨਾਮਜ਼ਦ ਨਹੀਂ ਕੀਤਾ ਹੈ।",
+      "status": {
+        "active": "ਸਰਗਰਮ",
+        "pending": "ਸਵੀਕ੍ਰਿਤੀ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ",
+        "rejected": "ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ",
+        "accepted": "ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ",
+        "deactivated": "ਮੁਅੱਤਲ ਕੀਤਾ ਗਿਆ"
+      },
+      "ariaLabel": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ",
+      "title": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ",
+      "table": {
+        "person": "ਵਿਅਕਤੀ",
+        "permissions": "ਇਜਾਜ਼ਤਾਂ",
+        "status": "ਸਥਿਤੀ",
+        "actions": "ਕਾਰਵਾਈਆਂ",
+        "morePermissions": "+{{count}} ਹੋਰ"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਜੋੜੋ",
+        "editTitle": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਦਾ ਵੇਰਵਾ ਸੰਪਾਦਿਤ ਕਰੋ",
+        "saveChanges": "ਬਦਲਾਅ ਸੰਭਾਲੋ",
+        "emailLabel": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਦੀ ਰਜਿਸਟਰਡ ਈਮੇਲ",
+        "permissionsTitle": "ਇਹ ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਕੀ ਕਰ ਸਕਦਾ ਹੈ?",
+        "permissionsSubtitle": "ਸਿਰਫ਼ ਉਹੀ ਚੁਣੋ ਜੋ ਤੁਸੀਂ ਦੇਣਾ ਚਾਹੁੰਦੇ ਹੋ। ਇਹ ਉਹ ਪਹੁੰਚ ਬਣ ਜਾਵੇਗੀ ਜੋ ਇਸ ਨਾਮਜ਼ਦ ਨੂੰ ਵਰਤਣ ਦੀ ਇਜਾਜ਼ਤ ਹੈ।",
+        "sensitive": "ਸੰਵੇਦਨਸ਼ੀਲ",
+        "cancel": "ਰੱਦ ਕਰੋ",
+        "processing": "ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ ਹੈ...",
+        "confirm": "ਨਾਮਜ਼ਦਗੀ ਭੇਜੋ",
+        "processingEdit": "ਸੰਭਾਲਿਆ ਜਾ ਰਿਹਾ ਹੈ…"
+      },
+      "removeDialog": {
+        "title": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਨੂੰ ਹਟਾਓ",
+        "message": "{{nomineeEmail}} ਹੁਣ ਤੁਹਾਡੀਆਂ ਸਹਿਮਤੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਨਹੀਂ ਕਰ ਸਕੇਗਾ।",
+        "confirm": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਹਟਾਓ",
+        "cancel": "ਰੱਦ ਕਰੋ",
+        "processing": "ਹਟਾਇਆ ਜਾ ਰਿਹਾ ਹੈ..."
+      }
+    },
+    "manage": {
+      "title": "ਮਾਲਕ ਦੀਆਂ ਸਹਿਮਤੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ",
+      "back": "ਨਾਮਜ਼ਦ ਦ੍ਰਿਸ਼ ਤੋਂ ਬਾਹਰ ਨਿਕਲੋ",
+      "consents": {
+        "title": "ਸਹਿਮਤੀਆਂ",
+        "subtitle": "ਇਸ ਖਾਤੇ ਦੁਆਰਾ ਦਿੱਤੀਆਂ ਗਈਆਂ ਸਹਿਮਤੀਆਂ ਵੇਖੋ ਅਤੇ, ਜਿੱਥੇ ਇਜਾਜ਼ਤ ਹੋਵੇ, ਵਾਪਸ ਲਵੋ।"
+      },
+      "selectedCount": "{{count}} ਚੁਣੇ ਗਏ",
+      "revokeSelected": "ਚੁਣੀਆਂ ਗਈਆਂ ਵਾਪਸ ਲਵੋ",
+      "messages": {
+        "loadFailed": "ਇਸ ਵੇਲੇ ਸਹਿਮਤੀਆਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+        "empty": "ਇਸ ਖਾਤੇ ਲਈ ਕੋਈ ਸਹਿਮਤੀ ਨਹੀਂ ਮਿਲੀ।"
+      },
+      "table": {
+        "ariaLabel": "ਨਾਮਜ਼ਦ-ਪ੍ਰਬੰਧਿਤ ਸਹਿਮਤੀ ਸਾਰਣੀ",
+        "purposes": "ਉਦੇਸ਼",
+        "type": "ਕਿਸਮ",
+        "status": "ਸਥਿਤੀ",
+        "updated": "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ",
+        "actions": "ਕਾਰਵਾਈਆਂ",
+        "revoke": "ਵਾਪਸ ਲਵੋ",
+        "notRevokable": "ਸਿਰਫ਼ ਸਰਗਰਮ ਸਹਿਮਤੀਆਂ ਹੀ ਵਾਪਸ ਲਈਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ",
+        "clientLabel": "ਸੰਸਥਾ: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "ਇੱਕਠੀਆਂ ਸਹਿਮਤੀਆਂ ਵਾਪਸ ਲੈਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ",
+        "message": "ਇਹ {{count}} ਸਹਿਮਤੀ(ਆਂ) ਨੂੰ ਰੱਦ ਕਰ ਦੇਵੇਗਾ। ਇਹ ਵਾਪਸ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।",
+        "note": "ਹਰੇਕ ਵਾਪਸੀ ਨੂੰ ਮਾਲਕ ਵੱਲੋਂ ਤੁਹਾਡੇ ਦੁਆਰਾ ਕੀਤੀ ਗਈ ਕਾਰਵਾਈ ਵਜੋਂ ਵੱਖਰੇ ਤੌਰ 'ਤੇ ਦਰਜ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।",
+        "progress": "{{count}} ਵਿੱਚੋਂ {{processed}} ਵਾਪਸ ਲਈਆਂ ਜਾ ਰਹੀਆਂ ਹਨ...",
+        "confirm": "ਚੁਣੀਆਂ ਗਈਆਂ ਵਾਪਸ ਲਵੋ",
+        "cancel": "ਰੱਦ ਕਰੋ",
+        "processing": "ਪ੍ਰਕਿਰਿਆ ਚੱਲ ਰਹੀ ਹੈ..."
+      },
+      "subtitle": "ਤੁਸੀਂ ਇਸ ਖਾਤੇ ਵੱਲੋਂ ਕੰਮ ਕਰ ਰਹੇ ਹੋ। ਤੁਸੀਂ ਸਿਰਫ਼ ਉਹੀ ਕਰ ਸਕਦੇ ਹੋ ਜੋ ਮਾਲਕ ਨੇ ਤੁਹਾਨੂੰ ਕਰਨ ਦਾ ਅਧਿਕਾਰ ਦਿੱਤਾ ਹੈ।",
+      "account": {
+        "title": "ਖਾਤੇ ਤੱਕ ਪਹੁੰਚ",
+        "subtitle": "ਮਾਲਕ ਦੁਆਰਾ ਆਪਣੇ ਖਾਤੇ 'ਤੇ ਕਰਨ ਲਈ ਅਧਿਕਾਰਤ ਕਾਰਵਾਈਆਂ।",
+        "notGranted": "ਮਾਲਕ ਦੁਆਰਾ ਇਜਾਜ਼ਤ ਨਹੀਂ ਦਿੱਤੀ ਗਈ"
+      }
+    },
+    "detail": {
+      "title": "ਸਹਿਮਤੀ ਦਾ ਵੇਰਵਾ",
+      "back": "ਵਾਪਸ"
+    }
+  },
+  "admin": {
+    "title": "ਨਾਮਜ਼ਦ ਦੀ ਸਰਗਰਮੀ",
+    "status": {
+      "active": "ਸਰਗਰਮ",
+      "accepted": "ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ",
+      "pending": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਦੀ ਉਡੀਕ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ",
+      "rejected": "ਅਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ",
+      "deactivated": "ਨਿਸ਼ਕਿਰਿਆ ਕੀਤਾ ਗਿਆ"
+    },
+    "pending": {
+      "title": "ਤੁਹਾਡੀ ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਵਿੱਚ",
+      "empty": "ਇਸ ਵੇਲੇ ਤੁਹਾਡੇ ਲਈ ਕੋਈ ਬਕਾਇਆ ਕੰਮ ਨਹੀਂ ਹੈ।",
+      "count": "{{count}} ਮਨਜ਼ੂਰੀ ਦੀ ਉਡੀਕ ਵਿੱਚ",
+      "appointed": "{{email}} ਨੂੰ ਨਿਯੁਕਤ ਕੀਤਾ ਗਿਆ",
+      "accepted": "{{date}} ਨੂੰ ਸਵੀਕਾਰ ਕੀਤਾ ਗਿਆ"
+    },
+    "search": {
+      "label": "ਨਾਮ ਜਾਂ ਈਮੇਲ ਦੁਆਰਾ ਖੋਜੋ",
+      "empty": "ਕੋਈ ਮੇਲ ਖਾਂਦੇ ਖਾਤੇ ਨਹੀਂ ਮਿਲੇ।",
+      "results": "ਖਾਤੇ"
+    },
+    "table": {
+      "ariaLabel": "ਨਾਮਜ਼ਦਗੀਆਂ",
+      "owner": "ਖਾਤਾ",
+      "nominee": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ",
+      "permissions": "ਦਿੱਤੀਆਂ ਗਈਆਂ ਇਜਾਜ਼ਤਾਂ",
+      "status": "ਸਥਿਤੀ",
+      "nominated": "ਨਾਮਜ਼ਦ ਕੀਤਾ ਗਿਆ",
+      "actions": "ਕਾਰਵਾਈਆਂ"
+    },
+    "controls": {
+      "title": "ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ",
+      "titleNamed": "{{name}} ਦੇ ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ",
+      "nominated": "{{date}} ਨੂੰ ਨਾਮਜ਼ਦ ਕੀਤਾ ਗਿਆ",
+      "ticket": "ਟਿਕਟ {{ticket}}",
+      "waitingNominee": "ਅਜੇ ਕਰਨ ਲਈ ਕੁਝ ਨਹੀਂ ਹੈ - ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਨੇ ਸਵੀਕਾਰ ਨਹੀਂ ਕੀਤਾ ਹੈ।",
+      "activate": "ਪਹੁੰਚ ਸਰਗਰਮ ਕਰੋ",
+      "noAction": "-",
+      "owner": "ਖਾਤਾ",
+      "deactivate": "ਪਹੁੰਚ ਵਾਪਸ ਲਵੋ",
+      "none": "ਇਸ ਖਾਤੇ ਨੇ ਕਿਸੇ ਨੂੰ ਵੀ ਨਿਯੁਕਤ ਨਹੀਂ ਕੀਤਾ ਹੈ।"
+    },
+    "activateDialog": {
+      "title": "ਨਾਮਜ਼ਦ ਪਹੁੰਚ ਸਰਗਰਮ ਕਰੋ",
+      "ticketLabel": "ਕਾਨੂੰਨੀ/ਸਹਾਇਤਾ ਟਿਕਟ ਹਵਾਲਾ",
+      "confirm": "ਪਹੁੰਚ ਸਰਗਰਮ ਕਰੋ",
+      "cancel": "ਰੱਦ ਕਰੋ",
+      "processing": "ਸਰਗਰਮ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "subtitle": "ਇਹ {{nomineeName}} ਨੂੰ {{ownerName}} ਲਈ ਸਹਿਮਤੀਆਂ ਦੇ ਪ੍ਰਬੰਧਨ ਦੀ ਪਹੁੰਚ ਦਿੰਦਾ ਹੈ।"
+    },
+    "deactivateDialog": {
+      "title": "ਨਾਮਜ਼ਦ ਪਹੁੰਚ ਨਿਸ਼ਕਿਰਿਆ ਕਰੋ",
+      "reasonLabel": "ਕਾਰਨ",
+      "confirm": "ਪਹੁੰਚ ਨਿਸ਼ਕਿਰਿਆ ਕਰੋ",
+      "cancel": "ਰੱਦ ਕਰੋ",
+      "processing": "ਨਿਸ਼ਕਿਰਿਆ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ...",
+      "subtitle": "ਇਹ ਤੁਰੰਤ {{ownerName}} ਦੀਆਂ ਸਹਿਮਤੀਆਂ ਤੱਕ ਨਾਮਜ਼ਦ ਵਿਅਕਤੀ ਦੀ ਪਹੁੰਚ ਨੂੰ ਰੱਦ ਕਰ ਦੇਵੇਗਾ।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ਡਾਟਾ ਲੀਕ",
+      "UNAUTHORIZED_DATA_SHARING": "ਅਣਅਧਿਕਾਰਤ ਡਾਟਾ ਸਾਂਝਾਕਰਨ",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "ਸਹਿਮਤੀ ਵਾਪਸੀ ਦੇ ਬਾਵਜੂਦ ਡਾਟਾ ਦੀ ਵਰਤੋਂ",
+      "PURPOSE_VIOLATION": "ਉਦੇਸ਼ ਦੀ ਉਲੰਘਣਾ",
+      "DATA_ERASURE_NOT_COMPLETED": "ਡਾਟਾ ਹਟਾਉਣ ਦੀ ਬੇਨਤੀ ਪੂਰੀ ਨਹੀਂ ਕੀਤੀ ਗਈ",
+      "DATA_CORRECTION_NOT_COMPLETED": "ਡਾਟਾ ਸੁਧਾਰ ਦੀ ਬੇਨਤੀ ਪੂਰੀ ਨਹੀਂ ਕੀਤੀ ਗਈ",
+      "CONSENT_LIFECYCLE_ISSUE": "ਸਹਿਮਤੀ ਪ੍ਰਬੰਧਕੀ ਮੁੱਦਾ",
+      "DATA_ACCESS_DENIED": "ਡਾਟਾ ਪਹੁੰਚ ਬੇਨਤੀ ਤੋਂ ਇਨਕਾਰ",
+      "EXCESSIVE_DATA_COLLECTION": "ਲੋੜ ਤੋਂ ਵੱਧ ਡਾਟਾ ਇਕੱਠਾ ਕਰਨਾ",
+      "OTHER": "ਹੋਰ"
+    },
+    "status": {
+      "open": "ਖੁੱਲ੍ਹੀ",
+      "investigation": "ਪ੍ਰਕਿਰਿਆ ਅਧੀਨ",
+      "awaitingInfo": "ਗ੍ਰਾਹਕ ਦੇ ਜਵਾਬ ਦੀ ਉਡੀਕ",
+      "waitingOnDpo": "ਅੰਦਰੂਨੀ ਸਮੀਖਿਆ ਦੀ ਉਡੀਕ",
+      "resolved": "ਹੱਲ ਕੀਤਾ ਗਿਆ"
+    },
+    "priority": {
+      "CRITICAL": "ਬਹੁਤ ਗੰਭੀਰ",
+      "HIGH": "ਉੱਚ",
+      "MEDIUM": "ਮੱਧਮ",
+      "LOW": "ਘੱਟ"
+    },
+    "sla": {
+      "dueDate": "ਅੰਤਿਮ ਤਾਰੀਖ {{date}}",
+      "dueToday": "ਅੱਜ ਅੰਤਿਮ ਤਾਰੀਖ ਹੈ",
+      "overdueSingular": "{{count}} ਦਿਨ ਦੇਰੀ ਹੋ ਗਈ ਹੈ",
+      "overduePlural": "{{count}} ਦਿਨ ਦੇਰੀ ਹੋ ਗਈ ਹੈ",
+      "daysLeftSingular": "{{count}} ਦਿਨ ਬਾਕੀ ਹੈ",
+      "daysLeftPlural": "{{count}} ਦਿਨ ਬਾਕੀ ਹਨ"
+    },
+    "timeline": {
+      "complaintReceived": "ਸ਼ਿਕਾਇਤ ਪ੍ਰਾਪਤ ਹੋਈ",
+      "statusChangePrefix": "ਸਥਿਤੀ ਬਦਲੀ ਗਈ",
+      "statusChangeJoiner": "ਤੋਂ"
+    },
+    "list": {
+      "title": "ਮੇਰੀਆਂ ਸ਼ਿਕਾਇਤਾਂ",
+      "subtitle": "ਤੁਹਾਡੇ ਦੁਆਰਾ ਦਰਜ ਕੀਤੀਆਂ ਸ਼ਿਕਾਇਤਾਂ ਅਤੇ ਉਹਨਾਂ ਦੀ ਪ੍ਰਗਤੀ ਨੂੰ ਟ੍ਰੈਕ ਕਰੋ।",
+      "submitNew": "ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ",
+      "loadFailed": "ਇਸ ਵੇਲੇ ਤੁਹਾਡੀਆਂ ਸ਼ਿਕਾਇਤਾਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+      "empty": "ਤੁਸੀਂ ਅਜੇ ਤੱਕ ਕੋਈ ਸ਼ਿਕਾਇਤ ਦਰਜ ਨਹੀਂ ਕੀਤੀ ਹੈ।",
+      "emptyFiltered": "ਚੁਣੇ ਗਏ ਫਿਲਟਰ ਨਾਲ ਕੋਈ ਸ਼ਿਕਾਇਤ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ।",
+      "filters": {
+        "status": "ਸਥਿਤੀ",
+        "all": "ਸਭ"
+      },
+      "table": {
+        "tableAriaLabel": "ਮੇਰੀਆਂ ਸ਼ਿਕਾਇਤਾਂ ਦੀ ਸਾਰਣੀ",
+        "headers": {
+          "referenceId": "ਹਵਾਲਾ ID",
+          "category": "ਸ਼੍ਰੇਣੀ",
+          "status": "ਸਥਿਤੀ",
+          "submitted": "ਦਰਜ ਕੀਤੀ ਗਈ",
+          "updated": "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ"
+        }
+      }
+    },
+    "detail": {
+      "back": "ਮੇਰੀਆਂ ਸ਼ਿਕਾਇਤਾਂ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+      "notFound": "ਸ਼ਿਕਾਇਤ ਨਹੀਂ ਮਿਲੀ",
+      "description": "ਵੇਰਵਾ",
+      "submittedOn": "{{date}} ਨੂੰ ਦਰਜ ਕੀਤੀ ਗਈ",
+      "awaitingInfo": {
+        "note": "ਸ਼ਿਕਾਇਤ ਅਧਿਕਾਰੀ ਤੁਹਾਡੇ ਤੋਂ ਹੋਰ ਜਾਣਕਾਰੀ ਦੀ ਉਡੀਕ ਕਰ ਰਿਹਾ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਹੇਠਾਂ ਜਵਾਬ ਦਿਓ।"
+      },
+      "resolved": {
+        "note": "ਇਹ ਸ਼ਿਕਾਇਤ ਹੱਲ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ।"
+      }
+    },
+    "submit": {
+      "title": "ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ",
+      "subtitle": "ਸਾਨੂੰ ਦੱਸੋ ਕਿ ਕੀ ਹੋਇਆ ਹੈ ਅਤੇ ਅਸੀਂ ਇਸਨੂੰ ਸਹੀ ਟੀਮ ਤੱਕ ਪਹੁੰਚਾਵਾਂਗੇ।",
+      "submitFailed": "ਇਸ ਵੇਲੇ ਤੁਹਾਡੀ ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ। ਕਿਰਪਾ ਕਰਕੇ ਦੋਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।",
+      "fields": {
+        "category": "ਸ਼੍ਰੇਣੀ",
+        "categoryPlaceholder": "ਇੱਕ ਸ਼੍ਰੇਣੀ ਚੁਣੋ",
+        "categoryHelp": "ਉਹ ਵਿਕਲਪ ਚੁਣੋ ਜੋ ਤੁਹਾਡੀ ਸ਼ਿਕਾਇਤ ਦਾ ਸਭ ਤੋਂ ਵਧੀਆ ਵਰਣਨ ਕਰਦਾ ਹੈ।",
+        "categoriesLoadFailed": "ਇਸ ਵੇਲੇ ਸ਼ਿਕਾਇਤ ਸ਼੍ਰੇਣੀਆਂ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+        "description": "ਵੇਰਵਾ",
+        "descriptionPlaceholder": "ਆਪਣੀ ਸ਼ਿਕਾਇਤ ਦਾ ਵਿਸਥਾਰ ਨਾਲ ਵਰਣਨ ਕਰੋ",
+        "descriptionHelp": "ਇਸਨੂੰ ਜਲਦੀ ਹੱਲ ਕਰਨ ਵਿੱਚ ਸਾਡੀ ਮਦਦ ਕਰਨ ਲਈ ਜਿੰਨਾ ਹੋ ਸਕੇ ਵਧੇਰੇ ਵੇਰਵਾ ਸ਼ਾਮਲ ਕਰੋ।",
+        "attachments": "ਅਟੈਚਮੈਂਟਾਂ (ਵਿਕਲਪਿਕ)",
+        "attachmentsHelp": "PDF, DOCX, PNG, ਜਾਂ JPG ਹਰੇਕ {{maxSize}} ਤੱਕ।",
+        "uploadButton": "ਫਾਈਲਾਂ ਅੱਪਲੋਡ ਕਰੋ"
+      },
+      "validation": {
+        "categoryRequired": "ਜਾਰੀ ਰੱਖਣ ਲਈ ਇੱਕ ਸ਼੍ਰੇਣੀ ਚੁਣੋ।",
+        "descriptionRequired": "ਜਾਰੀ ਰੱਖਣ ਲਈ ਆਪਣੀ ਸ਼ਿਕਾਇਤ ਦਾ ਵਰਣਨ ਕਰੋ।",
+        "attachmentTooLarge": "{{fileNames}} ਅਟੈਚਮੈਂਟ ਆਕਾਰ ਦੀ ਸੀਮਾ {{maxSize}} ਤੋਂ ਵੱਧ ਹੈ।"
+      },
+      "success": {
+        "message": "ਤੁਹਾਡੀ ਸ਼ਿਕਾਇਤ {{referenceId}} ਦਰਜ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ।",
+        "attachmentFailedMessage": "ਤੁਹਾਡੀ ਸ਼ਿਕਾਇਤ {{referenceId}} ਦਰਜ ਹੋ ਗਈ ਹੈ, ਪਰ ਅਟੈਚਮੈਂਟ ਅੱਪਲੋਡ ਨਹੀਂ ਹੋ ਸਕੀਆਂ। ਤੁਸੀਂ ਸ਼ਿਕਾਇਤ ਦੇ ਵੇਰਵੇ ਵਾਲੇ ਪੰਨੇ ਤੋਂ ਉਹਨਾਂ ਨੂੰ ਜੋੜ ਸਕਦੇ ਹੋ।"
+      },
+      "actions": {
+        "cancel": "ਰੱਦ ਕਰੋ",
+        "submit": "ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ"
+      }
+    },
+    "activity": {
+      "title": "ਗਤੀਵਿਧੀ",
+      "send": "ਭੇਜੋ",
+      "sendOnly": "ਸਿਰਫ਼ ਭੇਜੋ",
+      "sendOptions": "ਹੋਰ ਭੇਜਣ ਦੇ ਵਿਕਲਪ",
+      "sendAndChangeStatusTo": "ਭੇਜੋ ਅਤੇ ਸਥਿਤੀ ਬਦਲੋ",
+      "sendAndUpdateStatus": "ਭੇਜੋ ਅਤੇ {{status}} ਵਜੋਂ ਨਿਸ਼ਾਨਬੱਧ ਕਰੋ",
+      "publicReply": "ਜਵਾਬ ਦਿਓ",
+      "internalNote": "ਅੰਦਰੂਨੀ ਨੋਟ",
+      "internalTag": "ਅੰਦਰੂਨੀ",
+      "dataPrincipalRoleLabel": "ਗ੍ਰਾਹਕ / ਡਾਟਾ ਪ੍ਰਿੰਸੀਪਲ",
+      "officerRoleLabel": "ਸ਼ਿਕਾਇਤ ਅਧਿਕਾਰੀ",
+      "composerPlaceholderPublic": "ਵਰਤੋਂਕਾਰ ਨੂੰ ਜਵਾਬ ਲਿਖੋ...",
+      "composerPlaceholderInternal": "ਇੱਕ ਅੰਦਰੂਨੀ ਨੋਟ ਲਿਖੋ (ਵਰਤੋਂਕਾਰ ਨੂੰ ਦਿਖਾਈ ਨਹੀਂ ਦੇਵੇਗਾ)...",
+      "attach": "ਨੱਥੀ ਕਰੋ",
+      "attachmentsHelp": "PDF, DOCX, PNG, ਜਾਂ JPG ਪ੍ਰਤੀ ਫਾਈਲ {{maxSize}} ਤੱਕ।",
+      "attachmentTooLarge": "{{fileNames}} ਅਟੈਚਮੈਂਟ ਆਕਾਰ ਦੀ ਸੀਮਾ {{maxSize}} ਤੋਂ ਵੱਧ ਹੈ।",
+      "removeAttachment": "ਅਟੈਚਮੈਂਟ ਹਟਾਓ"
+    },
+    "attachments": {
+      "tabLabel": "ਅਟੈਚਮੈਂਟਾਂ",
+      "tabLabelWithCount": "ਅਟੈਚਮੈਂਟਾਂ ({{count}})",
+      "empty": "ਇਸ ਸ਼ਿਕਾਇਤ ਵਿੱਚ ਕੋਈ ਅਟੈਚਮੈਂਟ ਨਹੀਂ ਜੋੜੀ ਗਈ ਹੈ।",
+      "initialSubmission": "ਆਰੰਭਿਕ ਜਮ੍ਹਾਂ ਕਰਵਾਈ ਗਈ",
+      "internalNote": "ਅੰਦਰੂਨੀ",
+      "overflowMore": "+{{count}} ਹੋਰ"
+    },
+    "management": {
+      "queue": {
+        "title": "ਸ਼ਿਕਾਇਤਾਂ",
+        "loadFailed": "ਇਸ ਵੇਲੇ ਸ਼ਿਕਾਇਤ ਕਤਾਰ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
+        "empty": "ਚੁਣੇ ਗਏ ਫਿਲਟਰਾਂ ਨਾਲ ਕੋਈ ਸ਼ਿਕਾਇਤ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ।",
+        "stats": {
+          "open": "ਖੁੱਲ੍ਹੀਆਂ",
+          "awaitingInfo": "ਜਵਾਬ ਦੀ ਉਡੀਕ",
+          "resolved": "ਹੱਲ ਕੀਤੀਆਂ",
+          "slaBreached": "SLA ਉਲੰਘਣਾ ਹੋਈ"
+        },
+        "filters": {
+          "sectionAriaLabel": "ਸ਼ਿਕਾਇਤ ਕਤਾਰ ਫਿਲਟਰ",
+          "status": "ਸਥਿਤੀ",
+          "priority": "ਪਹਿਲ",
+          "search": "ਹਵਾਲਾ ID ਜਾਂ ਵਰਤੋਂਕਾਰ ਦੁਆਰਾ ਖੋਜੋ",
+          "all": "ਸਭ",
+          "clear": "ਫਿਲਟਰ ਸਾਫ਼ ਕਰੋ",
+          "clearAriaLabel": "ਸਾਰੇ ਫਿਲਟਰ ਸਾਫ਼ ਕਰੋ"
+        },
+        "table": {
+          "tableAriaLabel": "ਸ਼ਿਕਾਇਤ ਕਤਾਰ ਸਾਰਣੀ",
+          "headers": {
+            "referenceId": "ਹਵਾਲਾ ID",
+            "dataPrincipal": "ਵਰਤੋਂਕਾਰ",
+            "category": "ਸ਼੍ਰੇਣੀ",
+            "priority": "ਪਹਿਲ",
+            "status": "ਸਥਿਤੀ",
+            "sla": "SLA",
+            "updated": "ਅੱਪਡੇਟ ਕੀਤਾ ਗਿਆ"
+          }
+        }
+      },
+      "case": {
+        "back": "ਕਤਾਰ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+        "notFound": "ਸ਼ਿਕਾਇਤ ਨਹੀਂ ਮਿਲੀ",
+        "dataPrincipal": "ਵਰਤੋਂਕਾਰ"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ",
+      "subtitle": "ਇਵੈਂਟ ਨੋਟੀਫਿਕੇਸ਼ਨ ਫਰੇਮਵਰਕ ਵਿੱਚ ਸਾਰੀਆਂ ਰਜਿਸਟਰਡ ਸਬਸਕ੍ਰਿਪਸ਼ਨਾਂ।",
+      "addAction": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਜੋੜੋ",
+      "filters": {
+        "sectionAriaLabel": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਫਿਲਟਰ",
+        "status": "ਸਥਿਤੀ",
+        "topic": "ਵਿਸ਼ਾ",
+        "clear": "ਫਿਲਟਰ ਸਾਫ਼ ਕਰੋ",
+        "statusOptions": {
+          "all": "ਸਾਰੀਆਂ ਸਥਿਤੀਆਂ",
+          "active": "ਸਰਗਰਮ",
+          "pendingVerification": "ਬਕਾਇਆ",
+          "stale": "ਅਸਰਗਰਮ"
+        },
+        "topicOptions": {
+          "all": "ਸਾਰੇ ਵਿਸ਼ੇ"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਸਫਲਤਾਪੂਰਵਕ ਮੁੜ-ਤਸਦੀਕ ਹੋ ਗਈ। ਸਥਿਤੀ ਹੁਣ ਸਰਗਰਮ (ACTIVE) ਹੈ।",
+        "reverifyStillStale": "ਤਸਦੀਕ ਮੁੜ ਅਸਫਲ ਰਹੀ। ਸਬਸਕ੍ਰਿਪਸ਼ਨ ਅਸਰਗਰਮ (STALE) ਹੀ ਰਹੇਗੀ।",
+        "reverifyFailed": "ਮੁੜ-ਤਸਦੀਕ ਅਸਫਲ ਰਹੀ।"
+      }
+    },
+    "events": {
+      "title": "ਘਟਨਾਵਾਂ",
+      "subtitle": "ਇਵੈਂਟ ਨੋਟੀਫਿਕੇਸ਼ਨ ਫਰੇਮਵਰਕ ਵਿੱਚ ਸਾਰੀਆਂ ਘਟਨਾਵਾਂ ਦੀ ਡਿਲਿਵਰੀ।",
+      "filters": {
+        "sectionAriaLabel": "ਘਟਨਾ ਫਿਲਟਰ",
+        "status": "ਸਥਿਤੀ",
+        "topic": "ਵਿਸ਼ਾ",
+        "search": "ਘਟਨਾਵਾਂ ਦੀ ਖੋਜ ਕਰੋ",
+        "searchPlaceholder": "ਉਦੇਸ਼ ਜਾਂ ਸਬਸਕ੍ਰਾਈਬਰ ID ਦੁਆਰਾ ਖੋਜੋ...",
+        "clear": "ਫਿਲਟਰ ਸਾਫ਼ ਕਰੋ",
+        "statusOptions": {
+          "all": "ਸਾਰੀਆਂ ਸਥਿਤੀਆਂ"
+        },
+        "topicOptions": {
+          "all": "ਸਾਰੇ ਵਿਸ਼ੇ"
+        }
+      },
+      "emptyTitle": "ਕੋਈ ਘਟਨਾ ਨਹੀਂ ਮਿਲੀ",
+      "emptyMessage": "ਚੁਣੇ ਗਏ ਮਾਪਦੰਡਾਂ ਨਾਲ ਕੋਈ ਪ੍ਰਕਾਸ਼ਿਤ ਘਟਨਾ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ।",
+      "table": {
+        "eventId": "ਘਟਨਾ ID",
+        "topic": "ਵਿਸ਼ਾ",
+        "purposes": "ਉਦੇਸ਼",
+        "deliveries": "ਡਿਲਿਵਰੀਆਂ",
+        "occurredAt": "ਵਾਪਰਨ ਦਾ ਸਮਾਂ",
+        "action": "ਕਾਰਵਾਈ",
+        "all": "ਸਭ",
+        "noSubscribers": "ਕੋਈ ਸਬਸਕ੍ਰਾਈਬਰ ਨਹੀਂ",
+        "viewEvent": "ਘਟਨਾ ਵੇਖੋ",
+        "subscriberCount_one": "{{count}} ਸਬਸਕ੍ਰਾਈਬਰ",
+        "subscriberCount_other": "{{count}} ਸਬਸਕ੍ਰਾਈਬਰ"
+      },
+      "detail": {
+        "notFoundTitle": "ਘਟਨਾ ਨਹੀਂ ਮਿਲੀ",
+        "notFoundMessage": "ID \"{{eventId}}\" ਨਾਲ ਕੋਈ ਘਟਨਾ ਨਹੀਂ ਮਿਲੀ।",
+        "backToEvents": "ਘਟਨਾਵਾਂ 'ਤੇ ਵਾਪਸ ਜਾਓ",
+        "topic": "ਵਿਸ਼ਾ",
+        "purposes": "ਉਦੇਸ਼",
+        "occurredAt": "ਵਾਪਰਨ ਦਾ ਸਮਾਂ",
+        "deliveries": "ਡਿਲਿਵਰੀਆਂ",
+        "all": "ਸਭ",
+        "noSubscribers": "ਕੋਈ ਸਬਸਕ੍ਰਾਈਬਰ ਨਹੀਂ",
+        "subscriberCount_one": "{{count}} ਸਬਸਕ੍ਰਾਈਬਰ",
+        "subscriberCount_other": "{{count}} ਸਬਸਕ੍ਰਾਈਬਰ"
+      },
+      "dialog": {
+        "title": "ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰਨ ਦਾ ਇਤਿਹਾਸ",
+        "deliveryId": "ਡਿਲਿਵਰੀ ID",
+        "loading": "ਘਟਨਾ ਡਿਲਿਵਰੀ ਇਤਿਹਾਸ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ…",
+        "noRetries": "ਪਹਿਲੀ ਕੋਸ਼ਿਸ਼ ਪੂਰੀ ਹੋ ਗਈ। ਕੋਈ ਮੁੜ ਕੋਸ਼ਿਸ਼ਾਂ ਦਰਜ ਨਹੀਂ ਹੋਈਆਂ।",
+        "attempt": "ਕੋਸ਼ਿਸ਼ {{attempt}}",
+        "retrySuffix": " (ਮੁੜ ਕੋਸ਼ਿਸ਼)",
+        "webhookDescription": "HTTP ਡਿਲਿਵਰੀ ਦੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ ਅਤੇ ਮੁੜ ਕੋਸ਼ਿਸ਼ਾਂ ਦਾ ਕਾਲਕ੍ਰਮਿਕ ਇਤਿਹਾਸ।",
+        "pollTitle": "ਪੋਲ ਪੂਰਤੀ ਸਥਿਤੀ ਅਤੇ ਪ੍ਰਵਾਨਗੀ",
+        "completionStatus": "ਪੂਰਤੀ ਸਥਿਤੀ",
+        "completionTimestamp": "ਪੂਰਤੀ ਦਾ ਸਮਾਂ",
+        "erasureMethod": "ਡਾਟਾ ਹਟਾਉਣ ਦਾ ਤਰੀਕਾ",
+        "recordsAffected": "ਪ੍ਰਭਾਵਿਤ ਰਿਕਾਰਡ",
+        "referenceId": "ਹਵਾਲਾ ID",
+        "submittedBy": "ਦੁਆਰਾ ਦਰਜ ਕੀਤਾ ਗਿਆ",
+        "notes": "ਨੋਟਸ",
+        "noAcknowledgment": "ਅਜੇ ਤੱਕ ਕੋਈ ਪੋਲ ਪੂਰਤੀ ਪ੍ਰਵਾਨਗੀ ਦਰਜ ਨਹੀਂ ਕੀਤੀ ਗਈ ਹੈ।",
+        "close": "ਬੰਦ ਕਰੋ"
+      }
+    }
+  }
+}

@@ -1,0 +1,87 @@
+@startuml nominee-service-schema
+hide circle
+skinparam linetype ortho
+skinparam roundcorner 6
+
+entity "nominations" as nominations {
+  * **nomination_id** : varchar(36) <<PK>>
+  --
+  * org_id : varchar(255)
+  * owner_id : varchar(255)
+  * nominee_id : varchar(255)
+  * nominee_email : varchar(320)
+  --
+  * permissions : varchar(255)
+  ..
+  sorted, comma separated
+  CONSENT_VIEW | CONSENT_REVOKE
+  CONSENT_APPROVE
+  ACCOUNT_VIEW | ACCOUNT_UPDATE
+  ACCOUNT_DELETE
+  --
+  * status : varchar(255)
+  ..
+  PENDING | ACCEPTED | REJECTED
+  ACTIVE | DEACTIVATED
+  --
+  * nominated_at : timestamptz
+  accepted_at : timestamptz
+  activated_at : timestamptz
+  activated_by : varchar(255)
+  activation_ticket : varchar(255)
+  deactivated_at : timestamptz
+  deactivated_by : varchar(255)
+  deactivation_reason : varchar(255)
+  --
+  <<unique>> uq_owner_nominee
+  (owner_id, nominee_id, org_id)
+  <<index>> idx_nominee (nominee_id)
+  <<index>> idx_org_status (org_id, status)
+}
+
+entity "nominee_audit_events" as audit {
+  * **audit_event_id** : varchar(36) <<PK>>
+  --
+  * org_id : varchar(255)
+  nomination_id : varchar(36)
+  * owner_id : varchar(255)
+  * nominee_id : varchar(255)
+  --
+  * event_type : varchar(255)
+  ..
+  NOMINATED | PERMISSIONS_CHANGED
+  ACCEPTED | REJECTED
+  ACTIVATED | DEACTIVATED | REMOVED
+  SESSION_STARTED | SESSION_DENIED
+  ACTION_PERFORMED | ACTION_DENIED
+  --
+  detail : text
+  * occurred_at : timestamptz
+  --
+  <<index>> idx_nomination_time
+  (nomination_id, occurred_at)
+  <<index>> idx_owner_time
+  (owner_id, occurred_at)
+  <<index>> idx_org_time
+  (org_id, occurred_at)
+}
+
+nominations ||..o{ audit : "nomination_id\n(no FK - audit outlives\nthe nomination)"
+
+note bottom of audit
+  Deliberately unconstrained and nullable: an audit
+  row must survive removal of the nomination it
+  describes, and an attempt to act with no
+  nomination at all is recorded with it null.
+
+  owner_id and nominee_id are snapshots, so a row
+  stays readable once the nomination is gone.
+end note
+
+note top of nominations
+  The unique key leads on owner_id so it also
+  serves the gate lookup (owner + nominee), which
+  runs on every acting request.
+end note
+
+@enduml

@@ -58,6 +58,14 @@ public class OAuthLoginServlet extends HttpServlet {
                 config.getPortalBasePath() + "/auth", PortalConstants.AUTH_TRANSACTION_MAX_AGE_SECONDS,
                 true, config.isCookieSecure(), "Lax");
 
+        // Defense in depth alongside AuthLogoutServlet: a fresh login must never
+        // inherit an acting-as mask token left over from whoever used this
+        // browser before, however that earlier session ended.
+        CookieUtil.clearCookie(response, PortalConstants.ACTING_TOKEN_COOKIE, config.getPortalBasePath(),
+                config.isCookieSecure());
+        CookieUtil.clearCookie(response, PortalConstants.ACTING_STATE_COOKIE, config.getPortalBasePath(),
+                config.isCookieSecure());
+
         response.sendRedirect(OAuthService.getInstance()
                 .buildAuthorizeUrl(config, redirectUri, state, codeChallenge));
     }

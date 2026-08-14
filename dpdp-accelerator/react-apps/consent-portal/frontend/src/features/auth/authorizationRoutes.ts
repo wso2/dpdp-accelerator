@@ -23,7 +23,9 @@ const AUTHORIZED_DESTINATIONS: ReadonlyArray<{ path: string; scope: PortalScope 
   { path: '/consents', scope: PORTAL_SCOPES.CONSENTS_READ_SELF },
   { path: '/purposes', scope: PORTAL_SCOPES.PURPOSES_READ },
   { path: '/elements', scope: PORTAL_SCOPES.ELEMENTS_READ },
+  { path: '/nominations', scope: PORTAL_SCOPES.PROFILE_READ_SELF },
   { path: '/administration/consents', scope: PORTAL_SCOPES.CONSENTS_READ_ANY },
+  { path: '/administration/nominees', scope: PORTAL_SCOPES.PROFILE_READ_ANY },
 ]
 
 export default function firstAuthorizedPath(scopes: readonly PortalScope[]): string | undefined {

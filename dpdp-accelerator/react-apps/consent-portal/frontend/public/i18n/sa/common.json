@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "सहमति-द्वारम्"
+  },
+  "language": {
+    "label": "भाषा",
+    "selectAria": "भाषाम् चिनोतु"
+  },
+  "authorization": {
+    "loading": "भवतः सत्रं भार्यते",
+    "loadFailed": "भवतः सत्रं भारयितुम् असमर्थः।",
+    "tryAgain": "पुनः प्रयतताम्",
+    "noAccessTitle": "द्वारस्य प्रवेशाधिकारः नास्ति",
+    "noAccessDescription": "अस्मिन् द्वारे कस्यापि पृष्ठस्य प्रवेशार्थं भवतः खात्यां अनुमतिः नास्ति।"
+  },
+  "copyableText": {
+    "copy": "प्रतिलिपिं कुरु",
+    "copied": "प्रतिलिपिः कृता",
+    "copyLabel": "{{label}} प्रतिलिपिं कुरु",
+    "copyValue": "{{label}} {{value}} प्रतिलिपिं कुरु",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "प्राथमिक-सञ्चालनम्",
+    "dashboard": "नियन्त्रणपट्टिका",
+    "consent": "सहमतिः",
+    "allConsents": "सर्वाः सहमतयः",
+    "pendingConsents": "लम्बमानाः सहमतयः",
+    "catalog": "परिभाषाः",
+    "purposes": "उद्देश्यानि",
+    "elements": "तत्त्वानि",
+    "administration": "प्रशासनम्",
+    "adminConsents": "सहमतयः",
+    "nominations": "नामांकनानि",
+    "nomineeActivation": "नामित-सक्रियनम्",
+    "myComplaints": "मम आक्षेपाः",
+    "complaintManagement": "आक्षेपाः",
+    "dataProcessors": "दत्तांश-संसाधकाः",
+    "dataProcessorTopics": "विषयाः",
+    "dataProcessorSubscriptions": "सदस्यताः",
+    "dataProcessorEvents": "घटनाः"
+  },
+  "layout": {
+    "home": "गृहम्",
+    "breadcrumbAriaLabel": "मार्गदर्शिका",
+    "userMenu": {
+      "unknownUser": "अज्ञातः उपयोक्ता",
+      "noEmail": "विपत्रम् नास्ति",
+      "signOut": "बहिर्गच्छतु",
+      "signOutError": "बहिर्गन्तुम् असमर्थः। कृपया पुनः प्रयतताम्।",
+      "tryAgain": "पुनः प्रयतताम्"
+    }
+  },
+  "dashboard": {
+    "active": "सक्रियाः सहमतयः",
+    "attention": "भवतः ध्यानम् आवश्यकम्",
+    "commonPurposes": "अधिकतया साधितानि उद्देश्यानि",
+    "commonPurposesSubtitle": "भवतः सक्रियासु सहमतिषु समाविष्टानि उद्देश्यानि",
+    "consentCount": "{{count}} सहमतयः",
+    "consentCount_one": "{{count}} सहमतिः",
+    "consentCount_other": "{{count}} सहमतयः",
+    "expiringSoon": "शीघ्रमेव कालावधिः समाप्यते",
+    "loadFailed": "इदानीं भवतः नियन्त्रणपट्टिकां भारयितुम् असमर्थः।",
+    "noExpiring": "आगामिषु {{days}} दिनेषु कापि सक्रिया सहमतिः न समाप्यते।",
+    "noPending": "समीक्षार्थं कापि लम्बमाना सहमतिः नास्ति।",
+    "noPurposes": "अद्यापि कानिचित् साधितानि उद्देश्यानि उपलब्धानि न सन्ति।",
+    "pending": "लम्बमानाः सहमतयः",
+    "pendingConsents": "लम्बमानाः सहमतयः",
+    "subtitle": "भवतः सहमति-गतेः आगामि-कार्याणां च अवलोकनम्।",
+    "title": "नियन्त्रणपट्टिका",
+    "typeBreakdown": "सहमति-प्रकारस्य वर्गीकरणम्",
+    "typeBreakdownSubtitle": "प्रकारानुसारं भवतः सर्वाः सहमतयः",
+    "noTypes": "अद्यापि केऽपि सहमति-प्रकाराः उपलब्धाः न सन्ति।",
+    "viewPending": "सर्वाः लम्बमानाः सहमतयः पश्यन्तु"
+  },
+  "adminConsents": {
+    "title": "सहमतयः",
+    "filters": {
+      "sectionAriaLabel": "प्रशासनिक-सहमति-शोधकाः",
+      "consentIdSearchPlaceholder": "सहमति-परिचयेन अन्वेषणं कुरुत",
+      "removeConsentIdForAdvanced": "उन्नत-शोधकानां प्रयोगार्थं सहमति-परिचय-शोधकं निष्कासयन्तु।",
+      "removeConsentIdForStatus": "स्थिति-शोधकस्य प्रयोगार्थं सहमति-परिचय-शोधकं निष्कासयन्तु।",
+      "userIds": "उपयोक्तृ-परिचयाः",
+      "groupIds": "समूह-परिचयाः",
+      "commaSeparatedUsers": "एकाधिक-उपयोक्तृ-परिचयान् अल्पविरामेन पृथक् कुर्वन्तु",
+      "active": "सक्रियाः शोधकाः"
+    }
+  },
+  "consentRegistry": {
+    "title": "सर्वाः सहमतयः",
+    "details": {
+      "title": "सहमतेः विवरणम्",
+      "consentId": "सहमति-परिचयः",
+      "status": "स्थितिः",
+      "type": "सहमति-प्रकारः",
+      "frequency": "प्रवेश-सीमा",
+      "frequencyHelp": "प्रतिदिनं कतिवारम् अस्याः सहमतेः उपयोगः कर्तुं शक्यते इति सूचयति।",
+      "frequencyUnitSingular": "प्रतिदिनम् एकवारम्",
+      "frequencyUnitPlural": "प्रतिदिनम् बहुवारम्",
+      "purposes": "उद्देश्यानि",
+      "duration": "अवलोकन-अवधिः",
+      "durationHelp": "दत्तांशः कियत्कालं यावत् पूर्वं प्राप्तुं शक्यते इति परिभाषयति। उदाहरणतः, यदि षड्मासाः निर्धारिताः, तर्हि षड्मासपूर्वं यावत् दत्तांशः प्राप्यते।",
+      "durationUnitHourSingular": "होरा",
+      "durationUnitHourPlural": "होराः",
+      "durationUnitDaySingular": "दिनम्",
+      "durationUnitDayPlural": "दिनानि",
+      "durationUnitYearSingular": "वर्षम्",
+      "durationUnitYearPlural": "वर्षाणि",
+      "created": "निर्मितम्",
+      "updated": "अद्यतनीकृतम्",
+      "validUntil": "यावत् वैधम्",
+      "groupId": "समूह-परिचयः",
+      "recurring": "आवर्तकम्",
+      "back": "पञ्जिकां प्रति गच्छन्तु",
+      "notFound": "सहमति-अभिलेखः न प्राप्तः",
+      "approved": "अनुमोदितम्",
+      "notApproved": "न अनुमोदितम्",
+      "approvedCount": "{{total}} मध्ये {{approved}} अनुमोदितम्",
+      "section": {
+        "purposes": "सहमति-उद्देश्यानि",
+        "authorizations": "प्राधिकृतयः",
+        "lifecycle": "सहमति-जीवनचक्रम्"
+      },
+      "table": {
+        "element": "तत्त्वम्",
+        "approved": "अनुमोदितम्",
+        "required": "आवश्यकम्",
+        "description": "विवरणम्",
+        "user": "उपयोक्ता",
+        "status": "स्थितिः",
+        "updated": "अद्यतनीकृतम्",
+        "resources": "संसाधनानि",
+        "eventType": "घटना-प्रकारः",
+        "date": "दिनाङ्कः",
+        "time": "समयः"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "सहमति-जीवनचक्रम्",
+        "empty": "कापि जीवनचक्र-घटना न उपलभ्यते।",
+        "noDescription": "विवरणं नास्ति।"
+      },
+      "actions": {
+        "viewResources": "संसाधनानि पश्यन्तु",
+        "noResourcesTooltip": "संसाधनानि न सन्ति"
+      },
+      "resourcesModal": {
+        "title": "प्राधिकृति-संसाधनानि",
+        "authRef": "प्राधिकृतिः",
+        "close": "पिदधातु"
+      },
+      "values": {
+        "yes": "आम्",
+        "no": "न",
+        "required": "आवश्यकम्",
+        "optional": "वैकल्पिकम्"
+      }
+    },
+    "actions": {
+      "view": "पश्यन्तु",
+      "revoke": "प्रत्याहारं कुरुत",
+      "approve": "अनुमोदताम्",
+      "reject": "अस्वीकरोतु",
+      "copyConsentId": "सहमति-परिचयस्य प्रतिलिपिं कुरुत",
+      "copyConsentIdAriaLabel": "{{id}} सहमति-परिचयस्य प्रतिलिपिं कुरुत"
+    },
+    "modals": {
+      "consentId": "सहमति-परिचयः",
+      "actions": {
+        "cancel": "रद्द कुरुत",
+        "processing": "प्रक्रिया प्रचलति..."
+      },
+      "approval": {
+        "title": "सहमतिं समीक्ष्यताम् अनुमोदताम् च",
+        "subtitle": "अनुमोदनात् पूर्वं कृपया सहमति-तत्त्वानि समीक्षन्ताम्।",
+        "mandatory": "अनिवार्य-तत्त्वानि (आवश्यकानि)",
+        "optional": "वैकल्पिक-तत्त्वानि",
+        "required": "आवश्यकम्",
+        "toggle": "अनुमतिं परिवर्तयन्तु",
+        "toggleWithDetails": "{{purposeLabel}} मध्ये {{elementLabel}} कृते अनुमतिं परिवर्तयन्तु",
+        "loading": "सहमति-विवरणं भार्यते...",
+        "noMandatory": "अस्यै सहमत्यै कापि अनिवार्य-आवश्यकता नास्ति।",
+        "confirm": "अनुमोदताम् अग्रे गच्छन्तु च"
+      },
+      "rejection": {
+        "title": "अस्वीकारं प्रमाणीकुरुत",
+        "message": "किं भवान् निश्चयेन इमां सहमतिम् अस्वीकर्तुम् इच्छति?",
+        "note": "अस्याः सहमतेः अस्वीकरणेन याचिताः सहमतयः न प्रदास्यन्ते।",
+        "confirm": "सहमतिम् अस्वीकरोतु",
+        "cancel": "रद्द कुरुत"
+      },
+      "revocation": {
+        "title": "प्रत्याहारं प्रमाणीकुरुत",
+        "message": "किं भवान् निश्चयेन सहमतिं प्रत्याहर्तुम् इच्छति?",
+        "note": "एतत् कार्यं सम्बद्धानां सर्वेषाम् उद्देश्यानां कृते प्रदत्ताः अनिवार्याः वैकल्पिकाः च सहमतयः प्रत्याहरति।",
+        "confirm": "सहमतयः प्रत्याहरन्तु",
+        "cancel": "रद्द कुरुत"
+      }
+    },
+    "status": {
+      "all": "सर्वम्",
+      "active": "सक्रियम्",
+      "pending": "लम्बमानम्",
+      "created": "निर्मितम्",
+      "approved": "अनुमोदितम्",
+      "rejected": "अस्वीकृतम्",
+      "revoked": "प्रत्याहृतम्",
+      "expired": "कालावधिः समाप्तः",
+      "systemExpired": "तन्त्रेण कालावधिः समाप्तः",
+      "systemRevoked": "तन्त्रेण प्रत्याहृतम्"
+    },
+    "filters": {
+      "sectionAriaLabel": "सहमति-शोधकाः",
+      "purposeSearchPlaceholder": "उद्देश्यस्य नाम्ना अन्वेषणं कुरुत",
+      "status": "स्थितिः",
+      "groupIds": "समूह-परिचयः",
+      "elementName": "तत्त्वस्य नाम",
+      "elementVersion": "तत्त्वस्य संस्करणम्",
+      "advanced": "उन्नत-शोधकाः",
+      "apply": "प्रयुञ्जताम्",
+      "cancel": "रद्द कुरुत",
+      "startDate": "प्रारम्भ-दिनाङ्कः",
+      "startDateAriaLabel": "प्रारम्भ-दिनाङ्क-शोधकः",
+      "endDate": "समाप्ति-दिनाङ्कः",
+      "endDateAriaLabel": "समाप्ति-दिनाङ्क-शोधकः",
+      "clear": "सर्वं मार्जयन्तु",
+      "clearAriaLabel": "सर्वान् शोधकान् मार्जयन्तु"
+    },
+    "messages": {
+      "loading": "सहमतयः भार्यन्ते...",
+      "loadFailed": "इदानीं सहमतीः भारयितुम् असमर्थः।",
+      "emptyTitle": "कापि सहमतिः न प्राप्ता",
+      "empty": "चयनित-शोधकेभ्यः कापि सहमतिः न प्राप्ता।"
+    },
+    "table": {
+      "tableAriaLabel": "सहमति-पञ्जिका-सारणी",
+      "consentIdAriaLabel": "सहमति-परिचयः: {{id}}",
+      "groupLabel": "समूह-परिचयः: {{groupId}}",
+      "notApplicable": "न प्रयोज्यम्",
+      "purposes": {
+        "more": "+{{count}} अधिकम्",
+        "title": "सहमति-उद्देश्यानि",
+        "hint": "सहमतेः सर्वाणि उद्देश्यानि प्रदर्श्यन्ते"
+      },
+      "headers": {
+        "consentId": "सहमति-परिचयः",
+        "type": "प्रकारः",
+        "status": "स्थितिः",
+        "purposes": "उद्देश्यानि",
+        "updated": "अद्यतनीकृतम्",
+        "expiration": "समाप्तिः",
+        "actions": "कार्याणि"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "तत्त्वं योजयन्तु",
+      "addProperty": "गुणधर्मं योजयन्तु",
+      "apply": "प्रयुञ्जताम्",
+      "cancel": "रद्द कुरुत",
+      "clear": "मार्जयन्तु",
+      "clearAll": "सर्वं मार्जयन्तु",
+      "create": "सृजन्तु",
+      "delete": "विलोपयन्तु",
+      "deleting": "मार्ज्यते...",
+      "deleteVersion": "संस्करणं विलोपयन्तु",
+      "filters": "शोधकाः",
+      "removeElement": "तत्त्वं निष्कासयन्तु",
+      "removeProperty": "गुणधर्मं निष्कासयन्तु",
+      "retry": "पुनः प्रयतताम्",
+      "saving": "रक्ष्यते...",
+      "view": "पश्यन्तु",
+      "viewElement": "{{name}} पश्यन्तु",
+      "viewPurpose": "{{name}} पश्यन्तु"
+    },
+    "fields": {
+      "actions": "कार्याणि",
+      "created": "निर्मितम्",
+      "description": "विवरणम्",
+      "displayName": "प्रदर्शित-नाम",
+      "element": "तत्त्वम्",
+      "elementId": "तत्त्व-परिचयः",
+      "elementName": "तत्त्वस्य नाम",
+      "elementNamespace": "तत्त्वस्य नामस्थानम्",
+      "elements": "तत्त्वानि",
+      "elementVersion": "तत्त्वस्य संस्करणम्",
+      "groupId": "समूह-परिचयः",
+      "groupIds": "समूह-परिचयाः",
+      "mandatory": "अनिवार्यम्",
+      "name": "नाम",
+      "namespace": "नामस्थानम्",
+      "properties": "गुणधर्माः",
+      "propertyKey": "कुञ्जिका",
+      "propertyValue": "मूल्यम्",
+      "purpose": "उद्देश्यम्",
+      "purposeId": "उद्देश्य-परिचयः",
+      "purposeName": "उद्देश्यस्य नाम",
+      "scope": "व्याप्तिः",
+      "purposeScope": "उद्देश्यस्य व्याप्तिः",
+      "purposeVersion": "उद्देश्यस्य संस्करणम्",
+      "requirement": "आवश्यकता",
+      "schema": "रूपरेखा",
+      "type": "प्रकारः",
+      "version": "संस्करणम्"
+    },
+    "help": {
+      "commaSeparatedGroups": "एकाधिक-समूह-परिचयान् अल्पविरामेन पृथक् कुर्वन्तु",
+      "defaultNamespace": "रिक्तं चेत् पूर्वनिर्धारित-नामस्थानस्य उपयोगं करोति",
+      "elementVersionRequiresIdentity": "प्रथमं तत्त्वस्य नाम अथवा नामस्थानं प्रविशन्तु",
+      "organizationPurpose": "संस्था-स्तरीयं उद्देश्यं निर्मातुं रिक्तं त्यजन्तु",
+      "purposeVersionRequiresName": "प्रथमम् उद्देश्यस्य नाम प्रविशन्तु",
+      "schemaElementTypes": "रूपरेखाः केवलं JSON तथा XML तत्त्वानां कृते समर्थिताः सन्ति।",
+      "selectElementFirst": "प्रथमं तत्त्वं चिनोतु"
+    },
+    "values": {
+      "all": "सर्वम्",
+      "any": "किमपि",
+      "customNamespace": "अनुकूलित-नामस्थानम्",
+      "defaultNamespace": "पूर्वनिर्धारित-नामस्थानम्",
+      "mandatory": "अनिवार्यम्",
+      "matches": "समानम्",
+      "noDescription": "विवरणं नास्ति",
+      "optional": "वैकल्पिकम्",
+      "specificGroup": "विशिष्ट-समूहः",
+      "itemCount": "{{count}} चयनितम्",
+      "latest": "नवीनतमम्",
+      "viewing": "दृश्यते"
+    },
+    "elements": {
+      "add": "तत्त्वं योजयन्तु",
+      "activeFilters": "सक्रियाः शोधकाः",
+      "back": "तत्त्वानि प्रति गच्छन्तु",
+      "createTitle": "तत्त्वं सृजन्तु",
+      "detailsSection": "तत्त्वस्य विवरणम्",
+      "empty": "चयनित-शोधकैः सह किमपि तत्त्वं न मिलति।",
+      "emptyTitle": "किमपि तत्त्वं न प्राप्तम्",
+      "filterTitle": "शोधक-तत्त्वानि",
+      "loadFailed": "इदानीं तत्त्वानि भारयितुम् असमर्थः।",
+      "newVersion": "नूतनं संस्करणं सृजन्तु",
+      "refreshing": "पुनर्भार्यते...",
+      "results": "{{count}} तत्त्वानि",
+      "searchPlaceholder": "तत्त्वस्य नाम्ना अन्वेषणं कुरुत",
+      "subtitle": "पुनर्प्रयोज्यानि सहमति-तत्त्वानि तेषां संस्करण-परिभाषाः च प्रबन्धयन्तु।",
+      "tableLabel": "सहमति-तत्त्वानि",
+      "title": "तत्त्वानि"
+    },
+    "purposes": {
+      "add": "उद्देश्यं योजयन्तु",
+      "activeFilters": "सक्रियाः शोधकाः",
+      "allPurposes": "सर्वाणि उद्देश्यानि",
+      "back": "उद्देश्यानि प्रति गच्छन्तु",
+      "createTitle": "उद्देश्यं सृजन्तु",
+      "detailsSection": "उद्देश्यस्य विवरणम्",
+      "empty": "चयनित-शोधकैः सह किमपि उद्देश्यं न मिलति।",
+      "emptyTitle": "किमपि उद्देश्यं न प्राप्तम्",
+      "filterTitle": "शोधक-उद्देश्यानि",
+      "loadFailed": "इदानीं उद्देश्यानि भारयितुम् असमर्थः।",
+      "newVersion": "नूतनं संस्करणं सृजन्तु",
+      "orgWide": "सम्पूर्ण-संस्थायाम्",
+      "refreshing": "पुनर्भार्यते...",
+      "results": "{{count}} उद्देश्यानि",
+      "searchLabel": "उद्देश्यानि अन्विष्यन्तु",
+      "searchPlaceholder": "उद्देश्यस्य नाम्ना अन्वेषणं कुरुत",
+      "scopeFilter": "उद्देश्यस्य व्याप्तिः",
+      "subtitle": "पुनर्प्रयोज्यानि सहमति-उद्देश्यानि तेषां तत्त्व-परिभाषाः च प्रबन्धयन्तु।",
+      "tableLabel": "सहमति-उद्देश्यानि",
+      "title": "उद्देश्यानि"
+    },
+    "details": {
+      "definition": "परिभाषा",
+      "elementIdentity": "तत्त्व-परिचयः",
+      "elements": "तत्त्वानि",
+      "identity": "उद्देश्य-परिचयः",
+      "overview": "अवलोकनम्",
+      "versionDetails": "संस्करण-विवरणम्",
+      "versions": "संस्करण-इतिहासः"
+    },
+    "messages": {
+      "createElementFirst": "उद्देश्य-निर्धारणात् पूर्वं तत्त्वं सृजन्तु।",
+      "immutableElement": "{{namespace}}:{{name}} एकं {{type}} तत्त्वं तिष्ठति। संस्करणयोः मध्ये परिचय-क्षेत्राणि परिवर्तयितुं न शक्यन्ते।",
+      "immutablePurpose": "{{name}} अस्य स्वामित्वं {{groupId}} इत्यस्य एव तिष्ठति। संस्करणयोः मध्ये परिचय-क्षेत्राणि परिवर्तयितुं न शक्यन्ते।",
+      "immutableOrganizationPurpose": "{{name}} संस्था-स्तरीयं वर्तते। अस्य परिचयः व्याप्तिः च संस्करणयोः मध्ये परिवर्तयितुं न शक्यन्ते।",
+      "immutableGroupPurpose": "{{name}} अस्य व्याप्तिः {{groupId}} समूहं यावत् अस्ति। अस्य परिचयः व्याप्तिः च संस्करणयोः मध्ये परिवर्तयितुं न शक्यन्ते।",
+      "loadingElements": "उपलभ्यमानानि तत्त्वानि भार्यन्ते...",
+      "loadingVersions": "तत्त्व-संस्करणाणि भार्यन्ते...",
+      "noElementsFound": "समानानि तत्त्वानि न सन्ति",
+      "noElements": "अस्य संस्करणस्य कृते कानिपि तत्त्वानि सज्जीकृतानि न सन्ति।",
+      "noProperties": "अनुकूलित-गुणधर्माः न सन्ति।",
+      "noSchema": "अस्य संस्करणस्य कृते कापि रूपरेखा सज्जीकृता नास्ति।",
+      "noPurposeElements": "अद्यापि कानिपि तत्त्वानि न योजितानि। उद्देश्यं निर्मातुं न्यूनतमम् एकं तत्त्वं योजयन्तु।",
+      "noVersions": "कानिचिदपि संस्करणाणि उपलब्धानि न सन्ति।",
+      "versionsLoadFailed": "इदानीं संस्करण-इतिहासं भारयितुम् असमर्थः।"
+    },
+    "validation": {
+      "duplicateElements": "प्रत्येकं तत्त्वं केवलम् एकवारमेव समावेशयितुं शक्यते।",
+      "duplicatePropertyKeys": "गुणधर्म-कुञ्जिकाः अद्वितीयाः भवितव्याः।",
+      "elementRequired": "न्यूनतमम् एकं तत्त्वं चिनोतु।",
+      "groupIdRequired": "समूह-विशिष्ट-उद्देश्यस्य कृते समूह-परिचयः आवश्यकः अस्ति।",
+      "nameRequired": "नाम आवश्यकम् अस्ति।",
+      "namespaceRequired": "यदा अनुकूलीकरणं चयनितं भवति तदा नामस्थानम् आवश्यकम् अस्ति।",
+      "schemaRequired": "JSON तथा XML तत्त्वानां कृते रूपरेखा आवश्यकी अस्ति।"
+    },
+    "delete": {
+      "title": "संस्करणं विलोपयन्तु",
+      "message": "किं {{version}} संस्करणं मार्जनीयम्?",
+      "warning": "एतत् कार्यं प्रत्यावर्तयितुं न शक्यते। सन्दर्भित-संस्करणाणि मार्जयितुं न शक्यन्ते, अन्तिम-संस्करणस्य मार्जनेन सम्पूर्णा प्रविष्टिः एव मार्जिता भवति।"
+    }
+  },
+  "nominee": {
+    "title": "नामांकनानि",
+    "messages": {
+      "loadFailed": "इदानीं नामांकनानि भारयितुम् असमर्थः।"
+    },
+    "nominatedFor": {
+      "openAccount": "खातां उद्घाटयन्तु →",
+      "accept": "स्वीकरोतु",
+      "reject": "अस्वीकरोतु",
+      "actionNeeded": "कार्यं अपेक्षितम्",
+      "ariaLabel": "नामांकिताः खाताः",
+      "empty": "अद्यापि केनापि भवान् न नामांकितः।",
+      "title": "नामांकिताः खाताः",
+      "table": {
+        "account": "खाता",
+        "status": "स्थितिः",
+        "actions": "कार्याणि"
+      }
+    },
+    "acting": {
+      "starting": "खाता उद्घाट्यते...",
+      "startFailed": "भवान् अस्याः खातायाः कृते नामांकितः नास्ति।",
+      "startFailedHint": "नामांकनानि प्रति गत्वा पुनः प्रयतताम्।",
+      "blockedTitle": "नामांकित-प्रवेशे न उपलब्धम्",
+      "blockedFenced": "खाता-सेटिंग्स्, प्रमाणानि, नामांकनानि च अन्यस्य जनस्य कृते कदापि उपयोक्तुं न शक्यन्ते।",
+      "blockedScope": "खाता-स्वामिना अस्य क्षेत्रस्य कृते भवते अनुमतिः न दत्ता।",
+      "backToAllowed": "यत्र मम प्रवेशः अस्ति तत्र गच्छामि",
+      "exit": "बहिर्गच्छन्तु"
+    },
+    "permissions": {
+      "consentView": "सहमतयः पश्यन्तु",
+      "consentRevoke": "सहमतयः प्रत्याहरन्तु",
+      "consentApprove": "लम्बमानाः सहमतयः अनुमोदताम्",
+      "accountView": "वैयक्तिक-खातां पश्यन्तु",
+      "accountUpdate": "वैयक्तिक-खाताम् अद्यतनीकुर्वन्तु",
+      "accountDelete": "वैयक्तिक-खातां मार्जयन्तु"
+    },
+    "mine": {
+      "add": "नामांकितं योजयन्तु",
+      "remove": "निष्कासयन्तु",
+      "empty": "भवता अद्यापि कोऽपि न नामांकितः।",
+      "status": {
+        "active": "सक्रियः",
+        "pending": "स्वीकृतेः प्रतीक्षते",
+        "rejected": "अस्वीकृतः",
+        "accepted": "अनुमोदनस्य प्रतीक्षते",
+        "deactivated": "निलम्बितः"
+      },
+      "ariaLabel": "नामांकिताः",
+      "title": "नामांकिताः",
+      "table": {
+        "person": "व्यक्तिः",
+        "permissions": "अनुमतयः",
+        "status": "स्थितिः",
+        "actions": "कार्याणि",
+        "morePermissions": "+{{count}} अधिकम्"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "नामांकितं योजयन्तु",
+        "editTitle": "नामांकितं सम्पादयन्तु",
+        "saveChanges": "परिवर्तनानि रक्षन्तु",
+        "emailLabel": "नामांकितस्य पञ्जीकृत-ईमेल",
+        "permissionsTitle": "अयं नामांकितः किं कर्तुं शक्नोति?",
+        "permissionsSubtitle": "यत् प्रदातुम् इच्छति तदेव चिनोतु। एताः एव अस्य नामांकितस्य अनुमतयः भविष्यन्ति।",
+        "sensitive": "संवेदनशीलम्",
+        "cancel": "रद्द कुरुत",
+        "processing": "रक्ष्यते...",
+        "confirm": "नामांकनं प्रेषयन्तु",
+        "processingEdit": "रक्ष्यते..."
+      },
+      "removeDialog": {
+        "title": "नामांकितं निष्कासयन्तु",
+        "message": "{{nomineeEmail}} इदानीं भवतः सहमतीनां प्रबन्धनं कर्तुं न शक्ष्यति।",
+        "confirm": "नामांकितं निष्कासयन्तु",
+        "cancel": "रद्द कुरुत",
+        "processing": "निष्कास्यते..."
+      }
+    },
+    "manage": {
+      "title": "स्वामिनः सहमतीनां प्रबन्धनम्",
+      "back": "नामांकित-दृश्यात् बहिर्गच्छन्तु",
+      "consents": {
+        "title": "सहमतयः",
+        "subtitle": "अस्याः खातायाः द्वारा प्रदत्ताः सहमतयः पश्यन्तु, यत्र अनुमतं तत्र प्रत्याहरन्तु च।"
+      },
+      "selectedCount": "{{count}} चयनितम्",
+      "revokeSelected": "चयनितं प्रत्याहरन्तु",
+      "messages": {
+        "loadFailed": "इदानीं सहमतीः भारयितुम् असमर्थः।",
+        "empty": "अस्याः खातायाः कृते कापि सहमतिः न प्राप्ता।"
+      },
+      "table": {
+        "ariaLabel": "नामांकित-प्रबन्धिता सहमति-सारणी",
+        "purposes": "उद्देश्यानि",
+        "type": "प्रकारः",
+        "status": "स्थितिः",
+        "updated": "अद्यतनीकृतम्",
+        "actions": "कार्याणि",
+        "revoke": "प्रत्याहारं कुरुत",
+        "notRevokable": "केवलं सक्रियाः सहमतयः प्रत्याहर्तुं शक्यन्ते",
+        "clientLabel": "संस्था: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "सामूहिक-प्रत्याहारं प्रमाणीकुरुत",
+        "message": "एतत् {{count}} सहमतिं/सहमतीः प्रत्याहरिष्यति। एतत् कार्यं प्रत्यावर्तयितुं न शक्यते।",
+        "note": "प्रत्येकं प्रत्याहारं स्वामिनः कृते भवता कृतं कार्यमिति पृथक् अभिलेखितं भवति।",
+        "progress": "{{count}} मध्ये {{processed}} प्रत्याह्रियते...",
+        "confirm": "चयनितं प्रत्याहरन्तु",
+        "cancel": "रद्द कुरुत",
+        "processing": "प्रक्रिया प्रचलति..."
+      },
+      "subtitle": "भवान् अस्याः खातायाः कृते कार्यं करोति। यत् स्वामिना अधिकृतं तदेव भवान् कर्तुं शक्नोति।",
+      "account": {
+        "title": "खाता-प्रवेशः",
+        "subtitle": "स्वामिना तस्य खातायां कर्तुं भवते अधिकृतानि कार्याणि।",
+        "notGranted": "स्वामिना न प्रदत्तम्"
+      }
+    },
+    "detail": {
+      "title": "सहमतेः विवरणम्",
+      "back": "पृष्ठतः"
+    }
+  },
+  "admin": {
+    "title": "नामित-सक्रियनम्",
+    "status": {
+      "active": "सक्रियः",
+      "accepted": "अनुमोदनस्य प्रतीक्षते",
+      "pending": "नामांकितस्य प्रतीक्षते",
+      "rejected": "अस्वीकृतः",
+      "deactivated": "निष्क्रियीकृतः"
+    },
+    "pending": {
+      "title": "भवतः अनुमोदनस्य प्रतीक्षते",
+      "empty": "सम्प्रति किमपि भवतः प्रतीक्षाम् न करोति।",
+      "count": "{{count}} अनुमोदनस्य प्रतीक्षन्ते",
+      "appointed": "{{email}} नियुक्तः",
+      "accepted": "{{date}} दिनाङ्के स्वीकृतम्"
+    },
+    "search": {
+      "label": "नाम्ना ईमेल-द्वारा वा अन्वेषणं कुरुत",
+      "empty": "समानाः खाताः न प्राप्ताः।",
+      "results": "खाताः"
+    },
+    "table": {
+      "ariaLabel": "नामांकनानि",
+      "owner": "खाता",
+      "nominee": "नामांकितः",
+      "permissions": "प्रदत्तम्",
+      "status": "स्थितिः",
+      "nominated": "नामांकितः",
+      "actions": "कार्याणि"
+    },
+    "controls": {
+      "title": "नामांकिताः",
+      "titleNamed": "{{name}} इत्यस्य नामांकिताः",
+      "nominated": "{{date}} दिनाङ्के नामांकितः",
+      "ticket": "पत्रचिह्नम् {{ticket}}",
+      "waitingNominee": "अद्यापि किमपि कर्तव्यं नास्ति - नामांकितेन न स्वीकृतम्।",
+      "activate": "प्रवेशं सक्रियं कुर्वन्तु",
+      "noAction": "-",
+      "owner": "खाता",
+      "deactivate": "प्रवेशं प्रत्याहरन्तु",
+      "none": "अनेन खात्रा कोऽपि न नियुक्तः।"
+    },
+    "activateDialog": {
+      "title": "नामित-प्रवेशं सक्रियं कुर्वन्तु",
+      "ticketLabel": "विधिक/सहायता टिकट्-सन्दर्भः",
+      "confirm": "प्रवेशं सक्रियं कुर्वन्तु",
+      "cancel": "रद्द कुरुत",
+      "processing": "सक्रियीक्रियते...",
+      "subtitle": "एतत् {{ownerName}} इत्यस्य सहमतीनां प्रबन्धनाय {{nomineeName}} कृते प्रवेशं ददाति।"
+    },
+    "deactivateDialog": {
+      "title": "नामित-प्रवेशं निष्क्रियं कुर्वन्तु",
+      "reasonLabel": "कारणम्",
+      "confirm": "प्रवेशं निष्क्रियं कुर्वन्तु",
+      "cancel": "रद्द कुरुत",
+      "processing": "निष्क्रियीक्रियते...",
+      "subtitle": "एतत् {{ownerName}} इत्यस्य सहमतिभ्यः नामांकितस्य प्रवेशं तत्क्षणमेव प्रत्याहरति।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "दत्तांश-भेदः",
+      "UNAUTHORIZED_DATA_SHARING": "अनधिकृत-दत्तांश-साझाकरणम्",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "सहमति-प्रत्याहार-समस्या",
+      "PURPOSE_VIOLATION": "उद्देश्य-उल्लंघनम्",
+      "DATA_ERASURE_NOT_COMPLETED": "दत्तांश-मार्जन-अनुरोधः न पूर्णः",
+      "DATA_CORRECTION_NOT_COMPLETED": "दत्तांश-संशोधन-अनुरोधः न पूर्णः",
+      "CONSENT_LIFECYCLE_ISSUE": "सहमति-प्रबन्धक-समस्या",
+      "DATA_ACCESS_DENIED": "दत्तांश-प्राप्ति-अनुरोध-अस्वीकारः",
+      "EXCESSIVE_DATA_COLLECTION": "अत्यधिक-दत्तांश-संग्रहणम्",
+      "OTHER": "अन्यत्"
+    },
+    "status": {
+      "open": "उद्घाटितम्",
+      "investigation": "प्रगतिपथे",
+      "awaitingInfo": "क्लायंट्-प्रतीक्षायाम्",
+      "waitingOnDpo": "आन्तरिक-समीक्षा-प्रतीक्षायाम्",
+      "resolved": "समाहितम्"
+    },
+    "priority": {
+      "CRITICAL": "अतिगम्भीरम्",
+      "HIGH": "उच्चम्",
+      "MEDIUM": "मध्यमम्",
+      "LOW": "निम्नम्"
+    },
+    "sla": {
+      "dueDate": "देय-दिनाङ्कः {{date}}",
+      "dueToday": "अद्य देयम्",
+      "overdueSingular": "{{count}} दिनं विलम्बितम्",
+      "overduePlural": "{{count}} दिनानि विलम्बितानि",
+      "daysLeftSingular": "{{count}} दिनं शेषम्",
+      "daysLeftPlural": "{{count}} दिनानि शेषाणि"
+    },
+    "timeline": {
+      "complaintReceived": "आक्षेपः प्राप्तः",
+      "statusChangePrefix": "स्थितिः अस्मात् परिवर्तिता",
+      "statusChangeJoiner": "प्रति"
+    },
+    "list": {
+      "title": "मम आक्षेपाः",
+      "subtitle": "भवता समर्पितानाम् आक्षेपाणां तेषां प्रगतेः च अनुसरणं कुर्वन्तु।",
+      "submitNew": "आक्षेपं समर्पयन्तु",
+      "loadFailed": "इदानीं भवतः आक्षेपान् भारयितुम् असमर्थः।",
+      "empty": "भवता अद्यापि कोऽपि आक्षेपः न समर्पितः।",
+      "emptyFiltered": "चयनित-शोधकेन सह कोऽपि आक्षेपः न मिलति।",
+      "filters": {
+        "status": "स्थितिः",
+        "all": "सर्वम्"
+      },
+      "table": {
+        "tableAriaLabel": "मम आक्षेपाणां सारणी",
+        "headers": {
+          "referenceId": "सन्दर्भ-परिचयः",
+          "category": "वर्गः",
+          "status": "स्थितिः",
+          "submitted": "समर्पितम्",
+          "updated": "अद्यतनीकृतम्"
+        }
+      }
+    },
+    "detail": {
+      "back": "मम आक्षेपान् प्रति गच्छन्तु",
+      "notFound": "आक्षेपः न प्राप्तः",
+      "description": "विवरणम्",
+      "submittedOn": "{{date}} दिनाङ्के समर्पितम्",
+      "awaitingInfo": {
+        "note": "आक्षेप-अधिकारी भवतः सकाशात् अधिक-सूचनायाः प्रतीक्षते। कृपया अधः उत्तरं ददतु।"
+      },
+      "resolved": {
+        "note": "अयं आक्षेपः समाहितः अस्ति।"
+      }
+    },
+    "submit": {
+      "title": "आक्षेपं समर्पयन्तु",
+      "subtitle": "किम् अभवत् इति अस्मान् सूचयन्तु, वयं तत् सम्यक्-दलं प्रति प्रेषयिष्यामः।",
+      "submitFailed": "इदानीं भवतः आक्षेपं समर्पयितुम् असमर्थः। कृपया पुनः प्रयतताम्।",
+      "fields": {
+        "category": "वर्गः",
+        "categoryPlaceholder": "वर्गं चिनोतु",
+        "categoryHelp": "भवतः आक्षेपस्य सर्वोत्तमं वर्णनं कुर्वन्तं विकल्पं चिनोतु।",
+        "categoriesLoadFailed": "इदानीम् आक्षेप-वर्गान् भारयितुम् असमर्थः।",
+        "description": "विवरणम्",
+        "descriptionPlaceholder": "भवतः आक्षेपस्य विस्तृतं वर्णनं कुर्वन्तु",
+        "descriptionHelp": "अस्य शीघ्रं समाधानार्थं यथासम्भवं विस्तृतं विवरणं समावेशयन्तु।",
+        "attachments": "संलग्नानि (वैकल्पिकम्)",
+        "attachmentsHelp": "PDF, DOCX, PNG, अथवा JPG प्रत्येकं {{maxSize}} पर्यन्तम्।",
+        "uploadButton": "सञ्चिकाः उद्भारयन्तु"
+      },
+      "validation": {
+        "categoryRequired": "अग्रे गन्तुं वर्गं चिनोतु।",
+        "descriptionRequired": "अग्रे गन्तुं भवतः आक्षेपस्य वर्णनं कुर्वन्तु।",
+        "attachmentTooLarge": "{{fileNames}} संलग्नानां {{maxSize}} सीमाम् अतिक्रामति।"
+      },
+      "success": {
+        "message": "भवतः आक्षेपः {{referenceId}} समर्पितः अस्ति।",
+        "attachmentFailedMessage": "भवतः आक्षेपः {{referenceId}} समर्पितः अस्ति, परन्तु संलग्नानि उद्भारयितुम् असमर्थानि। भवान् तानि आक्षेप-विवरण-पृष्ठात् योजयितुं शक्नोति।"
+      },
+      "actions": {
+        "cancel": "रद्द कुरुत",
+        "submit": "आक्षेपं समर्पयन्तु"
+      }
+    },
+    "activity": {
+      "title": "गतिविधिः",
+      "send": "प्रेषयन्तु",
+      "sendOnly": "केवलं प्रेषयन्तु",
+      "sendOptions": "अधिक-प्रेषण-विकल्पाः",
+      "sendAndChangeStatusTo": "प्रेषयन्तु स्थितिं च अत्र परिवर्तयन्तु",
+      "sendAndUpdateStatus": "प्रेषयन्तु {{status}} इति चिह्नीकुर्वन्तु च",
+      "publicReply": "उत्तरं ददतु",
+      "internalNote": "आन्तरिक-टिप्पणी",
+      "internalTag": "आन्तरिकम्",
+      "dataPrincipalRoleLabel": "ग्राहकः",
+      "officerRoleLabel": "आक्षेप-अधिकारी",
+      "composerPlaceholderPublic": "उपयोक्तुः कृते उत्तरं लिखन्तु...",
+      "composerPlaceholderInternal": "आन्तरिक-टिप्पणीं लिखन्तु (उपयोक्तुः कृते न दृश्यते)...",
+      "attach": "संलग्नं कुर्वन्तु",
+      "attachmentsHelp": "PDF, DOCX, PNG, अथवा JPG प्रत्येकं सञ्चिका {{maxSize}} पर्यन्तम्।",
+      "attachmentTooLarge": "{{fileNames}} संलग्नानां {{maxSize}} सीमाम् अतिक्रामति।",
+      "removeAttachment": "संलग्नं निष्कासयन्तु"
+    },
+    "attachments": {
+      "tabLabel": "संलग्नानि",
+      "tabLabelWithCount": "संलग्नानि ({{count}})",
+      "empty": "अस्मिन् आक्षेपे कानिपि संलग्नानि न योजितानि।",
+      "initialSubmission": "प्रारम्भिक-समर्पणम्",
+      "internalNote": "आन्तरिकम्",
+      "overflowMore": "+{{count}} अधिकम्"
+    },
+    "management": {
+      "queue": {
+        "title": "आक्षेपाः",
+        "loadFailed": "इदानीम् आक्षेप-पङ्क्तिं भारयितुम् असमर्थः।",
+        "empty": "चयनित-शोधकैः सह कोऽपि आक्षेपः न मिलति।",
+        "stats": {
+          "open": "उद्घाटितम्",
+          "awaitingInfo": "उत्तरापेक्षया",
+          "resolved": "समाहितम्",
+          "slaBreached": "SLA उल्लंघितम्"
+        },
+        "filters": {
+          "sectionAriaLabel": "आक्षेप-पङ्क्ति-शोधकाः",
+          "status": "स्थितिः",
+          "priority": "प्राथमिकता",
+          "search": "सन्दर्भ-परिचयेन उपयोक्त्रा वा अन्वेषणं कुरुत",
+          "all": "सर्वम्",
+          "clear": "शोधकान् मार्जयन्तु",
+          "clearAriaLabel": "सर्वान् शोधकान् मार्जयन्तु"
+        },
+        "table": {
+          "tableAriaLabel": "आक्षेप-पङ्क्ति-सारणी",
+          "headers": {
+            "referenceId": "सन्दर्भ-परिचयः",
+            "dataPrincipal": "उपयोक्ता",
+            "category": "वर्गः",
+            "priority": "प्राथमिकता",
+            "status": "स्थितिः",
+            "sla": "SLA",
+            "updated": "अद्यतनीकृतम्"
+          }
+        }
+      },
+      "case": {
+        "back": "पङ्क्तिं प्रति गच्छन्तु",
+        "notFound": "आक्षेपः न प्राप्तः",
+        "dataPrincipal": "उपयोक्ता"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "सदस्यताः",
+      "subtitle": "घटना-सूचना-रूपरेखायाम् सर्वाः पञ्जीकृताः सदस्यताः।",
+      "addAction": "सदस्यतां योजयन्तु",
+      "filters": {
+        "sectionAriaLabel": "सदस्यता-शोधकाः",
+        "status": "स्थितिः",
+        "topic": "विषयः",
+        "clear": "शोधकान् मार्जयन्तु",
+        "statusOptions": {
+          "all": "सर्वाः स्थितयः",
+          "active": "सक्रियम्",
+          "pendingVerification": "लम्बमानम्",
+          "stale": "जीर्णम्"
+        },
+        "topicOptions": {
+          "all": "सर्वे विषयाः"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "सदस्यता सफलतापूर्वकं पुनः प्रमाणीकृता। स्थितिः इदानीं सक्रिया अस्ति।",
+        "reverifyStillStale": "प्रमाणीकरणं पुनः असफलम्। सदस्यता जीर्णा एव तिष्ठति।",
+        "reverifyFailed": "पुनः प्रमाणीकरणम् असफलम् अभवत्।"
+      }
+    },
+    "events": {
+      "title": "घटनाः",
+      "subtitle": "घटना-सूचना-रूपरेखायाम् सर्वाः घटना-वितरणाः।",
+      "filters": {
+        "sectionAriaLabel": "घटना-शोधकाः",
+        "status": "स्थितिः",
+        "topic": "विषयः",
+        "search": "घटनाः अन्विष्यन्तु",
+        "searchPlaceholder": "उद्देश्येन वा सदस्य-परिचयेन अन्वेषणं कुर्वन्तु...",
+        "clear": "शोधकान् मार्जयन्तु",
+        "statusOptions": {
+          "all": "सर्वाः स्थितयः"
+        },
+        "topicOptions": {
+          "all": "सर्वे विषयाः"
+        }
+      },
+      "emptyTitle": "कापि घटना न प्राप्ता",
+      "emptyMessage": "चयनित-मानदण्डैः सह कापि प्रकाशिता घटना न मिलति।",
+      "table": {
+        "eventId": "घटना-परिचयः",
+        "topic": "विषयः",
+        "purposes": "उद्देश्यानि",
+        "deliveries": "वितरणाः",
+        "occurredAt": "अस्मिन् समये घटितम्",
+        "action": "कार्यम्",
+        "all": "सर्वम्",
+        "noSubscribers": "न केऽपि सदस्याः",
+        "viewEvent": "घटनां पश्यन्तु",
+        "subscriberCount_one": "{{count}} सदस्यः",
+        "subscriberCount_other": "{{count}} सदस्याः"
+      },
+      "detail": {
+        "notFoundTitle": "घटना न प्राप्ता",
+        "notFoundMessage": "\"{{eventId}}\" परिचयेन सह कापि घटना न प्राप्ता।",
+        "backToEvents": "घटनाः प्रति गच्छन्तु",
+        "topic": "विषयः",
+        "purposes": "उद्देश्यानि",
+        "occurredAt": "अस्मिन् समये घटितम्",
+        "deliveries": "वितरणाः",
+        "all": "सर्वम्",
+        "noSubscribers": "न केऽपि सदस्याः",
+        "subscriberCount_one": "{{count}} सदस्यः",
+        "subscriberCount_other": "{{count}} सदस्याः"
+      },
+      "dialog": {
+        "title": "पुनःप्रयासस्य इतिहासः",
+        "deliveryId": "वितरण-परिचयः",
+        "loading": "घटना-वितरण-इतिहासः भार्यते…",
+        "noRetries": "प्रारम्भिक-प्रयासः सम्पन्नः। कोऽपि पुनःप्रयासः न अभिलेखितः।",
+        "attempt": "प्रयासः {{attempt}}",
+        "retrySuffix": " (पुनःप्रयासः)",
+        "webhookDescription": "HTTP वितरण-प्रयासानां पुनःप्रयासानां च कालक्रमानुसारम् इतिहासः।",
+        "pollTitle": "मतदान-पूर्णता-स्थितिः स्वीकृतिः च",
+        "completionStatus": "पूर्णता-स्थितिः",
+        "completionTimestamp": "पूर्णता-समयमुद्रा",
+        "erasureMethod": "मार्जन-विधिः",
+        "recordsAffected": "प्रभाविताः अभिलेखाः",
+        "referenceId": "सन्दर्भ-परिचयः",
+        "submittedBy": "अनेन समर्पितम्",
+        "notes": "टिप्पण्यः",
+        "noAcknowledgment": "अद्यापि कापि मतदान-पूर्णता-स्वीकृतिः न समर्पिता।",
+        "close": "पिदधातु"
+      }
+    }
+  }
+}

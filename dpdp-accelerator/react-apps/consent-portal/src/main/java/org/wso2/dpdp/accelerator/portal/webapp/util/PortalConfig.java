@@ -51,6 +51,18 @@ public final class PortalConfig {
     public static final String OAUTH_SCOPES = "oauth.scopes";
     public static final String COOKIE_SECURE = "cookie.secure";
     public static final String ORG_ID_CLAIM = "org.id.claim";
+    public static final String SCOPE_PREFIX = "scope.prefix";
+    public static final String ADMIN_ROLE_NAME = "admin.role.name";
+    public static final String IMPERSONATION_REDIRECT_URI = "impersonation.redirect.uri";
+    public static final String IMPERSONATION_SCOPE = "impersonation.scope";
+    public static final String SCIM_CLIENT_ID = "scim.client.id";
+    public static final String SCIM_CLIENT_SECRET = "scim.client.secret";
+    public static final String SCIM_CUSTOM_SCHEMA_URN = "scim.custom.schema.urn";
+    public static final String SCIM_DIRECTORY_SCOPES = "scim.directory.scopes";
+    public static final String NOMINEE_SERVICE_URL = "nominee.service.url";
+    public static final String NOMINEE_GATE_API_KEY = "nominee.gate.api.key";
+    public static final String NOMINEE_GATE_TIMEOUT_SECONDS = "nominee.gate.timeout.seconds";
+    public static final String CONSENT_SERVER_URL = "consent.server.url";
 
     private PortalConfig(ServletContext servletContext) {
 
@@ -134,6 +146,73 @@ public final class PortalConfig {
     public String getPortalBasePath() {
 
         return servletContext.getContextPath();
+    }
+
+    public String getScopePrefix() {
+
+        return get(SCOPE_PREFIX, "portal:");
+    }
+
+    public String getAdminRoleName() {
+
+        return get(ADMIN_ROLE_NAME, "PortalAdmin");
+    }
+
+    public String getImpersonationRedirectUri() {
+
+        return get(IMPERSONATION_REDIRECT_URI);
+    }
+
+    public String getImpersonationScope() {
+
+        return get(IMPERSONATION_SCOPE, "internal_user_impersonate");
+    }
+
+    public String getScimClientId() {
+
+        return get(SCIM_CLIENT_ID, getClientId());
+    }
+
+    public String getScimClientSecret() {
+
+        return get(SCIM_CLIENT_SECRET, getClientSecret());
+    }
+
+    public String getScimCustomSchemaUrn() {
+
+        return get(SCIM_CUSTOM_SCHEMA_URN, "urn:scim:wso2:schema");
+    }
+
+    public String getScimDirectoryScopes() {
+
+        return get(SCIM_DIRECTORY_SCOPES,
+                "internal_user_mgt_view internal_user_mgt_list internal_role_mgt_view internal_group_mgt_view");
+    }
+
+    public String getNomineeServiceUrl() {
+
+        String url = get(NOMINEE_SERVICE_URL, "");
+        return trimTrailingSlash(url);
+    }
+
+    public String getNomineeGateApiKey() {
+
+        return get(NOMINEE_GATE_API_KEY, "");
+    }
+
+    public int getNomineeGateTimeoutSeconds() {
+
+        try {
+            return Integer.parseInt(get(NOMINEE_GATE_TIMEOUT_SECONDS, "3"));
+        } catch (NumberFormatException e) {
+            return 3;
+        }
+    }
+
+    public String getConsentServerUrl() {
+
+        String url = get(CONSENT_SERVER_URL, "");
+        return trimTrailingSlash(url);
     }
 
     private static String trimTrailingSlash(String value) {

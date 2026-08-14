@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "सहमति पोर्टल"
+  },
+  "language": {
+    "label": "भाषा",
+    "selectAria": "भाषा चुनू"
+  },
+  "authorization": {
+    "loading": "अहाँक सत्र लोड भऽ रहल अछि",
+    "loadFailed": "अहाँक सत्र लोड करै मे असमर्थ।",
+    "tryAgain": "पुनः प्रयास करू",
+    "noAccessTitle": "पोर्टल पहुँच नहि अछि",
+    "noAccessDescription": "अहाँक खाता केँ कोनहु पोर्टल पृष्ठ तक पहुँँचबाक अनुमति नहि अछि।"
+  },
+  "copyableText": {
+    "copy": "कॉपी करू",
+    "copied": "कॉपी भऽ गेल",
+    "copyLabel": "{{label}} कॉपी करू",
+    "copyValue": "{{label}} {{value}} कॉपी करू",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "मुख्य नेविगेशन",
+    "dashboard": "डैशबोर्ड",
+    "consent": "सहमति",
+    "allConsents": "सभ सहमति",
+    "pendingConsents": "लंबित सहमति",
+    "catalog": "परिभाषा सभ",
+    "purposes": "उद्देश्य सभ",
+    "elements": "तत्व सभ",
+    "administration": "प्रशासन",
+    "adminConsents": "सहमति सभ",
+    "nominations": "नामांकन",
+    "nomineeActivation": "नामांकित व्यक्ति सक्रियण",
+    "myComplaints": "हमर शिकायत सभ",
+    "complaintManagement": "शिकायत प्रबंधन",
+    "dataProcessors": "डेटा प्रोसेसर",
+    "dataProcessorTopics": "विषय सभ",
+    "dataProcessorSubscriptions": "सदस्यता सभ",
+    "dataProcessorEvents": "घटना सभ"
+  },
+  "layout": {
+    "home": "होम",
+    "breadcrumbAriaLabel": "ब्रेडक्रंब",
+    "userMenu": {
+      "unknownUser": "अज्ञात उपयोगकर्ता",
+      "noEmail": "ईमेल उपलब्ध नहि",
+      "signOut": "साइन आउट",
+      "signOutError": "साइन आउट करै मे असमर्थ। कृपया पुनः प्रयास करू।",
+      "tryAgain": "पुनः प्रयास करू"
+    }
+  },
+  "dashboard": {
+    "active": "सक्रिय सहमति सभ",
+    "attention": "अहाँक ध्यानक आवश्यकता अछि",
+    "commonPurposes": "सबसँ सामान्य रूप सँ साझा कएल गेल उद्देश्य",
+    "commonPurposesSubtitle": "अहाँक सक्रिय सहमति सभ मे शामिल उद्देश्य",
+    "consentCount": "{{count}} सहमति सभ",
+    "consentCount_one": "{{count}} सहमति",
+    "consentCount_other": "{{count}} सहमति सभ",
+    "expiringSoon": "शीघ्र समाप्त भऽ रहल अछि",
+    "loadFailed": "अखनि अहाँक डैशबोर्ड लोड करै मे असमर्थ।",
+    "noExpiring": "अगिला {{days}} दिन मे कोनहु सक्रिय सहमति समाप्त नहि भऽ रहल अछि।",
+    "noPending": "समीक्षा लेल कोनहु लंबित सहमति नहि अछि।",
+    "noPurposes": "अखनि कोनहु साझा कएल गेल उद्देश्य उपलब्ध नहि अछि।",
+    "pending": "लंबित सहमति सभ",
+    "pendingConsents": "लंबित सहमति सभ",
+    "subtitle": "अहाँक सहमति गतिविधि आ आगामी कार्रवाईक एक विवरण।",
+    "title": "डैशबोर्ड",
+    "typeBreakdown": "सहमति प्रकार विवरण",
+    "typeBreakdownSubtitle": "प्रकार द्वारा समूहबद्ध अहाँक सभ सहमति",
+    "noTypes": "अखनि कोनहु सहमति प्रकार उपलब्ध नहि अछि।",
+    "viewPending": "सभ लंबित सहमति देखू"
+  },
+  "adminConsents": {
+    "title": "सहमति सभ",
+    "filters": {
+      "sectionAriaLabel": "प्रशासकीय सहमति फ़िल्टर",
+      "consentIdSearchPlaceholder": "सहमति आईडी द्वारा खोजू",
+      "removeConsentIdForAdvanced": "उन्नत फ़िल्टरक उपयोग करै लेल सहमति आईडी फ़िल्टर हटाऊ।",
+      "removeConsentIdForStatus": "स्थिति फ़िल्टरक उपयोग करै लेल सहमति आईडी फ़िल्टर हटाऊ।",
+      "userIds": "उपयोगकर्ता आईडी",
+      "groupIds": "समूह आईडी",
+      "commaSeparatedUsers": "अनेक उपयोगकर्ता आईडी केँ कॉमा सँ अलग करू",
+      "active": "सक्रिय फ़िल्टर"
+    }
+  },
+  "consentRegistry": {
+    "title": "सभ सहमति",
+    "details": {
+      "title": "सहमति विवरण",
+      "consentId": "सहमति आईडी",
+      "status": "स्थिति",
+      "type": "सहमति प्रकार",
+      "frequency": "पहुँच सीमा",
+      "frequencyHelp": "ई दर्शाबैत अछि जे ई सहमति प्रति दिन कतेक बेर पहुँच कएल जा सकैत अछि।",
+      "frequencyUnitSingular": "प्रति दिन एक बेर",
+      "frequencyUnitPlural": "प्रति दिन कई बेर",
+      "purposes": "उद्देश्य सभ",
+      "duration": "पूर्वावलोकन अवधि",
+      "durationHelp": "ई परिभाषित करैत अछि जे डेटा कतेक पाछाँ तक पहुँच कएल जा सकैत अछि। उदाहरण लेल, यदि 6 मास निर्धारित अछि, तँ 6 मास पहिने तकक डेटा पहुँच योग्य अछि।",
+      "durationUnitHourSingular": "घंटा",
+      "durationUnitHourPlural": "घंटा",
+      "durationUnitDaySingular": "दिन",
+      "durationUnitDayPlural": "दिन",
+      "durationUnitYearSingular": "वर्ष",
+      "durationUnitYearPlural": "वर्ष",
+      "created": "बनाएल गेल",
+      "updated": "अद्यतन कएल गेल",
+      "validUntil": "तारीख तक वैध",
+      "groupId": "समूह आईडी",
+      "recurring": "आवर्ती",
+      "back": "रजिस्ट्री पर वापस जाऊ",
+      "notFound": "सहमति रिकॉर्ड नहि भेटल",
+      "approved": "स्वीकृत",
+      "notApproved": "अस्वीकृत",
+      "approvedCount": "{{approved}}/{{total}} स्वीकृत",
+      "section": {
+        "purposes": "सहमति उद्देश्य",
+        "authorizations": "प्राधिकरण",
+        "lifecycle": "सहमति जीवनचक्र"
+      },
+      "table": {
+        "element": "तत्व",
+        "approved": "स्वीकृत",
+        "required": "आवश्यक",
+        "description": "विवरण",
+        "user": "उपयोगकर्ता",
+        "status": "स्थिति",
+        "updated": "अद्यतन कएल गेल",
+        "resources": "संसाधन सभ",
+        "eventType": "घटना प्रकार",
+        "date": "तिथि",
+        "time": "समय"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "सहमति जीवनचक्र",
+        "empty": "कोनहु जीवनचक्र घटना उपलब्ध नहि अछि।",
+        "noDescription": "कोनहु विवरण उपलब्ध नहि अछि।"
+      },
+      "actions": {
+        "viewResources": "संसाधन देखू",
+        "noResourcesTooltip": "कोनहु संसाधन उपलब्ध नहि अछि"
+      },
+      "resourcesModal": {
+        "title": "प्राधिकरण संसाधन सभ",
+        "authRef": "ऑथ",
+        "close": "बंद करू"
+      },
+      "values": {
+        "yes": "हाँ",
+        "no": "नहि",
+        "required": "आवश्यक",
+        "optional": "वैकल्पिक"
+      }
+    },
+    "actions": {
+      "view": "देखू",
+      "revoke": "रद्द करू (Revoke)",
+      "approve": "स्वीकृत करू",
+      "reject": "अस्वीकृत करू",
+      "copyConsentId": "सहमति आईडी कॉपी करू",
+      "copyConsentIdAriaLabel": "सहमति आईडी {{id}} कॉपी करू"
+    },
+    "modals": {
+      "consentId": "सहमति आईडी",
+      "actions": {
+        "cancel": "रद्द करू",
+        "processing": "प्रक्रिया भऽ रहल अछि..."
+      },
+      "approval": {
+        "title": "सहमति समीक्षा आ स्वीकृति",
+        "subtitle": "कृपया स्वीकृति सँ पहिने सहमति तत्व सभक समीक्षा करू।",
+        "mandatory": "अनिवार्य तत्व (आवश्यक)",
+        "optional": "वैकल्पिक तत्व",
+        "required": "आवश्यक",
+        "toggle": "अनुमति बदलू",
+        "toggleWithDetails": "{{purposeLabel}} मे {{elementLabel}} लेल अनुमति बदलू",
+        "loading": "सहमति विवरण लोड भऽ रहल अछि...",
+        "noMandatory": "अहि सहमति लेल कोनहु अनिवार्य आवश्यकता नहि अछि।",
+        "confirm": "स्वीकृत करू आ जारी राखू"
+      },
+      "rejection": {
+        "title": "अस्वीकृतिका पुष्टि करू",
+        "message": "कि अहाँ ई सहमति केँ अस्वीकृत करै लेल निश्चित छी?",
+        "note": "अहि सहमति केँ अस्वीकृत करबाक अर्थ अछि जे अनुरोध कएल गेल सहमति प्रदान नहि कएल जाएत।",
+        "confirm": "सहमति अस्वीकृत करू",
+        "cancel": "रद्द करू"
+      },
+      "revocation": {
+        "title": "रद्द करबाक पुष्टि करू",
+        "message": "कि अहाँ सहमति वापस लेबै लेल निश्चित छी?",
+        "note": "ई कार्रवाई सभ संबंधित उद्देश्य सभ लेल देल गेल अनिवार्य आ वैकल्पिक सहमति सभ केँ रद्द कऽ दैत अछि।",
+        "confirm": "सहमति सभ रद्द करू",
+        "cancel": "रद्द करू"
+      }
+    },
+    "status": {
+      "all": "सभ",
+      "active": "सक्रिय",
+      "pending": "लंबित",
+      "created": "बनाएल गेल",
+      "approved": "स्वीकृत",
+      "rejected": "अस्वीकृत",
+      "revoked": "रद्द कएल गेल",
+      "expired": "समाप्त भऽ गेल",
+      "systemExpired": "सिस्टम द्वारा समाप्त",
+      "systemRevoked": "सिस्टम द्वारा रद्द"
+    },
+    "filters": {
+      "sectionAriaLabel": "सहमति फ़िल्टर",
+      "purposeSearchPlaceholder": "उद्देश्य नाम सँ खोजू",
+      "status": "स्थिति",
+      "groupIds": "समूह आईडी",
+      "elementName": "तत्व नाम",
+      "elementVersion": "तत्व संस्करण",
+      "advanced": "उन्नत फ़िल्टर",
+      "apply": "लागू करू",
+      "cancel": "रद्द करू",
+      "startDate": "प्रारंभ तिथि",
+      "startDateAriaLabel": "प्रारंभ तिथि फ़िल्टर",
+      "endDate": "अंतिम तिथि",
+      "endDateAriaLabel": "अंतिम तिथि फ़िल्टर",
+      "clear": "सभ साफ़ करू",
+      "clearAriaLabel": "सभ फ़िल्टर साफ़ करू"
+    },
+    "messages": {
+      "loading": "सहमति सभ लोड भऽ रहल अछि...",
+      "loadFailed": "अखनि सहमति सभ लोड करै मे असमर्थ।",
+      "emptyTitle": "कोनहु सहमति नहि भेटल",
+      "empty": "चुनल गेल फ़िल्टर लेल कोनहु सहमति नहि भेटल।"
+    },
+    "table": {
+      "tableAriaLabel": "सहमति रजिस्ट्री तालिका",
+      "consentIdAriaLabel": "सहमति आईडी: {{id}}",
+      "groupLabel": "समूह आईडी: {{groupId}}",
+      "notApplicable": "लागू नहि",
+      "purposes": {
+        "more": "+{{count}} और",
+        "title": "सहमति उद्देश्य",
+        "hint": "सहमति के सभ उद्देश्य देखाएल जा रहल अछि"
+      },
+      "headers": {
+        "consentId": "सहमति आईडी",
+        "type": "प्रकार",
+        "status": "स्थिति",
+        "purposes": "उद्देश्य सभ",
+        "updated": "अद्यतन कएल गेल",
+        "expiration": "समाप्ति",
+        "actions": "कार्रवाई सभ"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "तत्व जोड़ू",
+      "addProperty": "गुण जोड़ू",
+      "apply": "लागू करू",
+      "cancel": "रद्द करू",
+      "clear": "साफ़ करू",
+      "clearAll": "सभ साफ़ करू",
+      "create": "बनाऊ",
+      "delete": "हटाऊ",
+      "deleting": "हटाएल जा रहल अछि...",
+      "deleteVersion": "संस्करण हटाऊ",
+      "filters": "फ़िल्टर",
+      "removeElement": "तत्व हटाऊ",
+      "removeProperty": "गुण हटाऊ",
+      "retry": "पुनः प्रयास करू",
+      "saving": "सहेजल् जा रहल अछि...",
+      "view": "देखू",
+      "viewElement": "{{name}} देखू",
+      "viewPurpose": "{{name}} देखू"
+    },
+    "fields": {
+      "actions": "कार्रवाई सभ",
+      "created": "बनाएल गेल",
+      "description": "विवरण",
+      "displayName": "प्रदर्शित नाम",
+      "element": "तत्व",
+      "elementId": "तत्व आईडी",
+      "elementName": "तत्व नाम",
+      "elementNamespace": "तत्व नेमस्पेस",
+      "elements": "तत्व सभ",
+      "elementVersion": "तत्व संस्करण",
+      "groupId": "समूह आईडी",
+      "groupIds": "समूह आईडी",
+      "mandatory": "अनिवार्य",
+      "name": "नाम",
+      "namespace": "नेमस्पेस",
+      "properties": "गुण सभ",
+      "propertyKey": "कुंजी (Key)",
+      "propertyValue": "मान (Value)",
+      "purpose": "उद्देश्य",
+      "purposeId": "उद्देश्य आईडी",
+      "purposeName": "उद्देश्य नाम",
+      "scope": "दायरा (Scope)",
+      "purposeScope": "उद्देश्य दायरा",
+      "purposeVersion": "उद्देश्य संस्करण",
+      "requirement": "आवश्यकता",
+      "schema": "स्कीमा",
+      "type": "प्रकार",
+      "version": "संस्करण"
+    },
+    "help": {
+      "commaSeparatedGroups": "अनेक समूह आईडी केँ कॉमा सँ अलग करू",
+      "defaultNamespace": "खाली रहला पर डिफ़ॉल्ट नेमस्पेसक उपयोग करैत अछि",
+      "elementVersionRequiresIdentity": "पहिने तत्व नाम वा नेमस्पेस दर्ज करू",
+      "organizationPurpose": "संगठन-स्तरीय उद्देश्य बनाबै लेल खाली छोडू",
+      "purposeVersionRequiresName": "पहिने उद्देश्य नाम दर्ज करू",
+      "schemaElementTypes": "स्कीमा केवल JSON आ XML तत्व सभ लेल समर्थित अछि।",
+      "selectElementFirst": "पहिने एक तत्व चुनू"
+    },
+    "values": {
+      "all": "सभ",
+      "any": "कोनहु",
+      "customNamespace": "कस्टम नेमस्पेस",
+      "defaultNamespace": "डिफ़ॉल्ट नेमस्पेस",
+      "mandatory": "अनिवार्य",
+      "matches": "मेल खाैत अछि",
+      "noDescription": "कोनहु विवरण नहि",
+      "optional": "वैकल्पिक",
+      "specificGroup": "विशिष्ट समूह",
+      "itemCount": "{{count}} चुनल गेल",
+      "latest": "नवीनतम",
+      "viewing": "देखि रहल छी"
+    },
+    "elements": {
+      "add": "तत्व जोड़ू",
+      "activeFilters": "सक्रिय फ़िल्टर",
+      "back": "तत्व सभ पर वापस जाऊ",
+      "createTitle": "तत्व बनाऊ",
+      "detailsSection": "तत्व विवरण",
+      "empty": "चुनल गेल फ़िल्टर सँ कोनहु तत्व मेल नहि खाैत अछि।",
+      "emptyTitle": "कोनहु तत्व नहि भेटल",
+      "filterTitle": "तत्व फ़िल्टर करू",
+      "loadFailed": "अखनि तत्व सभ लोड करै मे असमर्थ।",
+      "newVersion": "नवीक संस्करण बनाऊ",
+      "refreshing": "रीफ्रेश भऽ रहल अछि...",
+      "results": "{{count}} तत्व सभ",
+      "searchPlaceholder": "तत्व नाम सँ खोजू",
+      "subtitle": "पुनः प्रयोज्य सहमति तत्व सभ आ ओकर संस्करणबद्ध परिभाषा सभक प्रबंधन करू।",
+      "tableLabel": "सहमति तत्व सभ",
+      "title": "तत्व सभ"
+    },
+    "purposes": {
+      "add": "उद्देश्य जोड़ू",
+      "activeFilters": "सक्रिय फ़िल्टर",
+      "allPurposes": "सभ उद्देश्य",
+      "back": "उद्देश्य सभ पर वापस जाऊ",
+      "createTitle": "उद् उद्देश्य बनाऊ",
+      "detailsSection": "उद्देश्य विवरण",
+      "empty": "चुनल गेल फ़िल्टर सँ कोनहु उद्देश्य मेल नहि खाैत अछि।",
+      "emptyTitle": "कोनहु उद्देश्य नहि भेटल",
+      "filterTitle": "उद्देश्य फ़िल्टर करू",
+      "loadFailed": "अखनि उद्देश्य सभ लोड करै मे असमर्थ।",
+      "newVersion": "नवीन संस्करण बनाऊ",
+      "orgWide": "संगठन-व्यापी",
+      "refreshing": "रीफ्रेश भऽ रहल अछि...",
+      "results": "{{count}} उद्देश्य सभ",
+      "searchLabel": "उद्देश्य खोजू",
+      "searchPlaceholder": "उद्देश्य नाम सँ खोजू",
+      "scopeFilter": "उद्देश्य दायरा",
+      "subtitle": "पुनः प्रयोज्य सहमति उद्देश्य सभ आ ओकर तत्व परिभाषा सभक प्रबंधन करू।",
+      "tableLabel": "सहमति उद्देश्य सभ",
+      "title": "उद्देश्य सभ"
+    },
+    "details": {
+      "definition": "परिभाषा",
+      "elementIdentity": "तत्व पहचान",
+      "elements": "तत्व सभ",
+      "identity": "उद्देश्य पहचान",
+      "overview": "अवलोकन",
+      "versionDetails": "संस्करण विवरण",
+      "versions": "संस्करण इतिहास"
+    },
+    "messages": {
+      "createElementFirst": "उद्देश्य परिभाषित करबा सँ पहिने एक तत्व बनाऊ।",
+      "immutableElement": "{{namespace}}:{{name}} एक {{type}} तत्व बनल अछि। संस्करण सभ के बीच पहचान क्षेत्र नहि बदलि सकैत अछि।",
+      "immutablePurpose": "{{name}} पर {{groupId}} क स्वामित्व बनल अछि। संस्करण सभ के बीच पहचान क्षेत्र नहि बदलि सकैत अछि।",
+      "immutableOrganizationPurpose": "{{name}} संगठन-व्यापी अछि। अहि के पहचान आ दायरा संस्करण सभ के बीच नहि बदलि सकैत अछि।",
+      "immutableGroupPurpose": "{{name}} समूह {{groupId}} तक सीमित अछि। अहि के पहचान आ दायरा संस्करण सभ के बीच नहि बदलि सकैत अछि।",
+      "loadingElements": "उपलब्ध तत्व सभ लोड भऽ रहल अछि...",
+      "loadingVersions": "तत्व संस्करण लोड भऽ रहल अछि...",
+      "noElementsFound": "कोनहु मेल खाैत तत्व नहि भेटल",
+      "noElements": "अहि संस्करण लेल कोनहु तत्व कॉन्फ़िगर नहि अछि।",
+      "noProperties": "कोनहु कस्टम गुण नहि।",
+      "noSchema": "अहि संस्करण लेल कोनहु स्कीमा कॉन्फ़िगर नहि अछि।",
+      "noPurposeElements": "अखनि तक कोनहु तत्व नहि जोड़ल गेल अछि। उद्देश्य बनाबै लेल कम सँ कम एक तत्व जोड़ू।",
+      "noVersions": "कोनहु संस्करण उपलब्ध नहि अछि।",
+      "versionsLoadFailed": "अखनि संस्करण इतिहास लोड करै मे असमर्थ।"
+    },
+    "validation": {
+      "duplicateElements": "प्रत्येक तत्व केँ केवल एक बेर शामिल कएल जा सकैत अछि।",
+      "duplicatePropertyKeys": "गुण कुंजी (Property keys) अद्वितीय होबाक चाही।",
+      "elementRequired": "कम सँ कम एक तत्व चुनू।",
+      "groupIdRequired": "समूह-विशिष्ट उद्देश्य लेल समूह आईडी आवश्यक अछि।",
+      "nameRequired": "नाम आवश्यक अछि।",
+      "namespaceRequired": "कस्टम चुनल गेला पर नेमस्पेस आवश्यक अछि।",
+      "schemaRequired": "JSON आ XML तत्व सभ लेल स्कीमा आवश्यक अछि।"
+    },
+    "delete": {
+      "title": "संस्करण हटाऊ",
+      "message": "कि संस्करण {{version}} हटाऊ?",
+      "warning": "अहि केँ वापस नहि कएल जा सकैत अछि। संदर्भित संस्करण सभ केँ नहि हटाएल जा सकैत अछि, आ अंतिम संस्करण केँ हटैला सँ पूरा प्रविष्टि हटि जाएत।"
+    }
+  },
+  "nominee": {
+    "title": "नामांकन",
+    "messages": {
+      "loadFailed": "अखनि नामांकन सभ लोड करै मे असमर्थ।"
+    },
+    "nominatedFor": {
+      "openAccount": "खाता खोलू →",
+      "accept": "स्वीकार करू",
+      "reject": "अस्वीकार करू",
+      "actionNeeded": "कार्रवाईक आवश्यकता अछि",
+      "ariaLabel": "नामांकित खाता सभ",
+      "empty": "अखनि तक अहाँ केँ कयो नामांकित नहि केने अछि।",
+      "title": "नामांकित खाता सभ",
+      "table": {
+        "account": "खाता",
+        "status": "स्थिति",
+        "actions": "कार्रवाई सभ"
+      }
+    },
+    "acting": {
+      "starting": "खाता खोलि रहल छी…",
+      "startFailed": "अहाँ अहि खाता लेल नामांकित व्यक्ति नहि छी।",
+      "startFailedHint": "नामांकन पर वापस जाऊ आ पुनः प्रयास करू।",
+      "blockedTitle": "नामांकित पहुँच मे उपलब्ध नहि अछि",
+      "blockedFenced": "खाता सेटिंग्स, क्रेडेंशियल आ नामांकनक उपयोग कखनो दोसर व्यक्ति कऽ तरफ सँ नहि कएल जा सकैत अछि।",
+      "blockedScope": "खाताधारक अहाँ केँ अहि क्षेत्र लेल अनुमति नहि देने छथि।",
+      "backToAllowed": "ओहि पर जाऊ जहाँ हम पहुँचि सकैत छी",
+      "exit": "बाहर निकलू"
+    },
+    "permissions": {
+      "consentView": "सहमति देखू",
+      "consentRevoke": "सहमति रद्द करू",
+      "consentApprove": "लंबित सहमति स्वीकृत करू",
+      "accountView": "व्यक्तिगत खाता देखू",
+      "accountUpdate": "व्यक्तिगत खाता अद्यतन करू",
+      "accountDelete": "व्यक्तिगत खाता हटाऊ"
+    },
+    "mine": {
+      "add": "नामांकित व्यक्ति जोड़ू",
+      "remove": "हटाऊ",
+      "empty": "अहाँ अखनि तक ककरो नामांकित नहि केने छी।",
+      "status": {
+        "active": "सक्रिय",
+        "pending": "स्वीकृति कऽ प्रतीक्षा मे",
+        "rejected": "अस्वीकृत",
+        "accepted": "अनुमोदन कऽ प्रतीक्षा मे",
+        "deactivated": "निलंबित"
+      },
+      "ariaLabel": "नामांकित व्यक्ति सभ",
+      "title": "नामांकित व्यक्ति सभ",
+      "table": {
+        "person": "व्यक्ति",
+        "permissions": "अनुमति सभ",
+        "status": "स्थिति",
+        "actions": "कार्रवाई सभ",
+        "morePermissions": "+{{count}} और"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "नामांकित व्यक्ति जोड़ू",
+        "editTitle": "नामांकित व्यक्ति संपादित करू",
+        "saveChanges": "परिवर्तन सहेजू",
+        "emailLabel": "नामांकित व्यक्तिक पंजीकृत ईमेल",
+        "permissionsTitle": "ई नामांकित व्यक्ति की कऽ सकैत अछि?",
+        "permissionsSubtitle": "केवल वही टिक करू जे अहाँ देनाइ चाहैत छी। ई अहि नामांकित व्यक्ति लेल अनुमत पहुँच बनि जाएत।",
+        "sensitive": "संवेदनशील",
+        "cancel": "रद्द करू",
+        "processing": "सहेजल् जा रहल अछि...",
+        "confirm": "नामांकन भेजू",
+        "processingEdit": "सहेजल् जा रहल अछि…"
+      },
+      "removeDialog": {
+        "title": "नामांकित व्यक्ति हटाऊ",
+        "message": "{{nomineeEmail}} अब अहाँक सहमति प्रबंधित करै मे सक्षम नहि रहताह।",
+        "confirm": "नामांकित व्यक्ति हटाऊ",
+        "cancel": "रद्द करू",
+        "processing": "हटाएल जा रहल अछि..."
+      }
+    },
+    "manage": {
+      "title": "खाताधारक कऽ सहमतिक प्रबंधन",
+      "back": "नामांकित दृश्य सँ बाहर निकलू",
+      "consents": {
+        "title": "सहमति सभ",
+        "subtitle": "अहि खाता द्वारा देल गेल सहमति सभ केँ देखू आ जतय अनुमति होय, ओकरा रद्द करू।"
+      },
+      "selectedCount": "{{count}} चुनल गेल",
+      "revokeSelected": "चुनल गेल केँ रद्द करू",
+      "messages": {
+        "loadFailed": "अखनि सहमति सभ लोड करै मे असमर्थ।",
+        "empty": "अहि खाता लेल कोनहु सहमति नहि भेटल।"
+      },
+      "table": {
+        "ariaLabel": "नामांकित-प्रबंधित सहमति तालिका",
+        "purposes": "उद्देश्य सभ",
+        "type": "प्रकार",
+        "status": "स्थिति",
+        "updated": "अद्यतन कएल गेल",
+        "actions": "कार्रवाई सभ",
+        "revoke": "रद्द करू",
+        "notRevokable": "केवल सक्रिय सहमति सभ केँ रद्द कएल जा सकैत अछि",
+        "clientLabel": "संगठन: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "बल्क रद्द करबाक पुष्टि करू",
+        "message": "ई {{count}} सहमति (सभ) केँ रद्द कऽ देत। अहि केँ वापस नहि कएल जा सकैत अछि।",
+        "note": "प्रत्येक रद्दीकरण केँ खाताधारक कऽ तरफ सँ कएल गेल कार्रवाईक रूप मे अलग सँ दर्ज कएल जाएत।",
+        "progress": "{{count}} मे सँ {{processed}} रद्द कएल जा रहल अछि...",
+        "confirm": "चुनल गेल केँ रद्द करू",
+        "cancel": "रद्द करू",
+        "processing": "प्रक्रिया भऽ रहल अछि..."
+      },
+      "subtitle": "अहाँ अहि खाताक तरफ सँ काम कऽ रहल छी। अहाँ केवल वही कऽ सकैत छी जेकर अनुमति खाताधारक देने छथि।",
+      "account": {
+        "title": "खाता पहुँच",
+        "subtitle": "कार्रवाई सभ जेकर अनुमति खाताधारक अहाँ केँ अपन खाता पर करै लेल देने छथि।",
+        "notGranted": "खाताधारक द्वारा देल नहि गेल"
+      }
+    },
+    "detail": {
+      "title": "सहमति विवरण",
+      "back": "वापस"
+    }
+  },
+  "admin": {
+    "title": "नामांकित व्यक्ति सक्रियण",
+    "status": {
+      "active": "सक्रिय",
+      "accepted": "अनुमोदन कऽ प्रतीक्षा मे",
+      "pending": "नामांकित व्यक्तिक प्रतीक्षा मे",
+      "rejected": "अस्वीकृत",
+      "deactivated": "निष्क्रिय कएल गेल"
+    },
+    "pending": {
+      "title": "अहाँक अनुमोदन कऽ प्रतीक्षा मे",
+      "empty": "अखनि अहाँक लेल किछु लंबित नहि अछि।",
+      "count": "{{count}} अनुमोदन कऽ प्रतीक्षा मे",
+      "appointed": "{{email}} केँ नियुक्त कएल गेल",
+      "accepted": "{{date}} केँ स्वीकृत"
+    },
+    "search": {
+      "label": "नाम वा ईमेल सँ खोजू",
+      "empty": "कोनहु मेल खाैत खाता नहि भेटल।",
+      "results": "खाता सभ"
+    },
+    "table": {
+      "ariaLabel": "नामांकन",
+      "owner": "खाता",
+      "nominee": "नामांकित व्यक्ति",
+      "permissions": "प्रदान कएल गेल",
+      "status": "स्थिति",
+      "nominated": "नामांकित",
+      "actions": "कार्रवाई सभ"
+    },
+    "controls": {
+      "title": "नामांकित व्यक्ति सभ",
+      "titleNamed": "{{name}} क नामांकित व्यक्ति सभ",
+      "nominated": "नामांकित {{date}}",
+      "ticket": "टिकट {{ticket}}",
+      "waitingNominee": "अखनि करै लेल किछु नहि अछि - नामांकित व्यक्ति स्वीकार नहि केने छथि।",
+      "activate": "पहुँच सक्रिय करू",
+      "noAction": "-",
+      "owner": "खाता",
+      "deactivate": "पहुँच वापस लेबू",
+      "none": "ई खाता ककरो नियुक्त नहि केने अछि।"
+    },
+    "activateDialog": {
+      "title": "नामांकित पहुँच सक्रिय करू",
+      "ticketLabel": "कानूनी/सहायता टिकट संदर्भ",
+      "confirm": "पहुँच सक्रिय करू",
+      "cancel": "रद्द करू",
+      "processing": "सक्रिय कएल जा रहल अछि...",
+      "subtitle": "ई {{nomineeName}} केँ {{ownerName}} लेल सहमति प्रबंधित करबाक पहुँच प्रदान करैत अछि।"
+    },
+    "deactivateDialog": {
+      "title": "नामांकित पहुँच निष्क्रिय करू",
+      "reasonLabel": "कारण",
+      "confirm": "पहुँच निष्क्रिय करू",
+      "cancel": "रद्द करू",
+      "processing": "निष्क्रिय कएल जा रहल अछि...",
+      "subtitle": "ई तुरंत {{ownerName}} क सहमतियों तक नामांकित व्यक्तिक पहुँच रद्द कऽ दैत अछि।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "डेटा उल्लंघन (Data breach)",
+      "UNAUTHORIZED_DATA_SHARING": "अनधिकृत डेटा साझाकरण",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "सहमति वापसीक बादो डेटा उपयोग issue",
+      "PURPOSE_VIOLATION": "उद्देश्य उल्लंघन",
+      "DATA_ERASURE_NOT_COMPLETED": "डेटा मिटाबैक अनुरोध पूरा नहि भेल",
+      "DATA_CORRECTION_NOT_COMPLETED": "डेटा संशोधन अनुरोध पूरा नहि भेल",
+      "CONSENT_LIFECYCLE_ISSUE": "सहमति प्रबंधक समस्या",
+      "DATA_ACCESS_DENIED": "डेटा पहुँच अनुरोध अस्वीकार",
+      "EXCESSIVE_DATA_COLLECTION": "अत्यधिक डेटा संग्रह",
+      "OTHER": "अन्य"
+    },
+    "status": {
+      "open": "खुला अछि",
+      "investigation": "प्रगति मे अछि",
+      "awaitingInfo": "ग्राहक कऽ प्रतीक्षा मे",
+      "waitingOnDpo": "आंतरिक समीक्षा कऽ प्रतीक्षा मे",
+      "resolved": "समाधान भऽ गेल"
+    },
+    "priority": {
+      "CRITICAL": "गंभीर (Critical)",
+      "HIGH": "उच्च (High)",
+      "MEDIUM": "मध्यम (Medium)",
+      "LOW": "कम (Low)"
+    },
+    "sla": {
+      "dueDate": "नियत तिथि {{date}}",
+      "dueToday": "आजुक नियत तिथि",
+      "overdueSingular": "{{count}} दिन विलंब",
+      "overduePlural": "{{count}} दिन विलंब",
+      "daysLeftSingular": "{{count}} दिन बाँकी",
+      "daysLeftPlural": "{{count}} दिन बाँकी"
+    },
+    "timeline": {
+      "complaintReceived": "शिकायत प्राप्त भेल",
+      "statusChangePrefix": "स्थिति बदलल गेल",
+      "statusChangeJoiner": "सँ"
+    },
+    "list": {
+      "title": "हमर शिकायत सभ",
+      "subtitle": "अहाँ द्वारा दर्ज कएल गेल शिकायत सभ आ ओकर प्रगतिक ट्रैक करू।",
+      "submitNew": "शिकायत दर्ज करू",
+      "loadFailed": "अखनि अहाँक शिकायत सभ लोड करै मे असमर्थ।",
+      "empty": "अहाँ अखनि तक कोनहु शिकायत दर्ज नहि केने छी।",
+      "emptyFiltered": "चुनल गेल फ़िल्टर सँ कोनहु शिकायत मेल नहि खाैत अछि।",
+      "filters": {
+        "status": "स्थिति",
+        "all": "सभ"
+      },
+      "table": {
+        "tableAriaLabel": "हमर शिकायत तालिका",
+        "headers": {
+          "referenceId": "संदर्भ आईडी",
+          "category": "श्रेणी",
+          "status": "स्थिति",
+          "submitted": "दर्ज कएल गेल",
+          "updated": "अद्यतन कएल गेल"
+        }
+      }
+    },
+    "detail": {
+      "back": "हमर शिकायत सभ पर वापस जाऊ",
+      "notFound": "शिकायत नहि भेटल",
+      "description": "विवरण",
+      "submittedOn": "{{date}} केँ दर्ज कएल गेल",
+      "awaitingInfo": {
+        "note": "शिकायत अधिकारी अहाँ सँ और जानकारीक प्रतीक्षा मे छथि। कृपया नीचाँ जवाब दिअ।"
+      },
+      "resolved": {
+        "note": "अहि शिकायतक समाधान भऽ गेल अछि।"
+      }
+    },
+    "submit": {
+      "title": "शिकायत दर्ज करू",
+      "subtitle": "हमरा सभ केँ बताऊ जे की भेल, आ हम ओकरा सही टीम तक पहुँचाएब।",
+      "submitFailed": "अखनि अहाँक शिकायत दर्ज करै मे असमर्थ। कृपया पुनः प्रयास करू।",
+      "fields": {
+        "category": "श्रेणी",
+        "categoryPlaceholder": "एक श्रेणी चुनू",
+        "categoryHelp": "ओह विकल्प केँ चुनू जे अहाँक शिकायतक सबसँ नीक वर्णन करैत अछि।",
+        "categoriesLoadFailed": "अखनि शिकायत श्रेणी सभ लोड करै मे असमर्थ।",
+        "description": "विवरण",
+        "descriptionPlaceholder": "अपन शिकायतक विस्तार सँ वर्णन करू",
+        "descriptionHelp": "अहि केँ जल्दी समाधान करै मे सहायता लेल यथासंभव विवरण शामिल करू।",
+        "attachments": "संलग्नक (वैकल्पिक)",
+        "attachmentsHelp": "प्रत्येक {{maxSize}} तक PDF, DOCX, PNG, वा JPG।",
+        "uploadButton": "फ़ाइल अपलोड करू"
+      },
+      "validation": {
+        "categoryRequired": "जारी रखबा लेल एक श्रेणी चुनू।",
+        "descriptionRequired": "जारी रखबा लेल अपन शिकायतक वर्णन करू।",
+        "attachmentTooLarge": "{{fileNames}} {{maxSize}} संलग्नक आकार सीमा सँ अधिक अछि।"
+      },
+      "success": {
+        "message": "अहाँक शिकायत {{referenceId}} दर्ज भऽ गेल अछि।",
+        "attachmentFailedMessage": "अहाँक शिकायत {{referenceId}} दर्ज भऽ गेल अछि, मुदा संलग्नक अपलोड नहि भऽ सकल। अहाँ शिकायत विवरण पृष्ठ सँ ओकरा जोड़ि सकैत छी।"
+      },
+      "actions": {
+        "cancel": "रद्द करू",
+        "submit": "शिकायत भेजू"
+      }
+    },
+    "activity": {
+      "title": "गतिविधि",
+      "send": "भेजू",
+      "sendOnly": "केवल भेजू",
+      "sendOptions": "और भेजने कऽ विकल्प",
+      "sendAndChangeStatusTo": "भेजू आ स्थिति बदलि कऽ करू",
+      "sendAndUpdateStatus": "भेजू आ {{status}} क रूप मे चिह्नित करू",
+      "publicReply": "जवाब दिअ",
+      "internalNote": "आंतरिक टिप्पणी",
+      "internalTag": "आंतरिक",
+      "dataPrincipalRoleLabel": "ग्राहक",
+      "officerRoleLabel": "शिकायत अधिकारी",
+      "composerPlaceholderPublic": "उपयोगकर्ता लेल उत्तर लिखू...",
+      "composerPlaceholderInternal": "आंतरिक टिप्पणी लिखू (उपयोगकर्ता लेल दृश्यमान नहि)...",
+      "attach": "संलग्न करू",
+      "attachmentsHelp": "प्रति फ़ाइल {{maxSize}} तक PDF, DOCX, PNG, वा JPG।",
+      "attachmentTooLarge": "{{fileNames}} {{maxSize}} संलग्नक आकार सीमा सँ अधिक अछि।",
+      "removeAttachment": "संलग्नक हटाऊ"
+    },
+    "attachments": {
+      "tabLabel": "संलग्नक सभ",
+      "tabLabelWithCount": "संलग्नक सभ ({{count}})",
+      "empty": "अहि शिकायत मे कोनहु संलग्नक नहि जोड़ल गेल अछि।",
+      "initialSubmission": "प्रारंभिक सबमिशन",
+      "internalNote": "आंतरिक",
+      "overflowMore": "+{{count}} और"
+    },
+    "management": {
+      "queue": {
+        "title": "शिकायत सभ",
+        "loadFailed": "अखनि शिकायत कतार लोड करै मे असमर्थ।",
+        "empty": "चुनल गेल फ़िल्टर सँ कोनहु शिकायत मेल नहि खाैत अछि।",
+        "stats": {
+          "open": "खुला अछि",
+          "awaitingInfo": "प्रतिक्रियाक प्रतीक्षा मे",
+          "resolved": "समाधान भऽ गेल",
+          "slaBreached": "SLA क उल्लंघन भेल"
+        },
+        "filters": {
+          "sectionAriaLabel": "शिकायत कतार फ़िल्टर",
+          "status": "स्थिति",
+          "priority": "प्राथमिकता",
+          "search": "संदर्भ आईडी वा उपयोगकर्ता द्वारा खोजू",
+          "all": "सभ",
+          "clear": "फ़िल्टर साफ़ करू",
+          "clearAriaLabel": "सभ फ़िल्टर साफ़ करू"
+        },
+        "table": {
+          "tableAriaLabel": "शिकायत कतार तालिका",
+          "headers": {
+            "referenceId": "संदर्भ आईडी",
+            "dataPrincipal": "उपयोगकर्ता",
+            "category": "श्रेणी",
+            "priority": "प्राथमिकता",
+            "status": "स्थिति",
+            "sla": "SLA",
+            "updated": "अद्यतन कएल गेल"
+          }
+        }
+      },
+      "case": {
+        "back": "कतार पर वापस जाऊ",
+        "notFound": "शिकायत नहि भेटल",
+        "dataPrincipal": "उपयोगकर्ता"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "सदस्यता सभ",
+      "subtitle": "घटना अधिसूचना ढांचे (Event Notification Framework) मे सभ पंजीकृत सदस्यता सभ।",
+      "addAction": "सदस्यता जोड़ू",
+      "filters": {
+        "sectionAriaLabel": "सदस्यता फ़िल्टर",
+        "status": "स्थिति",
+        "topic": "विषय",
+        "clear": "फ़िल्टर साफ़ करू",
+        "statusOptions": {
+          "all": "सभ स्थिति",
+          "active": "सक्रिय",
+          "pendingVerification": "लंबित",
+          "stale": "पुराना/अमान्य (Stale)"
+        },
+        "topicOptions": {
+          "all": "सभ विषय"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "सदस्यता पुनः सफलतापूर्वक सत्यापित भेल। स्थिति अब ACTIVE अछि।",
+        "reverifyStillStale": "सत्यापन पुनः विफल भऽ गेल। सदस्यता STALE बनल अछि।",
+        "reverifyFailed": "पुनः सत्यापन विफल भऽ गेल।"
+      }
+    },
+    "events": {
+      "title": "घटना सभ",
+      "subtitle": "घटना अधिसूचना ढांचे (Event Notification Framework) मे सभ घटना डिलीवरी।",
+      "filters": {
+        "sectionAriaLabel": "घटना फ़िल्टर",
+        "status": "स्थिति",
+        "topic": "विषय",
+        "search": "घटना खोजू",
+        "searchPlaceholder": "उद्देश्य वा ग्राहक आईडी द्वारा खोजू...",
+        "clear": "फ़िल्टर साफ़ करू",
+        "statusOptions": {
+          "all": "सभ स्थिति"
+        },
+        "topicOptions": {
+          "all": "सभ विषय"
+        }
+      },
+      "emptyTitle": "कोनहु घटना नहि भेटल",
+      "emptyMessage": "चुनल गेल मापदंड सँ कोनहु प्रकाशित घटना मेल नहि खाैत अछि।",
+      "table": {
+        "eventId": "घटना आईडी",
+        "topic": "विषय",
+        "purposes": "उद्देश्य सभ",
+        "deliveries": "डिलीवरी सभ",
+        "occurredAt": "घटित भेल",
+        "action": "कार्रवाई",
+        "all": "सभ",
+        "noSubscribers": "कोनहु ग्राहक नहि",
+        "viewEvent": "घटना देखू",
+        "subscriberCount_one": "{{count}} ग्राहक",
+        "subscriberCount_other": "{{count}} ग्राहक सभ"
+      },
+      "detail": {
+        "notFoundTitle": "घटना नहि भेटल",
+        "notFoundMessage": "आईडी \"{{eventId}}\" केँ साथ कोनहु घटना नहि भेटल।",
+        "backToEvents": "घटना सभ पर वापस जाऊ",
+        "topic": "विषय",
+        "purposes": "उद्देश्य सभ",
+        "occurredAt": "घटित भेल",
+        "deliveries": "डिलीवरी सभ",
+        "all": "सभ",
+        "noSubscribers": "कोनहु ग्राहक नहि",
+        "subscriberCount_one": "{{count}} ग्राहक",
+        "subscriberCount_other": "{{count}} ग्राहक सभ"
+      },
+      "dialog": {
+        "title": "पुनः प्रयास इतिहास",
+        "deliveryId": "डिलीवरी आईडी",
+        "loading": "घटना डिलीवरी इतिहास लोड भऽ रहल अछि…",
+        "noRetries": "प्रारंभिक प्रयास पूरा भेल। कोनहु पुनः प्रयास दर्ज नहि कएल गेल।",
+        "attempt": "प्रयास {{attempt}}",
+        "retrySuffix": " (पुनः प्रयास)",
+        "webhookDescription": "HTTP डिलीवरी प्रयास सभ आ पुनः प्रयास सभक कालानुक्रमिक इतिहास।",
+        "pollTitle": "पोल समाप्ति स्थिति आ पावती",
+        "completionStatus": "समाप्ति स्थिति",
+        "completionTimestamp": "समाप्ति समय",
+        "erasureMethod": "मिटाबैक विधि (Erasure Method)",
+        "recordsAffected": "प्रभावित रिकॉर्ड",
+        "referenceId": "संदर्भ आईडी",
+        "submittedBy": "द्वारा सबमिट कएल गेल",
+        "notes": "नोट्स",
+        "noAcknowledgment": "अखनि तक कोनहु पोल समाप्ति पावती दर्ज नहि भेल अछि।",
+        "close": "बंद करू"
+      }
+    }
+  }
+}

@@ -62,7 +62,10 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- The consent portal ships pre-exploded so Carbon does not have to unpack it during startup. -->
+            <!--
+              The webapp is shipped exploded so that a deployment can edit files
+              inside it (and so merge.sh can preserve them across an upgrade).
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
@@ -76,7 +79,7 @@
                         <configuration>
                             <target>
                                 <unzip src="../../react-apps/consent-portal/target/consent-portal.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consent-portal"/>
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consent-portal/"/>
                             </target>
                         </configuration>
                     </execution>

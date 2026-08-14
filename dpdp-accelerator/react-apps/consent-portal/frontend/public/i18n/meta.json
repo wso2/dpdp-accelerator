@@ -1,0 +1,119 @@
+{
+  "languages": [
+    {
+      "code": "en",
+      "endonym": "English",
+      "english": "English"
+    },
+    {
+      "code": "hi",
+      "endonym": "हिन्दी",
+      "english": "Hindi"
+    },
+    {
+      "code": "as",
+      "endonym": "অসমীয়া",
+      "english": "Assamese"
+    },
+    {
+      "code": "bn",
+      "endonym": "বাংলা",
+      "english": "Bengali"
+    },
+    {
+      "code": "brx",
+      "endonym": "बड़ो",
+      "english": "Bodo"
+    },
+    {
+      "code": "doi",
+      "endonym": "डोगरी",
+      "english": "Dogri"
+    },
+    {
+      "code": "gu",
+      "endonym": "ગુજરાતી",
+      "english": "Gujarati"
+    },
+    {
+      "code": "kn",
+      "endonym": "ಕನ್ನಡ",
+      "english": "Kannada"
+    },
+    {
+      "code": "ks",
+      "endonym": "کٲشُر",
+      "english": "Kashmiri"
+    },
+    {
+      "code": "kok",
+      "endonym": "कोंकणी",
+      "english": "Konkani"
+    },
+    {
+      "code": "mai",
+      "endonym": "मैथिली",
+      "english": "Maithili"
+    },
+    {
+      "code": "ml",
+      "endonym": "മലയാളം",
+      "english": "Malayalam"
+    },
+    {
+      "code": "mni",
+      "endonym": "মৈতৈলোন্",
+      "english": "Manipuri (Meitei)"
+    },
+    {
+      "code": "mr",
+      "endonym": "मराठी",
+      "english": "Marathi"
+    },
+    {
+      "code": "ne",
+      "endonym": "नेपाली",
+      "english": "Nepali"
+    },
+    {
+      "code": "or",
+      "endonym": "ଓଡ଼ିଆ",
+      "english": "Odia"
+    },
+    {
+      "code": "pa",
+      "endonym": "ਪੰਜਾਬੀ",
+      "english": "Punjabi"
+    },
+    {
+      "code": "sa",
+      "endonym": "संस्कृतम्",
+      "english": "Sanskrit"
+    },
+    {
+      "code": "sat",
+      "endonym": "ᱥᱟᱱᱛᱟᱲᱤ",
+      "english": "Santali"
+    },
+    {
+      "code": "sd",
+      "endonym": "سنڌي",
+      "english": "Sindhi"
+    },
+    {
+      "code": "ta",
+      "endonym": "தமிழ்",
+      "english": "Tamil"
+    },
+    {
+      "code": "te",
+      "endonym": "తెలుగు",
+      "english": "Telugu"
+    },
+    {
+      "code": "ur",
+      "endonym": "اردو",
+      "english": "Urdu"
+    }
+  ]
+}

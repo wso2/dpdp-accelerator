@@ -27,6 +27,7 @@ import {
   Divider,
   IconButton,
   Link,
+  MenuItem,
   Skeleton,
   Stack,
   Table,
@@ -35,39 +36,87 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Tooltip,
   Typography,
 } from '@wso2/oxygen-ui'
 import {
   AlignLeft,
+  CalendarClock,
+  Eye,
   Fingerprint,
   GitBranch,
+  KeyRound,
   Plus,
-  Shapes,
-  Star,
   Tag,
   Trash2,
+  Type as TypeIcon,
+  Users,
 } from '@wso2/oxygen-ui-icons-react'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import CopyableText from '../../components/CopyableText'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
-import { APIError } from '../../utils/apiClient'
-import { PORTAL_SCOPES } from '../../utils/portalScopes'
 import useAuthorization from '../auth/useAuthorization'
-import DetailGrid from './components/DetailGrid'
-import PurposeDeleteDialog from './components/PurposeDeleteDialog'
-import PurposeVersionDeleteDialog from './components/PurposeVersionDeleteDialog'
-import PurposeVersionFormDialog from './components/PurposeVersionFormDialog'
+import type { PurposeVersionItem } from '../../types/catalog'
+import { formatEpochTimestamp } from '../../utils/dateTime'
+import { PORTAL_SCOPES } from '../../utils/portalScopes'
+import DeleteVersionDialog from './components/DeleteVersionDialog'
+import PurposeFormDialog from './components/PurposeFormDialog'
 import {
   useCreatePurposeVersionMutation,
-  useDeletePurposeMutation,
   useDeletePurposeVersionMutation,
   usePurposeQuery,
   usePurposeVersionsQuery,
-  useSetLatestPurposeVersionMutation,
 } from './hooks/useCatalogQueries'
+
+interface DetailField {
+  icon: React.ReactNode
+  label: string
+  value: React.ReactNode
+}
+
+function DetailGrid({ fields }: { fields: DetailField[] }): React.JSX.Element {
+  return (
+    <Box
+      sx={{
+        display: 'grid',
+        gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' },
+        gap: { xs: 2, md: 3 },
+      }}
+    >
+      {fields.map((field) => (
+        <Stack key={field.label} spacing={0} minWidth={0}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={700}
+            sx={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 0.5,
+              mb: 1,
+              textTransform: 'uppercase',
+              letterSpacing: 0.5,
+            }}
+          >
+            {field.icon}
+            {field.label}
+          </Typography>
+          <Typography
+            component="div"
+            variant="body2"
+            fontWeight={500}
+            sx={{ overflowWrap: 'anywhere' }}
+          >
+            {field.value || '-'}
+          </Typography>
+        </Stack>
+      ))}
+    </Box>
+  )
+}
 
 function PurposeDetailsPage(): React.JSX.Element {
   const { t } = useTranslation('common')
@@ -75,19 +124,38 @@ function PurposeDetailsPage(): React.JSX.Element {
   const navigate = useNavigate()
   const detailQuery = usePurposeQuery(id)
   const versionsQuery = usePurposeVersionsQuery(id)
-  const detail = detailQuery.data
-  const versions = versionsQuery.data?.Versions ?? []
-  const { hasScope } = useAuthorization()
-  const canWrite = hasScope(PORTAL_SCOPES.PURPOSES_WRITE)
-
-  const [deleteOpen, setDeleteOpen] = useState(false)
-  const [versionFormOpen, setVersionFormOpen] = useState(false)
-  const [versionToDelete, setVersionToDelete] = useState<{ id: string; version: string }>()
-
-  const deletePurposeMutation = useDeletePurposeMutation()
   const createVersionMutation = useCreatePurposeVersionMutation()
-  const setLatestMutation = useSetLatestPurposeVersionMutation()
-  const deleteVersionMutation = useDeletePurposeVersionMutation()
+  const deleteMutation = useDeletePurposeVersionMutation()
+  const [selectedVersion, setSelectedVersion] = useState<string>()
+  const [versionDialogOpen, setVersionDialogOpen] = useState(false)
+  const [deleteVersion, setDeleteVersion] = useState<string>()
+  const { currentUser, hasScope } = useAuthorization()
+  const canWritePurposes = hasScope(PORTAL_SCOPES.PURPOSES_WRITE)
+
+  const detail = detailQuery.data
+  const latestVersion = useMemo<PurposeVersionItem | undefined>(
+    () =>
+      detail
+        ? {
+            version: detail.version,
+            displayName: detail.displayName,
+            description: detail.description,
+            properties: detail.properties,
+            elements: detail.elements,
+            createdTime: detail.createdTime,
+          }
+        : undefined,
+    [detail],
+  )
+  const versions = useMemo(() => versionsQuery.data?.versions ?? [], [versionsQuery.data?.versions])
+  const versionOptions = useMemo(() => {
+    if (!latestVersion || versions.some((version) => version.version === latestVersion.version)) {
+      return versions
+    }
+    return [latestVersion, ...versions]
+  }, [latestVersion, versions])
+  const displayedVersion =
+    versionOptions.find((version) => version.version === selectedVersion) ?? latestVersion
 
   if (detailQuery.isLoading) {
     return (
@@ -103,80 +171,72 @@ function PurposeDetailsPage(): React.JSX.Element {
     )
   }
 
-  if (!id || detailQuery.isError || !detail) {
+  if (!id || detailQuery.isError || !detail || !displayedVersion) {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={2}>
           <Typography color="error.main">{t('catalog.purposes.loadFailed')}</Typography>
-          <Box>
-            <Button variant="outlined" onClick={() => navigate('/purposes')}>
-              {t('catalog.purposes.back')}
-            </Button>
-          </Box>
+          <Button variant="outlined" onClick={() => navigate('/purposes')}>
+            {t('catalog.purposes.back')}
+          </Button>
         </Stack>
       </Box>
     )
   }
 
-  const propertyEntries = Object.entries(detail.properties ?? {})
-  // The purpose's own description/elements/properties always mirror whichever
-  // version is currently latest -- verified live, not documented behaviour --
-  // so a new version starts from these rather than an empty form.
-  const versionFormSource = {
-    description: detail.description,
-    elements: detail.elements.map((element) => ({
-      id: element.id,
-      name: element.name,
-      displayName: element.displayName,
-      mandatory: element.mandatory,
-    })),
-    properties: detail.properties,
-  }
-  const existingVersions = versions.map((version) => version.version)
-
-  // A 409 here has one well-known cause -- the purpose is still referenced by
-  // a consent -- so it gets a precise, actionable message regardless of the
-  // upstream's own wording; anything else falls back to a plain apology
-  // rather than surfacing raw server text.
-  let deleteErrorMessage: string | undefined
-  if (deletePurposeMutation.error) {
-    deleteErrorMessage =
-      deletePurposeMutation.error instanceof APIError && deletePurposeMutation.error.status === 409
-        ? t('catalog.purposeDelete.conflict')
-        : t('catalog.purposeDelete.deleteFailed')
-  }
-  // Duplicate version names are rejected before submit (see
-  // PurposeVersionFormDialog), so any server error here is unexpected.
-  const createVersionErrorMessage = createVersionMutation.error
-    ? t('catalog.purposeVersionForm.createFailed')
-    : undefined
-  // Deleting the latest version is disabled in the table below, so any
-  // server error here is unexpected.
-  const deleteVersionErrorMessage = deleteVersionMutation.error
-    ? t('catalog.purposeVersionDelete.deleteFailed')
-    : undefined
+  const organizationWide = detail.groupId === currentUser.organizationId
+  const propertyEntries = Object.entries(displayedVersion.properties ?? {})
 
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
-        <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
+        <Stack
+          direction={{ xs: 'column', md: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ md: 'flex-end' }}
+          spacing={2}
+        >
           <Stack spacing={1} minWidth={0}>
             <HeaderBreadcrumbs currentLabel={detail.name} />
             <Typography variant="h4" fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
-              {detail.name}
+              {displayedVersion.displayName ?? detail.name}
             </Typography>
           </Stack>
-          {canWrite ? (
-            <Button
-              variant="outlined"
-              color="error"
-              startIcon={<Trash2 size={16} />}
-              sx={{ flexShrink: 0 }}
-              onClick={() => setDeleteOpen(true)}
+          <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ sm: 'center' }} spacing={1}>
+            <TextField
+              select
+              size="small"
+              value={displayedVersion.version}
+              disabled={versionsQuery.isLoading || versionOptions.length === 0}
+              slotProps={{
+                select: {
+                  inputProps: {
+                    'aria-label': t('catalog.fields.purposeVersion'),
+                  },
+                },
+              }}
+              onChange={(event) => {
+                const version = event.target.value
+                setSelectedVersion(version === detail.version ? undefined : version)
+              }}
+              sx={{ width: 80 }}
             >
-              {t('catalog.actions.delete')}
-            </Button>
-          ) : null}
+              {versionOptions.map((version) => (
+                <MenuItem key={version.version} value={version.version}>
+                  {version.version}
+                </MenuItem>
+              ))}
+            </TextField>
+            {canWritePurposes ? (
+              <Button
+                variant="contained"
+                startIcon={<Plus size={18} />}
+                onClick={() => setVersionDialogOpen(true)}
+              >
+                {t('catalog.purposes.newVersion')}
+              </Button>
+            ) : null}
+          </Stack>
         </Stack>
 
         <Card sx={{ boxShadow: 1 }}>
@@ -188,18 +248,18 @@ function PurposeDetailsPage(): React.JSX.Element {
                   {t('catalog.fields.purposeId')}:
                 </Typography>
                 <CopyableText
-                  value={detail.id}
+                  value={detail.purposeId}
                   monospace
                   textAriaLabel={t('copyableText.valueAriaLabel', {
                     label: t('catalog.fields.purposeId'),
-                    value: detail.id,
+                    value: detail.purposeId,
                   })}
                   copyTooltip={t('copyableText.copyLabel', {
                     label: t('catalog.fields.purposeId'),
                   })}
                   copyAriaLabel={t('copyableText.copyValue', {
                     label: t('catalog.fields.purposeId'),
-                    value: detail.id,
+                    value: detail.purposeId,
                   })}
                 />
               </Stack>
@@ -216,23 +276,51 @@ function PurposeDetailsPage(): React.JSX.Element {
                   value: <Box component="code">{detail.name}</Box>,
                 },
                 {
-                  icon: <Shapes size={14} />,
-                  label: t('catalog.fields.type'),
-                  value: <Chip size="small" variant="outlined" label={detail.type} />,
+                  icon: <Users size={14} />,
+                  label: t('catalog.fields.scope'),
+                  value: organizationWide ? (
+                    <Chip size="small" variant="outlined" label={t('catalog.purposes.orgWide')} />
+                  ) : (
+                    <Chip size="small" variant="outlined" label={detail.groupId} />
+                  ),
                 },
+              ]}
+            />
+          </CardContent>
+        </Card>
+
+        <Card sx={{ boxShadow: 1 }}>
+          <CardHeader
+            title={
+              <Typography variant="h5" fontWeight={600}>
+                {t('catalog.details.versionDetails')}
+              </Typography>
+            }
+            sx={{ pb: 1 }}
+          />
+          <Divider />
+          <CardContent>
+            <DetailGrid
+              fields={[
                 {
                   icon: <GitBranch size={14} />,
-                  label: t('catalog.fields.latestVersion'),
-                  value: detail.latestVersion ? (
-                    <Chip size="small" color="primary" label={detail.latestVersion.version} />
-                  ) : (
-                    '-'
-                  ),
+                  label: t('catalog.fields.version'),
+                  value: <Chip size="small" color="primary" label={displayedVersion.version} />,
+                },
+                {
+                  icon: <TypeIcon size={14} />,
+                  label: t('catalog.fields.displayName'),
+                  value: displayedVersion.displayName ?? '-',
+                },
+                {
+                  icon: <CalendarClock size={14} />,
+                  label: t('catalog.fields.created'),
+                  value: formatEpochTimestamp(displayedVersion.createdTime),
                 },
                 {
                   icon: <AlignLeft size={14} />,
                   label: t('catalog.fields.description'),
-                  value: detail.description ?? '-',
+                  value: displayedVersion.description ?? '-',
                 },
               ]}
             />
@@ -249,38 +337,45 @@ function PurposeDetailsPage(): React.JSX.Element {
             sx={{ pb: 1 }}
           />
           <Divider />
-          {propertyEntries.length > 0 ? (
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 700, width: '35%' }}>
-                      {t('catalog.elementForm.propertyKeyLabel')}
-                    </TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>
-                      {t('catalog.elementForm.propertyValueLabel')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {propertyEntries.map(([key, value]) => (
-                    <TableRow key={key} hover>
-                      <TableCell>
-                        <Box component="code">{key}</Box>
-                      </TableCell>
-                      <TableCell sx={{ overflowWrap: 'anywhere' }}>{value}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <CardContent>
+          <CardContent>
+            {propertyEntries.length > 0 ? (
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' },
+                  gap: 2,
+                }}
+              >
+                {propertyEntries.map(([key, value]) => (
+                  <Stack key={key} spacing={0}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      fontWeight={700}
+                      sx={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 0.5,
+                        mb: 1,
+                        textTransform: 'uppercase',
+                        letterSpacing: 0.5,
+                      }}
+                    >
+                      <KeyRound size={13} />
+                      {key}
+                    </Typography>
+                    <Typography variant="body2" fontWeight={500} sx={{ overflowWrap: 'anywhere' }}>
+                      {value}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Box>
+            ) : (
               <Typography variant="body2" color="text.secondary">
                 {t('catalog.messages.noProperties')}
               </Typography>
-            </CardContent>
-          )}
+            )}
+          </CardContent>
         </Card>
 
         <Card sx={{ boxShadow: 1 }}>
@@ -298,12 +393,12 @@ function PurposeDetailsPage(): React.JSX.Element {
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.element')}</TableCell>
-                  <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.description')}</TableCell>
+                  <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.version')}</TableCell>
                   <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.requirement')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {detail.elements.length === 0 ? (
+                {displayedVersion.elements.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={3}>
                       <Typography
@@ -317,11 +412,21 @@ function PurposeDetailsPage(): React.JSX.Element {
                     </TableCell>
                   </TableRow>
                 ) : null}
-                {detail.elements.map((element) => {
-                  const elementPath = `/elements/${encodeURIComponent(element.id)}`
+                {displayedVersion.elements.map((element) => {
+                  const elementPath = `/elements/${encodeURIComponent(element.elementId)}`
 
                   return (
-                    <TableRow key={element.id} hover>
+                    <TableRow
+                      key={`${element.elementId}-${element.version}`}
+                      hover
+                      sx={{
+                        cursor: 'pointer',
+                        '&:hover .purpose-element-link': {
+                          color: 'primary.dark',
+                        },
+                      }}
+                      onClick={() => navigate(elementPath)}
+                    >
                       <TableCell>
                         <Stack spacing={0.25}>
                           <Link
@@ -329,15 +434,27 @@ function PurposeDetailsPage(): React.JSX.Element {
                             to={elementPath}
                             fontWeight={600}
                             underline="none"
+                            className="purpose-element-link"
+                            onClick={(event) => event.stopPropagation()}
+                            sx={{
+                              '&:hover, &:focus-visible': {
+                                color: 'primary.dark',
+                                textDecoration: 'none',
+                              },
+                            }}
                           >
                             {element.displayName ?? element.name}
                           </Link>
                           <Typography variant="caption" color="text.secondary">
-                            <Box component="code">{element.name}</Box>
+                            <Box component="code">
+                              {element.namespace}:{element.name}
+                            </Box>
                           </Typography>
                         </Stack>
                       </TableCell>
-                      <TableCell>{element.description ?? '-'}</TableCell>
+                      <TableCell>
+                        <Chip size="small" color="primary" label={element.version} />
+                      </TableCell>
                       <TableCell>
                         <Chip
                           size="small"
@@ -365,18 +482,6 @@ function PurposeDetailsPage(): React.JSX.Element {
                 {t('catalog.details.versions')}
               </Typography>
             }
-            action={
-              canWrite ? (
-                <Button
-                  size="small"
-                  variant="outlined"
-                  startIcon={<Plus size={16} />}
-                  onClick={() => setVersionFormOpen(true)}
-                >
-                  {t('catalog.actions.addVersion')}
-                </Button>
-              ) : null
-            }
             sx={{ pb: 1 }}
           />
           <Divider />
@@ -385,17 +490,15 @@ function PurposeDetailsPage(): React.JSX.Element {
               <Stack spacing={1}>
                 <Skeleton height={36} />
                 <Skeleton height={36} />
+                <Skeleton height={36} />
               </Stack>
             </CardContent>
           ) : null}
           {versionsQuery.isError ? (
             <CardContent>
-              <Alert severity="error">{t('catalog.messages.versionsLoadFailed')}</Alert>
-            </CardContent>
-          ) : null}
-          {setLatestMutation.isError ? (
-            <CardContent>
-              <Alert severity="error">{t('catalog.messages.setLatestFailed')}</Alert>
+              <Alert severity="error">
+                {versionsQuery.error?.message || t('catalog.messages.versionsLoadFailed')}
+              </Alert>
             </CardContent>
           ) : null}
           {!versionsQuery.isLoading && !versionsQuery.isError ? (
@@ -405,90 +508,68 @@ function PurposeDetailsPage(): React.JSX.Element {
                   <TableRow>
                     <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.version')}</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>
-                      {t('catalog.fields.description')}
+                      {t('catalog.fields.displayName')}
                     </TableCell>
-                    {canWrite ? (
-                      <TableCell sx={{ fontWeight: 700 }} align="right">
-                        {t('catalog.fields.actions')}
-                      </TableCell>
-                    ) : null}
+                    <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.elements')}</TableCell>
+                    <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.created')}</TableCell>
+                    <TableCell align="right" sx={{ fontWeight: 700 }}>
+                      {t('catalog.fields.actions')}
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {versions.length === 0 ? (
+                  {versionOptions.length === 0 ? (
                     <TableRow>
-                      <TableCell
-                        colSpan={canWrite ? 3 : 2}
-                        align="center"
-                        sx={{ py: 4, color: 'text.secondary' }}
-                      >
+                      <TableCell colSpan={5} align="center" sx={{ py: 4, color: 'text.secondary' }}>
                         {t('catalog.messages.noVersions')}
                       </TableCell>
                     </TableRow>
                   ) : null}
-                  {versions.map((version) => {
-                    const isLatest = detail.latestVersion?.id === version.id
-
-                    return (
-                      <TableRow hover key={version.id}>
-                        <TableCell>
-                          <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap">
-                            <Chip size="small" color="primary" label={version.version} />
-                            {isLatest ? (
-                              <Chip size="small" label={t('catalog.values.latest')} />
-                            ) : null}
-                          </Stack>
-                        </TableCell>
-                        <TableCell>{version.description ?? '-'}</TableCell>
-                        {canWrite ? (
-                          <TableCell align="right">
-                            <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                              {!isLatest ? (
-                                <Tooltip title={t('catalog.actions.setLatest')}>
-                                  <IconButton
-                                    size="small"
-                                    disabled={setLatestMutation.isPending}
-                                    aria-label={t('catalog.actions.setLatest')}
-                                    onClick={() =>
-                                      setLatestMutation.mutate({
-                                        purposeId: id,
-                                        versionId: version.id,
-                                      })
-                                    }
-                                  >
-                                    <Star size={16} />
-                                  </IconButton>
-                                </Tooltip>
-                              ) : null}
-                              <Tooltip
-                                title={
-                                  isLatest
-                                    ? t('catalog.purposeVersionDelete.latestBlocked')
-                                    : t('catalog.actions.delete')
-                                }
-                              >
-                                <span>
-                                  <IconButton
-                                    size="small"
-                                    disabled={isLatest}
-                                    aria-label={t('catalog.actions.delete')}
-                                    onClick={() =>
-                                      setVersionToDelete({
-                                        id: version.id,
-                                        version: version.version,
-                                      })
-                                    }
-                                  >
-                                    <Trash2 size={16} />
-                                  </IconButton>
-                                </span>
-                              </Tooltip>
-                            </Stack>
-                          </TableCell>
+                  {versionOptions.map((version) => (
+                    <TableRow
+                      hover
+                      key={version.version}
+                      selected={displayedVersion.version === version.version}
+                      sx={{ cursor: 'pointer' }}
+                      onClick={() =>
+                        setSelectedVersion(
+                          version.version === detail.version ? undefined : version.version,
+                        )
+                      }
+                    >
+                      <TableCell>
+                        <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap">
+                          <Chip size="small" color="primary" label={version.version} />
+                          {displayedVersion.version === version.version ? (
+                            <Chip
+                              size="small"
+                              icon={<Eye size={14} />}
+                              label={t('catalog.values.viewing')}
+                            />
+                          ) : null}
+                        </Stack>
+                      </TableCell>
+                      <TableCell>{version.displayName ?? '-'}</TableCell>
+                      <TableCell>{version.elements.length}</TableCell>
+                      <TableCell>{formatEpochTimestamp(version.createdTime)}</TableCell>
+                      <TableCell align="right">
+                        {canWritePurposes ? (
+                          <Tooltip title={t('catalog.actions.deleteVersion')}>
+                            <IconButton
+                              size="small"
+                              aria-label={t('catalog.actions.deleteVersion')}
+                              onClick={(event) => {
+                                event.stopPropagation()
+                                setDeleteVersion(version.version)
+                              }}
+                            >
+                              <Trash2 size={17} />
+                            </IconButton>
+                          </Tooltip>
                         ) : null}
-                      </TableRow>
-                    )
-                  })}
+                      </TableCell>
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
@@ -496,56 +577,50 @@ function PurposeDetailsPage(): React.JSX.Element {
         </Card>
       </Stack>
 
-      <PurposeDeleteDialog
-        open={deleteOpen}
-        purposeName={detail.name}
-        loading={deletePurposeMutation.isPending}
-        error={deleteErrorMessage}
-        onClose={() => {
-          setDeleteOpen(false)
-          deletePurposeMutation.reset()
-        }}
-        onConfirm={() => {
-          deletePurposeMutation.mutate(detail.id, {
-            onSuccess: () => navigate('/purposes'),
-          })
-        }}
-      />
-
-      <PurposeVersionFormDialog
-        open={versionFormOpen}
+      <PurposeFormDialog
+        key={`purpose-version-${String(versionDialogOpen)}`}
+        open={versionDialogOpen}
+        initialValue={detail}
+        organizationId={currentUser.organizationId}
         loading={createVersionMutation.isPending}
-        error={createVersionErrorMessage}
-        existingVersions={existingVersions}
-        source={versionFormSource}
+        error={createVersionMutation.error?.message}
         onClose={() => {
-          setVersionFormOpen(false)
+          setVersionDialogOpen(false)
           createVersionMutation.reset()
         }}
-        onSubmit={(payload) => {
+        onCreate={() => {}}
+        onCreateVersion={(payload) => {
           createVersionMutation.mutate(
             { purposeId: id, payload },
-            { onSuccess: () => setVersionFormOpen(false) },
+            {
+              onSuccess: (version) => {
+                setVersionDialogOpen(false)
+                setSelectedVersion(version.version)
+              },
+            },
           )
         }}
       />
-
-      <PurposeVersionDeleteDialog
-        open={Boolean(versionToDelete)}
-        version={versionToDelete?.version ?? ''}
-        loading={deleteVersionMutation.isPending}
-        error={deleteVersionErrorMessage}
+      <DeleteVersionDialog
+        open={Boolean(deleteVersion)}
+        version={deleteVersion ?? ''}
+        loading={deleteMutation.isPending}
+        error={deleteMutation.error?.message}
         onClose={() => {
-          setVersionToDelete(undefined)
-          deleteVersionMutation.reset()
+          setDeleteVersion(undefined)
+          deleteMutation.reset()
         }}
         onConfirm={() => {
-          if (!versionToDelete) {
-            return
-          }
-          deleteVersionMutation.mutate(
-            { purposeId: id, versionId: versionToDelete.id },
-            { onSuccess: () => setVersionToDelete(undefined) },
+          if (!deleteVersion) return
+          deleteMutation.mutate(
+            { id, version: deleteVersion },
+            {
+              onSuccess: () => {
+                setDeleteVersion(undefined)
+                setSelectedVersion(undefined)
+                if (versions.length === 1) navigate('/purposes')
+              },
+            },
           )
         }}
       />

@@ -17,38 +17,47 @@
  */
 
 import type {
-  AdminConsentListQueryParams,
-  AdminConsentListResponse,
-  ConsentDetail,
+  ConsentDetailAPI,
+  ConsentListQueryParams,
+  ConsentSearchResponse,
 } from '../../../types/consent'
 import { apiRequest } from '../../../utils/apiClient'
 
 export async function fetchAdminConsents(
-  params: AdminConsentListQueryParams,
-): Promise<AdminConsentListResponse> {
-  return apiRequest<AdminConsentListResponse>('/api/consents', {
+  params: ConsentListQueryParams,
+): Promise<ConsentSearchResponse> {
+  return apiRequest<ConsentSearchResponse>('/api/consents', {
     method: 'GET',
     query: {
+      consentStatuses: params.consentStatuses,
+      userIds: params.userIds,
+      groupIds: params.groupIds,
+      purposeName: params.purposeName,
+      purposeVersion: params.purposeVersion,
+      elementName: params.elementName,
+      elementNamespace: params.elementNamespace,
+      elementVersion: params.elementVersion,
+      sort: params.sort,
+      fromTime: params.fromTime,
+      toTime: params.toTime,
       limit: params.limit,
-      after: params.after,
-      before: params.before,
-      subjectId: params.subjectId,
-      serviceId: params.serviceId,
-      state: params.state,
+      offset: params.offset,
+      details: true,
     },
   })
 }
 
-export async function fetchAdminConsentByID(consentID: string): Promise<ConsentDetail> {
-  return apiRequest<ConsentDetail>(`/api/consents/${encodeURIComponent(consentID)}`, {
+export async function fetchAdminConsentByID(consentID: string): Promise<ConsentDetailAPI> {
+  return apiRequest<ConsentDetailAPI>(`/api/consents/${encodeURIComponent(consentID)}`, {
     method: 'GET',
+    query: { details: true, includeStatusHistory: true },
   })
 }
 
-export async function revokeAdminConsent(consentID: string): Promise<unknown> {
+export async function revokeAdminConsent(consentID: string, actionBy: string): Promise<unknown> {
   return apiRequest<unknown>(`/api/consents/${encodeURIComponent(consentID)}/revoke`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({}),
+    body: JSON.stringify({ actionBy }),
   })
 }

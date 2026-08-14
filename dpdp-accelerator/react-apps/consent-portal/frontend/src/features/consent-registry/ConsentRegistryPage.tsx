@@ -28,42 +28,74 @@ import ConsentRevocationDialog from './components/ConsentRevocationDialog'
 import { CONSENT_REGISTRY_ROWS_PER_PAGE_OPTIONS } from './constants'
 import type {
   ConsentRegistryFilters as ConsentRegistryFiltersModel,
-  ConsentState,
+  ConsentRegistrySortDirection,
+  ConsentRegistrySortField,
 } from '../../types/consent'
-import { isConsentState } from '../../types/consent'
-import { PORTAL_SCOPES } from '../../utils/portalScopes'
-import useAuthorization from '../auth/useAuthorization'
 import {
   useApproveConsentMutation,
+  useConsentDetailQuery,
   useConsentListQuery,
   useRevokeConsentMutation,
 } from './hooks/useConsentQueries'
 
 const DEFAULT_FILTERS: ConsentRegistryFiltersModel = {
-  state: 'All',
-  serviceId: '',
+  status: 'All',
+  purposeName: '',
+  groupIds: '',
+  startDate: '',
+  endDate: '',
 }
+
+const FILTER_STATUS_VALUES: ConsentRegistryFiltersModel['status'][] = [
+  'All',
+  'Active',
+  'Pending',
+  'Rejected',
+  'Revoked',
+  'Expired',
+]
 
 const DEFAULT_PAGE = 0
 const DEFAULT_ROWS_PER_PAGE = 10
+const DEFAULT_SORT_FIELD: ConsentRegistrySortField = 'updatedTime'
+const DEFAULT_SORT_DIRECTION: ConsentRegistrySortDirection = 'desc'
+const SORT_FIELDS: ConsentRegistrySortField[] = ['status', 'updatedTime', 'validityTime']
+
+interface ConsentRegistrySort {
+  field: ConsentRegistrySortField
+  direction: ConsentRegistrySortDirection
+}
+
+function isValidFilterStatus(value: string): value is ConsentRegistryFiltersModel['status'] {
+  return FILTER_STATUS_VALUES.includes(value as ConsentRegistryFiltersModel['status'])
+}
 
 function getFiltersFromSearchParams(searchParams: URLSearchParams): ConsentRegistryFiltersModel {
-  const stateParam = searchParams.get('state') ?? ''
+  const statusParam = searchParams.get('status')
 
   return {
-    state: isConsentState(stateParam) ? (stateParam as ConsentState) : DEFAULT_FILTERS.state,
-    serviceId: searchParams.get('serviceId') ?? DEFAULT_FILTERS.serviceId,
+    status: statusParam && isValidFilterStatus(statusParam) ? statusParam : DEFAULT_FILTERS.status,
+    purposeName: searchParams.get('purposeName') ?? DEFAULT_FILTERS.purposeName,
+    groupIds: searchParams.get('groupIds') ?? DEFAULT_FILTERS.groupIds,
+    startDate: searchParams.get('startDate') ?? DEFAULT_FILTERS.startDate,
+    endDate: searchParams.get('endDate') ?? DEFAULT_FILTERS.endDate,
   }
 }
 
 function getPageFromSearchParams(searchParams: URLSearchParams): number {
-  const pageNumber = Number(searchParams.get('page') ?? '1')
+  const pageParam = searchParams.get('page')
+  const pageNumber = pageParam ? Number(pageParam) : Number.NaN
 
-  return Number.isInteger(pageNumber) && pageNumber > 0 ? pageNumber - 1 : DEFAULT_PAGE
+  if (!Number.isInteger(pageNumber) || pageNumber < 1) {
+    return DEFAULT_PAGE
+  }
+
+  return pageNumber - 1
 }
 
 function getRowsPerPageFromSearchParams(searchParams: URLSearchParams): number {
-  const rowsPerPage = Number(searchParams.get('rowsPerPage') ?? String(DEFAULT_ROWS_PER_PAGE))
+  const rowsPerPageParam = searchParams.get('rowsPerPage')
+  const rowsPerPage = rowsPerPageParam ? Number(rowsPerPageParam) : Number.NaN
 
   return CONSENT_REGISTRY_ROWS_PER_PAGE_OPTIONS.includes(
     rowsPerPage as (typeof CONSENT_REGISTRY_ROWS_PER_PAGE_OPTIONS)[number],
@@ -72,19 +104,54 @@ function getRowsPerPageFromSearchParams(searchParams: URLSearchParams): number {
     : DEFAULT_ROWS_PER_PAGE
 }
 
+function getSortFromSearchParams(searchParams: URLSearchParams): ConsentRegistrySort {
+  const sortParam = searchParams.get('sort')
+
+  if (!sortParam || sortParam.includes(',')) {
+    return { field: DEFAULT_SORT_FIELD, direction: DEFAULT_SORT_DIRECTION }
+  }
+
+  const [field, direction = DEFAULT_SORT_DIRECTION, ...extraParts] = sortParam.split(':')
+  const validField = SORT_FIELDS.includes(field as ConsentRegistrySortField)
+  const validDirection = direction === 'asc' || direction === 'desc'
+
+  if (!validField || !validDirection || extraParts.length > 0) {
+    return { field: DEFAULT_SORT_FIELD, direction: DEFAULT_SORT_DIRECTION }
+  }
+
+  return {
+    field: field as ConsentRegistrySortField,
+    direction,
+  }
+}
+
 function toSearchParams(
   filters: ConsentRegistryFiltersModel,
   page = DEFAULT_PAGE,
   rowsPerPage = DEFAULT_ROWS_PER_PAGE,
+  sortField: ConsentRegistrySortField = DEFAULT_SORT_FIELD,
+  sortDirection: ConsentRegistrySortDirection = DEFAULT_SORT_DIRECTION,
 ): URLSearchParams {
   const params = new URLSearchParams()
 
-  if (filters.state !== DEFAULT_FILTERS.state) {
-    params.set('state', filters.state)
+  if (filters.status !== DEFAULT_FILTERS.status) {
+    params.set('status', filters.status)
   }
 
-  if (filters.serviceId.trim()) {
-    params.set('serviceId', filters.serviceId.trim())
+  if (filters.purposeName.trim()) {
+    params.set('purposeName', filters.purposeName.trim())
+  }
+
+  if (filters.groupIds.trim()) {
+    params.set('groupIds', filters.groupIds.trim())
+  }
+
+  if (filters.startDate) {
+    params.set('startDate', filters.startDate)
+  }
+
+  if (filters.endDate) {
+    params.set('endDate', filters.endDate)
   }
 
   if (page !== DEFAULT_PAGE) {
@@ -95,31 +162,40 @@ function toSearchParams(
     params.set('rowsPerPage', String(rowsPerPage))
   }
 
+  if (sortField !== DEFAULT_SORT_FIELD || sortDirection !== DEFAULT_SORT_DIRECTION) {
+    params.set('sort', `${sortField}:${sortDirection}`)
+  }
+
   return params
 }
 
 function ConsentRegistryPage(): React.JSX.Element {
   const { t } = useTranslation('common')
   const [searchParams, setSearchParams] = useSearchParams()
-  const [approvalConsentID, setApprovalConsentID] = useState<string>()
-  const [revocationConsentID, setRevocationConsentID] = useState<string>()
+  const [approvalDialogOpen, setApprovalDialogOpen] = useState<boolean>(false)
+  const [revocationDialogOpen, setRevocationDialogOpen] = useState<boolean>(false)
+  const [selectedApprovalConsentID, setSelectedApprovalConsentID] = useState<string | null>(null)
+  const [selectedRevocationConsentID, setSelectedRevocationConsentID] = useState<string | null>(
+    null,
+  )
   const filters = useMemo(() => getFiltersFromSearchParams(searchParams), [searchParams])
   const page = useMemo(() => getPageFromSearchParams(searchParams), [searchParams])
   const rowsPerPage = useMemo(() => getRowsPerPageFromSearchParams(searchParams), [searchParams])
-  const consentListQuery = useConsentListQuery(filters, page, rowsPerPage)
+  const sort = useMemo(() => getSortFromSearchParams(searchParams), [searchParams])
+  const consentListQuery = useConsentListQuery(
+    filters,
+    page,
+    rowsPerPage,
+    sort.field,
+    sort.direction,
+  )
+  const selectedApprovalConsentQuery = useConsentDetailQuery(selectedApprovalConsentID ?? undefined)
   const approveMutation = useApproveConsentMutation()
   const revokeMutation = useRevokeConsentMutation()
-  const { hasScope } = useAuthorization()
-  const canWriteSelf = hasScope(PORTAL_SCOPES.CONSENTS_WRITE_SELF)
   const isTableLoading = consentListQuery.isPending || consentListQuery.isPlaceholderData
 
-  const updateParams = (
-    nextFilters: ConsentRegistryFiltersModel,
-    nextPage = DEFAULT_PAGE,
-    nextRowsPerPage = rowsPerPage,
-  ): void => {
-    setSearchParams(toSearchParams(nextFilters, nextPage, nextRowsPerPage), { replace: true })
-  }
+  const rows = consentListQuery.data?.rows ?? []
+  const totalCount = consentListQuery.data?.total ?? 0
 
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
@@ -132,63 +208,118 @@ function ConsentRegistryPage(): React.JSX.Element {
         </Stack>
 
         <ConsentRegistryFilters
-          key={searchParams.toString()}
           filters={filters}
-          onFilterChange={(nextFilters) => updateParams(nextFilters)}
-          onClear={() => updateParams(DEFAULT_FILTERS)}
+          onFilterChange={(nextFilters) => {
+            setSearchParams(
+              toSearchParams(nextFilters, DEFAULT_PAGE, rowsPerPage, sort.field, sort.direction),
+              {
+                replace: true,
+              },
+            )
+          }}
+          onClear={() => {
+            setSearchParams(
+              toSearchParams(
+                DEFAULT_FILTERS,
+                DEFAULT_PAGE,
+                rowsPerPage,
+                sort.field,
+                sort.direction,
+              ),
+              { replace: true },
+            )
+          }}
         />
 
         <ConsentRegistryTable
-          rows={consentListQuery.data?.rows ?? []}
+          rows={rows}
+          totalCount={totalCount}
           isLoading={isTableLoading}
           isError={consentListQuery.isError}
+          page={page}
           rowsPerPage={rowsPerPage}
-          hasPreviousPage={page > DEFAULT_PAGE}
-          hasNextPage={consentListQuery.data?.hasNextPage ?? false}
-          onPreviousPage={() => updateParams(filters, page - 1)}
-          onNextPage={() => updateParams(filters, page + 1)}
-          onRowsPerPageChange={(nextRowsPerPage) =>
-            updateParams(filters, DEFAULT_PAGE, nextRowsPerPage)
-          }
+          sortField={sort.field}
+          sortDirection={sort.direction}
+          onPageChange={(nextPage) => {
+            setSearchParams(
+              toSearchParams(filters, nextPage, rowsPerPage, sort.field, sort.direction),
+              { replace: true },
+            )
+          }}
+          onRowsPerPageChange={(nextRowsPerPage) => {
+            setSearchParams(
+              toSearchParams(filters, DEFAULT_PAGE, nextRowsPerPage, sort.field, sort.direction),
+              {
+                replace: true,
+              },
+            )
+          }}
+          onSortChange={(sortField, sortDirection) => {
+            setSearchParams(
+              toSearchParams(filters, DEFAULT_PAGE, rowsPerPage, sortField, sortDirection),
+              { replace: true },
+            )
+          }}
           onRetry={() => consentListQuery.refetch()}
-          canApprove={canWriteSelf}
-          canRevoke={canWriteSelf}
-          onApprove={setApprovalConsentID}
-          onRevoke={setRevocationConsentID}
+          onApprove={(consentID) => {
+            setSelectedApprovalConsentID(consentID)
+            setApprovalDialogOpen(true)
+          }}
+          onRevoke={(consentID) => {
+            setSelectedRevocationConsentID(consentID)
+            setRevocationDialogOpen(true)
+          }}
           isMutating={approveMutation.isPending || revokeMutation.isPending}
         />
 
-        {approvalConsentID ? (
+        {selectedApprovalConsentID ? (
           <ConsentApprovalDialog
-            open
-            consentId={approvalConsentID}
-            loading={approveMutation.isPending}
-            error={approveMutation.error?.message}
+            key={`registry-approval-${selectedApprovalConsentID}-${String(approvalDialogOpen)}`}
+            open={approvalDialogOpen}
+            consentId={selectedApprovalConsentID}
+            purposes={selectedApprovalConsentQuery.data?.purposes ?? []}
+            loading={
+              approveMutation.isPending ||
+              selectedApprovalConsentQuery.isLoading ||
+              !selectedApprovalConsentQuery.data
+            }
             onClose={() => {
-              setApprovalConsentID(undefined)
-              approveMutation.reset()
+              setApprovalDialogOpen(false)
+              setSelectedApprovalConsentID(null)
             }}
-            onConfirm={() => {
-              approveMutation.mutate(approvalConsentID, {
-                onSuccess: () => setApprovalConsentID(undefined),
-              })
+            onConfirm={(selectedOptionalElements) => {
+              approveMutation.mutate(
+                {
+                  consentID: selectedApprovalConsentID,
+                  selectedOptionalElements,
+                },
+                {
+                  onSuccess: () => {
+                    setApprovalDialogOpen(false)
+                    setSelectedApprovalConsentID(null)
+                  },
+                },
+              )
             }}
           />
         ) : null}
 
-        {revocationConsentID ? (
+        {selectedRevocationConsentID ? (
           <ConsentRevocationDialog
-            open
-            consentId={revocationConsentID}
+            key={`registry-revocation-${selectedRevocationConsentID}-${String(revocationDialogOpen)}`}
+            open={revocationDialogOpen}
+            consentId={selectedRevocationConsentID}
             loading={revokeMutation.isPending}
-            error={revokeMutation.error?.message}
             onClose={() => {
-              setRevocationConsentID(undefined)
-              revokeMutation.reset()
+              setRevocationDialogOpen(false)
+              setSelectedRevocationConsentID(null)
             }}
             onConfirm={() => {
-              revokeMutation.mutate(revocationConsentID, {
-                onSuccess: () => setRevocationConsentID(undefined),
+              revokeMutation.mutate(selectedRevocationConsentID, {
+                onSuccess: () => {
+                  setRevocationDialogOpen(false)
+                  setSelectedRevocationConsentID(null)
+                },
               })
             }}
           />

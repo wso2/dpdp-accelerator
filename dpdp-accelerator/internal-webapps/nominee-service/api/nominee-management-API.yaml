@@ -1,0 +1,864 @@
+openapi: 3.0.0
+info:
+  version: v1.0
+  title: Nominee Management API
+  description: |
+    This API manages nominations under DPDP Act section 14: an owner appoints one
+    or more nominees who may exercise the owner's data rights on their behalf.
+
+    **Key Concepts:**
+
+    - **Nomination**: The record of one owner appointing one nominee. An owner may
+      nominate any number of individuals, and each nomination carries its own
+      permissions, status and lifecycle, so one nominee can be view-only while
+      another may revoke.
+    - **Permission**: What the owner allows that specific nominee to do. Some
+      permissions require another: granting `CONSENT_REVOKE` also grants
+      `CONSENT_VIEW`, because a consent has to be found before it can be revoked.
+    - **Lifecycle**: `PENDING` → `ACCEPTED` → `ACTIVE`, and possibly `DEACTIVATED`.
+      Acceptance alone grants nothing; a nomination confers no authority until an
+      administrator activates it against a recorded ticket reference.
+    - **The gate**: The internal endpoints answer, for one owner-nominee pair,
+      whether the nomination is active and which permissions it carries. The
+      Identity Server consults it before issuing an impersonation token, and the
+      portal backend consults it again on every request made while acting, so
+      removing a permission takes effect on the next request rather than at token
+      expiry.
+
+    **Delegation is not transitive.** Every endpoint under `/me` and `/nominations`
+    refuses a token that is acting on another user's behalf. Managing nominations
+    is a right the owner exercises personally, and a nominee may not appoint
+    further nominees on the owner's account.
+  contact:
+    name: WSO2
+    url: 'https://wso2.com/solutions/financial-services/'
+    email: "architecture@wso2.com"
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: http://localhost:8082
+tags:
+  - name: My Nominees
+    description: Endpoints an owner uses to appoint and manage their own nominees
+  - name: My Nominations
+    description: Endpoints a nominee uses for nominations naming them
+  - name: Administration
+    description: Activation and deactivation after manual verification
+  - name: Internal
+    description: The nomination gate, called by infrastructure rather than by a user
+
+paths:
+  /me/nominees:
+    post:
+      tags:
+        - My Nominees
+      summary: Appoint a nominee
+      operationId: addMyNominee
+      description: |
+        Adds a nominee to the caller's existing nominations. The owner is taken
+        from the access token's subject and can never be supplied by the caller.
+
+        The new nomination is `PENDING`: the nominee must accept it, and an
+        administrator must then activate it, before any authority exists.
+
+        **Permission expansion.** Permissions that depend on another are stored
+        together with what they require, so the grant always describes something
+        the nominee can actually carry out. Requesting `CONSENT_REVOKE` alone
+        stores `CONSENT_REVOKE` and `CONSENT_VIEW`.
+      security:
+        - bearerAuth: [ 'portal:profile:write:self' ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateNominationRequest'
+            example:
+              nomineeId: "496152f4-7f45-4ecb-a912-699b08d14d24"
+              nomineeEmail: "nominee@example.com"
+              permissions: [ "CONSENT_VIEW", "CONSENT_REVOKE" ]
+      responses:
+        '201':
+          description: The nomination was created and is awaiting the nominee's acceptance.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NominationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: |
+            This owner has already nominated this person. An owner may nominate
+            any number of people, but each of them only once: a second nomination
+            for the same pairing would create two competing permission sets for
+            one relationship.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: "A nomination already exists for owner cb0d2ba6-... and nominee 496152f4-..."
+
+    get:
+      tags:
+        - My Nominees
+      summary: List the nominees I have appointed
+      operationId: getMyNominees
+      description: Every nomination this owner has made, in any status. May be empty.
+      security:
+        - bearerAuth: [ 'portal:profile:read:self' ]
+      responses:
+        '200':
+          description: The caller's nominations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NominationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /me/nominees/{id}:
+    patch:
+      tags:
+        - My Nominees
+      summary: Change what one nominee may do
+      operationId: updateMyNomineePermissions
+      description: |
+        Replaces the permissions granted to one nominee, leaving the owner's other
+        nominations untouched.
+
+        Once an administrator has activated the nomination the grant can only be
+        **narrowed**. Activation records that a specific set of permissions was
+        verified, so widening it afterwards would leave the nominee holding more
+        than was reviewed. Narrowing stays open because it only takes access
+        away, and removing the nomination is always allowed.
+
+        Takes effect immediately. The gate is consulted on every request made
+        while acting, so a permission removed here is refused on the nominee's
+        next request rather than when their token expires.
+      security:
+        - bearerAuth: [ 'portal:profile:write:self' ]
+      parameters:
+        - $ref: '#/components/parameters/NominationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePermissionsRequest'
+            example:
+              permissions: [ "CONSENT_VIEW" ]
+      responses:
+        '200':
+          description: The updated nomination.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NominationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NominationNotFound'
+        '409':
+          description: |
+            The nomination is active and the request would widen the grant. Narrow
+            it instead, remove the nomination, or have an administrator
+            deactivate it first.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      tags:
+        - My Nominees
+      summary: Remove a nominee
+      operationId: removeMyNominee
+      description: |
+        Removes one nomination, leaving the owner's others untouched. The
+        nomination record is deleted; its history remains in the audit trail.
+      security:
+        - bearerAuth: [ 'portal:profile:write:self' ]
+      parameters:
+        - $ref: '#/components/parameters/NominationId'
+      responses:
+        '204':
+          description: The nomination was removed.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NominationNotFound'
+
+  /nominations/{id}/accept:
+    post:
+      tags:
+        - My Nominations
+      summary: Accept a nomination naming me
+      operationId: acceptNomination
+      description: |
+        The nominee accepts. The caller must be the person named on the
+        nomination: holding the right scope is not enough, or any authenticated
+        user could accept somebody else's nomination by knowing its id.
+
+        Acceptance grants no authority by itself. The nomination stays inactive
+        until an administrator activates it.
+      security:
+        - bearerAuth: [ 'portal:profile:write:self' ]
+      parameters:
+        - $ref: '#/components/parameters/NominationId'
+      responses:
+        '200':
+          description: The nomination, now `ACCEPTED` and awaiting activation.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NominationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: |
+            The caller is not the person named on this nomination, or is acting
+            on another user's behalf.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: "Only the nominated user may accept this nomination"
+        '404':
+          $ref: '#/components/responses/NominationNotFound'
+
+  /nominations/{id}/reject:
+    post:
+      tags:
+        - My Nominations
+      summary: Decline a nomination naming me
+      operationId: rejectNomination
+      description: |
+        The nominee declines. As with accepting, the caller must be the person
+        named on the nomination.
+
+        Terminal: a refusal is not reversed by accepting afterwards, and only a
+        pending nomination can be refused. An owner who wants to ask again
+        creates a new nomination, which leaves the refusal standing in the
+        record.
+      security:
+        - bearerAuth: [ 'portal:profile:write:self' ]
+      parameters:
+        - $ref: '#/components/parameters/NominationId'
+      responses:
+        '200':
+          description: The nomination, now `REJECTED`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NominationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: |
+            The caller is not the person named on this nomination, is acting on
+            another user's behalf, or the nomination is no longer pending.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: "Only the nominated user may reject this nomination"
+        '404':
+          $ref: '#/components/responses/NominationNotFound'
+
+  /nominated-for:
+    get:
+      tags:
+        - My Nominations
+      summary: List the accounts I have been nominated for
+      operationId: nominatedFor
+      description: |
+        Every nomination naming the caller as nominee, in any status. A nominee
+        may serve several owners; each nomination carries its own permissions.
+      security:
+        - bearerAuth: [ 'portal:profile:read:self' ]
+      responses:
+        '200':
+          description: Nominations naming the caller.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NominationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/nominations:
+    get:
+      tags:
+        - Administration
+      summary: List one owner's nominations
+      operationId: getNominationsByOwner
+      security:
+        - bearerAuth: [ 'portal:profile:read:any' ]
+      parameters:
+        - in: query
+          name: ownerId
+          required: true
+          description: The owner whose nominations are being reviewed.
+          schema:
+            type: string
+          example: "cb0d2ba6-8ecf-4630-899a-b920f878a5bc"
+      responses:
+        '200':
+          description: That owner's nominations.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NominationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/nominations/pending:
+    get:
+      tags:
+        - Administration
+      summary: The activation queue
+      operationId: getPendingNominations
+      description: |
+        Nominations accepted by the nominee but not yet activated. This is the
+        queue an administrator works through after verifying the nomination
+        outside the system.
+      security:
+        - bearerAuth: [ 'portal:profile:read:any' ]
+      responses:
+        '200':
+          description: Nominations awaiting activation.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NominationResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/nominations/{id}/activate:
+    post:
+      tags:
+        - Administration
+      summary: Activate a nomination
+      operationId: activateNomination
+      description: |
+        Brings a nomination into force, after which the nominee may act within
+        the granted permissions.
+
+        Activation is deliberately not automatic. The ticket reference records
+        where the manual verification is evidenced, and the administrator's
+        identity is taken from their access token.
+
+        Activating clears any earlier deactivation, so a reinstated nomination
+        does not carry a stale reason or actor.
+      security:
+        - bearerAuth: [ 'portal:profile:write:any' ]
+      parameters:
+        - $ref: '#/components/parameters/NominationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivateRequest'
+            example:
+              ticketReference: "DPDP-2026-00417"
+      responses:
+        '200':
+          description: The nomination, now `ACTIVE`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NominationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NominationNotFound'
+
+  /admin/nominations/{id}/deactivate:
+    post:
+      tags:
+        - Administration
+      summary: Withdraw a nomination
+      operationId: deactivateNomination
+      description: |
+        Ends a nominee's authority. Any impersonation token already issued to
+        them remains cryptographically valid, so it is the gate rather than
+        expiry that stops them: their next request is refused.
+      security:
+        - bearerAuth: [ 'portal:profile:write:any' ]
+      parameters:
+        - $ref: '#/components/parameters/NominationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeactivateRequest'
+            example:
+              reason: "Owner requested removal by telephone, ref DPDP-2026-00988"
+      responses:
+        '200':
+          description: The nomination, now `DEACTIVATED`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NominationResponse'
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NominationNotFound'
+
+  /internal/nominations/active:
+    get:
+      tags:
+        - Internal
+      summary: Is there an active nomination for this pair?
+      operationId: isNominationActive
+      description: |
+        Answers whether one nominee may currently act for one owner. The Identity
+        Server calls this before issuing an impersonation subject token, so it
+        never needs a connection to, or knowledge of, this service's database.
+
+        Callers hold no user token, so a shared key authenticates them instead.
+        An unconfigured key matches nothing: a missing configuration closes the
+        gate rather than opening it.
+      security:
+        - internalKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/GateOwner'
+        - $ref: '#/components/parameters/GateNominee'
+      responses:
+        '200':
+          description: |
+            Whether an active nomination exists. An absent, pending, accepted or
+            deactivated nomination all report `false`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GateActiveResponse'
+              example:
+                active: true
+        '401':
+          $ref: '#/components/responses/InternalKeyRejected'
+
+  /internal/nominations/permissions:
+    get:
+      tags:
+        - Internal
+      summary: What may this nominee do for this owner?
+      operationId: getNominationPermissions
+      description: |
+        The permissions currently in force for one owner-nominee pair, so the
+        caller can enforce per-action limits such as viewing versus revoking.
+
+        Serving this and the active check from one place keeps a single
+        definition of what an active nomination grants, so the check made when a
+        token is issued and the check made on each request cannot drift apart.
+
+        An inactive nomination returns an empty list rather than its stored
+        permissions: a caller cannot read a permission set without also seeing
+        that it does not currently apply.
+      security:
+        - internalKey: [ ]
+      parameters:
+        - $ref: '#/components/parameters/GateOwner'
+        - $ref: '#/components/parameters/GateNominee'
+      responses:
+        '200':
+          description: The permissions in force, and whether the nomination is active.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GatePermissionsResponse'
+              examples:
+                active:
+                  summary: An active nomination
+                  value:
+                    active: true
+                    permissions: [ "CONSENT_REVOKE", "CONSENT_VIEW" ]
+                inactive:
+                  summary: Not active - no permissions apply
+                  value:
+                    active: false
+                    permissions: [ ]
+        '401':
+          $ref: '#/components/responses/InternalKeyRejected'
+
+  /internal/nominations/audit:
+    post:
+      tags:
+        - Internal
+      summary: Append an acting event to the audit chain
+      operationId: recordActingEvent
+      description: |
+        Records that a nominee started a session, was refused one, or performed
+        or was refused an action while acting.
+
+        A nominee reading an owner's records, and a nominee refused an action,
+        reach no other system: the Consent Server observes only successful
+        writes. They are recorded here or nowhere.
+
+        The nomination is resolved from the owner-nominee pair rather than taken
+        from the caller, so an event cannot be attributed to an unrelated
+        nomination. A pair with no nomination is still recorded, since an attempt
+        to act without one is exactly what the trail exists to capture.
+      security:
+        - internalKey: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RecordAuditRequest'
+            example:
+              ownerId: "cb0d2ba6-8ecf-4630-899a-b920f878a5bc"
+              nomineeId: "496152f4-7f45-4ecb-a912-699b08d14d24"
+              event: "ACTION_DENIED"
+              detail: "permission=CONSENT_REVOKE reason=permission not granted"
+      responses:
+        '204':
+          description: The event was appended.
+        '400':
+          $ref: '#/components/responses/ValidationFailed'
+        '401':
+          $ref: '#/components/responses/InternalKeyRejected'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        An access token issued by the Identity Server, validated here directly
+        against its JWKS. Both the issuer and the audience must match, so a token
+        minted for another application cannot be replayed against this service.
+
+        **The token arrives in two halves.** The `Authorization: Bearer` header
+        carries the first part; the second arrives automatically as an HttpOnly
+        cookie set by the portal backend. Neither half is a valid token on its
+        own - only their concatenation is. A caller presenting a complete token
+        in the header alone will be rejected.
+
+        The required scope is listed per operation.
+    internalKey:
+      type: apiKey
+      in: header
+      name: X-Internal-Key
+      description: |
+        A shared key for the gate endpoints, which are called by infrastructure
+        holding no user token. Compared in constant time, since a byte-by-byte
+        comparison returns sooner for a key sharing a longer prefix with the real
+        one and so leaks it to a caller able to measure the difference.
+
+  parameters:
+    NominationId:
+      in: path
+      name: id
+      required: true
+      description: The nomination's identifier.
+      schema:
+        type: string
+        format: uuid
+      example: "5d2afce4-8062-4897-8d33-dbbafcd7a4f6"
+    GateOwner:
+      in: query
+      name: owner
+      required: true
+      description: The owner whose data would be acted upon.
+      schema:
+        type: string
+      example: "cb0d2ba6-8ecf-4630-899a-b920f878a5bc"
+    GateNominee:
+      in: query
+      name: nominee
+      required: true
+      description: The nominee proposing to act.
+      schema:
+        type: string
+      example: "496152f4-7f45-4ecb-a912-699b08d14d24"
+
+  responses:
+    Unauthorized:
+      description: The access token is absent, incomplete, expired or not valid for this service.
+    Forbidden:
+      description: |
+        The token lacks the required scope, or is acting on another user's behalf.
+        Nominations can never be managed while acting for somebody else.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: "Nominations cannot be managed while acting for someone else"
+    NominationNotFound:
+      description: |
+        No such nomination, or it belongs to a different owner. Someone else's
+        nomination is reported as absent rather than forbidden, so the response
+        does not confirm that an identifier exists.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: "No nomination found for: 5d2afce4-8062-4897-8d33-dbbafcd7a4f6"
+    ValidationFailed:
+      description: The request body failed validation. The message names the offending fields.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            message: "nomineeEmail must be a well-formed email address"
+    InternalKeyRejected:
+      description: The shared key is absent or does not match.
+
+  schemas:
+    NomineePermission:
+      type: string
+      description: |
+        What an owner may grant a nominee. Each is granted individually, so a
+        nominee can be allowed to view consents without being allowed to revoke
+        them.
+
+        Some permissions require another and are stored together with it:
+        `CONSENT_REVOKE` and `CONSENT_APPROVE` each imply `CONSENT_VIEW`, and
+        both `ACCOUNT_UPDATE` and `ACCOUNT_DELETE` imply `ACCOUNT_VIEW`.
+
+        `CONSENT_REVOKE` and `CONSENT_APPROVE` are granted separately and neither
+        confers the other. They are opposite acts: revoking withdraws processing
+        the owner already chose, while approving authorises new processing on
+        their behalf.
+      enum:
+        - CONSENT_VIEW
+        - CONSENT_REVOKE
+        - CONSENT_APPROVE
+        - ACCOUNT_VIEW
+        - ACCOUNT_UPDATE
+        - ACCOUNT_DELETE
+
+    NominationStatus:
+      type: string
+      description: |
+        Only `ACTIVE` permits a nominee to act. A nomination that is merely
+        accepted grants nothing until an administrator has reviewed it.
+        `REJECTED` is terminal: the owner creates a new nomination rather than
+        reviving a refused one.
+      enum:
+        - PENDING
+        - ACCEPTED
+        - REJECTED
+        - ACTIVE
+        - DEACTIVATED
+
+    CreateNominationRequest:
+      type: object
+      required:
+        - nomineeId
+        - nomineeEmail
+        - permissions
+      properties:
+        nomineeId:
+          type: string
+          description: The Identity Server user id of the person being nominated.
+        nomineeEmail:
+          type: string
+          format: email
+          description: The nominee's email address, recorded at the time of nomination.
+        permissions:
+          type: array
+          minItems: 1
+          description: |
+            What this nominee may do. Stored together with anything the requested
+            permissions require, so the grant always describes something the
+            nominee can carry out.
+          items:
+            $ref: '#/components/schemas/NomineePermission'
+
+    UpdatePermissionsRequest:
+      type: object
+      required:
+        - permissions
+      properties:
+        permissions:
+          type: array
+          minItems: 1
+          description: The complete replacement set. Omitted permissions are withdrawn.
+          items:
+            $ref: '#/components/schemas/NomineePermission'
+
+    ActivateRequest:
+      type: object
+      required:
+        - ticketReference
+      properties:
+        ticketReference:
+          type: string
+          minLength: 1
+          description: Where the manual verification behind this activation is evidenced.
+
+    DeactivateRequest:
+      type: object
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          description: Why the nomination is being withdrawn. Retained in the audit trail.
+
+    NominationResponse:
+      type: object
+      description: One nomination, as returned to the owner, the nominee or an administrator.
+      properties:
+        id:
+          type: string
+          format: uuid
+        ownerId:
+          type: string
+          description: The person whose data may be acted upon.
+        nomineeId:
+          type: string
+          description: The person who may act.
+        nomineeEmail:
+          type: string
+          format: email
+        permissions:
+          type: array
+          items:
+            $ref: '#/components/schemas/NomineePermission'
+        status:
+          $ref: '#/components/schemas/NominationStatus'
+        nominatedAt:
+          type: string
+          format: date-time
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: When the nominee accepted, or null if they have not.
+        activatedBy:
+          type: string
+          nullable: true
+          description: The administrator who activated the nomination.
+        activatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        activationTicket:
+          type: string
+          nullable: true
+          description: The verification reference recorded at activation.
+      example:
+        id: "5d2afce4-8062-4897-8d33-dbbafcd7a4f6"
+        ownerId: "cb0d2ba6-8ecf-4630-899a-b920f878a5bc"
+        nomineeId: "496152f4-7f45-4ecb-a912-699b08d14d24"
+        nomineeEmail: "nominee@example.com"
+        permissions: [ "CONSENT_VIEW", "CONSENT_REVOKE" ]
+        status: "ACTIVE"
+        nominatedAt: "2026-07-24T08:51:37Z"
+        acceptedAt: "2026-07-24T08:53:10Z"
+        activatedBy: "4b146b5f-d745-4934-99cc-adba8adde291"
+        activatedAt: "2026-07-24T09:59:39Z"
+        activationTicket: "DPDP-2026-00417"
+
+    GateActiveResponse:
+      type: object
+      required:
+        - active
+      properties:
+        active:
+          type: boolean
+          description: Whether an active nomination exists for the queried pair.
+
+    GatePermissionsResponse:
+      type: object
+      required:
+        - active
+        - permissions
+      properties:
+        active:
+          type: boolean
+        permissions:
+          type: array
+          description: Empty whenever `active` is false.
+          items:
+            $ref: '#/components/schemas/NomineePermission'
+
+    RecordAuditRequest:
+      type: object
+      required:
+        - ownerId
+        - nomineeId
+        - event
+      properties:
+        ownerId:
+          type: string
+        nomineeId:
+          type: string
+        event:
+          type: string
+          description: |
+            Lifecycle events are written by this service itself; the acting
+            events are reported by whichever service observed them.
+          enum:
+            - NOMINATED
+            - PERMISSIONS_CHANGED
+            - ACCEPTED
+            - REJECTED
+            - ACTIVATED
+            - DEACTIVATED
+            - REMOVED
+            - SESSION_STARTED
+            - SESSION_DENIED
+            - ACTION_PERFORMED
+            - ACTION_DENIED
+        detail:
+          type: string
+          nullable: true
+          description: Free-form context, such as the permission reached for and the outcome.
+
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: What went wrong, in terms meaningful to the caller.

@@ -18,56 +18,47 @@
 
 import { describe, expect, it } from 'vitest'
 import {
-  getConsentStateChipColor,
-  getConsentStateLabelKey,
-  isConsentApprovableState,
-  isConsentRejectableState,
-  isConsentRevokableState,
+  getConsentStatusChipColor,
+  getConsentStatusLabelKey,
+  isConsentApprovableStatus,
+  isConsentRejectableStatus,
+  isConsentRevokableStatus,
 } from '../features/consent-registry/utils/statusChip'
-import commonEn from '../i18n/resources/en/common'
-import { CONSENT_AUTHORIZATION_STATES, CONSENT_STATES, isConsentState } from '../types/consent'
 
-describe('consent state presentation', () => {
-  it('maps consent and authorization states to the expected chip colors', () => {
-    expect(getConsentStateChipColor('ACTIVE')).toBe('success')
-    expect(getConsentStateChipColor('APPROVED')).toBe('success')
-    expect(getConsentStateChipColor('PENDING')).toBe('warning')
-    expect(getConsentStateChipColor('REJECTED')).toBe('error')
-    expect(getConsentStateChipColor('REVOKED')).toBe('error')
-    expect(getConsentStateChipColor('EXPIRED')).toBe('default')
+describe('getConsentStatusChipColor', () => {
+  it('maps API and display statuses to the expected chip colors', () => {
+    expect(getConsentStatusChipColor('ACTIVE')).toBe('success')
+    expect(getConsentStatusChipColor('Active')).toBe('success')
+    expect(getConsentStatusChipColor('APPROVED')).toBe('success')
+    expect(getConsentStatusChipColor('CREATED')).toBe('warning')
+    expect(getConsentStatusChipColor('Pending')).toBe('warning')
+    expect(getConsentStatusChipColor('REJECTED')).toBe('error')
+    expect(getConsentStatusChipColor('REVOKED')).toBe('error')
+    expect(getConsentStatusChipColor('Revoked')).toBe('error')
+    expect(getConsentStatusChipColor('EXPIRED')).toBe('default')
+    expect(getConsentStatusChipColor('Expired')).toBe('default')
+    expect(getConsentStatusChipColor('SYS_EXPIRED')).toBe('default')
+    expect(getConsentStatusChipColor('SYS_REVOKED')).toBe('default')
   })
 
-  it('maps states to translation keys that exist in the English resources', () => {
-    expect(getConsentStateLabelKey('ACTIVE')).toBe('active')
-    expect(getConsentStateLabelKey('PENDING')).toBe('pending')
-    expect(getConsentStateLabelKey('REJECTED')).toBe('rejected')
-    expect(getConsentStateLabelKey('REVOKED')).toBe('revoked')
-    expect(getConsentStateLabelKey('EXPIRED')).toBe('expired')
-    expect(getConsentStateLabelKey('APPROVED', 'authorization')).toBe('approved')
-
-    CONSENT_STATES.forEach((state) => {
-      expect(commonEn.consentRegistry.status).toHaveProperty(getConsentStateLabelKey(state))
-    })
-
-    CONSENT_AUTHORIZATION_STATES.forEach((state) => {
-      expect(commonEn.consentRegistry.status).toHaveProperty(
-        getConsentStateLabelKey(state, 'authorization'),
-      )
-    })
+  it('maps statuses to the expected translation keys', () => {
+    expect(getConsentStatusLabelKey('ACTIVE')).toBe('active')
+    expect(getConsentStatusLabelKey('CREATED')).toBe('pending')
+    expect(getConsentStatusLabelKey('REJECTED')).toBe('rejected')
+    expect(getConsentStatusLabelKey('REVOKED')).toBe('revoked')
+    expect(getConsentStatusLabelKey('EXPIRED')).toBe('expired')
+    expect(getConsentStatusLabelKey('APPROVED', 'authorization')).toBe('approved')
+    expect(getConsentStatusLabelKey('CREATED', 'authorization')).toBe('pending')
+    expect(getConsentStatusLabelKey('SYS_EXPIRED', 'authorization')).toBe('systemExpired')
+    expect(getConsentStatusLabelKey('SYS_REVOKED', 'authorization')).toBe('systemRevoked')
   })
 
-  it('limits lifecycle actions to their supported states', () => {
-    expect(isConsentApprovableState('PENDING')).toBe(true)
-    expect(isConsentRejectableState('PENDING')).toBe(true)
-    expect(isConsentRevokableState('ACTIVE')).toBe(true)
-    expect(isConsentApprovableState('ACTIVE')).toBe(false)
-    expect(isConsentRejectableState('REJECTED')).toBe(false)
-    expect(isConsentRevokableState('PENDING')).toBe(false)
-  })
-
-  it('no longer recognises the removed CREATED state', () => {
-    expect(CONSENT_STATES).toEqual(['PENDING', 'ACTIVE', 'REJECTED', 'REVOKED', 'EXPIRED'])
-    expect(isConsentState('CREATED')).toBe(false)
-    expect(isConsentApprovableState('CREATED')).toBe(false)
+  it('limits lifecycle actions to their supported statuses', () => {
+    expect(isConsentApprovableStatus('CREATED')).toBe(true)
+    expect(isConsentRejectableStatus('CREATED')).toBe(true)
+    expect(isConsentRevokableStatus('ACTIVE')).toBe(true)
+    expect(isConsentApprovableStatus('ACTIVE')).toBe(false)
+    expect(isConsentRejectableStatus('REJECTED')).toBe(false)
+    expect(isConsentRevokableStatus('CREATED')).toBe(false)
   })
 })

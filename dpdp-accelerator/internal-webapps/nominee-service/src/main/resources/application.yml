@@ -1,0 +1,45 @@
+server:
+  port: 8082
+
+spring:
+  application:
+    name: nominee-service
+  # Selects the database: mysql, postgres or sqlite. Each reads its settings
+  # from the environment - see application-<type>.yml. Create the schema first
+  # with the matching script in dbscripts/.
+  profiles:
+    active: ${NOMINEE_DB_TYPE:mysql}
+  jpa:
+    open-in-view: false
+
+# Real WSO2 IS - Nominee Service validates the same split access token the BFF
+# issues, directly. Must match the Go BFF's BFF_AUTH__* values exactly.
+identityserver:
+  issuer-uri: https://localhost:9443/oauth2/token
+  jwk-set-uri: https://localhost:9443/oauth2/jwks
+  audience: RDCuQpBugmer_wQyKw9zTfcRJoMa
+  # Certificate verification stays on unless a developer opts out for a local
+  # identity server using a self-signed certificate.
+  tls-skip-verify: ${NOMINEE_TLS_SKIP_VERIFY:false}
+
+# Every table in OpenFGC carries an organization id. It is read from the caller's
+# token, or from the override when the deployment's tokens carry no such claim -
+# which is why the Go BFF also runs with ORG_ID_OVERRIDE set. Leave the override
+# empty only if the tokens really do carry org_id.
+organization:
+  id-claim: org_id
+  id-override: ${NOMINEE_ORG_ID:}
+
+# Shared key the WSO2 IS impersonation validator extension must present when it
+# asks whether an owner-to-nominee nomination is currently active.
+impersonation-gate:
+  internal-api-key: ${IMPERSONATION_GATE_KEY:dev-impersonation-gate-key}
+
+# The access token is split across a header (part1, JS-readable) and an
+# HttpOnly cookie (part2) - see the BFF's auth.Manager for why. Cookies aren't
+# port-scoped, so the browser sends the same portal-at-p2 cookie here too.
+access-token:
+  part2-cookie: portal-at-p2
+
+cors:
+  allowed-origins: http://localhost:5173,http://localhost:3000

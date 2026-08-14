@@ -95,9 +95,10 @@ public final class TokenValidator {
         }
 
         String orgId = stringClaim(claims, orgIdClaim);
+        String rawOrgId = stringClaim(claims, "org_id");
         String scope = stringClaim(claims, "scope");
         List<String> scopes = scope == null ? List.of() : Arrays.asList(scope.split("\\s+"));
-        return new AuthenticatedUser(subject, orgId, scopes);
+        return new AuthenticatedUser(subject, orgId, rawOrgId, scopes);
     }
 
     private static String stringClaim(JWTClaimsSet claims, String name) {

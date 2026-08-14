@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "رضامندي پورٽل"
+  },
+  "language": {
+    "label": "ٻولي",
+    "selectAria": "ٻولي چونڊيو"
+  },
+  "authorization": {
+    "loading": "توهان جو سيشن لوڊ ٿي رهيو آهي",
+    "loadFailed": "توهان جو سيشن لوڊ ڪرڻ ۾ ناڪام.",
+    "tryAgain": "ٻيهر ڪوشش ڪريو",
+    "noAccessTitle": "پورٽل تائين رسائي ناهي",
+    "noAccessDescription": "توهان جي اڪائونٽ کي ڪنهن به پورٽل صفحي تائين رسائي جي اجازت ناهي."
+  },
+  "copyableText": {
+    "copy": "ڪاپي ڪريو",
+    "copied": "ڪاپي ٿي ويو",
+    "copyLabel": "{{label}} ڪاپي ڪريو",
+    "copyValue": "{{label}} {{value}} ڪاپي ڪريو",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "پرائمري نيويگيشن",
+    "dashboard": "ڊيش بورڊ",
+    "consent": "رضامندي",
+    "allConsents": "سڀ رضامنديون",
+    "pendingConsents": "زير التوا رضامنديون",
+    "catalog": "تعريفون",
+    "purposes": "مقصد",
+    "elements": "عنصر",
+    "administration": "انتظاميه",
+    "adminConsents": "رضامنديون",
+    "nominations": "نامزدگيون",
+    "nomineeActivation": "نامزد ٿيل جي فعاليت",
+    "myComplaints": "منهنجون شڪايتون",
+    "complaintManagement": "شڪايتون",
+    "dataProcessors": "ڊيٽا پروسيسرز",
+    "dataProcessorTopics": "موضوع",
+    "dataProcessorSubscriptions": "سبسڪرپشنز",
+    "dataProcessorEvents": "واقعا"
+  },
+  "layout": {
+    "home": "گھر",
+    "breadcrumbAriaLabel": "بريڊ ڪرمب",
+    "userMenu": {
+      "unknownUser": "نامعلوم استعمال ڪندڙ",
+      "noEmail": "ڪا به اي ميل موجود ناهي",
+      "signOut": "سائن آئوٽ",
+      "signOutError": "سائن آئوٽ ڪرڻ ۾ ناڪام. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+      "tryAgain": "ٻيهر ڪوشش ڪريو"
+    }
+  },
+  "dashboard": {
+    "active": "فعال رضامنديون",
+    "attention": "توهان جي توجه جي ضرورت آهي",
+    "commonPurposes": "سڀ کان وڌيڪ حصيداري ڪيل مقصد",
+    "commonPurposesSubtitle": "توهان جي فعال رضامندين ۾ شامل مقصد",
+    "consentCount": "{{count}} رضامنديون",
+    "consentCount_one": "{{count}} رضامندي",
+    "consentCount_other": "{{count}} رضامنديون",
+    "expiringSoon": "جلد ختم ٿيڻ واريون",
+    "loadFailed": "هن وقت توهان جو ڊيش بورڊ لوڊ ڪرڻ ۾ ناڪام.",
+    "noExpiring": "ايندڙ {{days}} ڏينهن اندر ڪا به فعال رضامندي ختم نٿي ٿئي.",
+    "noPending": "توهان وٽ جائزو وٺڻ لاءِ ڪا به زير التوا رضامندي ناهي.",
+    "noPurposes": "ڪي به حصيداري ڪيل مقصد اڃا موجود ناهن.",
+    "pending": "زير التوا رضامنديون",
+    "pendingConsents": "زير التوا رضامنديون",
+    "subtitle": "توهان جي رضامندي جي سرگرمي ۽ ايندڙ عملن جو جائزو.",
+    "title": "ڊيش بورڊ",
+    "typeBreakdown": "رضامندي جي قسم جو تفصيل",
+    "typeBreakdownSubtitle": "توهان جون سڀ رضامنديون قسم جي لحاظ کان",
+    "noTypes": "رضامندي جا ڪي به قسم اڃا موجود ناهن.",
+    "viewPending": "سڀ زير التوا رضامنديون ڏسو"
+  },
+  "adminConsents": {
+    "title": "رضامنديون",
+    "filters": {
+      "sectionAriaLabel": "انتظامي رضامندي فلٽر",
+      "consentIdSearchPlaceholder": "رضامندي ID ذريعي ڳوليو",
+      "removeConsentIdForAdvanced": "اعليٰ فلٽر استعمال ڪرڻ لاءِ رضامندي ID فلٽر هٽايو.",
+      "removeConsentIdForStatus": "اسٽيٽس فلٽر استعمال ڪرڻ لاءِ رضامندي ID فلٽر هٽايو.",
+      "userIds": "يوزر IDs",
+      "groupIds": "گروپ IDs",
+      "commaSeparatedUsers": "هڪ کان وڌيڪ يوزر IDs کي ڪاما سان ڌار ڪريو",
+      "active": "فعال فلٽر"
+    }
+  },
+  "consentRegistry": {
+    "title": "سڀ رضامنديون",
+    "details": {
+      "title": "رضامندي جا تفصيل",
+      "consentId": "رضامندي ID",
+      "status": "حالت",
+      "type": "رضامندي جو قسم",
+      "frequency": "رسائي جي حد",
+      "frequencyHelp": "هي ظاهر ڪري ٿو ته هن رضامندي تائين روزانو ڪيترا ڀيرا رسائي ٿي سگهي ٿي.",
+      "frequencyUnitSingular": "ڀيرو روزانو",
+      "frequencyUnitPlural": "ڀيرا روزانو",
+      "purposes": "مقصد",
+      "duration": "پوئتي ڏسڻ جو مدو",
+      "durationHelp": "هي طئي ڪري ٿو ته ڪيتري پراڻي ڊيٽا تائين رسائي ٿي سگهي ٿي. مثال طور، جيڪڏهن 6 مهينا مقرر ڪيو وڃي، ته 6 مهينا اڳ تائين جي ڊيٽا تائين رسائي ممڪن آهي.",
+      "durationUnitHourSingular": "ڪلاڪ",
+      "durationUnitHourPlural": "ڪلاڪ",
+      "durationUnitDaySingular": "ڏينهن",
+      "durationUnitDayPlural": "ڏينهن",
+      "durationUnitYearSingular": "سال",
+      "durationUnitYearPlural": "سال",
+      "created": "ٺاهيو ويو",
+      "updated": "اپڊيٽ ڪيو ويو",
+      "validUntil": "تائين صحيح آهي",
+      "groupId": "گروپ ID",
+      "recurring": "ورجائيندڙ",
+      "back": "رجسٽري ڏانهن واپس",
+      "notFound": "رضامندي جو رڪارڊ نه مليو",
+      "approved": "منظور ٿيل",
+      "notApproved": "منظور ٿيل ناهي",
+      "approvedCount": "{{approved}}/{{total}} منظور ٿيل",
+      "section": {
+        "purposes": "رضامندي جا مقصد",
+        "authorizations": "اجازتون",
+        "lifecycle": "رضامندي جو لائف سائيڪل"
+      },
+      "table": {
+        "element": "عنصر",
+        "approved": "منظور ٿيل",
+        "required": "ضروري",
+        "description": "تفصيل",
+        "user": "استعمال ڪندڙ",
+        "status": "حالت",
+        "updated": "اپڊيٽ ڪيو ويو",
+        "resources": "وسيلا",
+        "eventType": "واقعي جو قسم",
+        "date": "تاريخ",
+        "time": "وقت"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "رضامندي جو لائف سائيڪل",
+        "empty": "لائف سائيڪل جا ڪي به واقعا موجود ناهن.",
+        "noDescription": "ڪو به تفصيل موجود ناهي."
+      },
+      "actions": {
+        "viewResources": "وسيلا ڏسو",
+        "noResourcesTooltip": "ڪي به وسيلا موجود ناهن"
+      },
+      "resourcesModal": {
+        "title": "اجازت جا وسيلا",
+        "authRef": "Auth",
+        "close": "بند ڪريو"
+      },
+      "values": {
+        "yes": "ها",
+        "no": "نه",
+        "required": "ضروري",
+        "optional": "اختياري"
+      }
+    },
+    "actions": {
+      "view": "ڏسو",
+      "revoke": "رد ڪريو",
+      "approve": "منظور ڪريو",
+      "reject": "انڪار ڪريو",
+      "copyConsentId": "رضامندي ID ڪاپي ڪريو",
+      "copyConsentIdAriaLabel": "رضامندي ID {{id}} ڪاپي ڪريو"
+    },
+    "modals": {
+      "consentId": "رضامندي ID",
+      "actions": {
+        "cancel": "منسوخ ڪريو",
+        "processing": "پروسيسنگ..."
+      },
+      "approval": {
+        "title": "رضامندي جو جائزو ۽ منظوري",
+        "subtitle": "منظوري کان اڳ مهرباني ڪري رضامندي جي عنصرن جو جائزو وٺو.",
+        "mandatory": "لازمي عنصر (ضروري)",
+        "optional": "اختياري عنصر",
+        "required": "ضروري",
+        "toggle": "اجازت مٽايو",
+        "toggleWithDetails": "{{purposeLabel}} ۾ {{elementLabel}} لاءِ اجازت مٽايو",
+        "loading": "رضامندي جا تفصيل لوڊ ٿي رهيا آهن...",
+        "noMandatory": "هن رضامندي لاءِ ڪي به لازمي شرط ناهن.",
+        "confirm": "منظور ڪريو ۽ جاري رکو"
+      },
+      "rejection": {
+        "title": "انڪار جي تصديق",
+        "message": "ڇا توهان واقعي هن رضامندي کان انڪار ڪرڻ چاهيو ٿا؟",
+        "note": "هن رضامندي کي انڪار ڪرڻ جو مطلب آهي ته درخواست ڪيل رضامنديون نه ڏنيون وينديون.",
+        "confirm": "رضامندي کان انڪار ڪريو",
+        "cancel": "منسوخ ڪريو"
+      },
+      "revocation": {
+        "title": "رد ڪرڻ جي تصديق",
+        "message": "ڇا توهان واقعي رضامندي رد ڪرڻ چاهيو ٿا؟",
+        "note": "هي عمل سڀني لاڳاپيل مقصدن لاءِ ڏنل لازمي ۽ اختياري ٻنهي رضامندين کي رد ڪري ٿو.",
+        "confirm": "رضامنديون رد ڪريو",
+        "cancel": "منسوخ ڪريو"
+      }
+    },
+    "status": {
+      "all": "سڀ",
+      "active": "فعال",
+      "pending": "زير التوا",
+      "created": "ٺاهيل",
+      "approved": "منظور ٿيل",
+      "rejected": "انڪار ڪيل",
+      "revoked": "رد ڪيل",
+      "expired": "ختم ٿيل",
+      "systemExpired": "سسٽم ختم ٿيل",
+      "systemRevoked": "سسٽم رد ڪيل"
+    },
+    "filters": {
+      "sectionAriaLabel": "رضامندي جا فلٽر",
+      "purposeSearchPlaceholder": "مقصد جي نالي سان ڳوليو",
+      "status": "حالت",
+      "groupIds": "گروپ ID",
+      "elementName": "عنصر جو نالو",
+      "elementVersion": "عنصر جو ورزن",
+      "advanced": "اعليٰ فلٽر",
+      "apply": "لاڳو ڪريو",
+      "cancel": "منسوخ ڪريو",
+      "startDate": "شروعاتي تاريخ",
+      "startDateAriaLabel": "شروعاتي تاريخ جو فلٽر",
+      "endDate": "آخري تاريخ",
+      "endDateAriaLabel": "آخري تاريخ جو فلٽر",
+      "clear": "سڀ صاف ڪريو",
+      "clearAriaLabel": "سڀ فلٽر صاف ڪريو"
+    },
+    "messages": {
+      "loading": "رضامنديون لوڊ ٿي رهيون آهن...",
+      "loadFailed": "هن وقت رضامنديون لوڊ ڪرڻ ۾ ناڪام.",
+      "emptyTitle": "ڪا به رضامندي نه ملي",
+      "empty": "چونڊيل فلٽرن لاءِ ڪا به رضامندي نه ملي."
+    },
+    "table": {
+      "tableAriaLabel": "رضامندي رجسٽري ٽيبل",
+      "consentIdAriaLabel": "رضامندي ID: {{id}}",
+      "groupLabel": "گروپ ID: {{groupId}}",
+      "notApplicable": "لاڳو ناهي",
+      "purposes": {
+        "more": "+{{count}} وڌيڪ",
+        "title": "رضامندي جا مقصد",
+        "hint": "رضامندي جا سڀ مقصد ڏيکاري رهيو آهي"
+      },
+      "headers": {
+        "consentId": "رضامندي ID",
+        "type": "قسم",
+        "status": "حالت",
+        "purposes": "مقصد",
+        "updated": "اپڊيٽ ڪيو ويو",
+        "expiration": "ختم ٿيڻ جو وقت",
+        "actions": "عمل"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "عنصر شامل ڪريو",
+      "addProperty": "خاصيت شامل ڪريو",
+      "apply": "لاڳو ڪريو",
+      "cancel": "منسوخ ڪريو",
+      "clear": "صاف ڪريو",
+      "clearAll": "سڀ صاف ڪريو",
+      "create": "ٺاهيو",
+      "delete": "حذف ڪريو",
+      "deleting": "حذف ٿي رهيو آهي...",
+      "deleteVersion": "ورزن حذف ڪريو",
+      "filters": "فلٽر",
+      "removeElement": "عنصر هٽايو",
+      "removeProperty": "خاصيت هٽايو",
+      "retry": "ٻيهر ڪوشش ڪريو",
+      "saving": "محفوظ ٿي رهيو آهي...",
+      "view": "ڏسو",
+      "viewElement": "{{name}} ڏسو",
+      "viewPurpose": "{{name}} ڏسو"
+    },
+    "fields": {
+      "actions": "عمل",
+      "created": "ٺاهيو ويو",
+      "description": "تفصيل",
+      "displayName": "ڏيکارڻ جو نالو",
+      "element": "عنصر",
+      "elementId": "عنصر ID",
+      "elementName": "عنصر جو نالو",
+      "elementNamespace": "عنصر جي نالي جي جاءِ (Namespace)",
+      "elements": "عنصر",
+      "elementVersion": "عنصر جو ورزن",
+      "groupId": "گروپ ID",
+      "groupIds": "گروپ IDs",
+      "mandatory": "لازمي",
+      "name": "نالو",
+      "namespace": "نالي جي جاءِ (Namespace)",
+      "properties": "خاصيتون",
+      "propertyKey": "ڪي (Key)",
+      "propertyValue": "قدر (Value)",
+      "purpose": "مقصد",
+      "purposeId": "مقصد ID",
+      "purposeName": "مقصد جو نالو",
+      "scope": "دائرو (Scope)",
+      "purposeScope": "مقصد جو دائرو",
+      "purposeVersion": "مقصد جو ورزن",
+      "requirement": "ضرورت",
+      "schema": "اسڪيما (Schema)",
+      "type": "قسم",
+      "version": "ورزن"
+    },
+    "help": {
+      "commaSeparatedGroups": "هڪ کان وڌيڪ گروپ IDs کي ڪاما سان ڌار ڪريو",
+      "defaultNamespace": "جڏهن خالي هجي ته ڊفالٽ نالي جي جاءِ استعمال ڪندو آهي",
+      "elementVersionRequiresIdentity": "پهرين عنصر جو نالو يا نالي جي جاءِ داخل ڪريو",
+      "organizationPurpose": "تنظيم جي سطح جو مقصد ٺاهڻ لاءِ خالي ڇڏي ڏيو",
+      "purposeVersionRequiresName": "پهرين مقصد جو نالو داخل ڪريو",
+      "schemaElementTypes": "اسڪيمائون صرف JSON ۽ XML عنصرن لاءِ سپورٽ ٿيل آهن.",
+      "selectElementFirst": "پهرين هڪ عنصر چونڊيو"
+    },
+    "values": {
+      "all": "سڀ",
+      "any": "ڪو به",
+      "customNamespace": "ڪسٽم نالي جي جاءِ",
+      "defaultNamespace": "ڊفالٽ نالي جي جاءِ",
+      "mandatory": "لازمي",
+      "matches": "ملندڙ",
+      "noDescription": "ڪو به تفصيل ناهي",
+      "optional": "اختياري",
+      "specificGroup": "مخصوص گروپ",
+      "itemCount": "{{count}} چونڊيل",
+      "latest": "تازو ترين",
+      "viewing": "ڏسي رهيو آهي"
+    },
+    "elements": {
+      "add": "عنصر شامل ڪريو",
+      "activeFilters": "فعال فلٽر",
+      "back": "عنصرن ڏانهن واپس",
+      "createTitle": "عنصر ٺاهيو",
+      "detailsSection": "عنصر جا تفصيل",
+      "empty": "چونڊيل فلٽرن سان ڪي به عنصر نٿا ملن.",
+      "emptyTitle": "ڪي به عنصر نه مليا",
+      "filterTitle": "عنصر فلٽر ڪريو",
+      "loadFailed": "هن وقت عنصر لوڊ ڪرڻ ۾ ناڪام.",
+      "newVersion": "نئون ورزن ٺاهيو",
+      "refreshing": "ريفريش ٿي رهيو آهي...",
+      "results": "{{count}} عنصر",
+      "searchPlaceholder": "عنصر جي نالي سان ڳوليو",
+      "subtitle": "ٻيهر استعمال جوڳا رضامندي عنصر ۽ انهن جي ورزن جي وصفن جو انتظام ڪريو.",
+      "tableLabel": "رضامندي جا عنصر",
+      "title": "عنصر"
+    },
+    "purposes": {
+      "add": "مقصد شامل ڪريو",
+      "activeFilters": "فعال فلٽر",
+      "allPurposes": "سڀ مقصد",
+      "back": "مقصدن ڏانهن واپس",
+      "createTitle": "مقصد ٺاهيو",
+      "detailsSection": "مقصد جا تفصيل",
+      "empty": "چونڊيل فلٽرن سان ڪي به مقصد نٿا ملن.",
+      "emptyTitle": "ڪي به مقصد نه مليا",
+      "filterTitle": "مقصد فلٽر ڪريو",
+      "loadFailed": "هن وقت مقصد لوڊ ڪرڻ ۾ ناڪام.",
+      "newVersion": "نئون ورزن ٺاهيو",
+      "orgWide": "تنظيم جي سطح تي",
+      "refreshing": "ريفريش ٿي رهيو آهي...",
+      "results": "{{count}} مقصد",
+      "searchLabel": "مقصد ڳوليو",
+      "searchPlaceholder": "مقصد جي نالي سان ڳوليو",
+      "scopeFilter": "مقصد جو دائرو",
+      "subtitle": "ٻيهر استعمال جوڳا رضامندي مقصد ۽ انهن جي عنصر جي وصفن جو انتظام ڪريو.",
+      "tableLabel": "رضامندي جا مقصد",
+      "title": "مقصد"
+    },
+    "details": {
+      "definition": "وصف (Definition)",
+      "elementIdentity": "عنصر جي سڃاڻپ",
+      "elements": "عنصر",
+      "identity": "مقصد جي سڃاڻپ",
+      "overview": "جائزو",
+      "versionDetails": "ورزن جا تفصيل",
+      "versions": "ورزن جي تاريخ"
+    },
+    "messages": {
+      "createElementFirst": "مقصد طئي ڪرڻ کان اڳ هڪ عنصر ٺاهيو.",
+      "immutableElement": "{{namespace}}:{{name}} هڪ {{type}} عنصر رهي ٿو. سڃاڻپ جا خانا ورزنز جي وچ ۾ تبديل نٿا ٿي سگهن.",
+      "immutablePurpose": "{{name}} جي ملڪيت {{groupId}} وٽ رهي ٿي. سڃاڻپ جا خانا ورزنز جي وچ ۾ تبديل نٿا ٿي سگهن.",
+      "immutableOrganizationPurpose": "{{name}} پوري تنظيم لاءِ آهي. ان جي سڃاڻپ ۽ دائرو ورزنز جي وچ ۾ تبديل نٿا ٿي سگهن.",
+      "immutableGroupPurpose": "{{name}} گروپ {{groupId}} تائين محدود آهي. ان جي سڃاڻپ ۽ دائرو ورزنز جي وچ ۾ تبديل نٿا ٿي سگهن.",
+      "loadingElements": "موجود عنصر لوڊ ٿي رهيا آهن...",
+      "loadingVersions": "عنصر جا ورزن لوڊ ٿي رهيا آهن...",
+      "noElementsFound": "ڪي به ملندڙ عنصر ناهن",
+      "noElements": "هن ورزن لاءِ ڪي به عنصر ترتيب ڏنل ناهن.",
+      "noProperties": "ڪي به ڪسٽم خاصيتون ناهن.",
+      "noSchema": "هن ورزن لاءِ ڪا به اسڪيما ترتيب ڏنل ناهي.",
+      "noPurposeElements": "اڃا تائين ڪي به عنصر شامل نه ڪيا ويا آهن. مقصد ٺاهڻ لاءِ گهٽ ۾ گهٽ هڪ عنصر شامل ڪريو.",
+      "noVersions": "ڪي به ورزن موجود ناهن.",
+      "versionsLoadFailed": "هن وقت ورزن جي تاريخ لوڊ ڪرڻ ۾ ناڪام."
+    },
+    "validation": {
+      "duplicateElements": "هر عنصر کي صرف هڪ ڀيرو شامل ڪري سگهجي ٿو.",
+      "duplicatePropertyKeys": "پراپرٽي ڪيز (Keys) منفرد هجڻ گهرجن.",
+      "elementRequired": "گهٽ ۾ گهٽ هڪ عنصر چونڊيو.",
+      "groupIdRequired": "گروپ لاءِ مخصوص مقصد لاءِ گروپ ID ضروري آهي.",
+      "nameRequired": "نالو ضروري آهي.",
+      "namespaceRequired": "جڏهن ڪسٽم چونڊيو وڃي ته نالي جي جاءِ (Namespace) ضروري آهي.",
+      "schemaRequired": "JSON ۽ XML عنصرن لاءِ اسڪيما ضروري آهي."
+    },
+    "delete": {
+      "title": "ورزن حذف ڪريو",
+      "message": "ڇا ورزن {{version}} حذف ڪجي؟",
+      "warning": "هن عمل کي واپس نٿو آڻي سگهجي. حوالي ڏنل ورزن حذف نٿا ٿي سگهن، ۽ آخري ورزن کي حذف ڪرڻ سان پوري داخلا ختم ٿي وڃي ٿي."
+    }
+  },
+  "nominee": {
+    "title": "نامزدگيون",
+    "messages": {
+      "loadFailed": "هن وقت نامزدگيون لوڊ ڪرڻ ۾ ناڪام."
+    },
+    "nominatedFor": {
+      "openAccount": "اڪائونٽ کوليو →",
+      "accept": "قبول ڪريو",
+      "reject": "انڪار ڪريو",
+      "actionNeeded": "عمل جي ضرورت آهي",
+      "ariaLabel": "نامزد ڪيل اڪائونٽس",
+      "empty": "اڃا تائين ڪنهن به توهان کي نامزد ناهي ڪيو.",
+      "title": "نامزد ڪيل اڪائونٽس",
+      "table": {
+        "account": "اڪائونٽ",
+        "status": "حالت",
+        "actions": "عمل"
+      }
+    },
+    "acting": {
+      "starting": "اڪائونٽ کولي رهيو آهي…",
+      "startFailed": "توهان هن اڪائونٽ لاءِ نامزد ٿيل ناهيو.",
+      "startFailedHint": "نامزدگين ڏانهن واپس وڃو ۽ ٻيهر ڪوشش ڪريو.",
+      "blockedTitle": "نامزد ٿيل جي رسائي ۾ موجود ناهي",
+      "blockedFenced": "اڪائونٽ سيٽنگون، سندون ۽ نامزدگيون ڪڏهن به ڪنهن ٻئي شخص جي پاران استعمال نٿيون ڪري سگهجن.",
+      "blockedScope": "مالڪ توهان کي هن حصي جي اجازت ناهي ڏني.",
+      "backToAllowed": "ان ڏانهن وڃو جنهن تائين منهنجي رسائي آهي",
+      "exit": "نڪرو"
+    },
+    "permissions": {
+      "consentView": "رضامنديون ڏسو",
+      "consentRevoke": "رضامنديون رد ڪريو",
+      "consentApprove": "زير التوا رضامنديون منظور ڪريو",
+      "accountView": "ذاتي اڪائونٽ ڏسو",
+      "accountUpdate": "ذاتي اڪائونٽ اپڊيٽ ڪريو",
+      "accountDelete": "ذاتي اڪائونٽ حذف ڪريو"
+    },
+    "mine": {
+      "add": "نامزد ٿيل شامل ڪريو",
+      "remove": "هٽايو",
+      "empty": "توهان اڃا تائين ڪنهن کي به نامزد ناهي ڪيو.",
+      "status": {
+        "active": "فعال",
+        "pending": "قبوليت جي انتظار ۾",
+        "rejected": "انڪار ڪيل",
+        "accepted": "منظوري جي انتظار ۾",
+        "deactivated": "معطل ٿيل"
+      },
+      "ariaLabel": "نامزد ٿيل (Nominees)",
+      "title": "نامزد ٿيل",
+      "table": {
+        "person": "شخص",
+        "permissions": "اجازتون",
+        "status": "حالت",
+        "actions": "عمل",
+        "morePermissions": "+{{count}} وڌيڪ"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "نامزد ٿيل شامل ڪريو",
+        "editTitle": "نامزد ٿيل ايڊٽ ڪريو",
+        "saveChanges": "تبديليون محفوظ ڪريو",
+        "emailLabel": "نامزد ٿيل جي رجسٽرڊ اي ميل",
+        "permissionsTitle": "هي نامزد ٿيل ڇا ڪري سگهي ٿو؟",
+        "permissionsSubtitle": "صرف انهن تي ٽڪ لڳايو جيڪي توهان اجازت ڏيڻ چاهيو ٿا. اهي اهي ئي رسائي بڻجي وڃن ٿيون جيڪي هن نامزد ٿيل کي استعمال ڪرڻ جي اجازت آهي.",
+        "sensitive": "حساس",
+        "cancel": "منسوخ ڪريو",
+        "processing": "محفوظ ٿي رهيو آهي...",
+        "confirm": "نامزدگي موڪليو",
+        "processingEdit": "محفوظ ٿي رهيو آهي…"
+      },
+      "removeDialog": {
+        "title": "نامزد ٿيل کي هٽايو",
+        "message": "{{nomineeEmail}} هاڻي توهان جي رضامندين جو انتظام نه ڪري سگهندو.",
+        "confirm": "نامزد ٿيل کي هٽايو",
+        "cancel": "منسوخ ڪريو",
+        "processing": "هٽائي رهيو آهي..."
+      }
+    },
+    "manage": {
+      "title": "مالڪ جي رضامندين جو انتظام",
+      "back": "نامزد ٿيل ڏيک مان نڪرو",
+      "consents": {
+        "title": "رضامنديون",
+        "subtitle": "ڏسو ۽، جتي اجازت هجي، هن اڪائونٽ پاران ڏنل رضامنديون رد ڪريو."
+      },
+      "selectedCount": "{{count}} چونڊيل",
+      "revokeSelected": "چونڊيل رد ڪريو",
+      "messages": {
+        "loadFailed": "هن وقت رضامنديون لوڊ ڪرڻ ۾ ناڪام.",
+        "empty": "هن اڪائونٽ لاءِ ڪا به رضامندي نه ملي."
+      },
+      "table": {
+        "ariaLabel": "نامزد ٿيل پاران منظم ڪيل رضامندي جي ٽيبل",
+        "purposes": "مقصد",
+        "type": "قسم",
+        "status": "حالت",
+        "updated": "اپڊيٽ ڪيو ويو",
+        "actions": "عمل",
+        "revoke": "رد ڪريو",
+        "notRevokable": "صرف فعال رضامنديون رد ڪري سگهجن ٿيون",
+        "clientLabel": "تنظيم: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "مجموعي طور تي رد ڪرڻ جي تصديق",
+        "message": "هن سان {{count}} رضامندي(يون) رد ٿي وينديون. هن کي واپس نٿو آڻي سگهجي.",
+        "note": "هر رد ڪرڻ کي الڳ طور تي رڪارڊ ڪيو وڃي ٿو ان عمل جي طور تي جيڪو توهان مالڪ جي پاران ڪيو آهي.",
+        "progress": "{{count}} مان {{processed}} رد ٿي رهيون آهن...",
+        "confirm": "چونڊيل رد ڪريو",
+        "cancel": "منسوخ ڪريو",
+        "processing": "پروسيسنگ..."
+      },
+      "subtitle": "توهان هن اڪائونٽ جي پاران ڪم ڪري رهيا آهيو. توهان صرف اهو ئي ڪري سگهو ٿا جنهن جي مالڪ توهان کي اجازت ڏني آهي.",
+      "account": {
+        "title": "اڪائونٽ تائين رسائي",
+        "subtitle": "اهي عمل جيڪي مالڪ توهان کي پنهنجي اڪائونٽ تي ڪرڻ جي اجازت ڏني آهي.",
+        "notGranted": "مالڪ طرفان اجازت نه ڏني وئي"
+      }
+    },
+    "detail": {
+      "title": "رضامندي جا تفصيل",
+      "back": "واپس"
+    }
+  },
+  "admin": {
+    "title": "نامزد ٿيل جي فعاليت",
+    "status": {
+      "active": "فعال",
+      "accepted": "منظوري جي انتظار ۾",
+      "pending": "نامزد ٿيل جي انتظار ۾",
+      "rejected": "انڪار ڪيل",
+      "deactivated": "غير فعال ٿيل"
+    },
+    "pending": {
+      "title": "توهان جي منظوري جي انتظار ۾",
+      "empty": "هن وقت توهان تي ڪجھ به انتظار ۾ ناهي.",
+      "count": "{{count}} منظوري جي انتظار ۾",
+      "appointed": "{{email}} کي مقرر ڪيو ويو",
+      "accepted": "قبول ڪيو ويو {{date}}"
+    },
+    "search": {
+      "label": "نالي يا اي ميل سان ڳوليو",
+      "empty": "ڪي به ملندڙ اڪائونٽس نه مليا.",
+      "results": "اڪائونٽس"
+    },
+    "table": {
+      "ariaLabel": "نامزدگيون",
+      "owner": "اڪائونٽ",
+      "nominee": "نامزد ٿيل",
+      "permissions": "ڏنل",
+      "status": "حالت",
+      "nominated": "نامزد ٿيل",
+      "actions": "عمل"
+    },
+    "controls": {
+      "title": "نامزد ٿيل",
+      "titleNamed": "{{name}} جا نامزد ٿيل",
+      "nominated": "نامزد ڪيو ويو {{date}} تي",
+      "ticket": "ٽڪيٽ {{ticket}}",
+      "waitingNominee": "اڃا ڪرڻ لاءِ ڪجھ ناهي - نامزد ٿيل اڃا تائين قبول ناهي ڪيو.",
+      "activate": "رسائي فعال ڪريو",
+      "noAction": "-",
+      "owner": "اڪائونٽ",
+      "deactivate": "رسائي واپس وٺو",
+      "none": "هن اڪائونٽ ڪنهن کي به مقرر ناهي ڪيو."
+    },
+    "activateDialog": {
+      "title": "نامزد ٿيل جي رسائي فعال ڪريو",
+      "ticketLabel": "قانوني/سپورٽ ٽڪيٽ جو حوالو",
+      "confirm": "رسائي فعال ڪريو",
+      "cancel": "منسوخ ڪريو",
+      "processing": "فعال ٿي رهيو آهي...",
+      "subtitle": "هي {{nomineeName}} کي {{ownerName}} جي رضامندين جو انتظام ڪرڻ جي رسائي ڏئي ٿو."
+    },
+    "deactivateDialog": {
+      "title": "نامزد ٿيل جي رسائي غير فعال ڪريو",
+      "reasonLabel": "سبب",
+      "confirm": "رسائي غير فعال ڪريو",
+      "cancel": "منسوخ ڪريو",
+      "processing": "غير فعال ٿي رهيو آهي...",
+      "subtitle": "هي فوري طور تي {{ownerName}} جي رضامندين تائين نامزد ٿيل جي رسائي کي رد ڪري ڇڏيندو."
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ڊيٽا جي ڀڃڪڙي",
+      "UNAUTHORIZED_DATA_SHARING": "غير مجاز ڊيٽا شيئرنگ",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "رضامندي واپس وٺڻ جو مسئلو",
+      "PURPOSE_VIOLATION": "مقصد جي ڀڃڪڙي",
+      "DATA_ERASURE_NOT_COMPLETED": "ڊيٽا ختم ڪرڻ جي درخواست پوري نه ٿي",
+      "DATA_CORRECTION_NOT_COMPLETED": "ڊيٽا درست ڪرڻ جي درخواست پوري نه ٿي",
+      "CONSENT_LIFECYCLE_ISSUE": "رضامندي مئنيجر جو مسئلو",
+      "DATA_ACCESS_DENIED": "ڊيٽا تائين رسائي جي درخواست رد ڪئي وئي",
+      "EXCESSIVE_DATA_COLLECTION": "حد کان وڌيڪ ڊيٽا گڏ ڪرڻ",
+      "OTHER": "ٻيو"
+    },
+    "status": {
+      "open": "کليل",
+      "investigation": "عمل ۾",
+      "awaitingInfo": "ڪلائنٽ جي انتظار ۾",
+      "waitingOnDpo": "اندروني جائزي جي انتظار ۾",
+      "resolved": "حل ٿيل"
+    },
+    "priority": {
+      "CRITICAL": "نازڪ",
+      "HIGH": "اعليٰ",
+      "MEDIUM": "وچولي",
+      "LOW": "گهٽ"
+    },
+    "sla": {
+      "dueDate": "آخري تاريخ {{date}}",
+      "dueToday": "اڄ آخري تاريخ آهي",
+      "overdueSingular": "{{count}} ڏينهن جي دير",
+      "overduePlural": "{{count}} ڏينهن جي دير",
+      "daysLeftSingular": "{{count}} ڏينهن باقي",
+      "daysLeftPlural": "{{count}} ڏينهن باقي"
+    },
+    "timeline": {
+      "complaintReceived": "شڪايت ملي",
+      "statusChangePrefix": "حالت تبديل ڪئي وئي کان",
+      "statusChangeJoiner": "ڏانهن"
+    },
+    "list": {
+      "title": "منهنجون شڪايتون",
+      "subtitle": "پنهنجي جمع ڪرايل شڪايتن ۽ انهن جي اڳڀرائي کي ٽريڪ ڪريو.",
+      "submitNew": "هڪ شڪايت جمع ڪرايو",
+      "loadFailed": "هن وقت توهان جون شڪايتون لوڊ ڪرڻ ۾ ناڪام.",
+      "empty": "توهان اڃا تائين ڪا به شڪايت جمع ناهي ڪرائي.",
+      "emptyFiltered": "چونڊيل فلٽر سان ڪا به شڪايت نٿي ملي.",
+      "filters": {
+        "status": "حالت",
+        "all": "سڀ"
+      },
+      "table": {
+        "tableAriaLabel": "منهنجي شڪايتن جي ٽيبل",
+        "headers": {
+          "referenceId": "حوالو ID",
+          "category": "زمرو",
+          "status": "حالت",
+          "submitted": "جمع ڪرايل",
+          "updated": "اپڊيٽ ڪيل"
+        }
+      }
+    },
+    "detail": {
+      "back": "منهنجي شڪايتن ڏانهن واپس",
+      "notFound": "شڪايت نه ملي",
+      "description": "تفصيل",
+      "submittedOn": "جمع ڪرايو ويو {{date}} تي",
+      "awaitingInfo": {
+        "note": "شڪايت آفيسر توهان کان وڌيڪ معلومات جي انتظار ۾ آهي. مهرباني ڪري هيٺ جواب ڏيو."
+      },
+      "resolved": {
+        "note": "هي شڪايت حل ٿي چڪي آهي."
+      }
+    },
+    "submit": {
+      "title": "هڪ شڪايت جمع ڪرايو",
+      "subtitle": "اسان کي ٻڌايو ته ڇا ٿيو ۽ اسان ان کي صحيح ٽيم ڏانهن موڪلينداسين.",
+      "submitFailed": "هن وقت توهان جي شڪايت جمع ڪرڻ ۾ ناڪام. مهرباني ڪري ٻيهر ڪوشش ڪريو.",
+      "fields": {
+        "category": "زمرو",
+        "categoryPlaceholder": "هڪ زمرو چونڊيو",
+        "categoryHelp": "اهو آپشن چونڊيو جيڪو توهان جي شڪايت کي بهترين نموني بيان ڪري ٿو.",
+        "categoriesLoadFailed": "هن وقت شڪايت جا زمرا لوڊ ڪرڻ ۾ ناڪام.",
+        "description": "تفصيل",
+        "descriptionPlaceholder": "پنهنجي شڪايت تفصيل سان بيان ڪريو",
+        "descriptionHelp": "جيترو ٿي سگهي تفصيل شامل ڪريو ته جيئن اسان کي جلدي حل ڪرڻ ۾ مدد ملي.",
+        "attachments": "منسلڪات (اختياري)",
+        "attachmentsHelp": "PDF، DOCX، PNG، يا JPG، هر هڪ جي سائيز {{maxSize}} تائين.",
+        "uploadButton": "فائل اپ لوڊ ڪريو"
+      },
+      "validation": {
+        "categoryRequired": "جاري رکڻ لاءِ هڪ زمرو چونڊيو.",
+        "descriptionRequired": "جاري رکڻ لاءِ پنهنجي شڪايت بيان ڪريو.",
+        "attachmentTooLarge": "{{fileNames}} منسلڪ سائيز جي حد {{maxSize}} کان وڌيڪ آهي."
+      },
+      "success": {
+        "message": "توهان جي شڪايت {{referenceId}} جمع ڪئي وئي آهي.",
+        "attachmentFailedMessage": "توهان جي شڪايت {{referenceId}} جمع ٿي وئي آهي، پر منسلڪات اپ لوڊ ڪرڻ ۾ ناڪام رهيا. توهان انهن کي شڪايت جي تفصيلي صفحي تان شامل ڪري سگهو ٿا."
+      },
+      "actions": {
+        "cancel": "منسوخ ڪريو",
+        "submit": "شڪايت جمع ڪرايو"
+      }
+    },
+    "activity": {
+      "title": "سرگرمي",
+      "send": "موڪليو",
+      "sendOnly": "صرف موڪليو",
+      "sendOptions": "موڪلڻ جا وڌيڪ آپشن",
+      "sendAndChangeStatusTo": "موڪليو ۽ حالت تبديل ڪريو ڏانهن",
+      "sendAndUpdateStatus": "موڪليو ۽ {{status}} طور نشان لڳايو",
+      "publicReply": "جواب ڏيو",
+      "internalNote": "اندروني نوٽ",
+      "internalTag": "اندروني",
+      "dataPrincipalRoleLabel": "ڪلائنٽ",
+      "officerRoleLabel": "شڪايت آفيسر",
+      "composerPlaceholderPublic": "استعمال ڪندڙ کي جواب لکو...",
+      "composerPlaceholderInternal": "هڪ اندروني نوٽ لکو (استعمال ڪندڙ کي نظر نه ايندو)...",
+      "attach": "منسلڪ ڪريو",
+      "attachmentsHelp": "PDF، DOCX، PNG، يا JPG، هر فائل جي سائيز {{maxSize}} تائين.",
+      "attachmentTooLarge": "{{fileNames}} منسلڪ سائيز جي حد {{maxSize}} کان وڌيڪ آهي.",
+      "removeAttachment": "منسلڪ هٽايو"
+    },
+    "attachments": {
+      "tabLabel": "منسلڪات",
+      "tabLabelWithCount": "منسلڪات ({{count}})",
+      "empty": "هن شڪايت ۾ ڪي به منسلڪات شامل نه ڪيا ويا آهن.",
+      "initialSubmission": "شروعاتي جمع ڪيل",
+      "internalNote": "اندروني",
+      "overflowMore": "+{{count}} وڌيڪ"
+    },
+    "management": {
+      "queue": {
+        "title": "شڪايتون",
+        "loadFailed": "هن وقت شڪايتن جي قطار لوڊ ڪرڻ ۾ ناڪام.",
+        "empty": "چونڊيل فلٽرن سان ڪا به شڪايت نٿي ملي.",
+        "stats": {
+          "open": "کليل",
+          "awaitingInfo": "جواب جي انتظار ۾",
+          "resolved": "حل ٿيل",
+          "slaBreached": "SLA ٽوڙيل"
+        },
+        "filters": {
+          "sectionAriaLabel": "شڪايتن جي قطار جا فلٽر",
+          "status": "حالت",
+          "priority": "ترجيح",
+          "search": "حوالو ID يا استعمال ڪندڙ ذريعي ڳوليو",
+          "all": "سڀ",
+          "clear": "فلٽر صاف ڪريو",
+          "clearAriaLabel": "سڀ فلٽر صاف ڪريو"
+        },
+        "table": {
+          "tableAriaLabel": "شڪايتن جي قطار جي ٽيبل",
+          "headers": {
+            "referenceId": "حوالو ID",
+            "dataPrincipal": "استعمال ڪندڙ",
+            "category": "زمرو",
+            "priority": "ترجيح",
+            "status": "حالت",
+            "sla": "SLA",
+            "updated": "اپڊيٽ ڪيل"
+          }
+        }
+      },
+      "case": {
+        "back": "قطار ڏانهن واپس",
+        "notFound": "شڪايت نه ملي",
+        "dataPrincipal": "استعمال ڪندڙ"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "سبسڪرپشنز",
+      "subtitle": "ايونٽ نوٽيفڪيشن فريم ورڪ ۾ سڀ رجسٽرڊ سبسڪرپشنز.",
+      "addAction": "سبسڪرپشن شامل ڪريو",
+      "filters": {
+        "sectionAriaLabel": "سبسڪرپشن جا فلٽر",
+        "status": "حالت",
+        "topic": "موضوع",
+        "clear": "فلٽر صاف ڪريو",
+        "statusOptions": {
+          "all": "سڀ حالتون",
+          "active": "فعال",
+          "pendingVerification": "زير التوا",
+          "stale": "پراڻو (Stale)"
+        },
+        "topicOptions": {
+          "all": "سڀ موضوع"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "سبسڪرپشن جي ڪاميابي سان ٻيهر تصديق ڪئي وئي. حالت هاڻي فعال (ACTIVE) آهي.",
+        "reverifyStillStale": "تصديق ٻيهر ناڪام ٿي. سبسڪرپشن اڃا تائين پراڻي (STALE) آهي.",
+        "reverifyFailed": "ٻيهر تصديق ناڪام ٿي."
+      }
+    },
+    "events": {
+      "title": "واقعا",
+      "subtitle": "ايونٽ نوٽيفڪيشن فريم ورڪ ۾ سڀ واقعن جي ترسيل.",
+      "filters": {
+        "sectionAriaLabel": "واقعن جا فلٽر",
+        "status": "حالت",
+        "topic": "موضوع",
+        "search": "واقعا ڳوليو",
+        "searchPlaceholder": "مقصد يا سبسڪرائبر ID سان ڳوليو...",
+        "clear": "فلٽر صاف ڪريو",
+        "statusOptions": {
+          "all": "سڀ حالتون"
+        },
+        "topicOptions": {
+          "all": "سڀ موضوع"
+        }
+      },
+      "emptyTitle": "ڪي به واقعا نه مليا",
+      "emptyMessage": "شايع ٿيل واقعن مان ڪي به چونڊيل معيار سان نٿا ملن.",
+      "table": {
+        "eventId": "واقعي جي ID",
+        "topic": "موضوع",
+        "purposes": "مقصد",
+        "deliveries": "ترسيلون",
+        "occurredAt": "واقع ٿيو",
+        "action": "عمل",
+        "all": "سڀ",
+        "noSubscribers": "ڪي به سبسڪرائبر ناهن",
+        "viewEvent": "واقعو ڏسو",
+        "subscriberCount_one": "{{count}} سبسڪرائبر",
+        "subscriberCount_other": "{{count}} سبسڪرائبرز"
+      },
+      "detail": {
+        "notFoundTitle": "واقعو نه مليو",
+        "notFoundMessage": "ID \"{{eventId}}\" سان ڪو به واقعو نه مليو.",
+        "backToEvents": "واقعن ڏانهن واپس",
+        "topic": "موضوع",
+        "purposes": "مقصد",
+        "occurredAt": "واقع ٿيو",
+        "deliveries": "ترسيلون",
+        "all": "سڀ",
+        "noSubscribers": "ڪي به سبسڪرائبر ناهن",
+        "subscriberCount_one": "{{count}} سبسڪرائبر",
+        "subscriberCount_other": "{{count}} سبسڪرائبرز"
+      },
+      "dialog": {
+        "title": "ٻيهر ڪوشش جي تاريخ",
+        "deliveryId": "ترسيل ID",
+        "loading": "واقعي جي ترسيل جي تاريخ لوڊ ٿي رهي آهي…",
+        "noRetries": "شروعاتي ڪوشش مڪمل ٿي. ڪا به ٻيهر ڪوشش رڪارڊ ناهي ڪئي وئي.",
+        "attempt": "ڪوشش {{attempt}}",
+        "retrySuffix": " (ٻيهر ڪوشش)",
+        "webhookDescription": "HTTP ترسيل جي ڪوششن ۽ ٻيهر ڪوششن جي تاريخ جو تفصيل.",
+        "pollTitle": "پول (Poll) مڪمل ٿيڻ جي حالت ۽ اعتراف",
+        "completionStatus": "مڪمل ٿيڻ جي حالت",
+        "completionTimestamp": "مڪمل ٿيڻ جو وقت (Timestamp)",
+        "erasureMethod": "مٽائڻ جو طريقو",
+        "recordsAffected": "متاثر ٿيل رڪارڊ",
+        "referenceId": "حوالو ID",
+        "submittedBy": "جمع ڪرايو ويو",
+        "notes": "نوٽس",
+        "noAcknowledgment": "پول مڪمل ٿيڻ جو ڪو به اعتراف اڃا تائين جمع ناهي ڪرايو ويو.",
+        "close": "بند ڪريو"
+      }
+    }
+  }
+}

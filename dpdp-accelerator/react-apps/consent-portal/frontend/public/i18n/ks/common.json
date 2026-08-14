@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "رضامندی پورٹل"
+  },
+  "language": {
+    "label": "زبان",
+    "selectAria": "زبان مُنتَخَب کِریو"
+  },
+  "authorization": {
+    "loading": "تُہُند سیشن لوڈ گَچھان چھُ",
+    "loadFailed": "تُہُند سیشن لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+    "tryAgain": "دوبارٕ کِریو کوشِش",
+    "noAccessTitle": "پورٹلَس تام رسائی نہٕ",
+    "noAccessDescription": "تُہنٛدِس اکاؤنٹَس چھنہٕ کانہہ تہِ پورٹل صَفہٕ وُچھنٕچ اِجازت۔"
+  },
+  "copyableText": {
+    "copy": "کاپیر",
+    "copied": "کاپیر کُرمُت",
+    "copyLabel": "کاپیر {{label}}",
+    "copyValue": "کاپیر {{label}} {{value}}",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "اہم نِویگیشَن",
+    "dashboard": "ڈیش بورڈ",
+    "consent": "رضامندی",
+    "allConsents": "تمامی رضامندیہِ",
+    "pendingConsents": "مُعَلَّق رضامندیہِ",
+    "catalog": "تَعریفات",
+    "purposes": "مقاصِد",
+    "elements": "عَناصِر",
+    "administration": "اِنتِظامِیہ",
+    "adminConsents": "رضامندیہِ",
+    "nominations": "نامزَدگِیہِ",
+    "nomineeActivation": "نامزَد شَخصَس اِفتاہ/فَعّال کَرُن",
+    "myComplaints": "مَیانی شِکایات",
+    "complaintManagement": "شِکایات",
+    "dataProcessors": "ڈیٹا پروسیسر",
+    "dataProcessorTopics": "مَوضُوعات",
+    "dataProcessorSubscriptions": "سَبسکِرپشَنز",
+    "dataProcessorEvents": "واقعات"
+  },
+  "layout": {
+    "home": "ہوم",
+    "breadcrumbAriaLabel": "بریڈ کرَمب",
+    "userMenu": {
+      "unknownUser": "ناشِناس صارف",
+      "noEmail": "کانہہ اِی میل مَوجود چھنہٕ",
+      "signOut": "سائن آؤٹ",
+      "signOutError": "سائن آؤٹ گَچھنَس مَنٛز آئِیہِ ناکامی۔ مہرَبانی کٔرِتھ دوبارٕ کوشِش کِریو۔",
+      "tryAgain": "دوبارٕ کوشِش کِریو"
+    }
+  },
+  "dashboard": {
+    "active": "فَعّال رضامندیہِ",
+    "attention": "تُہنٛزِ تَوَجُہٕ چھیہِ ضَرورَت",
+    "commonPurposes": "سارِوٕے کھوتہٕ زِیادٕ شَیَر کَرنہٕ آمِت مقاصِد",
+    "commonPurposesSubtitle": "تُہنٛدِین فَعّال رضامندین مَنٛز شامِل مقاصِد",
+    "consentCount": "{{count}} رضامندیہِ",
+    "consentCount_one": "{{count}} رضامندی",
+    "consentCount_other": "{{count}} رضامندیہِ",
+    "expiringSoon": "جَلد ہی ختم گَچھن وول",
+    "loadFailed": "تُہُند ڈیش بورڈ لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+    "noExpiring": "کانہہ تہِ فَعّال رضامندی چھنہٕ یِمَن {{days}} دوہَن مَنٛز خَتَم گَچھان۔",
+    "noPending": "تُہندِس حِسابَس مَنٛز چھنہٕ کانہہ مُعَلَّق رضامندی۔",
+    "noPurposes": "کانہہ تہِ شَیَر کَرنہٕ آمُت مَقصَد چھُنہٕ وُنِی مَوجود۔",
+    "pending": "مُعَلَّق رضامندیہِ",
+    "pendingConsents": "مُعَلَّق رضامندیہِ",
+    "subtitle": "تُہنٛزِ رضامندی سرگرمی تہٕ اِقداماتن ہُند اَکھ خُلاصہٕ۔",
+    "title": "ڈیش بورڈ",
+    "typeBreakdown": "رضامندی قِسمَن ہُند تَقسیم",
+    "typeBreakdownSubtitle": "تُہنٛزِ تمام رضامندیہِ قِسمَس طابِق تَقسیم کَرنہٕ آمِت",
+    "noTypes": "کانہہ تہِ رضامندی قِسم چھُنہٕ وُنِی مَوجود۔",
+    "viewPending": "ساری مُعَلَّق رضامندیہِ وُچھیو"
+  },
+  "adminConsents": {
+    "title": "رضامندیہِ",
+    "filters": {
+      "sectionAriaLabel": "اِنتِظامی رضامندی فِلتَر",
+      "consentIdSearchPlaceholder": "رضامندی آئی ڈی سِیِتھ تپاس کِریو",
+      "removeConsentIdForAdvanced": "ایڈوانسڈ فِلتَر اِستِعمال کَرنہٕ باپَتھ رضامندی آئی ڈی کَڈیو۔",
+      "removeConsentIdForStatus": "سٹیٹَس فِلتَر اِستِعمال کَرنہٕ باپَتھ رضامندی آئی ڈی کَڈیو۔",
+      "userIds": "صارف آئی ڈی",
+      "groupIds": "گروپ آئی ڈی",
+      "commaSeparatedUsers": "مُتَعَدِّد صارف آئی ڈی کاما (,) سِیِتھ الگ کِریو",
+      "active": "فَعّال فِلتَر"
+    }
+  },
+  "consentRegistry": {
+    "title": "تمامی رضامندیہِ",
+    "details": {
+      "title": "رضامندی تَفصِیلات",
+      "consentId": "رضامندی آئی ڈی",
+      "status": "سٹیٹَس",
+      "type": "رضامندی قِسم",
+      "frequency": "رسائی حد",
+      "frequencyHelp": "یہِ چھُ بَناوَن زِ اَکھ دُوہَس مَنٛز کُتِی لَٹہِ اَتھ رضامندی رسائی کٔرِتھ ہیو کَو۔",
+      "frequencyUnitSingular": "لَٹہِ فی دۄہ",
+      "frequencyUnitPlural": "لَٹہِ فی دۄہ",
+      "purposes": "مقاصِد",
+      "duration": "لوک بَیک مُدَت",
+      "durationHelp": "یہِ چھُ بَناوَن زِ کُتِی پَتِم ڈیٹا رسائی کٔرِتھ ہیو کَو۔ مِثال، 6 ریتہِ سیٹ کَرنہٕ سِیِتھ، 6 ریتَن پَتِم ڈیٹا چھُ رسائی باپَتھ دَستِیاب۔",
+      "durationUnitHourSingular": "گَنٹہٕ",
+      "durationUnitHourPlural": "گَنٹہِ",
+      "durationUnitDaySingular": "دۄہ",
+      "durationUnitDayPlural": "دۄہ",
+      "durationUnitYearSingular": "وُری",
+      "durationUnitYearPlural": "وُرِیہِ",
+      "created": "تخلیق کُرمُت",
+      "updated": "اپڈیٹ کُرمُت",
+      "validUntil": "میعاد تام",
+      "groupId": "گروپ آئی ڈی",
+      "recurring": "بار بار گَچھن وول",
+      "back": "رجسٹری مَنٛز واپس گَچھیو",
+      "notFound": "رضامندی ریکارڈ لَبنہٕ نہٕ آو",
+      "approved": "مَنظُور کُرمُت",
+      "notApproved": "مَنظُور چھُنہٕ کُرمُت",
+      "approvedCount": "{{approved}}/{{total}} مَنظُور کُرمُت",
+      "section": {
+        "purposes": "رضامندی مقاصِد",
+        "authorizations": "اِجازَت نامہٕ",
+        "lifecycle": "رضامندی سائیکل"
+      },
+      "table": {
+        "element": "عُنصُر",
+        "approved": "مَنظُور",
+        "required": "لازمی",
+        "description": "تَفصِیل",
+        "user": "صارف",
+        "status": "سٹیٹَس",
+        "updated": "اپڈیٹ",
+        "resources": "وسائِل",
+        "eventType": "ایوینٹ قِسم",
+        "date": "تاریخ",
+        "time": "وَقت"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "رضامندی سائیکل",
+        "empty": "کانہہ تہِ لائف سائیکل ایوینٹ چھُنہٕ مَوجود۔",
+        "noDescription": "کانہہ تَفصِیل چھنہٕ مَوجود۔"
+      },
+      "actions": {
+        "viewResources": "وسائِل وُچھیو",
+        "noResourcesTooltip": "کانہہ وسائل چھُنہٕ مَوجود"
+      },
+      "resourcesModal": {
+        "title": "اِجازَت نامہٕ وسائل",
+        "authRef": "آتھ",
+        "close": "بَند کِریو"
+      },
+      "values": {
+        "yes": "آں",
+        "no": "نہٕ",
+        "required": "لازمی",
+        "optional": "اِختیاری"
+      }
+    },
+    "actions": {
+      "view": "وُچھیو",
+      "revoke": "منسوخ کِریو",
+      "approve": "مَنظُور کِریو",
+      "reject": "رد کِریو",
+      "copyConsentId": "رضامندی آئی ڈی کاپیر کِریو",
+      "copyConsentIdAriaLabel": "رضامندی آئی ڈی کاپیر کِریو {{id}}"
+    },
+    "modals": {
+      "consentId": "رضامندی آئی ڈی",
+      "actions": {
+        "cancel": "کَنسَل",
+        "processing": "پروسیسنگ..."
+      },
+      "approval": {
+        "title": "جائزٕ تہٕ رضامندی مَنظُور کِریو",
+        "subtitle": "مہرَبانی کٔرِتھ کِریو مَنظُوری دِنہٕ بَروٹھ رضامندی عناصرَن جائزہٕ۔",
+        "mandatory": "لازمی عناصر",
+        "optional": "اِختیاری عناصر",
+        "required": "لازمی",
+        "toggle": "اِجازَت بَدلِیو",
+        "toggleWithDetails": "{{purposeLabel}} مَنٛز {{elementLabel}} باپَتھ اِجازَت بَدلِیو",
+        "loading": "رضامندی تَفصِیلات لوڈ گَچھان...",
+        "noMandatory": "اَتھ رضامندی مَنٛز چھنہٕ کانہہ لازمی ضَرورَت۔",
+        "confirm": "مَنظُور تہٕ جاری تھاوِیو"
+      },
+      "rejection": {
+        "title": "رد کَرنٕچ تَصدِیق کِریو",
+        "message": "تُہی چھِوا یقین زِ تُہی چھِ یَچھان یہِ رضامندی رد کَرُن؟",
+        "note": "یہِ رضامندی رد کَرنہٕ سِیِتھ مِلہِ نہٕ مَنگنہٕ آمِت رضامندیہِ۔",
+        "confirm": "رضامندی رد کِریو",
+        "cancel": "کَنسَل"
+      },
+      "revocation": {
+        "title": "تنسیخٕچ تَصدِیق کِریو",
+        "message": "تُہی چھِوا یقین زِ تُہی چھِ یَچھان رضامندی منسوخ کَرُن؟",
+        "note": "اَتھ اِقدام سِیِتھ گَچھِ تمام مقاصِدَن باپَتھ دِنہٕ آمِت لازمی تہٕ اِختیاری رضامندیہِ منسوخ۔",
+        "confirm": "رضامندیہِ منسوخ کِریو",
+        "cancel": "کَنسَل"
+      }
+    },
+    "status": {
+      "all": "ساری",
+      "active": "فَعّال",
+      "pending": "مُعَلَّق",
+      "created": "تخلیق کُرمُت",
+      "approved": "مَنظُور",
+      "rejected": "رد کُرمُت",
+      "revoked": "منسوخ کُرمُت",
+      "expired": "میعاد ختم",
+      "systemExpired": "سسٹم مَنٛز میعاد ختم",
+      "systemRevoked": "سسٹم مَنٛز منسوخ"
+    },
+    "filters": {
+      "sectionAriaLabel": "رضامندی فِلتَر",
+      "purposeSearchPlaceholder": "مَقصَد ناو سِیِتھ تپاس کِریو",
+      "status": "سٹیٹَس",
+      "groupIds": "گروپ آئی ڈی",
+      "elementName": "عُنصُر ناو",
+      "elementVersion": "عُنصُر ورژن",
+      "advanced": "ایڈوانسڈ فِلتَر",
+      "apply": "لاگو کِریو",
+      "cancel": "کَنسَل",
+      "startDate": "شُروعِچ تاریخ",
+      "startDateAriaLabel": "شُروعِچ تاریخ فِلتَر",
+      "endDate": "آخری تاریخ",
+      "endDateAriaLabel": "آخری تاریخ فِلتَر",
+      "clear": "ساری صاف کِریو",
+      "clearAriaLabel": "ساری فِلتَر صاف کِریو"
+    },
+    "messages": {
+      "loading": "رضامندیہِ لوڈ گَچھان...",
+      "loadFailed": "رضامندیہِ لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+      "emptyTitle": "کانہہ تہِ رضامندی لَبنہٕ نہٕ آو",
+      "empty": "مُنتَخَب کَرمِت فِلتَرن باپَتھ کانہہ تہِ رضامندی لَبنہٕ نہٕ آو۔"
+    },
+    "table": {
+      "tableAriaLabel": "رضامندی رجسٹری ٹیبل",
+      "consentIdAriaLabel": "رضامندی آئی ڈی: {{id}}",
+      "groupLabel": "گروپ آئی ڈی: {{groupId}}",
+      "notApplicable": "قابِلِ اِطلاق نہٕ",
+      "purposes": {
+        "more": "+{{count}} بێیہِ",
+        "title": "رضامندی مقاصِد",
+        "hint": "رضامندی ہُنٛد تمام مقاصِد وُچھناوَن"
+      },
+      "headers": {
+        "consentId": "رضامندی آئی ڈی",
+        "type": "قِسم",
+        "status": "سٹیٹَس",
+        "purposes": "مقاصِد",
+        "updated": "اپڈیٹ",
+        "expiration": "میعاد ختم",
+        "actions": "اِقدامات"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "عُنصُر شامِل کِریو",
+      "addProperty": "خصُوصِیَت شامِل کِریو",
+      "apply": "لاگو کِریو",
+      "cancel": "کَنسَل",
+      "clear": "صاف کِریو",
+      "clearAll": "ساری صاف کِریو",
+      "create": "تخلیق کِریو",
+      "delete": "حَذف کِریو",
+      "deleting": "حَذف گَچھان...",
+      "deleteVersion": "ورژن حَذف کِریو",
+      "filters": "فِلتَر",
+      "removeElement": "عُنصُر کَڈیو",
+      "removeProperty": "خصُوصِیَت کَڈیو",
+      "retry": "دوبارٕ کوشِش کِریو",
+      "saving": "محفُوظ گَچھان...",
+      "view": "وُچھیو",
+      "viewElement": "وُچھیو {{name}}",
+      "viewPurpose": "وُچھیو {{name}}"
+    },
+    "fields": {
+      "actions": "اِقدامات",
+      "created": "تخلیق کُرمُت",
+      "description": "تَفصِیل",
+      "displayName": "وُچھن وول ناو",
+      "element": "عُنصُر",
+      "elementId": "عُنصُر آئی ڈی",
+      "elementName": "عُنصُر ناو",
+      "elementNamespace": "عُنصُر نیم سپیس",
+      "elements": "عَناصِر",
+      "elementVersion": "عُنصُر ورژن",
+      "groupId": "گروپ آئی ڈی",
+      "groupIds": "گروپ آئی ڈی",
+      "mandatory": "لازمی",
+      "name": "ناو",
+      "namespace": "نیم سپیس",
+      "properties": "خصُوصِیات",
+      "propertyKey": "کِی",
+      "propertyValue": "قِیمَت",
+      "purpose": "مَقصَد",
+      "purposeId": "مَقصَد آئی ڈی",
+      "purposeName": "مَقصَد ناو",
+      "scope": "دائرٕ کار",
+      "purposeScope": "مَقصَد دائرٕ کار",
+      "purposeVersion": "مَقصَد ورژن",
+      "requirement": "ضَرورَت",
+      "schema": "سکِیما",
+      "type": "قِسم",
+      "version": "ورژن"
+    },
+    "help": {
+      "commaSeparatedGroups": "مُتَعَدِّد گروپ آئی ڈی کاما (,) سِیِتھ الگ کِریو",
+      "defaultNamespace": "خالی آسِتھ چھُ ڈیفالٹ نیم سپیس اِستِعمال گَچھان",
+      "elementVersionRequiresIdentity": "گوڈٕ کِریو عُنصُر ناو یا نیم سپیس درج",
+      "organizationPurpose": "اِدارٕ سَطَح مَقصَد بَناوَن باپَتھ تھاوِیو خالی",
+      "purposeVersionRequiresName": "گوڈٕ کِریو مَقصَد ناو درج",
+      "schemaElementTypes": "سکِیما چھُ صِرف JSON تہٕ XML عناصرَن باپَتھ حِمایَت کَرنہٕ یِوان۔",
+      "selectElementFirst": "گوڈٕ کِریو عُنصُر مُنتَخَب"
+    },
+    "values": {
+      "all": "ساری",
+      "any": "کانہہ تہِ",
+      "customNamespace": "کَسٹم نیم سپیس",
+      "defaultNamespace": "ڈیفالٹ نیم سپیس",
+      "mandatory": "لازمی",
+      "matches": "مِلان چھُ",
+      "noDescription": "کانہہ تَفصِیل چھنہٕ",
+      "optional": "اِختیاری",
+      "specificGroup": "خاص گروپ",
+      "itemCount": "{{count}} مُنتَخَب کُرمُت",
+      "latest": "تازہ ترین",
+      "viewing": "وُچھان"
+    },
+    "elements": {
+      "add": "عُنصُر شامِل کِریو",
+      "activeFilters": "فَعّال فِلتَر",
+      "back": "عناصرَن مَنٛز واپس گَچھیو",
+      "createTitle": "عُنصُر تخلیق کِریو",
+      "detailsSection": "عُنصُر تَفصِیلات",
+      "empty": "کانہہ تہِ عُنصُر چھُنہٕ فِلتَرَن سِیِتھ مِلان۔",
+      "emptyTitle": "کانہہ تہِ عُنصُر لَبنہٕ نہٕ آو",
+      "filterTitle": "عناصر فِلتَر کِریو",
+      "loadFailed": "عناصر لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+      "newVersion": "نۆو ورژن تخلیق کِریو",
+      "refreshing": "ریفرِش گَچھان...",
+      "results": "{{count}} عناصر",
+      "searchPlaceholder": "عُنصُر ناو سِیِتھ تپاس کِریو",
+      "subtitle": "دوبارٕ اِستِعمال گَچھَن وٲلِ رضامندی عناصرَن تہٕ تِہنٛدِین ورژنَن ہُنٛد اِنتِظام کِریو۔",
+      "tableLabel": "رضامندی عناصر",
+      "title": "عَناصِر"
+    },
+    "purposes": {
+      "add": "مَقصَد شامِل کِریو",
+      "activeFilters": "فَعّال فِلتَر",
+      "allPurposes": "تمامی مقاصِد",
+      "back": "مقاصِدَن مَنٛز واپس گَچھیو",
+      "createTitle": "مَقصَد تخلیق کِریو",
+      "detailsSection": "مَقصَد تَفصِیلات",
+      "empty": "کانہہ تہِ مَقصَد چھُنہٕ فِلتَرَن سِیِتھ مِلان۔",
+      "emptyTitle": "کانہہ تہِ مَقصَد لَبنہٕ نہٕ آو",
+      "filterTitle": "مقاصِد فِلتَر کِریو",
+      "loadFailed": "مقاصِد لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+      "newVersion": "نۆو ورژن تخلیق کِریو",
+      "orgWide": "سارے اِدارَس باپَتھ",
+      "refreshing": "ریفرِش گَچھان...",
+      "results": "{{count}} مقاصِد",
+      "searchLabel": "مقاصِد تپاس کِریو",
+      "searchPlaceholder": "مَقصَد ناو سِیِتھ تپاس کِریو",
+      "scopeFilter": "مَقصَد دائرٕ کار",
+      "subtitle": "دوبارٕ اِستِعمال گَچھَن وٲلِ رضامندی مقاصِد تہٕ تِہنٛدِین عُنصُر تعریفاتن ہُند اِنتِظام کِریو۔",
+      "tableLabel": "رضامندی مقاصِد",
+      "title": "مقاصِد"
+    },
+    "details": {
+      "definition": "تَعریف",
+      "elementIdentity": "عُنصُر شَناخت",
+      "elements": "عَناصِر",
+      "identity": "مَقصَد شَناخت",
+      "overview": "جائزٕ",
+      "versionDetails": "ورژن تَفصِیلات",
+      "versions": "ورژن تَوارِیخ"
+    },
+    "messages": {
+      "createElementFirst": "مَقصَد بَناوَن بَروٹھ کِریو اَکھ عُنصُر تخلیق۔",
+      "immutableElement": "{{namespace}}:{{name}} چھُ اَکھ {{type}} عُنصُر۔ شَناخت فِیلڈز ہیکَن نہٕ ورژنَن مَنٛز بَدلِتھ۔",
+      "immutablePurpose": "{{name}} چھُ {{groupId}} ہُند مالِک۔ شَناخت فِیلڈز ہیکَن نہٕ ورژنَن مَنٛز بَدلِتھ۔",
+      "immutableOrganizationPurpose": "{{name}} چھُ سارے اِدارَس باپَتھ۔ اَمِچ شَناخت تہٕ دائرٕ کار ہیکِ نہٕ بَدلِتھ۔",
+      "immutableGroupPurpose": "{{name}} چھُ گروپ {{groupId}} باپَتھ۔ اَمِچ شَناخت تہٕ دائرٕ کار ہیکِ نہٕ بَدلِتھ۔",
+      "loadingElements": "مَوجود عناصر لوڈ گَچھان...",
+      "loadingVersions": "عُنصُر ورژن لوڈ گَچھان...",
+      "noElementsFound": "کانہہ تہِ مِلَن وول عُنصُر لَبنہٕ نہٕ آو",
+      "noElements": "اَتھ ورژنَس مَنٛز چھنہٕ کانہہ تہِ عُنصُر کَنفِگر کُرمُت۔",
+      "noProperties": "کانہہ تہِ کَسٹم خصُوصِیَت چھنہٕ۔",
+      "noSchema": "اَتھ ورژنَس مَنٛز چھنہٕ کانہہ تہِ سکِیما کَنفِگر کُرمُت۔",
+      "noPurposeElements": "کانہہ تہِ عُنصُر چھُنہٕ شامِل۔ مَقصَد بَناوَن باپَتھ کِریو کم از کم اَکھ عُنصُر شامِل۔",
+      "noVersions": "کانہہ تہِ ورژن چھُنہٕ مَوجود۔",
+      "versionsLoadFailed": "ورژن تَوارِیخ لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔"
+    },
+    "validation": {
+      "duplicateElements": "پریتھ عُنصُر ہیکِ صِرف اَکہِ لَٹہِ شامِل گَچھیتھ۔",
+      "duplicatePropertyKeys": "خصُوصِیَت کِی پَزَن الگ الگ آسِین۔",
+      "elementRequired": "کم از کم اَکھ عُنصُر مُنتَخَب کِریو۔",
+      "groupIdRequired": "گروپ مَقصَد باپَتھ چھُ گروپ آئی ڈی لازمی۔",
+      "nameRequired": "ناو چھُ لازمی۔",
+      "namespaceRequired": "کَسٹم مُنتَخَب کَرنَس پؠٹھ چھُ نیم سپیس لازمی۔",
+      "schemaRequired": "JSON تہٕ XML عناصرَن باپَتھ چھُ سکِیما لازمی۔"
+    },
+    "delete": {
+      "title": "ورژن حَذف کِریو",
+      "message": "تُہی چھِوا یقین زِ تُہی چھِ یَچھان ورژن {{version}} حَذف کَرُن؟",
+      "warning": "یہِ عمل ہیکِ نہٕ واپس کٔرِتھ۔ حوالہٕ دِنہٕ آمِت ورژن ہیکَن نہٕ حَذف کٔرِتھ۔"
+    }
+  },
+  "nominee": {
+    "title": "نامزَدگِیہِ",
+    "messages": {
+      "loadFailed": "نامزَدگِیہِ لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔"
+    },
+    "nominatedFor": {
+      "openAccount": "اکاؤنٹ کھولِیو →",
+      "accept": "قَبُول کِریو",
+      "reject": "رد کِریو",
+      "actionNeeded": "اِقدامٕچ ضَرورَت",
+      "ariaLabel": "نامزَد کَرنہٕ آمِت اکاؤنٹس",
+      "empty": "کانہہ تہِ چھُنہٕ تُہین ناۆ نامزَد کُرمُت۔",
+      "title": "نامزَد کَرنہٕ آمِت اکاؤنٹس",
+      "table": {
+        "account": "اکاؤنٹ",
+        "status": "سٹیٹَس",
+        "actions": "اِقدامات"
+      }
+    },
+    "acting": {
+      "starting": "اکاؤنٹ کھولان…",
+      "startFailed": "تُہی چھِو نہٕ اَتھ اکاؤنٹَس باپَتھ نامزَد شَخص۔",
+      "startFailedHint": "نامزَدگِیَن مَنٛز واپس گَچھیو تہٕ دوبارٕ کوشِش کِریو۔",
+      "blockedTitle": "نامزَد شَخصِچ رسائی مَنٛز مَوجود چھنہٕ",
+      "blockedFenced": "اکاؤنٹ سیٹِنگ، کریڈنشَل تہٕ نامزَدگِیہِ ہیکَن نہٕ کُنہِ بێیِس شَخصَس باپَتھ اِستِعمال کٔرِتھ۔",
+      "blockedScope": "مالِکَن دِژ نہٕ تُہین اَتھ حِصَس مَنٛز رسائِیچ اِجازَت۔",
+      "backToAllowed": "مےٚ رسائی وٲلِ حِصَس مَنٛز گَچھیو",
+      "exit": "نیبَر نِیرِیو"
+    },
+    "permissions": {
+      "consentView": "رضامندیہِ وُچھیو",
+      "consentRevoke": "رضامندیہِ منسوخ کِریو",
+      "consentApprove": "مُعَلَّق رضامندیہِ مَنظُور کِریو",
+      "accountView": "ذاتی اکاؤنٹ وُچھیو",
+      "accountUpdate": "ذاتی اکاؤنٹ اپڈیٹ کِریو",
+      "accountDelete": "ذاتی اکاؤنٹ حَذف کِریو"
+    },
+    "mine": {
+      "add": "نامزَد شَخص شامِل کِریو",
+      "remove": "کَڈیو",
+      "empty": "تُہی چھُنہٕ وُنِی کانہہ تہِ نامزَد کُرمُت۔",
+      "status": {
+        "active": "فَعّال",
+        "pending": "قَبُول کَرنُک اِنتِظار",
+        "rejected": "رد کُرمُت",
+        "accepted": "مَنظُوری ہُند اِنتِظار",
+        "deactivated": "مُعَطَّل"
+      },
+      "ariaLabel": "نامزَد شَخص",
+      "title": "نامزَد شَخص",
+      "table": {
+        "person": "شَخص",
+        "permissions": "اِجازات",
+        "status": "سٹیٹَس",
+        "actions": "اِقدامات",
+        "morePermissions": "+{{count}} بێیہِ"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "نامزَد شَخص شامِل کِریو",
+        "editTitle": "نامزَد شَخص ایڈِٹ کِریو",
+        "saveChanges": "تَبدِیلی محفُوظ کِریو",
+        "emailLabel": "نامزَد شَخصُک رجسٹرڈ اِی میل",
+        "permissionsTitle": "یہِ نامزَد شَخص کِیاہ کٔرِتھ ہیوِ؟",
+        "permissionsSubtitle": "صِرف تِمن ہُنٛد اِنتِخاب کِریو یِم تُہی دِییُن یَچھان چھِ۔",
+        "sensitive": "حَسّاس",
+        "cancel": "کَنسَل",
+        "processing": "محفُوظ گَچھان...",
+        "confirm": "نامزَدگی سوزِیو",
+        "processingEdit": "محفُوظ گَچھان…"
+      },
+      "removeDialog": {
+        "title": "نامزَد شَخص کَڈیو",
+        "message": "{{nomineeEmail}} ہیکِ نہٕ اَمہِ پَتہٕ تُہنٛزِ رضامندین ہُند اِنتِظام کٔرِتھ۔",
+        "confirm": "نامزَد شَخص کَڈیو",
+        "cancel": "کَنسَل",
+        "processing": "کَڈان..."
+      }
+    },
+    "manage": {
+      "title": "مالِکٕچ رضامندین ہُند اِنتِظام",
+      "back": "نامزَد ویو پؠٹھہٕ نیبَر نِیرِیو",
+      "consents": {
+        "title": "رضامندیہِ",
+        "subtitle": "اَتھ اکاؤنٹَس ذَرِیعہٕ دِنہٕ آمِت رضامندیہِ وُچھیو تہٕ جائَز جائے منسوخ کِریو۔"
+      },
+      "selectedCount": "{{count}} مُنتَخَب کُرمُت",
+      "revokeSelected": "مُنتَخَب رضامندیہِ منسوخ کِریو",
+      "messages": {
+        "loadFailed": "رضامندیہِ لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+        "empty": "اَتھ اکاؤنٹَس مَنٛز کانہہ رضامندی لَبنہٕ نہٕ آو۔"
+      },
+      "table": {
+        "ariaLabel": "نامزَد شَخص اِنتِظام رضامندی ٹیبل",
+        "purposes": "مقاصِد",
+        "type": "قِسم",
+        "status": "سٹیٹَس",
+        "updated": "اپڈیٹ",
+        "actions": "اِقدامات",
+        "revoke": "منسوخ کِریو",
+        "notRevokable": "صِرف فَعّال رضامندیہِ ہیکَن منسوخ کٔرِتھ",
+        "clientLabel": "اِدارٕ: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "ساری منسوخ کَرنٕچ تَصدِیق",
+        "message": "اَتھ سِیِتھ گَچھِ {{count}} رضامندی منسوخ۔ یہِ عمل ہیکِ نہٕ واپس کٔرِتھ۔",
+        "note": "پریتھ منسوخی گَچھِ مالِکٕچ طَرفہٕ تُہنٛدِ ذَرِیعہٕ کَرنہٕ آمُت اِقدام ریکارڈ۔",
+        "progress": "منسوخ گَچھان {{processed}} مَنٛز {{count}}...",
+        "confirm": "مُنتَخَب منسوخ کِریو",
+        "cancel": "کَنسَل",
+        "processing": "پروسیسنگ..."
+      },
+      "subtitle": "تُہی چھِو اَتھ اکاؤنٹَس طَرفہٕ کارروٲیی کَران۔ تُہی ہیکِو صِرف وہی کٔرِتھ یَمیچ مالِکَن اِجازَت دِژ۔",
+      "account": {
+        "title": "اکاؤنٹ رسائی",
+        "subtitle": "مالِکَن اِجازَت دِژمِت اِقدامات یِم تُہی اَتھ اکاؤنٹَس پؠٹھ کٔرِتھ ہیوِ۔",
+        "notGranted": "مالِکَن دِژ نہٕ اِجازَت"
+      }
+    },
+    "detail": {
+      "title": "رضامندی تَفصِیلات",
+      "back": "واپس"
+    }
+  },
+  "admin": {
+    "title": "نامزَد شَخصَس اِفتاہ/فَعّال کَرُن",
+    "status": {
+      "active": "فَعّال",
+      "accepted": "مَنظُوری ہُند اِنتِظار",
+      "pending": "نامزَد شَخصُک اِنتِظار",
+      "rejected": "رد کُرمُت",
+      "deactivated": "مُعَطَّل"
+    },
+    "pending": {
+      "title": "تُہنٛزِ مَنظُوری ہُند اِنتِظار",
+      "empty": "کانہہ تہِ کامِ چھنہٕ وُنِی تُہنٛدِ اِنتِظارَس مَنٛز۔",
+      "count": "{{count}} مَنظُوری ہُند اِنتِظار",
+      "appointed": "نامزَد کُرمُت {{email}}",
+      "accepted": "قَبُول کُرمُت {{date}}"
+    },
+    "search": {
+      "label": "ناو یا اِی میل سِیِتھ تپاس کِریو",
+      "empty": "کانہہ تہِ مِلَن وول اکاؤنٹ لَبنہٕ نہٕ آو۔",
+      "results": "اکاؤنٹس"
+    },
+    "table": {
+      "ariaLabel": "نامزَدگِیہِ",
+      "owner": "اکاؤنٹ",
+      "nominee": "نامزَد شَخص",
+      "permissions": "دِنہٕ آمِت اِجازات",
+      "status": "سٹیٹَس",
+      "nominated": "نامزَد کُرمُت",
+      "actions": "اِقدامات"
+    },
+    "controls": {
+      "title": "نامزَد شَخص",
+      "titleNamed": "{{name}} سِندِ نامزَد شَخص",
+      "nominated": "نامزَد کُرمُت {{date}}",
+      "ticket": "ٹِکَٹ {{ticket}}",
+      "waitingNominee": "کانہہ کامِ چھنہٕ وُنِی - نامزَد شَخصَن چھُنہٕ قَبُول کُرمُت۔",
+      "activate": "رسائی فَعّال کِریو",
+      "noAction": "-",
+      "owner": "اکاؤنٹ",
+      "deactivate": "رسائی منسوخ کِریو",
+      "none": "اَتھ اکاؤنٹَن چھُنہٕ کاہنِ نامزَد کُرمُت۔"
+    },
+    "activateDialog": {
+      "title": "نامزَد شَخصِچ رسائی فَعّال کِریو",
+      "ticketLabel": "قانُونی/سَپورٹ ٹِکَٹ حوالہٕ",
+      "confirm": "رسائی فَعّال کِریو",
+      "cancel": "کَنسَل",
+      "processing": "فَعّال گَچھان...",
+      "subtitle": "اَتھ سِیِتھ مِلہِ {{nomineeName}} اِجازَت {{ownerName}} سِندِ رضامندین ہُند اِنتِظام کَرنَس باپَتھ۔"
+    },
+    "deactivateDialog": {
+      "title": "نامزَد شَخصِچ رسائی مُعَطَّل کِریو",
+      "reasonLabel": "وَجہ",
+      "confirm": "رسائی مُعَطَّل کِریو",
+      "cancel": "کَنسَل",
+      "processing": "مُعَطَّل گَچھان...",
+      "subtitle": "اَتھ سِیِتھ گَچھِ فوراً نامزَد شَخصِچ {{ownerName}} سِندِ رضامندین تان رسائی ختم۔"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ڈیٹا سیکیورٹی لَنگھَن",
+      "UNAUTHORIZED_DATA_SHARING": "غیر مَجاز ڈیٹا شَیرِنگ",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "رضامندی منسوخ کَرنہٕ پَتہٕ تہِ ڈیٹا اِستِعمال",
+      "PURPOSE_VIOLATION": "مَقصَد لَنگھَن",
+      "DATA_ERASURE_NOT_COMPLETED": "ڈیٹا حَذف کَرنٕچ بَرخواست پُورٕ گَچھِ نہٕ",
+      "DATA_CORRECTION_NOT_COMPLETED": "ڈیٹا دُرُست کَرنٕچ بَرخواست پُورٕ گَچھِ نہٕ",
+      "CONSENT_LIFECYCLE_ISSUE": "رضامندی مینیجَر مَسئلہٕ",
+      "DATA_ACCESS_DENIED": "ڈیٹا رسائی بَرخواست رد کَرُن",
+      "EXCESSIVE_DATA_COLLECTION": "حَدہِ کھوتہٕ زِیادٕ ڈیٹا جَمع کَرُن",
+      "OTHER": "بێیہِ کانہہ"
+    },
+    "status": {
+      "open": "مفتُوح",
+      "investigation": "تَحقیقات جاری",
+      "awaitingInfo": "کلاینٹ سِندِ جوابُک اِنتِظار",
+      "waitingOnDpo": "اَندرُونی جائزُک اِنتِظار",
+      "resolved": "حَل کُرمُت"
+    },
+    "priority": {
+      "CRITICAL": "اہَم ترین",
+      "HIGH": "زیادٕ",
+      "MEDIUM": "دَرمیانہٕ",
+      "LOW": "کم"
+    },
+    "sla": {
+      "dueDate": "تاریخ تام {{date}}",
+      "dueToday": "ازِ چھُ واجِبُ الادا",
+      "overdueSingular": "{{count}} دۄہ زیاتہٕ گۆومُت",
+      "overduePlural": "{{count}} دۄہ زیاتہٕ گۆومُت",
+      "daysLeftSingular": "{{count}} دۄہ باقائے",
+      "daysLeftPlural": "{{count}} دۄہ باقائے"
+    },
+    "timeline": {
+      "complaintReceived": "شِکایَت مِلییہِ",
+      "statusChangePrefix": "سٹیٹَس بَدلِیو پؠٹھہٕ",
+      "statusChangeJoiner": "تام"
+    },
+    "list": {
+      "title": "مَیانی شِکایات",
+      "subtitle": "تُہنٛزِ درج کَرنہٕ آمِت شِکایاتن تہٕ تِہنٛدِ پیش رفتُک جائزہٕ نِیو/پیچھا کِریو۔",
+      "submitNew": "نِو شِکایَت درَج کِریو",
+      "loadFailed": "تُہنٛزِ شِکایات لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+      "empty": "تُہی چھُنہٕ وُنِی کانہہ شِکایَت درج کَرمِت۔",
+      "emptyFiltered": "کانہہ تہِ شِکایَت چھنہٕ فِلتَرَن سِیِتھ مِلان۔",
+      "filters": {
+        "status": "سٹیٹَس",
+        "all": "ساری"
+      },
+      "table": {
+        "tableAriaLabel": "مَیانی شِکایات ٹیبل",
+        "headers": {
+          "referenceId": "حوالہٕ آئی ڈی",
+          "category": "زُمرٕ",
+          "status": "سٹیٹَس",
+          "submitted": "درج کُرمُت",
+          "updated": "اپڈیٹ"
+        }
+      }
+    },
+    "detail": {
+      "back": "مَیانی شِکایاتن مَنٛز واپس گَچھیو",
+      "notFound": "شِکایَت لَبنہٕ نہٕ آو",
+      "description": "تَفصِیل",
+      "submittedOn": "درج کُرمُت تاریخَس {{date}}",
+      "awaitingInfo": {
+        "note": "شِکایَت افسَر چھُ تُہنٛدِ طَرفہٕ مَعلوُماتُک اِنتِظار کَران۔ مہرَبانی کٔرِتھ بۆنِم حِصَس مَنٛز جواب دِیو۔"
+      },
+      "resolved": {
+        "note": "یہِ شِکایَت چھیہِ حَل کَرنہٕ آمِت۔"
+      }
+    },
+    "submit": {
+      "title": "شِکایَت درَج کِریو",
+      "subtitle": "اسہِ دِیو مَعلوُمات زِ کِیاہ گۆو، اسِ سوزو یہِ صَحیح ٹِیمَس مَنٛز۔",
+      "submitFailed": "شِکایَت درَج کَرنَس مَنٛز آئِیہِ ناکامی۔ مہرَبانی کٔرِتھ دوبارٕ کوشِش کِریو۔",
+      "fields": {
+        "category": "زُمرٕ",
+        "categoryPlaceholder": "زُمرٕ مُنتَخَب کِریو",
+        "categoryHelp": "سارِوٕے کھوتہٕ مُناسب آپشَن مُنتَخَب کِریو۔",
+        "categoriesLoadFailed": "شِکایَت زُمرٕ لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+        "description": "تَفصِیل",
+        "descriptionPlaceholder": "شِکایَت بَپتھ پُورٕ تَفصِیل لِکھیو",
+        "descriptionHelp": "زِیادٕ کھوتہٕ زِیادٕ تَفصِیل شامِل کِریو تاکہ جَلد حَل گَچھیے۔",
+        "attachments": "نَسلِ گَنڈ (اِختیاری)",
+        "attachmentsHelp": "PDF, DOCX, PNG یا JPG - فی فایِل {{maxSize}} تام۔",
+        "uploadButton": "فایِلہِ اَپلوڈ کِریو"
+      },
+      "validation": {
+        "categoryRequired": "جاری تھاونہٕ باپَتھ کِریو زُمرٕ مُنتَخَب۔",
+        "descriptionRequired": "جاری تھاونہٕ باپَتھ لِکھیو تَفصِیل۔",
+        "attachmentTooLarge": "{{fileNames}} چھُ {{maxSize}} حدہِ کھوتہٕ بَڈ۔"
+      },
+      "success": {
+        "message": "تُہنٛز شِکایَت {{referenceId}} آئِیہِ درَج کَرنہٕ۔",
+        "attachmentFailedMessage": "تُہنٛز شِکایَت {{referenceId}} آئِیہِ درَج کَرنہٕ، بَلکہ نَسلِ گَنڈ اَپلوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔"
+      },
+      "actions": {
+        "cancel": "کَنسَل",
+        "submit": "شِکایَت درَج کِریو"
+      }
+    },
+    "activity": {
+      "title": "سَرگرمی",
+      "send": "سوزِیو",
+      "sendOnly": "صِرف سوزِیو",
+      "sendOptions": "مَزِید سوزنِچ آپشَن",
+      "sendAndChangeStatusTo": "سوزِیو تہٕ سٹیٹَس بَدلِیو اَتھ مَنٛز",
+      "sendAndUpdateStatus": "سوزِیو تہٕ کِریو اَتھ مارک {{status}}",
+      "publicReply": "جواب دِیو",
+      "internalNote": "اَندرُونی نوٹ",
+      "internalTag": "اَندرُونی",
+      "dataPrincipalRoleLabel": "کلاینٹ",
+      "officerRoleLabel": "شِکایَت افسَر",
+      "composerPlaceholderPublic": "صارفَس باپَتھ جواب لِکھیو...",
+      "composerPlaceholderInternal": "اَندرُونی نوٹ لِکھیو (صارفَس وُچھنَس مَنٛز یِیہِ نہٕ)...",
+      "attach": "نَسلِ گَنڈ",
+      "attachmentsHelp": "PDF, DOCX, PNG یا JPG - فی فایِل {{maxSize}} تام۔",
+      "attachmentTooLarge": "{{fileNames}} چھُ {{maxSize}} حدہِ کھوتہٕ بَڈ۔",
+      "removeAttachment": "نَسلِ گَنڈ کَڈیو"
+    },
+    "attachments": {
+      "tabLabel": "نَسلِ گَنڈ",
+      "tabLabelWithCount": "نَسلِ گَنڈ ({{count}})",
+      "empty": "اَتھ شِکایَتَس مَنٛز چھنہٕ کانہہ نَسلِ گَنڈ شامِل کُرمُت۔",
+      "initialSubmission": "اِبتِدائی درَج کُرمُت",
+      "internalNote": "اَندرُونی",
+      "overflowMore": "+{{count}} بێیہِ"
+    },
+    "management": {
+      "queue": {
+        "title": "شِکایات",
+        "loadFailed": "شِکایات کِیُو لوڈ گَچھنَس مَنٛز آئِیہِ ناکامی۔",
+        "empty": "کانہہ تہِ شِکایَت چھنہٕ فِلتَرَن سِیِتھ مِلان۔",
+        "stats": {
+          "open": "مفتُوح",
+          "awaitingInfo": "جوابُک اِنتِظار",
+          "resolved": "حَل کُرمُت",
+          "slaBreached": "SLA لَنگھَن"
+        },
+        "filters": {
+          "sectionAriaLabel": "شِکایَت کِیُو فِلتَر",
+          "status": "سٹیٹَس",
+          "priority": "تَرجِیح",
+          "search": "حوالہٕ آئی ڈی یا صارف سِیِتھ تپاس کِریو",
+          "all": "ساری",
+          "clear": "فِلتَر صاف کِریو",
+          "clearAriaLabel": "ساری فِلتَر صاف کِریو"
+        },
+        "table": {
+          "tableAriaLabel": "شِکایَت کِیُو ٹیبل",
+          "headers": {
+            "referenceId": "حوالہٕ آئی ڈی",
+            "dataPrincipal": "صارف",
+            "category": "زُمرٕ",
+            "priority": "تَرجِیح",
+            "status": "سٹیٹَس",
+            "sla": "SLA",
+            "updated": "اپڈیٹ"
+          }
+        }
+      },
+      "case": {
+        "back": "کِیُو مَنٛز واپس گَچھیو",
+        "notFound": "شِکایَت لَبنہٕ نہٕ آو",
+        "dataPrincipal": "صارف"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "سَبسکِرپشَنز",
+      "subtitle": "ایوینٹ نوٹیفِکیشن فریم ورکَس مَنٛز درج تمام سَبسکِرپشَنز۔",
+      "addAction": "سَبسکِرپشَن شامِل کِریو",
+      "filters": {
+        "sectionAriaLabel": "سَبسکِرپشَن فِلتَر",
+        "status": "سٹیٹَس",
+        "topic": "مَوضُوع",
+        "clear": "فِلتَر صاف کِریو",
+        "statusOptions": {
+          "all": "ساری سٹیٹَس",
+          "active": "فَعّال",
+          "pendingVerification": "مُعَلَّق",
+          "stale": "پرون/غیر فَعّال"
+        },
+        "topicOptions": {
+          "all": "ساری مَوضُوعات"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "سَبسکِرپشَن آئِیہِ کامِیابی سِیِتھ دوبارٕ تَصدِیق کَرنہٕ۔ سٹیٹَس چھُ فَعّال۔",
+        "reverifyStillStale": "تَصدِیق مَنٛز آئِیہِ ناکامی۔ سَبسکِرپشَن چھُ پرون/غیر فَعّال۔",
+        "reverifyFailed": "دوبارٕ تَصدِیق مَنٛز آئِیہِ ناکامی۔"
+      }
+    },
+    "events": {
+      "title": "واقعات",
+      "subtitle": "ایوینٹ نوٹیفِکیشن فریم ورکَس مَنٛز تمام ایوینٹ ترسیل۔",
+      "filters": {
+        "sectionAriaLabel": "ایوینٹ فِلتَر",
+        "status": "سٹیٹَس",
+        "topic": "مَوضُوع",
+        "search": "واقعات تپاس کِریو",
+        "searchPlaceholder": "مَقصَد یا سَبسکِرائبر آئی ڈی سِیِتھ تپاس کِریو...",
+        "clear": "فِلتَر صاف کِریو",
+        "statusOptions": {
+          "all": "ساری سٹیٹَس"
+        },
+        "topicOptions": {
+          "all": "ساری مَوضُوعات"
+        }
+      },
+      "emptyTitle": "کانہہ ایوینٹ لَبنہٕ نہٕ آو",
+      "emptyMessage": "کانہہ تہِ شائع کُرمُت ایوینٹ چھُنہٕ فِلتَرَن سِیِتھ مِلان۔",
+      "table": {
+        "eventId": "ایوینٹ آئی ڈی",
+        "topic": "مَوضُوع",
+        "purposes": "مقاصِد",
+        "deliveries": "ترسیل",
+        "occurredAt": "وَقت گۆومُت",
+        "action": "اِقدام",
+        "all": "ساری",
+        "noSubscribers": "کانہہ سَبسکِرائبر چھنہٕ",
+        "viewEvent": "ایوینٹ وُچھیو",
+        "subscriberCount_one": "{{count}} سَبسکِرائبر",
+        "subscriberCount_other": "{{count}} سَبسکِرائبرز"
+      },
+      "detail": {
+        "notFoundTitle": "ایوینٹ لَبنہٕ نہٕ آو",
+        "notFoundMessage": "آئی ڈی \"{{eventId}}\" سِیِتھ کانہہ تہِ ایوینٹ لَبنہٕ نہٕ آو۔",
+        "backToEvents": "واقعاتن مَنٛز واپس گَچھیو",
+        "topic": "مَوضُوع",
+        "purposes": "مقاصِد",
+        "occurredAt": "وَقت گۆومُت",
+        "deliveries": "ترسیل",
+        "all": "ساری",
+        "noSubscribers": "کانہہ سَبسکِرائبر چھنہٕ",
+        "subscriberCount_one": "{{count}} سَبسکِرائبر",
+        "subscriberCount_other": "{{count}} سَبسکِرائبرز"
+      },
+      "dialog": {
+        "title": "دوبارٕ کوشِش تَوارِیخ",
+        "deliveryId": "ترسیل آئی ڈی",
+        "loading": "ایوینٹ ترسیل تَوارِیخ لوڈ گَچھان…",
+        "noRetries": "گوڈنیچ کوشِش مُکَمَّل۔ کانہہ دوبارٕ کوشِش درج چھنہٕ۔",
+        "attempt": "کوشِش {{attempt}}",
+        "retrySuffix": " (دوبارٕ کوشِش)",
+        "webhookDescription": "HTTP ترسیل تہٕ دوبارٕ کوشِشَن ہُنٛد تَوارِیخ۔",
+        "pollTitle": "پول مُکَمَّل سٹیٹَس تہٕ اِعتِراف",
+        "completionStatus": "تَکمِیل سٹیٹَس",
+        "completionTimestamp": "تَکمِیل وَقت",
+        "erasureMethod": "حَذف کَرنُک طَرِیقہٕ",
+        "recordsAffected": "مُتَٲثِرہٕ ریکارڈ",
+        "referenceId": "حوالہٕ آئی ڈی",
+        "submittedBy": "درج کُرمُت بذریعہٕ",
+        "notes": "نوٹس",
+        "noAcknowledgment": "کانہہ تہِ اِعتِراف درج کُرمُت چھُنہٕ۔",
+        "close": "بَند کِریو"
+      }
+    }
+  }
+}

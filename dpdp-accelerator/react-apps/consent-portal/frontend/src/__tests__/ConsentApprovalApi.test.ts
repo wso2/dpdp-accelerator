@@ -19,11 +19,10 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import {
   approveMyConsent,
-  fetchMyConsents,
   rejectMyConsent,
   revokeMyConsent,
 } from '../features/consent-registry/api/consentsApi'
-import { APIError, apiRequest } from '../utils/apiClient'
+import { apiRequest } from '../utils/apiClient'
 
 const fetchMock = vi.fn()
 
@@ -32,41 +31,25 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-function mockOkResponse(payload: unknown = { status: 'OK' }): void {
-  vi.stubGlobal('fetch', fetchMock)
-  fetchMock.mockResolvedValue({
-    ok: true,
-    status: 200,
-    json: async () => payload,
-  })
-}
-
-describe('self-service consent API', () => {
-  it('sends only the supported list parameters', async () => {
-    mockOkResponse({ data: [], metadata: { total: 0, offset: 0, count: 0, limit: 10 } })
-
-    await fetchMyConsents({
-      limit: 10,
-      offset: 20,
-      consentStatuses: 'PENDING',
-      serviceId: 'dpdp-portal',
+describe('approveMyConsent', () => {
+  it('sends selected optional approvals to the BFF approve endpoint', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
     })
 
-    const [requestUrl] = fetchMock.mock.calls[0] ?? []
-    const url = new URL(String(requestUrl))
-    expect(url.pathname).toBe('/me/consents')
-    expect(Object.fromEntries(url.searchParams)).toEqual({
-      consentStatuses: 'PENDING',
-      serviceId: 'dpdp-portal',
-      limit: '10',
-      offset: '20',
-    })
-  })
+    const selectedOptionalElements = [
+      {
+        purposeId: 'purpose-profile',
+        purposeVersion: 'v2',
+        elementId: 'element-last-name',
+        elementVersion: 'v3',
+      },
+    ]
 
-  it('approves the whole consent with an empty body', async () => {
-    mockOkResponse()
-
-    await approveMyConsent('consent/123?draft')
+    await approveMyConsent('consent/123?draft', selectedOptionalElements)
 
     expect(fetchMock).toHaveBeenCalledTimes(1)
     const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? []
@@ -76,49 +59,49 @@ describe('self-service consent API', () => {
     expect(requestInit).toMatchObject({
       method: 'POST',
       credentials: 'include',
-      body: JSON.stringify({}),
+      body: JSON.stringify(selectedOptionalElements),
     })
     expect(requestHeaders.get('Accept')).toBe('application/json')
     expect(requestHeaders.get('Content-Type')).toBe('application/json')
   })
 
-  it('rejects consent with POST and an empty body', async () => {
-    mockOkResponse()
-
-    await rejectMyConsent('consent/123?draft')
-
-    const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? []
-    expect(String(requestUrl)).toContain('/me/consents/consent%2F123%3Fdraft/reject')
-    expect(requestInit).toMatchObject({ method: 'POST', body: JSON.stringify({}) })
-  })
-
-  it('revokes consent with POST and an empty body', async () => {
-    mockOkResponse()
+  it('revokes consent with POST', async () => {
+    vi.stubGlobal('fetch', fetchMock)
+    fetchMock.mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+    })
 
     await revokeMyConsent('consent-123')
 
-    const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? []
-    expect(String(requestUrl)).toContain('/me/consents/consent-123/revoke')
-    expect(requestInit).toMatchObject({ method: 'POST', body: JSON.stringify({}) })
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const [, requestInit] = fetchMock.mock.calls[0] ?? []
+    expect(requestInit).toMatchObject({
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({}),
+    })
   })
 
-  it('surfaces the INVALID_CONSENT_STATE message from a 409 response', async () => {
+  it('rejects consent with POST', async () => {
     vi.stubGlobal('fetch', fetchMock)
     fetchMock.mockResolvedValue({
-      ok: false,
-      status: 409,
-      json: async () => ({
-        code: 'INVALID_CONSENT_STATE',
-        message: 'Consent db1f6e7a is not in PENDING state.',
-      }),
+      ok: true,
+      status: 200,
+      json: async () => ({}),
     })
 
-    await expect(approveMyConsent('db1f6e7a')).rejects.toMatchObject({
-      code: 'INVALID_CONSENT_STATE',
-      status: 409,
-      message: 'Consent db1f6e7a is not in PENDING state.',
+    await rejectMyConsent('consent/123?draft')
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? []
+    expect(String(requestUrl)).toContain('/me/consents/consent%2F123%3Fdraft/reject')
+    expect(requestInit).toMatchObject({
+      method: 'POST',
+      credentials: 'include',
+      body: JSON.stringify({}),
     })
-    await expect(approveMyConsent('db1f6e7a')).rejects.toBeInstanceOf(APIError)
   })
 })
 

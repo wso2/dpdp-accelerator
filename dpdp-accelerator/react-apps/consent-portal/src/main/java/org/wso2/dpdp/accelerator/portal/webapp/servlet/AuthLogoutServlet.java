@@ -24,6 +24,7 @@ import org.wso2.dpdp.accelerator.portal.webapp.util.AuthUtil;
 import org.wso2.dpdp.accelerator.portal.webapp.util.CookieUtil;
 import org.wso2.dpdp.accelerator.portal.webapp.util.HttpUtil;
 import org.wso2.dpdp.accelerator.portal.webapp.util.PortalConfig;
+import org.wso2.dpdp.accelerator.portal.webapp.util.PortalConstants;
 
 import java.io.IOException;
 
@@ -50,6 +51,14 @@ public class AuthLogoutServlet extends HttpServlet {
                 config.getIdentityServerBaseUrl() + config.getPortalBasePath() + "/auth/callback";
 
         CookieUtil.clearAllAuthCookies(response, config.getPortalBasePath(), config.isCookieSecure());
+        // The acting-as mask token is bound to whoever was signed in when it was
+        // minted, not to this login session, so it must be cleared here too --
+        // otherwise it would silently survive into a different person's session
+        // on the same browser.
+        CookieUtil.clearCookie(response, PortalConstants.ACTING_TOKEN_COOKIE, config.getPortalBasePath(),
+                config.isCookieSecure());
+        CookieUtil.clearCookie(response, PortalConstants.ACTING_STATE_COOKIE, config.getPortalBasePath(),
+                config.isCookieSecure());
 
         ObjectNode body = HttpUtil.mapper().createObjectNode();
         body.put("logoutUrl", OAuthService.getInstance()

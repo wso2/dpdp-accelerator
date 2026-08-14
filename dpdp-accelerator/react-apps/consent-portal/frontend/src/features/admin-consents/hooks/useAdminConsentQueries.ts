@@ -18,97 +18,180 @@
 
 import {
   keepPreviousData,
+  queryOptions,
   type UseMutationResult,
   type UseQueryResult,
   useMutation,
   useQuery,
   useQueryClient,
 } from '@tanstack/react-query'
+import { useEffect } from 'react'
 import type {
-  AdminConsentListQueryParams,
   AdminConsentRegistryFilters,
-  ConsentDetail,
+  ConsentDetailAPI,
+  ConsentListQueryParams,
   ConsentRecord,
-  ConsentSummary,
+  ConsentRegistrySortDirection,
+  ConsentRegistrySortField,
 } from '../../../types/consent'
-import { isConsentState } from '../../../types/consent'
-import { getNextCursor, getPreviousCursor } from '../../../utils/cursorPagination'
-import { normalizeConsentState } from '../../consent-registry/utils/statusChip'
-import { toConsentRow } from '../../consent-registry/hooks/useConsentQueries'
+import { isConsentAPIStatus } from '../../../types/consent'
+import { PORTAL_SCOPES } from '../../../utils/portalScopes'
+import {
+  toEndOfDayEpochMilliseconds,
+  toEpochMilliseconds,
+  toStartOfDayEpochMilliseconds,
+} from '../../../utils/dateTime'
+import useAuthorization from '../../auth/useAuthorization'
+import {
+  isConsentRevokableStatus,
+  normalizeConsentStatus,
+} from '../../consent-registry/utils/statusChip'
 import {
   fetchAdminConsentByID,
   fetchAdminConsents,
   revokeAdminConsent,
 } from '../api/adminConsentsApi'
 
-export interface AdminConsentListResult {
+interface AdminConsentListResult {
   rows: ConsentRecord[]
-  nextCursor?: string
-  previousCursor?: string
-}
-
-function toAdminConsentRow(consent: ConsentSummary): ConsentRecord {
-  const normalizedState = normalizeConsentState(consent.state)
-
-  if (!isConsentState(normalizedState)) {
-    throw new Error(`Unsupported consent state received from API: ${consent.state}`)
-  }
-
-  return {
-    id: consent.id,
-    subjectId: consent.subjectId,
-    serviceId: consent.serviceId,
-    state: normalizedState,
-    timestamp: consent.timestamp,
-  }
+  total: number
 }
 
 function toListParams(
   filters: AdminConsentRegistryFilters,
+  page: number,
   rowsPerPage: number,
-  cursor: { after?: string; before?: string },
-): AdminConsentListQueryParams {
+  sortField: ConsentRegistrySortField,
+  sortDirection: ConsentRegistrySortDirection,
+): ConsentListQueryParams {
+  const statusFilterMap: Record<Exclude<AdminConsentRegistryFilters['status'], 'All'>, string> = {
+    Active: 'ACTIVE',
+    Pending: 'CREATED',
+    Rejected: 'REJECTED',
+    Revoked: 'REVOKED',
+    Expired: 'EXPIRED',
+  }
+
   return {
+    sort: `${sortField}:${sortDirection}`,
+    consentStatuses: filters.status === 'All' ? undefined : statusFilterMap[filters.status],
+    userIds: filters.userIds || undefined,
+    groupIds: filters.groupIds || undefined,
+    purposeName: filters.purposeName.trim() || undefined,
+    purposeVersion: filters.purposeName.trim()
+      ? filters.purposeVersion.trim() || undefined
+      : undefined,
+    elementName: filters.elementName.trim() || undefined,
+    elementNamespace: filters.elementNamespace.trim() || undefined,
+    elementVersion:
+      filters.elementName.trim() || filters.elementNamespace.trim()
+        ? filters.elementVersion.trim() || undefined
+        : undefined,
+    fromTime: toStartOfDayEpochMilliseconds(filters.startDate),
+    toTime: toEndOfDayEpochMilliseconds(filters.endDate),
     limit: rowsPerPage,
-    after: cursor.after,
-    before: cursor.before,
-    subjectId: filters.subjectId || undefined,
-    serviceId: filters.serviceId || undefined,
-    state: filters.state === 'All' ? undefined : filters.state,
+    offset: page * rowsPerPage,
   }
 }
 
-export function useAdminConsentListQuery(
-  filters: AdminConsentRegistryFilters,
-  rowsPerPage: number,
-  cursor: { after?: string; before?: string },
-): UseQueryResult<AdminConsentListResult> {
-  const consentID = filters.consentId
-  const params = toListParams(filters, rowsPerPage, cursor)
+function toAdminConsentRow(consent: ConsentDetailAPI, canWriteAny: boolean): ConsentRecord {
+  const normalizedStatus = normalizeConsentStatus(consent.status)
+  if (!isConsentAPIStatus(normalizedStatus)) {
+    throw new Error(`Unsupported consent status received from API: ${consent.status}`)
+  }
 
-  return useQuery({
-    queryKey: ['admin-consents', { consentID, params }],
+  return {
+    id: consent.id,
+    groupId: consent.groupId,
+    type: consent.type,
+    status: normalizedStatus,
+    purposes: consent.purposes.map((purpose) => purpose.displayName ?? purpose.name),
+    updatedAt: new Date(toEpochMilliseconds(consent.updatedTime) ?? 0).toISOString(),
+    expirationTime: consent.expirationTime ?? 0,
+    canApprove: false,
+    canRevoke: canWriteAny && isConsentRevokableStatus(normalizedStatus),
+  }
+}
+
+function adminConsentListQueryOptions(
+  filters: AdminConsentRegistryFilters,
+  page: number,
+  rowsPerPage: number,
+  sortField: ConsentRegistrySortField,
+  sortDirection: ConsentRegistrySortDirection,
+  canWriteAny: boolean,
+) {
+  const consentID = filters.consentId.trim()
+  const params = toListParams(filters, page, rowsPerPage, sortField, sortDirection)
+  return queryOptions({
+    queryKey: ['admin-consents', { consentID, params }, { canWriteAny }],
     queryFn: async (): Promise<AdminConsentListResult> => {
       if (consentID) {
         const consent = await fetchAdminConsentByID(consentID)
-        return { rows: [toConsentRow(consent)] }
+        return {
+          rows: [toAdminConsentRow(consent, canWriteAny)],
+          total: 1,
+        }
       }
-
       const response = await fetchAdminConsents(params)
-
       return {
-        rows: response.Consents.map(toAdminConsentRow),
-        nextCursor: getNextCursor(response.links),
-        previousCursor: getPreviousCursor(response.links),
+        rows: response.data.map((consent) => toAdminConsentRow(consent, canWriteAny)),
+        total: response.metadata.total,
       }
     },
     placeholderData: keepPreviousData,
   })
 }
 
+export function useAdminConsentListQuery(
+  filters: AdminConsentRegistryFilters,
+  page: number,
+  rowsPerPage: number,
+  sortField: ConsentRegistrySortField,
+  sortDirection: ConsentRegistrySortDirection,
+): UseQueryResult<AdminConsentListResult> {
+  const queryClient = useQueryClient()
+  const { hasScope } = useAuthorization()
+  const canWriteAny = hasScope(PORTAL_SCOPES.CONSENTS_WRITE_ANY)
+  const query = useQuery(
+    adminConsentListQueryOptions(filters, page, rowsPerPage, sortField, sortDirection, canWriteAny),
+  )
+
+  useEffect(() => {
+    const nextPage = page + 1
+    const hasNextPage = nextPage * rowsPerPage < (query.data?.total ?? 0)
+    if (!query.isPlaceholderData && hasNextPage) {
+      queryClient
+        .prefetchQuery(
+          adminConsentListQueryOptions(
+            filters,
+            nextPage,
+            rowsPerPage,
+            sortField,
+            sortDirection,
+            canWriteAny,
+          ),
+        )
+        .catch(() => undefined)
+    }
+  }, [
+    canWriteAny,
+    filters,
+    page,
+    query.data?.total,
+    query.isPlaceholderData,
+    queryClient,
+    rowsPerPage,
+    sortDirection,
+    sortField,
+  ])
+
+  return query
+}
+
 export function useAdminConsentDetailQuery(
   consentID: string | undefined,
-): UseQueryResult<ConsentDetail> {
+): UseQueryResult<ConsentDetailAPI> {
   return useQuery({
     queryKey: ['admin-consent', consentID],
     queryFn: () => fetchAdminConsentByID(String(consentID)),
@@ -116,14 +199,22 @@ export function useAdminConsentDetailQuery(
   })
 }
 
-export function useAdminRevokeConsentMutation(): UseMutationResult<unknown, Error, string> {
-  const queryClient = useQueryClient()
+interface AdminRevokeVariables {
+  consentID: string
+  actionBy: string
+}
 
+export function useAdminRevokeConsentMutation(): UseMutationResult<
+  unknown,
+  Error,
+  AdminRevokeVariables
+> {
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: (consentID: string) => revokeAdminConsent(consentID),
-    onSuccess: async (_data, consentID) => {
+    mutationFn: ({ consentID, actionBy }) => revokeAdminConsent(consentID, actionBy),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['admin-consents'] })
-      await queryClient.invalidateQueries({ queryKey: ['admin-consent', consentID] })
+      await queryClient.invalidateQueries({ queryKey: ['admin-consent', variables.consentID] })
     },
   })
 }

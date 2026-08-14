@@ -17,8 +17,11 @@
  */
 
 import {
+  AdapterDateFns,
+  Autocomplete,
   Box,
   Button,
+  DatePickers,
   FormControl,
   IconButton,
   InputLabel,
@@ -35,8 +38,9 @@ import { ListFilter } from '@wso2/oxygen-ui-icons-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { AdminConsentRegistryFilters } from '../../../types/consent'
-import { CONSENT_STATES } from '../../../types/consent'
-import { getConsentStateLabelKey } from '../../consent-registry/utils/statusChip'
+import type { ElementSummary } from '../../../types/catalog'
+import ElementVersionSelect from '../../catalog/components/ElementVersionSelect'
+import { useElementOptionsQuery } from '../../catalog/hooks/useCatalogQueries'
 import {
   EMPTY_ADMIN_CONSENT_FILTERS,
   normalizeAdminConsentFilters,
@@ -44,14 +48,38 @@ import {
 
 interface AdminConsentFiltersProps {
   filters: AdminConsentRegistryFilters
+  canReadElements: boolean
   onFilterChange: (filters: AdminConsentRegistryFilters) => void
   onClear: () => void
 }
 
 const MAIN_FILTER_HEIGHT = 40
 
+function parseDate(value: string): Date | null {
+  if (!value) return null
+  const [year, month, day] = value.split('-').map(Number)
+  const date = new Date(year, month - 1, day)
+  return date.getFullYear() === year && date.getMonth() === month - 1 && date.getDate() === day
+    ? date
+    : null
+}
+
+function formatDate(value: Date | null): string {
+  if (!value) return ''
+  return [
+    value.getFullYear(),
+    String(value.getMonth() + 1).padStart(2, '0'),
+    String(value.getDate()).padStart(2, '0'),
+  ].join('-')
+}
+
+function elementLabel(element: ElementSummary): string {
+  return `${element.displayName ?? element.name} (${element.namespace})`
+}
+
 export default function AdminConsentFilters({
   filters,
+  canReadElements,
   onFilterChange,
   onClear,
 }: AdminConsentFiltersProps): React.JSX.Element {
@@ -59,7 +87,24 @@ export default function AdminConsentFilters({
   const [draft, setDraft] = useState(filters)
   const [filtersAnchor, setFiltersAnchor] = useState<HTMLElement | null>(null)
   const filtersOpen = Boolean(filtersAnchor)
-  const advancedFilterCount = [filters.subjectId, filters.serviceId].filter(Boolean).length
+  const elementOptionsQuery = useElementOptionsQuery(filtersOpen && canReadElements)
+  const elementOptions = elementOptionsQuery.data?.data ?? []
+  const selectedElement =
+    elementOptions.find(
+      (element) =>
+        element.name === draft.elementName && element.namespace === draft.elementNamespace,
+    ) ?? null
+  const advancedFilterCount = [
+    filters.purposeName,
+    filters.userIds,
+    filters.groupIds,
+    filters.purposeVersion,
+    filters.elementName,
+    filters.elementNamespace,
+    filters.elementVersion,
+    filters.startDate,
+    filters.endDate,
+  ].filter(Boolean).length
 
   const applyFilters = (next: AdminConsentRegistryFilters): void => {
     const normalized = normalizeAdminConsentFilters(next)
@@ -148,32 +193,35 @@ export default function AdminConsentFilters({
           </Box>
         </Box>
         <Tooltip
-          title={filters.consentId ? t('adminConsents.filters.removeConsentIdForState') : ''}
+          title={filters.consentId ? t('adminConsents.filters.removeConsentIdForStatus') : ''}
         >
           <Box component="span" sx={{ width: { xs: '100%', sm: 220 }, flexShrink: 0 }}>
             <FormControl size="small" fullWidth disabled={Boolean(filters.consentId)}>
-              <InputLabel id="admin-consent-state-label">
-                {t('consentRegistry.filters.state')}
+              <InputLabel id="admin-consent-status-label">
+                {t('consentRegistry.filters.status')}
               </InputLabel>
               <Select
-                labelId="admin-consent-state-label"
-                value={filters.state}
-                label={t('consentRegistry.filters.state')}
+                labelId="admin-consent-status-label"
+                value={filters.status}
+                label={t('consentRegistry.filters.status')}
                 sx={{ height: MAIN_FILTER_HEIGHT }}
                 onChange={(event) =>
                   applyFilters({
                     ...filters,
                     consentId: draft.consentId,
-                    state: event.target.value as AdminConsentRegistryFilters['state'],
+                    status: event.target.value as AdminConsentRegistryFilters['status'],
                   })
                 }
               >
-                <MenuItem value="All">{t('consentRegistry.status.all')}</MenuItem>
-                {CONSENT_STATES.map((state) => (
-                  <MenuItem key={state} value={state}>
-                    {t(`consentRegistry.status.${getConsentStateLabelKey(state)}`)}
-                  </MenuItem>
-                ))}
+                {(['All', 'Active', 'Pending', 'Rejected', 'Revoked', 'Expired'] as const).map(
+                  (status) => (
+                    <MenuItem key={status} value={status}>
+                      {t(
+                        `consentRegistry.status.${status === 'All' ? 'all' : status.toLowerCase()}`,
+                      )}
+                    </MenuItem>
+                  ),
+                )}
               </Select>
             </FormControl>
           </Box>
@@ -189,7 +237,7 @@ export default function AdminConsentFilters({
         slotProps={{
           paper: {
             sx: {
-              width: { xs: 'calc(100vw - 32px)', sm: 560 },
+              width: { xs: 'calc(100vw - 32px)', sm: 720 },
               maxWidth: 'calc(100vw - 32px)',
               mt: 1,
               p: 2.5,
@@ -205,19 +253,156 @@ export default function AdminConsentFilters({
             <TextField
               size="small"
               fullWidth
-              label={t('adminConsents.filters.subjectId')}
-              helperText={t('adminConsents.filters.subjectIdHelp')}
-              value={draft.subjectId}
-              onChange={(event) => setDraft({ ...draft, subjectId: event.target.value })}
+              label={t('adminConsents.filters.userIds')}
+              helperText={t('adminConsents.filters.commaSeparatedUsers')}
+              value={draft.userIds}
+              onChange={(event) => setDraft({ ...draft, userIds: event.target.value })}
             />
             <TextField
               size="small"
               fullWidth
-              label={t('adminConsents.filters.serviceId')}
-              value={draft.serviceId}
-              onChange={(event) => setDraft({ ...draft, serviceId: event.target.value })}
+              label={t('adminConsents.filters.groupIds')}
+              helperText={t('catalog.help.commaSeparatedGroups')}
+              value={draft.groupIds}
+              onChange={(event) => setDraft({ ...draft, groupIds: event.target.value })}
             />
           </Stack>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <TextField
+              size="small"
+              fullWidth
+              label={t('catalog.fields.purposeName')}
+              value={draft.purposeName}
+              onChange={(event) => {
+                const purposeName = event.target.value
+                setDraft({
+                  ...draft,
+                  purposeName,
+                  purposeVersion: purposeName.trim() ? draft.purposeVersion : '',
+                })
+              }}
+            />
+            <Tooltip
+              arrow
+              title={t('catalog.help.purposeVersionRequiresName')}
+              disableHoverListener={Boolean(draft.purposeName.trim())}
+            >
+              <Box sx={{ width: '100%' }}>
+                <TextField
+                  size="small"
+                  fullWidth
+                  disabled={!draft.purposeName.trim()}
+                  label={t('catalog.fields.purposeVersion')}
+                  value={draft.purposeVersion}
+                  onChange={(event) => setDraft({ ...draft, purposeVersion: event.target.value })}
+                />
+              </Box>
+            </Tooltip>
+          </Stack>
+          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            {canReadElements ? (
+              <Autocomplete
+                size="small"
+                fullWidth
+                options={elementOptions}
+                value={selectedElement}
+                loading={elementOptionsQuery.isLoading}
+                getOptionLabel={elementLabel}
+                isOptionEqualToValue={(option, value) => option.elementId === value.elementId}
+                onChange={(_, selected) =>
+                  setDraft({
+                    ...draft,
+                    elementName: selected?.name ?? '',
+                    elementNamespace: selected?.namespace ?? '',
+                    elementVersion: '',
+                  })
+                }
+                renderInput={(params) => (
+                  // Oxygen UI Autocomplete requires forwarding its generated input props.
+                  // eslint-disable-next-line react/jsx-props-no-spreading
+                  <TextField {...params} label={t('catalog.fields.elementName')} />
+                )}
+              />
+            ) : (
+              <TextField
+                size="small"
+                fullWidth
+                label={t('catalog.fields.elementName')}
+                value={draft.elementName}
+                onChange={(event) => {
+                  const elementName = event.target.value
+                  setDraft({
+                    ...draft,
+                    elementName,
+                    elementVersion:
+                      elementName.trim() || draft.elementNamespace.trim()
+                        ? draft.elementVersion
+                        : '',
+                  })
+                }}
+              />
+            )}
+            <TextField
+              size="small"
+              fullWidth
+              label={t('catalog.fields.elementNamespace')}
+              value={draft.elementNamespace}
+              onChange={(event) => {
+                const elementNamespace = event.target.value
+                setDraft({
+                  ...draft,
+                  elementNamespace,
+                  elementVersion:
+                    draft.elementName.trim() || elementNamespace.trim() ? draft.elementVersion : '',
+                })
+              }}
+            />
+            {canReadElements && selectedElement ? (
+              <ElementVersionSelect
+                elementId={selectedElement.elementId}
+                latestVersion={selectedElement.version}
+                value={draft.elementVersion}
+                label={t('catalog.fields.elementVersion')}
+                allowAny
+                onChange={(elementVersion) => setDraft({ ...draft, elementVersion })}
+              />
+            ) : (
+              <Tooltip
+                arrow
+                title={t('catalog.help.elementVersionRequiresIdentity')}
+                disableHoverListener={Boolean(
+                  draft.elementName.trim() || draft.elementNamespace.trim(),
+                )}
+              >
+                <Box sx={{ width: '100%' }}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    disabled={!draft.elementName.trim() && !draft.elementNamespace.trim()}
+                    label={t('catalog.fields.elementVersion')}
+                    value={draft.elementVersion}
+                    onChange={(event) => setDraft({ ...draft, elementVersion: event.target.value })}
+                  />
+                </Box>
+              </Tooltip>
+            )}
+          </Stack>
+          <DatePickers.LocalizationProvider dateAdapter={AdapterDateFns}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <DatePickers.DatePicker
+                label={t('consentRegistry.filters.startDate')}
+                value={parseDate(draft.startDate)}
+                onChange={(value) => setDraft({ ...draft, startDate: formatDate(value) })}
+                slotProps={{ textField: { size: 'small', fullWidth: true } }}
+              />
+              <DatePickers.DatePicker
+                label={t('consentRegistry.filters.endDate')}
+                value={parseDate(draft.endDate)}
+                onChange={(value) => setDraft({ ...draft, endDate: formatDate(value) })}
+                slotProps={{ textField: { size: 'small', fullWidth: true } }}
+              />
+            </Stack>
+          </DatePickers.LocalizationProvider>
           <Stack
             direction="row"
             justifyContent="space-between"

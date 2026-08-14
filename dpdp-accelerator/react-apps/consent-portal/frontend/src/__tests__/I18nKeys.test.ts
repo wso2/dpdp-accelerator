@@ -17,7 +17,7 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import commonEn from '../i18n/resources/en/common'
+import commonEn from '../../public/i18n/en/common.json'
 
 const sourceFiles = import.meta.glob<string>(
   ['../**/*.{ts,tsx}', '!../**/*.test.{ts,tsx}', '!../__tests__/**'],
@@ -62,5 +62,53 @@ describe('i18n resources', () => {
       .filter(({ translationKey }) => !resourceKeys.has(translationKey))
 
     expect(missingKeys).toEqual([])
+  })
+
+  // i18next runs with skipOnVariables (its default), so a placeholder the call
+  // site never passes is not blanked out - it is printed verbatim, and users see
+  // "This grants {{nomineeName}} access to ...". The English default string next
+  // to the call can disagree with the resource string silently, which is exactly
+  // how that shipped once already.
+  it('passes every placeholder the English resource string interpolates', () => {
+    const flatten = (value: unknown, prefix = ''): [string, string][] => {
+      if (!value || typeof value !== 'object' || Array.isArray(value)) {
+        return []
+      }
+
+      return Object.entries(value as Record<string, unknown>).flatMap(([key, nested]) => {
+        const path = prefix ? `${prefix}.${key}` : key
+        return typeof nested === 'string'
+          ? ([[path, nested]] as [string, string][])
+          : flatten(nested, path)
+      })
+    }
+
+    const resourceStrings = new Map(flatten(commonEn))
+    // t('some.key', { a, b, defaultValue: '...' }) - the option object only.
+    const interpolatedCallPattern = /\bt\(\s*'([^']+)'\s*,\s*\{([\s\S]{0,600}?)\}\s*\)/g
+    const placeholderPattern = /\{\{\s*([A-Za-z_$][\w$]*)/g
+    // Property names in the option object, including a trailing shorthand.
+    const passedNamePattern = /(?:^|[{,])\s*([A-Za-z_$][\w$]*)\s*(?=[,:}]|$)/g
+
+    const mismatches = Object.entries(sourceFiles).flatMap(([filePath, source]) =>
+      Array.from(source.matchAll(interpolatedCallPattern)).flatMap(([, key, optionBody]) => {
+        const resourceString = resourceStrings.get(key)
+
+        if (!resourceString) {
+          return []
+        }
+
+        const passed = new Set(
+          Array.from(optionBody.matchAll(passedNamePattern), (match) => match[1]),
+        )
+        const missing = Array.from(
+          new Set(Array.from(resourceString.matchAll(placeholderPattern), (match) => match[1])),
+        ).filter((name) => !passed.has(name))
+
+        return missing.length > 0 ? [{ filePath, key, missing }] : []
+      }),
+    )
+
+    expect(mismatches).toEqual([])
   })
 })

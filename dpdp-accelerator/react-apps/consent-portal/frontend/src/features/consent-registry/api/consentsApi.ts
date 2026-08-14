@@ -17,13 +17,12 @@
  */
 
 import type {
-  ConsentDetail,
+  ConsentApprovalSelection,
+  ConsentDetailAPI,
   ConsentListQueryParams,
   ConsentSearchResponse,
 } from '../../../types/consent'
 import { apiRequest } from '../../../utils/apiClient'
-
-const jsonHeaders = { 'Content-Type': 'application/json' }
 
 export async function fetchMyConsents(
   params: ConsentListQueryParams,
@@ -32,32 +31,44 @@ export async function fetchMyConsents(
     method: 'GET',
     query: {
       consentStatuses: params.consentStatuses,
-      serviceId: params.serviceId,
+      purposeName: params.purposeName,
+      groupIds: params.groupIds,
+      elementName: params.elementName,
+      elementVersion: params.elementVersion,
+      sort: params.sort,
+      fromTime: params.fromTime,
+      toTime: params.toTime,
       limit: params.limit,
       offset: params.offset,
     },
   })
 }
 
-export async function fetchMyConsentByID(consentID: string): Promise<ConsentDetail> {
-  return apiRequest<ConsentDetail>(`/me/consents/${encodeURIComponent(consentID)}`, {
+export async function fetchMyConsentByID(consentID: string): Promise<ConsentDetailAPI> {
+  return apiRequest<ConsentDetailAPI>(`/me/consents/${encodeURIComponent(consentID)}`, {
     method: 'GET',
   })
 }
 
-/** Approves the whole consent. Per element selection no longer exists. */
-export async function approveMyConsent(consentID: string): Promise<unknown> {
+export async function approveMyConsent(
+  consentID: string,
+  selectedOptionalElements: ConsentApprovalSelection[],
+): Promise<unknown> {
   return apiRequest<unknown>(`/me/consents/${encodeURIComponent(consentID)}/approve`, {
     method: 'POST',
-    headers: jsonHeaders,
-    body: JSON.stringify({}),
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(selectedOptionalElements),
   })
 }
 
 export async function rejectMyConsent(consentID: string): Promise<unknown> {
   return apiRequest<unknown>(`/me/consents/${encodeURIComponent(consentID)}/reject`, {
     method: 'POST',
-    headers: jsonHeaders,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({}),
   })
 }
@@ -65,7 +76,9 @@ export async function rejectMyConsent(consentID: string): Promise<unknown> {
 export async function revokeMyConsent(consentID: string): Promise<unknown> {
   return apiRequest<unknown>(`/me/consents/${encodeURIComponent(consentID)}/revoke`, {
     method: 'POST',
-    headers: jsonHeaders,
+    headers: {
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify({}),
   })
 }

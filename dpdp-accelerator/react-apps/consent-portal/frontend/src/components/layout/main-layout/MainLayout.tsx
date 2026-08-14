@@ -21,8 +21,10 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Outlet } from 'react-router-dom'
 import AppSidebar from '../sidebar/AppSidebar'
+import LanguageSwitcher from './LanguageSwitcher'
 import RouteScrollManager from './RouteScrollManager'
 import UserProfileMenu from './UserProfileMenu'
+import ActingExitButton from '../../../features/nominee/actingAs/ActingExitButton'
 
 function MainLayout(): React.JSX.Element {
   const { t } = useTranslation('common')
@@ -42,9 +44,7 @@ function MainLayout(): React.JSX.Element {
             <Header.BrandLogo>
               <Box
                 component="img"
-                // Resolved against the deployed base path: the portal is served
-                // from a webapp context, not the server root.
-                src={`${import.meta.env.BASE_URL}wso2-logo.png`}
+                src={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/wso2-logo.png`}
                 alt=""
                 aria-hidden="true"
                 sx={{
@@ -58,6 +58,8 @@ function MainLayout(): React.JSX.Element {
           </Header.Brand>
           <Header.Spacer />
           <Header.Actions>
+            <ActingExitButton />
+            <LanguageSwitcher />
             <ColorSchemeToggle />
             <UserProfileMenu />
           </Header.Actions>
