@@ -120,7 +120,7 @@ public class AdminApiServlet extends AbstractProxyServlet {
         }
 
         String query = request.getQueryString();
-        String target = path + (query == null || query.isEmpty() ? "" : "?" + query);
+        String target = "/api/v1" + path + (query == null || query.isEmpty() ? "" : "?" + query);
         String groupId = request.getHeader("group-id");
         String orgId = caller.getRawOrgId();
 
