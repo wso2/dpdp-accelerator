@@ -88,6 +88,19 @@
     </Match>
 
     <!--
+      group-id is forwarded to the Consent Server verbatim, exactly as the SPA
+      set it, on purpose: the create-purpose flow lets the caller choose which
+      group a new purpose belongs to. It is never used to decide access to an
+      existing resource: reads and writes to existing purposes/elements are
+      addressed by id, and org-id (from the caller's own verified token) is
+      the tenant boundary that is actually enforced.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.AdminApiServlet"/>
+        <Bug pattern="SERVLET_HEADER"/>
+    </Match>
+
+    <!--
       Storing tokens in cookies is the design: part one is script-readable so
       the SPA can send it as a bearer, part two is HttpOnly so scripts can never
       reconstruct a whole token. Cookies are Secure and SameSite=Strict.
@@ -154,6 +167,14 @@
         <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ConsentServerClient$Result"/>
         <Bug pattern="XSS_SERVLET"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.AdminApiServlet"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.MyConsentsServlet"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
 
     <!--
       The only value logged is a filesystem path built from carbon.home, not
@@ -213,7 +234,7 @@
         <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
     <Match>
-        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingConsentsServlet"/>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.service.ConsentPayloadUtil"/>
         <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
 

@@ -27,12 +27,14 @@ public class AuthenticatedUser {
 
     private final String userId;
     private final String organizationId;
+    private final String rawOrgId;
     private final List<String> scopes;
 
-    public AuthenticatedUser(String userId, String organizationId, List<String> scopes) {
+    public AuthenticatedUser(String userId, String organizationId, String rawOrgId, List<String> scopes) {
 
         this.userId = userId;
         this.organizationId = organizationId;
+        this.rawOrgId = rawOrgId;
         this.scopes = List.copyOf(scopes);
     }
 
@@ -44,6 +46,18 @@ public class AuthenticatedUser {
     public String getOrganizationId() {
 
         return organizationId;
+    }
+
+    /**
+     * The token's raw {@code org_id} claim (a UUID), distinct from {@link
+     * #getOrganizationId()} which reflects the configurable, human-facing org
+     * claim (typically {@code org_handle} -> "carbon.super"). The Consent
+     * Server's {@code org-id} header is a tenant filter and needs this value,
+     * not the display one.
+     */
+    public String getRawOrgId() {
+
+        return rawOrgId;
     }
 
     public List<String> getScopes() {

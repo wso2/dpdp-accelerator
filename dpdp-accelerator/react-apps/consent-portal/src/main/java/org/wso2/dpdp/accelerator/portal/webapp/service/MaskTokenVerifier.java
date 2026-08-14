@@ -55,16 +55,24 @@ import java.util.Set;
  */
 public final class MaskTokenVerifier {
 
+    /**
+     * Deliberately not {@link PortalConfig#getOrgIdClaim()}: that setting picks
+     * the human-facing org identifier ("org_handle" -> "carbon.super") shown by
+     * {@code /me}, but the Consent Server's {@code org-id} header is a tenant
+     * filter and needs the actual {@code org_id} UUID claim. Mixing the two up
+     * silently returns zero consents -- the request succeeds, just scoped to a
+     * tenant nothing belongs to.
+     */
+    private static final String MASK_ORG_ID_CLAIM = "org_id";
+
     private static volatile MaskTokenVerifier instance;
 
     private final ConfigurableJWTProcessor<SecurityContext> jwtProcessor;
-    private final String orgIdClaim;
 
     private MaskTokenVerifier(PortalConfig config) throws MalformedURLException {
 
         URL jwksUrl = new URL(config.getIdentityServerInternalBaseUrl() + "/oauth2/jwks");
         JWKSource<SecurityContext> keySource = new RemoteJWKSet<>(jwksUrl);
-        orgIdClaim = config.getOrgIdClaim();
         jwtProcessor = new DefaultJWTProcessor<>();
         jwtProcessor.setJWSTypeVerifier(new DefaultJOSEObjectTypeVerifier<>(
                 new JOSEObjectType("at+jwt"), JOSEObjectType.JWT, null));
@@ -110,7 +118,7 @@ public final class MaskTokenVerifier {
         }
 
         Instant expiry = claims.getExpirationTime() == null ? Instant.EPOCH : claims.getExpirationTime().toInstant();
-        String orgId = stringClaim(claims, orgIdClaim);
+        String orgId = stringClaim(claims, MASK_ORG_ID_CLAIM);
         Set<String> scopes = parseScopeClaim(claims.getClaim("scope"));
 
         return new MaskToken(owner, nominee, scopes, expiry, orgId);

@@ -101,6 +101,11 @@ public class ConsentServerClient {
         return send(builder.build());
     }
 
+    public Result delete(String path, String orgId) throws IOException, InterruptedException {
+
+        return send(request(path, orgId, null).DELETE().build());
+    }
+
     private HttpRequest.Builder request(String pathAndQuery, String orgId, String groupId) {
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()

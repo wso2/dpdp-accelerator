@@ -19,7 +19,6 @@
 package org.wso2.dpdp.accelerator.portal.webapp.servlet;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -27,6 +26,7 @@ import org.wso2.dpdp.accelerator.portal.webapp.client.ConsentServerClient;
 import org.wso2.dpdp.accelerator.portal.webapp.client.NomineeServiceClient;
 import org.wso2.dpdp.accelerator.portal.webapp.exception.TokenValidationException;
 import org.wso2.dpdp.accelerator.portal.webapp.model.MaskToken;
+import org.wso2.dpdp.accelerator.portal.webapp.service.ConsentPayloadUtil;
 import org.wso2.dpdp.accelerator.portal.webapp.service.MaskTokenVerifier;
 import org.wso2.dpdp.accelerator.portal.webapp.service.ScopeMapper;
 import org.wso2.dpdp.accelerator.portal.webapp.util.CookieUtil;
@@ -39,8 +39,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -149,8 +147,8 @@ public class ActingConsentsServlet extends HttpServlet {
             ConsentServerClient client = new ConsentServerClient(config);
             ConsentServerClient.Result current = client.get("/api/v1/consents/" + encode(consentId),
                     mask.getOrgId());
-            if (current.getStatus() == HttpServletResponse.SC_OK && !consentBelongsTo(current.getBody(),
-                    mask.getOwner())) {
+            if (current.getStatus() == HttpServletResponse.SC_OK && !ConsentPayloadUtil.consentBelongsTo(
+                    current.getBody(), mask.getOwner())) {
                 LOG.warn("Consent " + LogUtil.safe(consentId) + " does not belong to owner "
                         + LogUtil.safe(mask.getOwner()));
                 sendConsentNotFound(response);
@@ -180,7 +178,7 @@ public class ActingConsentsServlet extends HttpServlet {
                 relay(current, response);
                 return;
             }
-            String groupId = ownedConsentGroupId(current.getBody(), mask.getOwner());
+            String groupId = ConsentPayloadUtil.ownedConsentGroupId(current.getBody(), mask.getOwner());
             if (groupId == null) {
                 LOG.warn("Consent " + LogUtil.safe(consentId) + " does not belong to owner "
                         + LogUtil.safe(mask.getOwner()));
@@ -237,7 +235,7 @@ public class ActingConsentsServlet extends HttpServlet {
                 return;
             }
             JsonNode consent = HttpUtil.mapper().readTree(current.getBody());
-            if (!consentBelongsTo(current.getBody(), mask.getOwner())) {
+            if (!ConsentPayloadUtil.consentBelongsTo(current.getBody(), mask.getOwner())) {
                 LOG.warn("Consent " + LogUtil.safe(consentId) + " does not belong to owner "
                         + LogUtil.safe(mask.getOwner()));
                 sendConsentNotFound(response);
@@ -246,7 +244,7 @@ public class ActingConsentsServlet extends HttpServlet {
 
             ObjectNode payload;
             try {
-                payload = buildApprovalUpdatePayload(consent, selections, mask.getOwner());
+                payload = ConsentPayloadUtil.buildApprovalUpdatePayload(consent, selections, mask.getOwner());
             } catch (IOException e) {
                 HttpUtil.sendError(response, HttpServletResponse.SC_BAD_REQUEST,
                         PortalConstants.ERROR_INVALID_PAYLOAD, "invalid request payload");
@@ -357,151 +355,6 @@ public class ActingConsentsServlet extends HttpServlet {
     }
 
     // ---------------------------------------------------------- consent shaping
-
-    /** Reports whether ownerId holds an authorization on the described consent. */
-    private static boolean consentBelongsTo(String body, String ownerId) {
-
-        try {
-            JsonNode consent = HttpUtil.mapper().readTree(body);
-            for (JsonNode authorization : consent.path("authorizations")) {
-                if (ownerId.equals(authorization.path("userId").asText(null))) {
-                    return true;
-                }
-            }
-        } catch (IOException e) {
-            return false;
-        }
-        return false;
-    }
-
-    /** Returns the consent's trusted group id if userId holds an authorization on it, else null. */
-    private static String ownedConsentGroupId(String body, String userId) throws IOException {
-
-        JsonNode consent = HttpUtil.mapper().readTree(body);
-        String trimmedUser = userId.trim();
-        for (JsonNode authorization : consent.path("authorizations")) {
-            String authUser = authorization.path("userId").asText(null);
-            if (authUser != null && authUser.trim().equals(trimmedUser)) {
-                return consent.path("groupId").asText("").trim();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Builds the consent update payload for an approval action, mirroring the
-     * Go BFF's {@code me.Service.BuildApprovalUpdatePayload}: mandatory
-     * elements are always approved, an optional element is approved only when
-     * it matches a selection, and the approval is recorded as an
-     * "authorisation" entry for the owner (who performed it is carried by the
-     * audit trail, not this record).
-     */
-    private static ObjectNode buildApprovalUpdatePayload(JsonNode consent, JsonNode selections, String ownerId)
-            throws IOException {
-
-        Set<String> selectedKeys = new LinkedHashSet<>();
-        for (JsonNode selection : selections) {
-            selectedKeys.add(approvalKey(selection.path("purposeId").asText(""),
-                    selection.path("purposeVersion").asText(""), selection.path("elementId").asText(""),
-                    selection.path("elementVersion").asText("")));
-        }
-        Set<String> matchedKeys = new LinkedHashSet<>();
-
-        ArrayNode updatedPurposes = HttpUtil.mapper().createArrayNode();
-        for (JsonNode purpose : consent.path("purposes")) {
-            String purposeId = purpose.path("purposeId").asText("");
-            String purposeVersion = purpose.path("version").asText("");
-
-            ObjectNode updatedPurpose = HttpUtil.mapper().createObjectNode();
-            updatedPurpose.put("name", purpose.path("name").asText(""));
-            updatedPurpose.put("version", purposeVersion);
-            ArrayNode updatedElements = updatedPurpose.putArray("elements");
-
-            for (JsonNode element : purpose.path("elements")) {
-                boolean mandatory = element.path("mandatory").asBoolean(false);
-                boolean approved = element.path("approved").asBoolean(false);
-                if (mandatory) {
-                    approved = true;
-                } else {
-                    String key = approvalKey(purposeId, purposeVersion, element.path("elementId").asText(""),
-                            element.path("version").asText(""));
-                    if (selectedKeys.contains(key)) {
-                        approved = true;
-                        matchedKeys.add(key);
-                    }
-                }
-                ObjectNode updatedElement = updatedElements.addObject();
-                updatedElement.put("name", element.path("name").asText(""));
-                updatedElement.put("namespace", element.path("namespace").asText(""));
-                updatedElement.put("version", element.path("version").asText(""));
-                updatedElement.put("approved", approved);
-                if (element.has("value")) {
-                    updatedElement.set("value", element.get("value"));
-                }
-            }
-            updatedPurposes.add(updatedPurpose);
-        }
-        if (matchedKeys.size() != selectedKeys.size()) {
-            throw new IOException("invalid approval selection");
-        }
-
-        ArrayNode updatedAuthorizations = HttpUtil.mapper().createArrayNode();
-        boolean ownerAuthorizationUpdated = false;
-        for (JsonNode authorization : consent.path("authorizations")) {
-            String authUserId = authorization.path("userId").asText(null);
-            ObjectNode updated = HttpUtil.mapper().createObjectNode();
-            if (authUserId != null && authUserId.trim().toLowerCase(java.util.Locale.ROOT)
-                    .equals(ownerId.trim().toLowerCase(java.util.Locale.ROOT))) {
-                updated.put("userId", ownerId);
-                updated.put("type", "authorisation");
-                updated.put("status", "APPROVED");
-                updated.set("resources", HttpUtil.mapper().createObjectNode());
-                ownerAuthorizationUpdated = true;
-            } else {
-                if (authUserId != null) {
-                    updated.put("userId", authUserId);
-                }
-                updated.put("type", authorization.path("type").asText(""));
-                updated.put("status", authorization.path("status").asText(""));
-                JsonNode resources = authorization.get("resources");
-                updated.set("resources", resources != null ? resources : HttpUtil.mapper().createObjectNode());
-            }
-            updatedAuthorizations.add(updated);
-        }
-        if (!ownerAuthorizationUpdated) {
-            ObjectNode ownerAuthorization = HttpUtil.mapper().createObjectNode();
-            ownerAuthorization.put("userId", ownerId);
-            ownerAuthorization.put("type", "authorisation");
-            ownerAuthorization.put("status", "APPROVED");
-            ownerAuthorization.set("resources", HttpUtil.mapper().createObjectNode());
-            updatedAuthorizations.add(ownerAuthorization);
-        }
-
-        ObjectNode payload = HttpUtil.mapper().createObjectNode();
-        payload.put("type", consent.path("type").asText(""));
-        copyIfPresent(consent, payload, "expirationTime");
-        copyIfPresent(consent, payload, "recurringIndicator");
-        copyIfPresent(consent, payload, "dataAccessValidityDuration");
-        copyIfPresent(consent, payload, "frequency");
-        payload.set("purposes", updatedPurposes);
-        JsonNode attributes = consent.get("attributes");
-        payload.set("attributes", attributes != null ? attributes : HttpUtil.mapper().createObjectNode());
-        payload.set("authorizations", updatedAuthorizations);
-        return payload;
-    }
-
-    private static void copyIfPresent(JsonNode source, ObjectNode target, String field) {
-
-        if (source.has(field) && !source.get(field).isNull()) {
-            target.set(field, source.get(field));
-        }
-    }
-
-    private static String approvalKey(String purposeId, String purposeVersion, String elementId,
-                                       String elementVersion) {
-
-        return purposeId + ' ' + purposeVersion + ' ' + elementId + ' ' + elementVersion;
-    }
 
     private static boolean isBlank(JsonNode selection, String field) {
 

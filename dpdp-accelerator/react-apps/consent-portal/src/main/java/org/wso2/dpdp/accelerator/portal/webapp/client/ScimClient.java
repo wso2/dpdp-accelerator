@@ -38,6 +38,7 @@ import java.util.Base64;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -72,8 +73,7 @@ public final class ScimClient {
         List<UserSummary> matches = findByAttribute("email", FILTER_EQUALS, email);
         for (UserSummary match : matches) {
             if (match.getEmail() != null
-                    && match.getEmail().toLowerCase(java.util.Locale.ROOT).equals(email.toLowerCase(
-                            java.util.Locale.ROOT))) {
+                    && match.getEmail().toLowerCase(Locale.ROOT).equals(email.toLowerCase(Locale.ROOT))) {
                 return match;
             }
         }
