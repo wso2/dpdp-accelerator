@@ -51,6 +51,18 @@
         <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.AdminApiServlet"/>
         <Bug pattern="SERVLET_QUERY_STRING"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingAuthServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingConsentsServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.NomineeDirectoryServlet"/>
+        <Bug pattern="SERVLET_PARAMETER"/>
+    </Match>
 
     <!--
       The Authorization header is read deliberately: it carries part one of the
@@ -60,6 +72,18 @@
     -->
     <Match>
         <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.AuthUtil"/>
+        <Bug pattern="SERVLET_HEADER"/>
+    </Match>
+
+    <!--
+      Same rationale as AuthUtil above, applied to the acting-mode mask token:
+      the Authorization header is only a fallback when the HttpOnly cookie is
+      absent (service-to-service callers), and X-Acting-Owner is compared
+      against the cryptographically verified token's own owner claim: it
+      never decides whose data is returned, only whether a stale tab is told.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingConsentsServlet"/>
         <Bug pattern="SERVLET_HEADER"/>
     </Match>
 
@@ -97,6 +121,14 @@
         <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.PortalConfig"/>
         <Bug pattern="UNVALIDATED_REDIRECT"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingAuthServlet"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ImpersonationClient"/>
+        <Bug pattern="UNVALIDATED_REDIRECT"/>
+    </Match>
 
     <!--
       Relayed bodies are Identity Server JSON responses written with an explicit
@@ -110,6 +142,18 @@
         <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.IdentityServerClient"/>
         <Bug pattern="XSS_SERVLET"/>
     </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingConsentsServlet"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ConsentServerClient"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ConsentServerClient$Result"/>
+        <Bug pattern="XSS_SERVLET"/>
+    </Match>
 
     <!--
       The only value logged is a filesystem path built from carbon.home, not
@@ -118,6 +162,59 @@
     <Match>
         <Class name="org.wso2.dpdp.accelerator.portal.webapp.util.PortalConfig"/>
         <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+
+    <!--
+      Every value these classes log is passed through LogUtil.safe(), which
+      strips CR/LF before the string reaches a log call. SpotBugs' taint
+      analysis does not recognise a project-local sanitizer method, so the
+      finding persists after the fix is already applied.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingAuthServlet"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingConsentsServlet"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.NomineeServiceClient"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+
+    <!--
+      NomineeServiceProxyServlet is a transparent reverse proxy: it forwards
+      every header, the full query string and the response verbatim by
+      design, exactly like AbstractProxyServlet/IdentityServerClient above,
+      and only debug-logs a header name (never a value) it declined to copy.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.NomineeServiceProxyServlet"/>
+        <Bug pattern="CRLF_INJECTION_LOGS"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.NomineeServiceProxyServlet"/>
+        <Bug pattern="HTTP_RESPONSE_SPLITTING"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.NomineeServiceProxyServlet"/>
+        <Bug pattern="SERVLET_QUERY_STRING"/>
+    </Match>
+
+    <!--
+      Case folding here compares opaque identifiers (SCIM user ids, emails)
+      that Identity Server itself issues as ASCII, not natural-language text,
+      so locale-dependent case mapping (e.g. the Turkish dotless i) cannot
+      apply. Locale.ROOT is used explicitly regardless.
+    -->
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.client.ScimClient"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
+    </Match>
+    <Match>
+        <Class name="org.wso2.dpdp.accelerator.portal.webapp.servlet.ActingConsentsServlet"/>
+        <Bug pattern="IMPROPER_UNICODE"/>
     </Match>
 
     <!--

@@ -16,67 +16,94 @@
  * under the License.
  */
 
-type ConsentStateLabelScope = 'consent' | 'authorization'
+import type { ConsentAPIStatus, ConsentStatus } from '../../../types/consent'
+
+type ConsentStatusLike = ConsentAPIStatus | ConsentStatus | string
+type ConsentStatusLabelScope = 'consent' | 'authorization'
 
 type ConsentChipColor = 'success' | 'warning' | 'error' | 'default'
 
-export function normalizeConsentState(state: string): string {
-  return state.trim().toUpperCase()
+export function normalizeConsentStatus(status: ConsentStatusLike): string {
+  return status.trim().toUpperCase()
 }
 
-export function isConsentApprovableState(state: string): boolean {
-  return normalizeConsentState(state) === 'PENDING'
+export function isConsentApprovableStatus(status: ConsentStatusLike): boolean {
+  return normalizeConsentStatus(status) === 'CREATED'
 }
 
-export function isConsentRejectableState(state: string): boolean {
-  return normalizeConsentState(state) === 'PENDING'
+export function isConsentRejectableStatus(status: ConsentStatusLike): boolean {
+  return normalizeConsentStatus(status) === 'CREATED'
 }
 
-export function isConsentRevokableState(state: string): boolean {
-  return normalizeConsentState(state) === 'ACTIVE'
+export function isConsentRevokableStatus(status: ConsentStatusLike): boolean {
+  return normalizeConsentStatus(status) === 'ACTIVE'
 }
 
-export function getConsentStateChipColor(state: string): ConsentChipColor {
-  switch (normalizeConsentState(state)) {
+export function getConsentStatusChipColor(status: ConsentStatusLike): ConsentChipColor {
+  switch (normalizeConsentStatus(status)) {
     case 'ACTIVE':
     case 'APPROVED':
       return 'success'
+    case 'CREATED':
     case 'PENDING':
       return 'warning'
     case 'REJECTED':
     case 'REVOKED':
       return 'error'
+    case 'EXPIRED':
+    case 'SYS_EXPIRED':
+    case 'SYS_REVOKED':
+      return 'default'
     default:
       return 'default'
   }
 }
 
-export function getConsentStateLabelKey(
-  state: string,
-  scope: ConsentStateLabelScope = 'consent',
+export function getConsentStatusLabelKey(
+  status: ConsentStatusLike,
+  scope: ConsentStatusLabelScope = 'consent',
 ): string {
-  const normalizedState = normalizeConsentState(state)
+  const normalizedStatus = normalizeConsentStatus(status)
 
-  if (
-    scope === 'authorization' &&
-    (normalizedState === 'APPROVED' || normalizedState === 'ACTIVE')
-  ) {
-    return 'approved'
-  }
-
-  switch (normalizedState) {
-    case 'ACTIVE':
-    case 'APPROVED':
-      return 'active'
-    case 'PENDING':
-      return 'pending'
-    case 'REJECTED':
-      return 'rejected'
-    case 'REVOKED':
-      return 'revoked'
-    case 'EXPIRED':
-      return 'expired'
+  switch (scope) {
+    case 'authorization':
+      switch (normalizedStatus) {
+        case 'APPROVED':
+        case 'ACTIVE':
+          return 'approved'
+        case 'CREATED':
+        case 'PENDING':
+          return 'pending'
+        case 'REJECTED':
+          return 'rejected'
+        case 'REVOKED':
+          return 'revoked'
+        case 'EXPIRED':
+          return 'expired'
+        case 'SYS_EXPIRED':
+          return 'systemExpired'
+        case 'SYS_REVOKED':
+          return 'systemRevoked'
+        default:
+          return normalizedStatus.toLowerCase()
+      }
+    case 'consent':
     default:
-      return normalizedState.toLowerCase()
+      switch (normalizedStatus) {
+        case 'ACTIVE':
+        case 'APPROVED':
+          return 'active'
+        case 'CREATED':
+        case 'PENDING':
+          return 'pending'
+        case 'REJECTED':
+          return 'rejected'
+        case 'REVOKED':
+          return 'revoked'
+        case 'EXPIRED':
+          return 'expired'
+        default:
+          return normalizedStatus.toLowerCase()
+      }
   }
 }

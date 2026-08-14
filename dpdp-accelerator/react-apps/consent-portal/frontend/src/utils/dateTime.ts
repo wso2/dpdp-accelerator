@@ -37,6 +37,26 @@ export function toEpochMilliseconds(epochTimestamp: number | null | undefined): 
   return epochTimestamp < EPOCH_MILLISECONDS_CUTOFF ? epochTimestamp * 1000 : epochTimestamp
 }
 
+export function toStartOfDayEpochMilliseconds(dateText: string): number | undefined {
+  if (!dateText) {
+    return undefined
+  }
+
+  const epochMilliseconds = new Date(`${dateText}T00:00:00.000Z`).getTime()
+
+  return Number.isNaN(epochMilliseconds) ? undefined : epochMilliseconds
+}
+
+export function toEndOfDayEpochMilliseconds(dateText: string): number | undefined {
+  if (!dateText) {
+    return undefined
+  }
+
+  const epochMilliseconds = new Date(`${dateText}T23:59:59.999Z`).getTime()
+
+  return Number.isNaN(epochMilliseconds) ? undefined : epochMilliseconds
+}
+
 export function formatEpochTimestamp(
   epochTimestamp: number | null | undefined,
   options?: Intl.DateTimeFormatOptions,

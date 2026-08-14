@@ -17,11 +17,21 @@
  */
 
 import { Sidebar } from '@wso2/oxygen-ui'
-import { Blocks, Clock3, House, ShieldCheck, ShieldPlus, Target } from '@wso2/oxygen-ui-icons-react'
+import {
+  Blocks,
+  Clock3,
+  House,
+  ShieldCheck,
+  ShieldPlus,
+  Target,
+  UserCog,
+  Users,
+} from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 import useAuthorization from '../../../features/auth/useAuthorization'
 import { PORTAL_SCOPES, type PortalScope } from '../../../utils/portalScopes'
+import { useActingAs } from '../../../features/nominee/actingAs/actingAsContext'
 
 interface AppSidebarProps {
   collapsed: boolean
@@ -56,7 +66,7 @@ const CONSENT_ITEMS: SidebarItem[] = [
   {
     id: 'pending-consents',
     labelKey: 'sidebar.pendingConsents',
-    path: '/consents?state=PENDING',
+    path: '/consents?status=Pending',
     icon: <Clock3 size={18} />,
     requiredScope: PORTAL_SCOPES.CONSENTS_READ_SELF,
   },
@@ -87,6 +97,23 @@ const ADMINISTRATION_ITEMS: SidebarItem[] = [
     icon: <ShieldPlus size={18} />,
     requiredScope: PORTAL_SCOPES.CONSENTS_READ_ANY,
   },
+  {
+    id: 'administration-nominees',
+    labelKey: 'sidebar.nomineeActivation',
+    path: '/administration/nominees',
+    icon: <UserCog size={18} />,
+    requiredScope: PORTAL_SCOPES.PROFILE_READ_ANY,
+  },
+]
+
+const NOMINEE_ITEMS: SidebarItem[] = [
+  {
+    id: 'nominations',
+    labelKey: 'sidebar.nominations',
+    path: '/nominations',
+    icon: <Users size={18} />,
+    requiredScope: PORTAL_SCOPES.PROFILE_READ_SELF,
+  },
 ]
 
 function mapPathToMenuId(pathname: string, search: string): string {
@@ -94,14 +121,22 @@ function mapPathToMenuId(pathname: string, search: string): string {
     return 'administration-consents'
   }
 
+  if (pathname.startsWith('/administration/nominees')) {
+    return 'administration-nominees'
+  }
+
+  if (pathname.startsWith('/nominations')) {
+    return 'nominations'
+  }
+
   if (pathname.startsWith('/dashboard')) {
     return 'dashboard'
   }
 
   if (pathname.startsWith('/consents')) {
-    const state = new URLSearchParams(search).get('state')
+    const status = new URLSearchParams(search).get('status')
 
-    if (state === 'PENDING') {
+    if (status === 'Pending') {
       return 'pending-consents'
     }
 
@@ -124,12 +159,23 @@ function AppSidebar({ collapsed }: AppSidebarProps): React.JSX.Element {
   const navigate = useNavigate()
   const location = useLocation()
   const { hasScope } = useAuthorization()
+  const { session } = useActingAs()
 
   const dashboardItems = DASHBOARD_ITEMS.filter((item) => hasScope(item.requiredScope))
   const consentItems = CONSENT_ITEMS.filter((item) => hasScope(item.requiredScope))
   const catalogItems = CATALOG_ITEMS.filter((item) => hasScope(item.requiredScope))
   const administrationItems = ADMINISTRATION_ITEMS.filter((item) => hasScope(item.requiredScope))
-  const visibleItems = [...dashboardItems, ...consentItems, ...catalogItems, ...administrationItems]
+  // Withheld while acting for someone else: a nominee exercises the owner's data
+  // rights, never their ability to appoint further nominees. Who else sees this
+  // is decided by the scopes their role carries, as with every other item here.
+  const nomineeItems = session ? [] : NOMINEE_ITEMS.filter((item) => hasScope(item.requiredScope))
+  const visibleItems = [
+    ...dashboardItems,
+    ...consentItems,
+    ...catalogItems,
+    ...nomineeItems,
+    ...administrationItems,
+  ]
 
   const activeItem = mapPathToMenuId(location.pathname, location.search)
 
@@ -150,6 +196,17 @@ function AppSidebar({ collapsed }: AppSidebarProps): React.JSX.Element {
         {dashboardItems.length > 0 ? (
           <Sidebar.Category>
             {dashboardItems.map((item) => (
+              <Sidebar.Item key={item.id} id={item.id}>
+                <Sidebar.ItemIcon>{item.icon}</Sidebar.ItemIcon>
+                <Sidebar.ItemLabel>{t(item.labelKey)}</Sidebar.ItemLabel>
+              </Sidebar.Item>
+            ))}
+          </Sidebar.Category>
+        ) : null}
+
+        {nomineeItems.length > 0 ? (
+          <Sidebar.Category>
+            {nomineeItems.map((item) => (
               <Sidebar.Item key={item.id} id={item.id}>
                 <Sidebar.ItemIcon>{item.icon}</Sidebar.ItemIcon>
                 <Sidebar.ItemLabel>{t(item.labelKey)}</Sidebar.ItemLabel>

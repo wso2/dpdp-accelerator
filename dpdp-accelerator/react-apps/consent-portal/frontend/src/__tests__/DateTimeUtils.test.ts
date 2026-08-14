@@ -17,7 +17,13 @@
  */
 
 import { describe, expect, it } from 'vitest'
-import { formatEpochTimestamp, formatIsoDateTime, toEpochMilliseconds } from '../utils/dateTime'
+import {
+  formatEpochTimestamp,
+  formatIsoDateTime,
+  toEndOfDayEpochMilliseconds,
+  toEpochMilliseconds,
+  toStartOfDayEpochMilliseconds,
+} from '../utils/dateTime'
 
 const DATE_TIME_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
   year: 'numeric',
@@ -77,6 +83,34 @@ describe('formatEpochTimestamp', () => {
     expect(formatEpochTimestamp(epochInMilliseconds, DATE_TIME_FORMAT_OPTIONS, 'en-US')).toBe(
       expected,
     )
+  })
+})
+
+describe('toStartOfDayEpochMilliseconds', () => {
+  it('returns undefined for empty or invalid values', () => {
+    expect(toStartOfDayEpochMilliseconds('')).toBeUndefined()
+    expect(toStartOfDayEpochMilliseconds('not-a-date')).toBeUndefined()
+  })
+
+  it('returns epoch milliseconds for the start of the selected day', () => {
+    const dateText = '2026-05-15'
+    const expected = Date.UTC(2026, 4, 15, 0, 0, 0, 0)
+
+    expect(toStartOfDayEpochMilliseconds(dateText)).toBe(expected)
+  })
+})
+
+describe('toEndOfDayEpochMilliseconds', () => {
+  it('returns undefined for empty or invalid values', () => {
+    expect(toEndOfDayEpochMilliseconds('')).toBeUndefined()
+    expect(toEndOfDayEpochMilliseconds('not-a-date')).toBeUndefined()
+  })
+
+  it('returns epoch milliseconds for the end of the selected day', () => {
+    const dateText = '2026-05-15'
+    const expected = Date.UTC(2026, 4, 15, 23, 59, 59, 999)
+
+    expect(toEndOfDayEpochMilliseconds(dateText)).toBe(expected)
   })
 })
 

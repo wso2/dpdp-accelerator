@@ -1,0 +1,14 @@
+# Create the schema first:
+#   mysql -u<user> -p <database> < dbscripts/db_schema_mysql.sql
+spring:
+  datasource:
+    url: jdbc:mysql://${NOMINEE_DB_HOST:localhost}:${NOMINEE_DB_PORT:3306}/${NOMINEE_DB_NAME:nominee_mgt}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${NOMINEE_DB_USER}
+    password: ${NOMINEE_DB_PASSWORD}
+  jpa:
+    # The schema is owned by dbscripts, not by the entities. Startup fails if
+    # the two disagree, rather than the schema being altered underneath.
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.MySQLDialect

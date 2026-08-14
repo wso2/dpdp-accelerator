@@ -29,8 +29,13 @@ function asRecord(value: unknown, name: string): Record<string, unknown> {
   return value as Record<string, unknown>
 }
 
+/*
+ * The BFF for this deployment is the Java webapp this frontend is packaged
+ * into, so its published contract sits beside the webapp rather than in a
+ * sibling backend module as it does in the standalone portal.
+ */
 function documentedPortalScopes(): string[] {
-  const openAPIPath = path.resolve(process.cwd(), 'openapi/portal-backend.yaml')
+  const openAPIPath = path.resolve(process.cwd(), '../openapi/portal-backend.yaml')
   const document = asRecord(parse(readFileSync(openAPIPath, 'utf8')) as unknown, 'document')
   const components = asRecord(document.components, 'components')
   const securitySchemes = asRecord(components.securitySchemes, 'securitySchemes')

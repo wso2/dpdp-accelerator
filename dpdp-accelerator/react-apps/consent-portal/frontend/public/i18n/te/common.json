@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "సమ్మతి పోర్టల్"
+  },
+  "language": {
+    "label": "భాష",
+    "selectAria": "భాషను ఎంచుకోండి"
+  },
+  "authorization": {
+    "loading": "మీ సెషన్ లోడ్ అవుతోంది",
+    "loadFailed": "మీ సెషన్‌ను లోడ్ చేయడం సాధ్యపడలేదు.",
+    "tryAgain": "మళ్లీ ప్రయత్నించండి",
+    "noAccessTitle": "పోర్టల్ యాక్సెస్ లేదు",
+    "noAccessDescription": "ఏ పోర్టల్ పేజీలకైనా యాక్సెస్ చేయడానికి మీ ఖాతాకు అనుమతి లేదు."
+  },
+  "copyableText": {
+    "copy": "కాపీ చేయి",
+    "copied": "కాపీ చేయబడింది",
+    "copyLabel": "{{label}} కాపీ చేయి",
+    "copyValue": "{{label}} {{value}} కాపీ చేయి",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "ప్రాథమిక నావిగేషన్",
+    "dashboard": "డ్యాష్‌బోర్డ్",
+    "consent": "సమ్మతి",
+    "allConsents": "అన్ని సమ్మతులు",
+    "pendingConsents": "పెండింగ్‌లో ఉన్న సమ్మతులు",
+    "catalog": "నిర్వచనాలు",
+    "purposes": "ప్రయోజనాలు",
+    "elements": "అంశాలు",
+    "administration": "నిర్వహణ",
+    "adminConsents": "సమ్మతులు",
+    "nominations": "నామినేషన్లు",
+    "nomineeActivation": "నామినీ యాక్టివేషన్",
+    "myComplaints": "నా ఫిర్యాదులు",
+    "complaintManagement": "ఫిర్యాదులు",
+    "dataProcessors": "డేటా ప్రాసెసర్లు",
+    "dataProcessorTopics": "టాపిక్స్",
+    "dataProcessorSubscriptions": "సబ్‌స్క్రిప్షన్లు",
+    "dataProcessorEvents": "ఈవెంట్‌లు"
+  },
+  "layout": {
+    "home": "హోమ్",
+    "breadcrumbAriaLabel": "బ్రెడ్‌క్రంబ్",
+    "userMenu": {
+      "unknownUser": "తెలియని వినియోగదారు",
+      "noEmail": "ఇమెయిల్ అందుబాటులో లేదు",
+      "signOut": "సైన్ అవుట్ చేయండి",
+      "signOutError": "సైన్ అవుట్ చేయడం సాధ్యపడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
+      "tryAgain": "మళ్లీ ప్రయత్నించండి"
+    }
+  },
+  "dashboard": {
+    "active": "క్రియాశీల సమ్మతులు",
+    "attention": "మీ శ్రద్ధ అవసరం",
+    "commonPurposes": "అత్యంత సాధారణంగా పంచుకున్న ప్రయోజనాలు",
+    "commonPurposesSubtitle": "మీ క్రియాశీల సమ్మతులలో చేర్చబడిన ప్రయోజనాలు",
+    "consentCount": "{{count}} సమ్మతులు",
+    "consentCount_one": "{{count}} సమ్మతి",
+    "consentCount_other": "{{count}} సమ్మతులు",
+    "expiringSoon": "త్వరలో ముగుస్తుంది",
+    "loadFailed": "ప్రస్తుతం మీ డ్యాష్‌బోర్డ్‌ను లోడ్ చేయడం సాధ్యపడలేదు.",
+    "noExpiring": "రాబోయే {{days}} రోజుల్లో ఎలాంటి క్రియాశీల సమ్మతుల గడువు ముగియదు.",
+    "noPending": "సమీక్షించడానికి మీకు పెండింగ్‌లో ఉన్న సమ్మతులు ఏవీ లేవు.",
+    "noPurposes": "షేర్ చేసిన ప్రయోజనాలు ఇంకా అందుబాటులో లేవు.",
+    "pending": "పెండింగ్ సమ్మతులు",
+    "pendingConsents": "పెండింగ్ సమ్మతులు",
+    "subtitle": "మీ సమ్మతి కార్యకలాపం మరియు రాబోయే చర్యల యొక్క అవలోకనం.",
+    "title": "డ్యాష్‌బోర్డ్",
+    "typeBreakdown": "సమ్మతి రకం విభజన",
+    "typeBreakdownSubtitle": "మీ అన్ని సమ్మతులు రకం వారీగా సమూహం చేయబడ్డాయి",
+    "noTypes": "సమ్మతి రకాలు ఇంకా అందుబాటులో లేవు.",
+    "viewPending": "పెండింగ్‌లో ఉన్న అన్ని సమ్మతులను వీక్షించండి"
+  },
+  "adminConsents": {
+    "title": "సమ్మతులు",
+    "filters": {
+      "sectionAriaLabel": "అడ్మినిస్ట్రేటివ్ సమ్మతి ఫిల్టర్‌లు",
+      "consentIdSearchPlaceholder": "సమ్మతి ID ద్వారా వెతకండి",
+      "removeConsentIdForAdvanced": "అధునాతన ఫిల్టర్‌లను ఉపయోగించడానికి సమ్మతి ID ఫిల్టర్‌ను తీసివేయండి.",
+      "removeConsentIdForStatus": "స్టేటస్ ఫిల్టర్‌ని ఉపయోగించడానికి సమ్మతి ID ఫిల్టర్‌ని తీసివేయండి.",
+      "userIds": "వినియోగదారు IDలు",
+      "groupIds": "గ్రూప్ IDలు",
+      "commaSeparatedUsers": "బహుళ వినియోగదారు IDలను కామాలతో వేరు చేయండి",
+      "active": "క్రియాశీల ఫిల్టర్‌లు"
+    }
+  },
+  "consentRegistry": {
+    "title": "అన్ని సమ్మతులు",
+    "details": {
+      "title": "సమ్మతి వివరాలు",
+      "consentId": "సమ్మతి ID",
+      "status": "స్థితి",
+      "type": "సమ్మతి రకం",
+      "frequency": "యాక్సెస్ పరిమితి",
+      "frequencyHelp": "ఈ సమ్మతిని రోజుకు ఎన్నిసార్లు యాక్సెస్ చేయవచ్చో ఇది సూచిస్తుంది.",
+      "frequencyUnitSingular": "రోజుకు సారి",
+      "frequencyUnitPlural": "రోజుకు సార్లు",
+      "purposes": "ప్రయోజనాలు",
+      "duration": "గత డేటా చూడగలిగే వ్యవధి",
+      "durationHelp": "ఎంత వెనుకటి డేటాను యాక్సెస్ చేయవచ్చో ఇది నిర్దేశిస్తుంది. ఉదాహరణకు, 6 నెలలకు సెట్ చేస్తే, 6 నెలల క్రితం వరకు ఉన్న డేటా యాక్సెస్ చేయవచ్చు.",
+      "durationUnitHourSingular": "గంట",
+      "durationUnitHourPlural": "గంటలు",
+      "durationUnitDaySingular": "రోజు",
+      "durationUnitDayPlural": "రోజులు",
+      "durationUnitYearSingular": "సంవత్సరం",
+      "durationUnitYearPlural": "సంవత్సరాలు",
+      "created": "సృష్టించబడింది",
+      "updated": "నవీకరించబడింది",
+      "validUntil": "చెల్లుబాటు తేదీ",
+      "groupId": "గ్రూప్ ID",
+      "recurring": "పునరావృతం",
+      "back": "రిజిస్ట్రీకి తిరిగి వెళ్ళు",
+      "notFound": "సమ్మతి రికార్డు కనుగొనబడలేదు",
+      "approved": "ఆమోదించబడింది",
+      "notApproved": "ఆమోదించబడలేదు",
+      "approvedCount": "{{total}}లో {{approved}} ఆమోదించబడ్డాయి",
+      "section": {
+        "purposes": "సమ్మతి ప్రయోజనాలు",
+        "authorizations": "అధికారాలు",
+        "lifecycle": "సమ్మతి జీవితచక్రం"
+      },
+      "table": {
+        "element": "అంశం",
+        "approved": "ఆమోదించబడింది",
+        "required": "తప్పనిసరి",
+        "description": "వివరణ",
+        "user": "వినియోగదారు",
+        "status": "స్థితి",
+        "updated": "నవీకరించబడింది",
+        "resources": "వనరులు",
+        "eventType": "ఈవెంట్ రకం",
+        "date": "తేదీ",
+        "time": "సమయం"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "సమ్మతి జీవితచక్రం",
+        "empty": "ఎలాంటి జీవితచక్ర ఈవెంట్‌లు అందుబాటులో లేవు.",
+        "noDescription": "ఎలాంటి వివరణ అందుబాటులో లేదు."
+      },
+      "actions": {
+        "viewResources": "వనరులను వీక్షించండి",
+        "noResourcesTooltip": "వనరులు అందుబాటులో లేవు"
+      },
+      "resourcesModal": {
+        "title": "అధికార వనరులు",
+        "authRef": "ఆథ్ (Auth)",
+        "close": "మూసివేయి"
+      },
+      "values": {
+        "yes": "అవును",
+        "no": "కాదు",
+        "required": "తప్పనిసరి",
+        "optional": "ఐచ్ఛికం"
+      }
+    },
+    "actions": {
+      "view": "వీక్షించు",
+      "revoke": "ఉపసంహరించు",
+      "approve": "ఆమోదించు",
+      "reject": "తిరస్కరించు",
+      "copyConsentId": "సమ్మతి IDని కాపీ చేయి",
+      "copyConsentIdAriaLabel": "సమ్మతి ID {{id}} కాపీ చేయి"
+    },
+    "modals": {
+      "consentId": "సమ్మతి ID",
+      "actions": {
+        "cancel": "రద్దు చేయి",
+        "processing": "ప్రాసెస్ అవుతోంది..."
+      },
+      "approval": {
+        "title": "సమ్మతిని సమీక్షించండి & ఆమోదించండి",
+        "subtitle": "ఆమోదించడానికి ముందు దయచేసి సమ్మతి అంశాలను సమీక్షించండి.",
+        "mandatory": "తప్పనిసరి అంశాలు (అవసరం)",
+        "optional": "ఐచ్ఛిక అంశాలు",
+        "required": "తప్పనిసరి",
+        "toggle": "అనుమతిని టోగుల్ చేయి",
+        "toggleWithDetails": "{{purposeLabel}}లో {{elementLabel}} కోసం అనుమతిని టోగుల్ చేయి",
+        "loading": "సమ్మతి వివరాలు లోడ్ అవుతున్నాయి...",
+        "noMandatory": "ఈ సమ్మతి కోసం తప్పనిసరి అవసరాలు ఏవీ లేవు.",
+        "confirm": "ఆమోదించు & కొనసాగించు"
+      },
+      "rejection": {
+        "title": "తిరస్కరణను నిర్ధారించండి",
+        "message": "మీరు ఖచ్చితంగా ఈ సమ్మతిని తిరస్కరించాలనుకుంటున్నారా?",
+        "note": "ఈ సమ్మతిని తిరస్కరించడం అంటే అభ్యర్థించిన సమ్మతులు మంజూరు చేయబడవు.",
+        "confirm": "సమ్మతిని తిరస్కరించు",
+        "cancel": "రద్దు చేయి"
+      },
+      "revocation": {
+        "title": "ఉపసంహరణను నిర్ధారించండి",
+        "message": "మీరు ఖచ్చితంగా సమ్మతిని ఉపసంహరించుకోవాలనుకుంటున్నారా?",
+        "note": "ఈ చర్య అనుబంధిత అన్ని ప్రయోజనాల కోసం మంజూరు చేయబడిన తప్పనిసరి మరియు ఐచ్ఛిక సమ్మతులను ఉపసంహరిస్తుంది.",
+        "confirm": "సమ్మతులను ఉపసంహరించు",
+        "cancel": "రద్దు చేయి"
+      }
+    },
+    "status": {
+      "all": "అన్నీ",
+      "active": "క్రియాశీలం",
+      "pending": "పెండింగ్",
+      "created": "సృష్టించబడింది",
+      "approved": "ఆమోదించబడింది",
+      "rejected": "తిరస్కరించబడింది",
+      "revoked": "ఉపసంహరించబడింది",
+      "expired": "గడువు ముగిసింది",
+      "systemExpired": "సిస్టమ్ గడువు ముగిసింది",
+      "systemRevoked": "సిస్టమ్ ద్వారా ఉపసంహరించబడింది"
+    },
+    "filters": {
+      "sectionAriaLabel": "సమ్మతి ఫిల్టర్‌లు",
+      "purposeSearchPlaceholder": "ప్రయోజనం పేరు ద్వారా వెతకండి",
+      "status": "స్థితి",
+      "groupIds": "గ్రూప్ ID",
+      "elementName": "అంశం పేరు",
+      "elementVersion": "అంశం వెర్షన్",
+      "advanced": "అధునాతన ఫిల్టర్‌లు",
+      "apply": "వర్తింపజేయు",
+      "cancel": "రద్దు చేయి",
+      "startDate": "ప్రారంభ తేదీ",
+      "startDateAriaLabel": "ప్రారంభ తేదీ ఫిల్టర్",
+      "endDate": "ముగింపు తేదీ",
+      "endDateAriaLabel": "ముగింపు తేదీ ఫిల్టర్",
+      "clear": "అన్నీ క్లియర్ చేయి",
+      "clearAriaLabel": "అన్ని ఫిల్టర్‌లను క్లియర్ చేయి"
+    },
+    "messages": {
+      "loading": "సమ్మతులు లోడ్ అవుతున్నాయి...",
+      "loadFailed": "ప్రస్తుతం సమ్మతులను లోడ్ చేయడం సాధ్యపడలేదు.",
+      "emptyTitle": "సమ్మతులు కనుగొనబడలేదు",
+      "empty": "ఎంచుకున్న ఫిల్టర్‌ల కోసం ఎలాంటి సమ్మతులు కనుగొనబడలేదు."
+    },
+    "table": {
+      "tableAriaLabel": "సమ్మతి రిజిస్ట్రీ పట్టిక",
+      "consentIdAriaLabel": "సమ్మతి ID: {{id}}",
+      "groupLabel": "గ్రూప్ ID: {{groupId}}",
+      "notApplicable": "వర్తించదు",
+      "purposes": {
+        "more": "మరిన్ని +{{count}}",
+        "title": "సమ్మతి ప్రయోజనాలు",
+        "hint": "సమ్మతి యొక్క అన్ని ప్రయోజనాలను చూపుతోంది"
+      },
+      "headers": {
+        "consentId": "సమ్మతి ID",
+        "type": "రకం",
+        "status": "స్థితి",
+        "purposes": "ప్రయోజనాలు",
+        "updated": "నవీకరించబడింది",
+        "expiration": "గడువు ముగింపు",
+        "actions": "చర్యలు"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "అంశాన్ని జోడించు",
+      "addProperty": "ప్రాపర్టీని జోడించు",
+      "apply": "వర్తింపజేయు",
+      "cancel": "రద్దు చేయి",
+      "clear": "క్లియర్ చేయి",
+      "clearAll": "అన్నీ క్లియర్ చేయి",
+      "create": "సృష్టించు",
+      "delete": "తొలగించు",
+      "deleting": "తొలగించబడుతోంది...",
+      "deleteVersion": "వెర్షన్‌ని తొలగించు",
+      "filters": "ఫిల్టర్‌లు",
+      "removeElement": "అంశాన్ని తీసివేయి",
+      "removeProperty": "ప్రాపర్టీని తీసివేయి",
+      "retry": "మళ్లీ ప్రయత్నించు",
+      "saving": "సేవ్ చేయబడుతోంది...",
+      "view": "వీక్షించు",
+      "viewElement": "{{name}} వీక్షించు",
+      "viewPurpose": "{{name}} వీక్షించు"
+    },
+    "fields": {
+      "actions": "చర్యలు",
+      "created": "సృష్టించబడింది",
+      "description": "వివరణ",
+      "displayName": "ప్రదర్శన పేరు",
+      "element": "అంశం",
+      "elementId": "అంశం ID",
+      "elementName": "అంశం పేరు",
+      "elementNamespace": "అంశం నేమ్‌స్పేస్",
+      "elements": "అంశాలు",
+      "elementVersion": "అంశం వెర్షన్",
+      "groupId": "గ్రూప్ ID",
+      "groupIds": "గ్రూప్ IDలు",
+      "mandatory": "తప్పనిసరి",
+      "name": "పేరు",
+      "namespace": "నేమ్‌స్పేస్",
+      "properties": "లక్షణాలు (Properties)",
+      "propertyKey": "కీ (Key)",
+      "propertyValue": "విలువ (Value)",
+      "purpose": "ప్రయోజనం",
+      "purposeId": "ప్రయోజనం ID",
+      "purposeName": "ప్రయోజనం పేరు",
+      "scope": "స్కోప్",
+      "purposeScope": "ప్రయోజన స్కోప్",
+      "purposeVersion": "ప్రయోజనం వెర్షన్",
+      "requirement": "అవసరం",
+      "schema": "స్కీమా (Schema)",
+      "type": "రకం",
+      "version": "వెర్షన్"
+    },
+    "help": {
+      "commaSeparatedGroups": "బహుళ గ్రూప్ IDలను కామాలతో వేరు చేయండి",
+      "defaultNamespace": "ఖాళీగా ఉన్నప్పుడు డిఫాల్ట్ నేమ్‌స్పేస్‌ను ఉపయోగిస్తుంది",
+      "elementVersionRequiresIdentity": "ముందుగా అంశం పేరు లేదా నేమ్‌స్పేస్‌ను నమోదు చేయండి",
+      "organizationPurpose": "సంస్థ-స్థాయి ప్రయోజనాన్ని సృష్టించడానికి ఖాళీగా వదిలివేయండి",
+      "purposeVersionRequiresName": "ముందుగా ప్రయోజనం పేరును నమోదు చేయండి",
+      "schemaElementTypes": "JSON మరియు XML అంశాలకు మాత్రమే స్కీమాలు మద్దతు ఇస్తాయి.",
+      "selectElementFirst": "ముందుగా ఒక అంశాన్ని ఎంచుకోండి"
+    },
+    "values": {
+      "all": "అన్నీ",
+      "any": "ఏదైనా",
+      "customNamespace": "కస్టమ్ నేమ్‌స్పేస్",
+      "defaultNamespace": "డిఫాల్ట్ నేమ్‌స్పేస్",
+      "mandatory": "తప్పనిసరి",
+      "matches": "సరిపోలికలు",
+      "noDescription": "వివరణ లేదు",
+      "optional": "ఐచ్ఛికం",
+      "specificGroup": "నిర్దిష్ట గ్రూప్",
+      "itemCount": "{{count}} ఎంచుకోబడ్డాయి",
+      "latest": "తాజా",
+      "viewing": "వీక్షిస్తున్నారు"
+    },
+    "elements": {
+      "add": "అంశాన్ని జోడించు",
+      "activeFilters": "క్రియాశీల ఫిల్టర్‌లు",
+      "back": "అంశాలకు తిరిగి వెళ్ళు",
+      "createTitle": "అంశాన్ని సృష్టించు",
+      "detailsSection": "అంశం వివరాలు",
+      "empty": "ఎంచుకున్న ఫిల్టర్‌లకు ఏ అంశాలు సరిపోలలేదు.",
+      "emptyTitle": "అంశాలు కనుగొనబడలేదు",
+      "filterTitle": "అంశాలను ఫిల్టర్ చేయి",
+      "loadFailed": "ప్రస్తుతం అంశాలను లోడ్ చేయడం సాధ్యపడలేదు.",
+      "newVersion": "కొత్త వెర్షన్‌ని సృష్టించు",
+      "refreshing": "రిఫ్రెష్ అవుతోంది...",
+      "results": "{{count}} అంశాలు",
+      "searchPlaceholder": "అంశం పేరు ద్వారా వెతకండి",
+      "subtitle": "పునర్వినియోగ సమ్మతి అంశాలను మరియు వాటి వెర్షన్ నిర్వచనాలను నిర్వహించండి.",
+      "tableLabel": "సమ్మతి అంశాలు",
+      "title": "అంశాలు"
+    },
+    "purposes": {
+      "add": "ప్రయోజనాన్ని జోడించు",
+      "activeFilters": "క్రియాశీల ఫిల్టర్‌లు",
+      "allPurposes": "అన్ని ప్రయోజనాలు",
+      "back": "ప్రయోజనాలకు తిరిగి వెళ్ళు",
+      "createTitle": "ప్రయోజనాన్ని సృష్టించు",
+      "detailsSection": "ప్రయోజనం వివరాలు",
+      "empty": "ఎంచుకున్న ఫిల్టర్‌లకు ఏ ప్రయోజనాలు సరిపోలలేదు.",
+      "emptyTitle": "ప్రయోజనాలు కనుగొనబడలేదు",
+      "filterTitle": "ప్రయోజనాలను ఫిల్టర్ చేయి",
+      "loadFailed": "ప్రస్తుతం ప్రయోజనాలను లోడ్ చేయడం సాధ్యపడలేదు.",
+      "newVersion": "కొత్త వెర్షన్‌ని సృష్టించు",
+      "orgWide": "సంస్థ-వ్యాప్తంగా",
+      "refreshing": "రిఫ్రెష్ అవుతోంది...",
+      "results": "{{count}} ప్రయోజనాలు",
+      "searchLabel": "ప్రయోజనాలను వెతకండి",
+      "searchPlaceholder": "ప్రయోజనం పేరు ద్వారా వెతకండి",
+      "scopeFilter": "ప్రయోజన స్కోప్",
+      "subtitle": "పునర్వినియోగ సమ్మతి ప్రయోజనాలను మరియు వాటి అంశాల నిర్వచనాలను నిర్వహించండి.",
+      "tableLabel": "సమ్మతి ప్రయోజనాలు",
+      "title": "ప్రయోజనాలు"
+    },
+    "details": {
+      "definition": "నిర్వచనం",
+      "elementIdentity": "అంశం గుర్తింపు",
+      "elements": "అంశాలు",
+      "identity": "ప్రయోజనం గుర్తింపు",
+      "overview": "అవలోకనం",
+      "versionDetails": "వెర్షన్ వివరాలు",
+      "versions": "వెర్షన్ చరిత్ర"
+    },
+    "messages": {
+      "createElementFirst": "ప్రయోజనాన్ని నిర్వచించే ముందు ఒక అంశాన్ని సృష్టించండి.",
+      "immutableElement": "{{namespace}}:{{name}} అనేది {{type}} అంశంగానే ఉంటుంది. వెర్షన్‌ల మధ్య గుర్తింపు ఫీల్డ్‌లు మారకూడదు.",
+      "immutablePurpose": "{{name}} అనేది {{groupId}} ఆధీనంలో ఉంటుంది. వెర్షన్‌ల మధ్య గుర్తింపు ఫీల్డ్‌లు మారకూడదు.",
+      "immutableOrganizationPurpose": "{{name}} అనేది సంస్థ-వ్యాప్తంగా వర్తిస్తుంది. వెర్షన్‌ల మధ్య దాని గుర్తింపు మరియు స్కోప్ మారకూడదు.",
+      "immutableGroupPurpose": "{{name}} అనేది గ్రూప్ {{groupId}}కు పరిమితం చేయబడింది. వెర్షన్‌ల మధ్య దాని గుర్తింపు మరియు స్కోప్ మారకూడదు.",
+      "loadingElements": "అందుబాటులో ఉన్న అంశాలు లోడ్ అవుతున్నాయి...",
+      "loadingVersions": "అంశం వెర్షన్‌లు లోడ్ అవుతున్నాయి...",
+      "noElementsFound": "సరిపోలే అంశాలు లేవు",
+      "noElements": "ఈ వెర్షన్ కోసం ఏ అంశాలు కాన్ఫిగర్ చేయబడలేదు.",
+      "noProperties": "కస్టమ్ లక్షణాలు లేవు.",
+      "noSchema": "ఈ వెర్షన్ కోసం ఏ స్కీమా కాన్ఫిగర్ చేయబడలేదు.",
+      "noPurposeElements": "ఇంకా ఎలాంటి అంశాలు జోడించబడలేదు. ప్రయోజనాన్ని సృష్టించడానికి కనీసం ఒక అంశాన్ని జోడించండి.",
+      "noVersions": "ఎలాంటి వెర్షన్‌లు అందుబాటులో లేవు.",
+      "versionsLoadFailed": "ప్రస్తుతం వెర్షన్ చరిత్రను లోడ్ చేయడం సాధ్యపడలేదు."
+    },
+    "validation": {
+      "duplicateElements": "ప్రతి అంశం ఒక్కసారి మాత్రమే చేర్చబడాలి.",
+      "duplicatePropertyKeys": "ప్రాపర్టీ కీలు ప్రత్యేకంగా ఉండాలి.",
+      "elementRequired": "కనీసం ఒక అంశాన్ని ఎంచుకోండి.",
+      "groupIdRequired": "గ్రూప్-నిర్దిష్ట ప్రయోజనం కోసం గ్రూప్ ID తప్పనిసరి.",
+      "nameRequired": "పేరు తప్పనిసరి.",
+      "namespaceRequired": "కస్టమ్ ఎంచుకున్నప్పుడు నేమ్‌స్పేస్ తప్పనిసరి.",
+      "schemaRequired": "JSON మరియు XML అంశాల కోసం స్కీమా తప్పనిసరి."
+    },
+    "delete": {
+      "title": "వెర్షన్‌ని తొలగించు",
+      "message": "వెర్షన్ {{version}}ను తొలగించాలా?",
+      "warning": "దీన్ని రద్దు చేయడం సాధ్యపడదు. సూచించబడిన వెర్షన్‌లను తొలగించలేరు, మరియు తుది వెర్షన్‌ను తొలగిస్తే మొత్తం ఎంట్రీ తొలగించబడుతుంది."
+    }
+  },
+  "nominee": {
+    "title": "నామినేషన్లు",
+    "messages": {
+      "loadFailed": "ప్రస్తుతం నామినేషన్లను లోడ్ చేయడం సాధ్యపడలేదు."
+    },
+    "nominatedFor": {
+      "openAccount": "ఖాతాను తెరవండి →",
+      "accept": "అంగీకరించు",
+      "reject": "తిరస్కరించు",
+      "actionNeeded": "చర్య అవసరం",
+      "ariaLabel": "నామినేట్ చేయబడిన ఖాతాలు",
+      "empty": "ఇంకా ఎవరూ మిమ్మల్ని నామినేట్ చేయలేదు.",
+      "title": "నామినేట్ చేయబడిన ఖాతాలు",
+      "table": {
+        "account": "ఖాతా",
+        "status": "స్థితి",
+        "actions": "చర్యలు"
+      }
+    },
+    "acting": {
+      "starting": "ఖాతాను తెరుస్తోంది…",
+      "startFailed": "మీరు ఈ ఖాతాకు నామినీ కారు.",
+      "startFailedHint": "నామినేషన్‌లకు తిరిగి వెళ్లి మళ్లీ ప్రయత్నించండి.",
+      "blockedTitle": "నామినీ యాక్సెస్‌లో అందుబాటులో లేదు",
+      "blockedFenced": "ఖాతా సెట్టింగ్‌లు, ఆధారాలు మరియు నామినేషన్లు వేరొకరి తరఫున ఎప్పటికీ ఉపయోగించబడవు.",
+      "blockedScope": "యజమాని ఈ విభాగం కోసం మీకు అనుమతి మంజూరు చేయలేదు.",
+      "backToAllowed": "నేను యాక్సెస్ చేయగల దానికి వెళ్ళు",
+      "exit": "నిష్క్రమించు"
+    },
+    "permissions": {
+      "consentView": "సమ్మతులను వీక్షించండి",
+      "consentRevoke": "సమ్మతులను ఉపసంహరించుకోండి",
+      "consentApprove": "పెండింగ్‌లో ఉన్న సమ్మతులను ఆమోదించండి",
+      "accountView": "వ్యక్తిగత ఖాతాను వీక్షించండి",
+      "accountUpdate": "వ్యక్తిగత ఖాతాను నవీకరించండి",
+      "accountDelete": "వ్యక్తిగత ఖాతాను తొలగించండి"
+    },
+    "mine": {
+      "add": "నామినీని జోడించు",
+      "remove": "తీసివేయి",
+      "empty": "మీరు ఇంకా ఎవరినీ నామినేట్ చేయలేదు.",
+      "status": {
+        "active": "క్రియాశీలం",
+        "pending": "అంగీకారం కోసం వేచి ఉంది",
+        "rejected": "తిరస్కరించబడింది",
+        "accepted": "ఆమోదం కోసం వేచి ఉంది",
+        "deactivated": "నిలిపివేయబడింది"
+      },
+      "ariaLabel": "నామినీలు",
+      "title": "నామినీలు",
+      "table": {
+        "person": "వ్యక్తి",
+        "permissions": "అనుమతులు",
+        "status": "స్థితి",
+        "actions": "చర్యలు",
+        "morePermissions": "మరిన్ని +{{count}}"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "నామినీని జోడించు",
+        "editTitle": "నామినీని సవరించు",
+        "saveChanges": "మార్పులను సేవ్ చేయి",
+        "emailLabel": "నామినీ నమోదు చేసిన ఇమెయిల్",
+        "permissionsTitle": "ఈ నామినీ ఏమి చేయగలరు?",
+        "permissionsSubtitle": "మీరు మంజూరు చేయాలనుకున్న వాటిని మాత్రమే టిక్ చేయండి. ఇవి ఈ నామినీ ఉపయోగించడానికి అనుమతించబడిన యాక్సెస్‌గా మారుతాయి.",
+        "sensitive": "సున్నితమైనది (Sensitive)",
+        "cancel": "రద్దు చేయి",
+        "processing": "సేవ్ చేయబడుతోంది...",
+        "confirm": "నామినేషన్ పంపించు",
+        "processingEdit": "సేవ్ చేయబడుతోంది…"
+      },
+      "removeDialog": {
+        "title": "నామినీని తీసివేయి",
+        "message": "{{nomineeEmail}} ఇకపై మీ సమ్మతులను నిర్వహించలేరు.",
+        "confirm": "నామినీని తీసివేయి",
+        "cancel": "రద్దు చేయి",
+        "processing": "తీసివేయబడుతోంది..."
+      }
+    },
+    "manage": {
+      "title": "యజమాని సమ్మతులను నిర్వహించడం",
+      "back": "నామినీ వీక్షణ నుండి నిష్క్రమించు",
+      "consents": {
+        "title": "సమ్మతులు",
+        "subtitle": "ఈ ఖాతా మంజూరు చేసిన సమ్మతులను వీక్షించండి మరియు అనుమతించబడిన చోట ఉపసంహరించుకోండి."
+      },
+      "selectedCount": "{{count}} ఎంచుకోబడ్డాయి",
+      "revokeSelected": "ఎంచుకున్నవి ఉపసంహరించు",
+      "messages": {
+        "loadFailed": "ప్రస్తుతం సమ్మతులను లోడ్ చేయడం సాధ్యపడలేదు.",
+        "empty": "ఈ ఖాతాకు ఎలాంటి సమ్మతులు కనుగొనబడలేదు."
+      },
+      "table": {
+        "ariaLabel": "నామినీ నిర్వహించే సమ్మతి పట్టిక",
+        "purposes": "ప్రయోజనాలు",
+        "type": "రకం",
+        "status": "స్థితి",
+        "updated": "నవీకరించబడింది",
+        "actions": "చర్యలు",
+        "revoke": "ఉపసంహరించు",
+        "notRevokable": "క్రియాశీల సమ్మతులను మాత్రమే ఉపసంహరించుకోవచ్చు",
+        "clientLabel": "సంస్థ: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "బల్క్ ఉపసంహరణను నిర్ధారించండి",
+        "message": "ఇది {{count}} సమ్మతి(ల)ను ఉపసంహరిస్తుంది. దీన్ని రద్దు చేయడం సాధ్యపడదు.",
+        "note": "ప్రతి ఉపసంహరణ యజమాని తరపున మీరు చేసిన చర్యగా విడిగా నమోదు చేయబడుతుంది.",
+        "progress": "{{count}}లో {{processed}} ఉపసంహరించబడుతోంది...",
+        "confirm": "ఎంచుకున్నవి ఉపసంహరించు",
+        "cancel": "రద్దు చేయి",
+        "processing": "ప్రాసెస్ అవుతోంది..."
+      },
+      "subtitle": "మీరు ఈ ఖాతా తరపున వ్యవహరిస్తున్నారు. యజమాని మీకు అధికారం ఇచ్చిన వాటిని మాత్రమే మీరు చేయగలరు.",
+      "account": {
+        "title": "ఖాతా యాక్సెస్",
+        "subtitle": "యజమాని వారి ఖాతాలో చేయడానికి మీకు అధికారం ఇచ్చిన చర్యలు.",
+        "notGranted": "యజమాని ద్వారా మంజూరు చేయబడలేదు"
+      }
+    },
+    "detail": {
+      "title": "సమ్మతి వివరాలు",
+      "back": "వెనుకకు"
+    }
+  },
+  "admin": {
+    "title": "నామినీ యాక్టివేషన్",
+    "status": {
+      "active": "క్రియాశీలం",
+      "accepted": "ఆమోదం కోసం వేచి ఉంది",
+      "pending": "నామినీ కోసం వేచి ఉంది",
+      "rejected": "తిరస్కరించబడింది",
+      "deactivated": "డియాక్టివేట్ చేయబడింది"
+    },
+    "pending": {
+      "title": "మీ ఆమోదం కోసం వేచి ఉంది",
+      "empty": "ప్రస్తుతం మీ కోసం ఏదీ పెండింగ్‌లో లేదు.",
+      "count": "{{count}} ఆమోదం కోసం వేచి ఉన్నాయి",
+      "appointed": "{{email}} నియమించబడ్డారు",
+      "accepted": "{{date}}న అంగీకరించబడింది"
+    },
+    "search": {
+      "label": "పేరు లేదా ఇమెయిల్ ద్వారా వెతకండి",
+      "empty": "సరిపోలే ఖాతాలు కనుగొనబడలేదు.",
+      "results": "ఖాతాలు"
+    },
+    "table": {
+      "ariaLabel": "నామినేషన్లు",
+      "owner": "ఖాతా",
+      "nominee": "నామినీ",
+      "permissions": "మంజూరు చేయబడింది",
+      "status": "స్థితి",
+      "nominated": "నామినేట్ చేయబడింది",
+      "actions": "చర్యలు"
+    },
+    "controls": {
+      "title": "నామినీలు",
+      "titleNamed": "{{name}} యొక్క నామినీలు",
+      "nominated": "{{date}}న నామినేట్ చేయబడింది",
+      "ticket": "టికెట్ {{ticket}}",
+      "waitingNominee": "ఇంకా చేయడానికి ఏమీ లేదు - నామినీ అంగీకరించలేదు.",
+      "activate": "యాక్సెస్‌ని యాక్టివేట్ చేయి",
+      "noAction": "-",
+      "owner": "ఖాతా",
+      "deactivate": "యాక్సెస్ వెనక్కి తీసుకో",
+      "none": "ఈ ఖాతా ఎవరినీ నియమించలేదు."
+    },
+    "activateDialog": {
+      "title": "నామినీ యాక్సెస్‌ని యాక్టివేట్ చేయండి",
+      "ticketLabel": "చట్టపరమైన/మద్దతు టికెట్ రిఫరెన్స్",
+      "confirm": "యాక్సెస్ యాక్టివేట్ చేయి",
+      "cancel": "రద్దు చేయి",
+      "processing": "యాక్టివేట్ అవుతోంది...",
+      "subtitle": "ఇది {{ownerName}} యొక్క సమ్మతులను నిర్వహించడానికి {{nomineeName}}కు యాక్సెస్‌ని మంజూరు చేస్తుంది."
+    },
+    "deactivateDialog": {
+      "title": "నామినీ యాక్సెస్‌ని డియాక్టివేట్ చేయండి",
+      "reasonLabel": "కారణం",
+      "confirm": "యాక్సెస్ డియాక్టివేట్ చేయి",
+      "cancel": "రద్దు చేయి",
+      "processing": "డియాక్టివేట్ అవుతోంది...",
+      "subtitle": "ఇది {{ownerName}} యొక్క సమ్మతులకు నామినీ యాక్సెస్‌ను వెంటనే ఉపసంహరిస్తుంది."
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "డేటా ఉల్లంఘన",
+      "UNAUTHORIZED_DATA_SHARING": "అనధికారిక డేటా షేరింగ్",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "సమ్మతి ఉపసంహరణ సమస్య",
+      "PURPOSE_VIOLATION": "ప్రయోజన ఉల్లంఘన",
+      "DATA_ERASURE_NOT_COMPLETED": "డేటా తొలగింపు అభ్యర్థన పూర్తి కాలేదు",
+      "DATA_CORRECTION_NOT_COMPLETED": "డేటా సవరణ అభ్యర్థన పూర్తి కాలేదు",
+      "CONSENT_LIFECYCLE_ISSUE": "సమ్మతి నిర్వాహక సమస్య",
+      "DATA_ACCESS_DENIED": "డేటా యాక్సెస్ అభ్యర్థన తిరస్కరణ",
+      "EXCESSIVE_DATA_COLLECTION": "మితిమీరిన డేటా సేకరణ",
+      "OTHER": "ఇతర"
+    },
+    "status": {
+      "open": "ఓపెన్",
+      "investigation": "ప్రాసెస్‌లో ఉంది",
+      "awaitingInfo": "వినియోగదారు కోసం వేచి ఉంది",
+      "waitingOnDpo": "అంతర్గత సమీక్ష కోసం వేచి ఉంది",
+      "resolved": "పరిష్కరించబడింది"
+    },
+    "priority": {
+      "CRITICAL": "క్లిష్టమైన",
+      "HIGH": "అధిక",
+      "MEDIUM": "మధ్యస్థ",
+      "LOW": "తక్కువ"
+    },
+    "sla": {
+      "dueDate": "గడువు {{date}}",
+      "dueToday": "ఈరోజే గడువు",
+      "overdueSingular": "{{count}} రోజు ఆలస్యమైంది",
+      "overduePlural": "{{count}} రోజులు ఆలస్యమైంది",
+      "daysLeftSingular": "{{count}} రోజు మిగిలి ఉంది",
+      "daysLeftPlural": "{{count}} రోజులు మిగిలి ఉన్నాయి"
+    },
+    "timeline": {
+      "complaintReceived": "ఫిర్యాదు స్వీకరించబడింది",
+      "statusChangePrefix": "స్థితి ఇక్కడి నుండి",
+      "statusChangeJoiner": "కు మార్చబడింది"
+    },
+    "list": {
+      "title": "నా ఫిర్యాదులు",
+      "subtitle": "మీరు సమర్పించిన ఫిర్యాదులు మరియు వాటి పురోగతిని ట్రాక్ చేయండి.",
+      "submitNew": "ఫిర్యాదు సమర్పించండి",
+      "loadFailed": "ప్రస్తుతం మీ ఫిర్యాదులను లోడ్ చేయడం సాధ్యపడలేదు.",
+      "empty": "మీరు ఇంకా ఎలాంటి ఫిర్యాదులు సమర్పించలేదు.",
+      "emptyFiltered": "ఎంచుకున్న ఫిల్టర్‌కు ఏ ఫిర్యాదులు సరిపోలలేదు.",
+      "filters": {
+        "status": "స్థితి",
+        "all": "అన్నీ"
+      },
+      "table": {
+        "tableAriaLabel": "నా ఫిర్యాదుల పట్టిక",
+        "headers": {
+          "referenceId": "రిఫరెన్స్ ID",
+          "category": "కేటగిరీ",
+          "status": "స్థితి",
+          "submitted": "సమర్పించబడింది",
+          "updated": "నవీకరించబడింది"
+        }
+      }
+    },
+    "detail": {
+      "back": "నా ఫిర్యాదులకు తిరిగి వెళ్ళు",
+      "notFound": "ఫిర్యాదు కనుగొనబడలేదు",
+      "description": "వివరణ",
+      "submittedOn": "{{date}}న సమర్పించబడింది",
+      "awaitingInfo": {
+        "note": "ఫిర్యాదు అధికారి మీ నుండి మరింత సమాచారం కోసం వేచి ఉన్నారు. దయచేసి కింద రిప్లై ఇవ్వండి."
+      },
+      "resolved": {
+        "note": "ఈ ఫిర్యాదు పరిష్కరించబడింది."
+      }
+    },
+    "submit": {
+      "title": "ఫిర్యాదు సమర్పించండి",
+      "subtitle": "ఏమి జరిగిందో మాకు చెప్పండి మరియు మేము దాన్ని సరైన బృందానికి పంపుతాము.",
+      "submitFailed": "ప్రస్తుతం మీ ఫిర్యాదును సమర్పించడం సాధ్యపడలేదు. దయచేసి మళ్లీ ప్రయత్నించండి.",
+      "fields": {
+        "category": "కేటగిరీ",
+        "categoryPlaceholder": "కేటగిరీని ఎంచుకోండి",
+        "categoryHelp": "మీ ఫిర్యాదును ఉత్తమంగా వివరించే ఎంపికను ఎంచుకోండి.",
+        "categoriesLoadFailed": "ప్రస్తుతం ఫిర్యాదు కేటగిరీలను లోడ్ చేయడం సాధ్యపడలేదు.",
+        "description": "వివరణ",
+        "descriptionPlaceholder": "మీ ఫిర్యాదును వివరంగా తెలపండి",
+        "descriptionHelp": "దీన్ని త్వరగా పరిష్కరించడంలో మాకు సహాయపడటానికి సాధ్యమైనంత ఎక్కువ వివరాలను చేర్చండి.",
+        "attachments": "జోడింపులు (ఐచ్ఛికం)",
+        "attachmentsHelp": "PDF, DOCX, PNG, లేదా JPG ఫైల్ ఒక్కొక్కటి {{maxSize}} వరకు అనుమతించబడుతుంది.",
+        "uploadButton": "ఫైళ్లను అప్‌లోడ్ చేయండి"
+      },
+      "validation": {
+        "categoryRequired": "కొనసాగడానికి కేటగిరీని ఎంచుకోండి.",
+        "descriptionRequired": "కొనసాగడానికి మీ ఫిర్యాదును వివరించండి.",
+        "attachmentTooLarge": "{{fileNames}} పరిమితి మించిపోయింది. ఫైల్ పరిమాణం {{maxSize}} లోపు ఉండాలి."
+      },
+      "success": {
+        "message": "మీ ఫిర్యాదు {{referenceId}} సమర్పించబడింది.",
+        "attachmentFailedMessage": "మీ ఫిర్యాదు {{referenceId}} సమర్పించబడింది, కానీ జోడింపులు అప్‌లోడ్ కాలేదు. మీరు వాటిని ఫిర్యాదు వివరాల పేజీ నుండి జోడించవచ్చు."
+      },
+      "actions": {
+        "cancel": "రద్దు చేయి",
+        "submit": "ఫిర్యాదు సమర్పించు"
+      }
+    },
+    "activity": {
+      "title": "కార్యకలాపం",
+      "send": "పంపు",
+      "sendOnly": "పంపించు మాత్రమే",
+      "sendOptions": "మరిన్ని పంపే ఎంపికలు",
+      "sendAndChangeStatusTo": "పంపండి మరియు స్థితిని దీనికి మార్చండి",
+      "sendAndUpdateStatus": "పంపండి మరియు {{status}}గా గుర్తించండి",
+      "publicReply": "ప్రత్యుత్తరం (Reply)",
+      "internalNote": "అంతర్గత గమనిక",
+      "internalTag": "అంతర్గతం",
+      "dataPrincipalRoleLabel": "వినియోగదారు",
+      "officerRoleLabel": "ఫిర్యాదు అధికారి",
+      "composerPlaceholderPublic": "వినియోగదారుకు ప్రత్యుత్తరం రాయండి...",
+      "composerPlaceholderInternal": "అంతర్గత గమనిక రాయండి (వినియోగదారుకు కనిపించదు)...",
+      "attach": "జోడించు",
+      "attachmentsHelp": "PDF, DOCX, PNG, లేదా JPG ప్రతి ఫైల్ {{maxSize}} వరకు.",
+      "attachmentTooLarge": "{{fileNames}} పరిమితి మించిపోయింది. ఫైల్ పరిమాణం {{maxSize}} లోపు ఉండాలి.",
+      "removeAttachment": "జోడింపును తీసివేయి"
+    },
+    "attachments": {
+      "tabLabel": "జోడింపులు",
+      "tabLabelWithCount": "జోడింపులు ({{count}})",
+      "empty": "ఈ ఫిర్యాదుకు ఎలాంటి జోడింపులు జోడించబడలేదు.",
+      "initialSubmission": "ప్రాథమిక సమర్పణ",
+      "internalNote": "అంతర్గతం",
+      "overflowMore": "మరిన్ని +{{count}}"
+    },
+    "management": {
+      "queue": {
+        "title": "ఫిర్యాదులు",
+        "loadFailed": "ప్రస్తుతం ఫిర్యాదు క్యూను లోడ్ చేయడం సాధ్యపడలేదు.",
+        "empty": "ఎంచుకున్న ఫిల్టర్‌లకు ఏ ఫిర్యాదులు సరిపోలలేదు.",
+        "stats": {
+          "open": "ఓపెన్",
+          "awaitingInfo": "స్పందన కోసం వేచి ఉంది",
+          "resolved": "పరిష్కరించబడింది",
+          "slaBreached": "SLA ఉల్లంఘించబడింది"
+        },
+        "filters": {
+          "sectionAriaLabel": "ఫిర్యాదు క్యూ ఫిల్టర్‌లు",
+          "status": "స్థితి",
+          "priority": "ప్రాధాన్యత",
+          "search": "రిఫరెన్స్ ID లేదా వినియోగదారు ద్వారా వెతకండి",
+          "all": "అన్నీ",
+          "clear": "ఫిల్టర్‌లను క్లియర్ చేయి",
+          "clearAriaLabel": "అన్ని ఫిల్టర్‌లను క్లియర్ చేయి"
+        },
+        "table": {
+          "tableAriaLabel": "ఫిర్యాదు క్యూ పట్టిక",
+          "headers": {
+            "referenceId": "రిఫరెన్స్ ID",
+            "dataPrincipal": "వినియోగదారు",
+            "category": "కేటగిరీ",
+            "priority": "ప్రాధాన్యత",
+            "status": "స్థితి",
+            "sla": "SLA",
+            "updated": "నవీకరించబడింది"
+          }
+        }
+      },
+      "case": {
+        "back": "క్యూకు తిరిగి వెళ్ళు",
+        "notFound": "ఫిర్యాదు కనుగొనబడలేదు",
+        "dataPrincipal": "వినియోగదారు"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "సబ్‌స్క్రిప్షన్లు",
+      "subtitle": "ఈవెంట్ నోటిఫికేషన్ ఫ్రేమ్‌వర్క్ అంతటా నమోదైన అన్ని సబ్‌స్క్రిప్షన్లు.",
+      "addAction": "సబ్‌స్క్రిప్షన్‌ను జోడించు",
+      "filters": {
+        "sectionAriaLabel": "సబ్‌స్క్రిప్షన్ ఫిల్టర్‌లు",
+        "status": "స్థితి",
+        "topic": "టాపిక్",
+        "clear": "ఫిల్టర్‌లను క్లియర్ చేయి",
+        "statusOptions": {
+          "all": "అన్ని స్థితులు",
+          "active": "క్రియాశీలం",
+          "pendingVerification": "పెండింగ్",
+          "stale": "పాతది (Stale)"
+        },
+        "topicOptions": {
+          "all": "అన్ని టాపిక్‌లు"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "సబ్‌స్క్రిప్షన్ విజయవంతంగా మళ్లీ ధృవీకరించబడింది. స్థితి ఇప్పుడు క్రియాశీలంగా ఉంది.",
+        "reverifyStillStale": "ధృవీకరణ మళ్లీ విఫలమైంది. సబ్‌స్క్రిప్షన్ పాతదిగా (STALE) మిగిలిపోయింది.",
+        "reverifyFailed": "రీ-వెరిఫికేషన్ విఫలమైంది."
+      }
+    },
+    "events": {
+      "title": "ఈవెంట్‌లు",
+      "subtitle": "ఈవెంట్ నోటిఫికేషన్ ఫ్రేమ్‌వర్క్ అంతటా అన్ని ఈవెంట్ డెలివరీలు.",
+      "filters": {
+        "sectionAriaLabel": "ఈవెంట్ ఫిల్టర్‌లు",
+        "status": "స్థితి",
+        "topic": "టాపిక్",
+        "search": "ఈవెంట్‌లను వెతకండి",
+        "searchPlaceholder": "ప్రయోజనం లేదా సబ్‌స్క్రైబర్ ID ద్వారా వెతకండి...",
+        "clear": "ఫిల్టర్‌లను క్లియర్ చేయి",
+        "statusOptions": {
+          "all": "అన్ని స్థితులు"
+        },
+        "topicOptions": {
+          "all": "అన్ని టాపిక్‌లు"
+        }
+      },
+      "emptyTitle": "ఈవెంట్‌లు కనుగొనబడలేదు",
+      "emptyMessage": "ఎంచుకున్న ప్రమాణాలకు పబ్లిష్ చేయబడిన ఈవెంట్‌లు ఏవీ సరిపోలలేదు.",
+      "table": {
+        "eventId": "ఈవెంట్ ID",
+        "topic": "టాపిక్",
+        "purposes": "ప్రయోజనాలు",
+        "deliveries": "డెలివరీలు",
+        "occurredAt": "జరిగిన సమయం",
+        "action": "చర్య",
+        "all": "అన్నీ",
+        "noSubscribers": "సబ్‌స్క్రైబర్‌లు లేరు",
+        "viewEvent": "ఈవెంట్‌ను వీక్షించండి",
+        "subscriberCount_one": "{{count}} సబ్‌స్క్రైబర్",
+        "subscriberCount_other": "{{count}} సబ్‌స్క్రైబర్‌లు"
+      },
+      "detail": {
+        "notFoundTitle": "ఈవెంట్ కనుగొనబడలేదు",
+        "notFoundMessage": "\"{{eventId}}\" IDతో ఎలాంటి ఈవెంట్ కనుగొనబడలేదు.",
+        "backToEvents": "ఈవెంట్‌లకు తిరిగి వెళ్ళు",
+        "topic": "టాపిక్",
+        "purposes": "ప్రయోజనాలు",
+        "occurredAt": "జరిగిన సమయం",
+        "deliveries": "డెలివరీలు",
+        "all": "అన్నీ",
+        "noSubscribers": "సబ్‌స్క్రైబర్‌లు లేరు",
+        "subscriberCount_one": "{{count}} సబ్‌స్క్రైబర్",
+        "subscriberCount_other": "{{count}} సబ్‌స్క్రైబర్‌లు"
+      },
+      "dialog": {
+        "title": "రీట్రై (Retry) చరిత్ర",
+        "deliveryId": "డెలివరీ ID",
+        "loading": "ఈవెంట్ డెలివరీ చరిత్ర లోడ్ అవుతోంది…",
+        "noRetries": "ప్రారంభ ప్రయత్నం పూర్తయింది. ఎలాంటి రీట్రైలు నమోదు కాలేదు.",
+        "attempt": "ప్రయత్నం {{attempt}}",
+        "retrySuffix": " (మళ్లీ ప్రయత్నించు)",
+        "webhookDescription": "HTTP డెలివరీ ప్రయత్నాలు మరియు రీట్రైల కాలానుగుణ చరిత్ర.",
+        "pollTitle": "పోల్ పూర్తి స్థితి & అంగీకారం",
+        "completionStatus": "పూర్తి స్థితి",
+        "completionTimestamp": "పూర్తయిన సమయముద్దు",
+        "erasureMethod": "తొలగింపు పద్ధతి",
+        "recordsAffected": "ప్రభావితమైన రికార్డులు",
+        "referenceId": "రిఫరెన్స్ ID",
+        "submittedBy": "సమర్పించిన వారు",
+        "notes": "గమనికలు",
+        "noAcknowledgment": "ఇంకా ఎలాంటి పోల్ పూర్తి అంగీకారం సమర్పించబడలేదు.",
+        "close": "మూసివేయి"
+      }
+    }
+  }
+}

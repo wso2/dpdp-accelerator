@@ -25,46 +25,75 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import type {
-  CatalogElement,
-  ElementInput,
-  ElementListQueryParams,
+  ElementCreateRequest,
+  ElementFilters,
   ElementListResponse,
-  PurposeDetail,
-  PurposeInput,
-  PurposeListQueryParams,
+  ElementVersion,
+  ElementVersionCreateRequest,
+  ElementVersionList,
+  PurposeCreateRequest,
+  PurposeFilters,
   PurposeListResponse,
-  PurposeVersionInput,
-  PurposeVersionListResponse,
-  PurposeVersionSummary,
+  PurposeVersion,
+  PurposeVersionCreateRequest,
+  PurposeVersionList,
 } from '../../../types/catalog'
 import {
   createElement,
+  createElementVersion,
   createPurpose,
   createPurposeVersion,
-  deleteElement,
-  deletePurpose,
+  deleteElementVersion,
   deletePurposeVersion,
   fetchElement,
   fetchElements,
+  fetchElementVersions,
   fetchPurpose,
   fetchPurposes,
   fetchPurposeVersions,
-  setLatestPurposeVersion,
 } from '../api/catalogApi'
 
-export const CATALOG_VERSIONS_PAGE_SIZE = 50
+interface CreatePurposeVariables {
+  payload: PurposeCreateRequest
+  groupId?: string
+}
+
+interface CreateElementVersionVariables {
+  elementId: string
+  payload: ElementVersionCreateRequest
+}
+
+interface CreatePurposeVersionVariables {
+  purposeId: string
+  payload: PurposeVersionCreateRequest
+}
+
+interface DeleteVersionVariables {
+  id: string
+  version: string
+}
 
 export function useElementsQuery(
-  params: ElementListQueryParams,
+  filters: ElementFilters,
+  page: number,
+  rowsPerPage: number,
 ): UseQueryResult<ElementListResponse> {
   return useQuery({
-    queryKey: ['elements', params],
-    queryFn: () => fetchElements(params),
+    queryKey: ['elements', filters, page, rowsPerPage],
+    queryFn: () => fetchElements(filters, rowsPerPage, page * rowsPerPage),
     placeholderData: keepPreviousData,
   })
 }
 
-export function useElementQuery(elementId?: string): UseQueryResult<CatalogElement> {
+export function useElementOptionsQuery(enabled = true): UseQueryResult<ElementListResponse> {
+  return useQuery({
+    queryKey: ['elements', 'options'],
+    queryFn: () => fetchElements({ name: '', namespace: '', type: 'All', version: '' }, 100, 0),
+    enabled,
+  })
+}
+
+export function useElementQuery(elementId?: string): UseQueryResult<ElementVersion> {
   return useQuery({
     queryKey: ['element', elementId],
     queryFn: () => fetchElement(String(elementId)),
@@ -72,39 +101,72 @@ export function useElementQuery(elementId?: string): UseQueryResult<CatalogEleme
   })
 }
 
-export function useCreateElementMutation(): UseMutationResult<CatalogElement, Error, ElementInput> {
+export function useElementVersionsQuery(elementId?: string): UseQueryResult<ElementVersionList> {
+  return useQuery({
+    queryKey: ['element', elementId, 'versions'],
+    queryFn: () => fetchElementVersions(String(elementId)),
+    enabled: Boolean(elementId),
+  })
+}
+
+export function useCreateElementMutation(): UseMutationResult<
+  ElementVersion,
+  Error,
+  ElementCreateRequest
+> {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: ElementInput) => createElement(payload),
-    onSuccess: async (): Promise<void> => {
+    mutationFn: createElement,
+    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['elements'] }),
+  })
+}
+
+export function useCreateElementVersionMutation(): UseMutationResult<
+  ElementVersion,
+  Error,
+  CreateElementVersionVariables
+> {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ elementId, payload }) => createElementVersion(elementId, payload),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['elements'] })
+      await queryClient.invalidateQueries({ queryKey: ['element', variables.elementId] })
     },
   })
 }
 
-export function useDeleteElementMutation(): UseMutationResult<void, Error, string> {
+export function useDeleteElementVersionMutation(): UseMutationResult<
+  void,
+  Error,
+  DeleteVersionVariables
+> {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (elementId: string) => deleteElement(elementId),
-    onSuccess: async (): Promise<void> => {
+    mutationFn: ({ id, version }) => deleteElementVersion(id, version),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['elements'] })
+      await queryClient.invalidateQueries({ queryKey: ['element', variables.id] })
     },
   })
 }
 
 export function usePurposesQuery(
-  params: PurposeListQueryParams,
+  filters: PurposeFilters,
+  page: number,
+  rowsPerPage: number,
 ): UseQueryResult<PurposeListResponse> {
   return useQuery({
-    queryKey: ['purposes', params],
-    queryFn: () => fetchPurposes(params),
+    queryKey: ['purposes', filters, page, rowsPerPage],
+    queryFn: () => fetchPurposes(filters, rowsPerPage, page * rowsPerPage),
     placeholderData: keepPreviousData,
   })
 }
 
-export function usePurposeQuery(purposeId?: string): UseQueryResult<PurposeDetail> {
+export function usePurposeQuery(purposeId?: string): UseQueryResult<PurposeVersion> {
   return useQuery({
     queryKey: ['purpose', purposeId],
     queryFn: () => fetchPurpose(String(purposeId)),
@@ -112,101 +174,55 @@ export function usePurposeQuery(purposeId?: string): UseQueryResult<PurposeDetai
   })
 }
 
-export function useCreatePurposeMutation(): UseMutationResult<PurposeDetail, Error, PurposeInput> {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (payload: PurposeInput) => createPurpose(payload),
-    onSuccess: async (): Promise<void> => {
-      await queryClient.invalidateQueries({ queryKey: ['purposes'] })
-    },
-  })
-}
-
-export function useDeletePurposeMutation(): UseMutationResult<void, Error, string> {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: (purposeId: string) => deletePurpose(purposeId),
-    onSuccess: async (): Promise<void> => {
-      await queryClient.invalidateQueries({ queryKey: ['purposes'] })
-    },
-  })
-}
-
-export function usePurposeVersionsQuery(
-  purposeId?: string,
-): UseQueryResult<PurposeVersionListResponse> {
+export function usePurposeVersionsQuery(purposeId?: string): UseQueryResult<PurposeVersionList> {
   return useQuery({
     queryKey: ['purpose', purposeId, 'versions'],
-    queryFn: () => fetchPurposeVersions(String(purposeId), { limit: CATALOG_VERSIONS_PAGE_SIZE }),
+    queryFn: () => fetchPurposeVersions(String(purposeId)),
     enabled: Boolean(purposeId),
   })
 }
 
-interface CreatePurposeVersionArgs {
-  purposeId: string
-  payload: PurposeVersionInput
+export function useCreatePurposeMutation(): UseMutationResult<
+  PurposeVersion,
+  Error,
+  CreatePurposeVariables
+> {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ payload, groupId }) => createPurpose(payload, groupId),
+    onSuccess: async () => queryClient.invalidateQueries({ queryKey: ['purposes'] }),
+  })
 }
 
 export function useCreatePurposeVersionMutation(): UseMutationResult<
-  PurposeVersionSummary,
+  PurposeVersion,
   Error,
-  CreatePurposeVersionArgs
+  CreatePurposeVersionVariables
 > {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ purposeId, payload }: CreatePurposeVersionArgs) =>
-      createPurposeVersion(purposeId, payload),
-    onSuccess: async (_data, { purposeId }): Promise<void> => {
-      // Prefix match invalidates both the detail and versions queries.
-      await queryClient.invalidateQueries({ queryKey: ['purpose', purposeId] })
+    mutationFn: ({ purposeId, payload }) => createPurposeVersion(purposeId, payload),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['purposes'] })
+      await queryClient.invalidateQueries({ queryKey: ['purpose', variables.purposeId] })
     },
   })
-}
-
-interface SetLatestPurposeVersionArgs {
-  purposeId: string
-  versionId: string
-}
-
-export function useSetLatestPurposeVersionMutation(): UseMutationResult<
-  void,
-  Error,
-  SetLatestPurposeVersionArgs
-> {
-  const queryClient = useQueryClient()
-
-  return useMutation({
-    mutationFn: ({ purposeId, versionId }: SetLatestPurposeVersionArgs) =>
-      setLatestPurposeVersion(purposeId, versionId),
-    onSuccess: async (_data, { purposeId }): Promise<void> => {
-      await queryClient.invalidateQueries({ queryKey: ['purpose', purposeId] })
-      await queryClient.invalidateQueries({ queryKey: ['purposes'] })
-    },
-  })
-}
-
-interface DeletePurposeVersionArgs {
-  purposeId: string
-  versionId: string
 }
 
 export function useDeletePurposeVersionMutation(): UseMutationResult<
   void,
   Error,
-  DeletePurposeVersionArgs
+  DeleteVersionVariables
 > {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ purposeId, versionId }: DeletePurposeVersionArgs) =>
-      deletePurposeVersion(purposeId, versionId),
-    onSuccess: async (_data, { purposeId }): Promise<void> => {
-      await queryClient.invalidateQueries({ queryKey: ['purpose', purposeId] })
+    mutationFn: ({ id, version }) => deletePurposeVersion(id, version),
+    onSuccess: async (_data, variables) => {
       await queryClient.invalidateQueries({ queryKey: ['purposes'] })
+      await queryClient.invalidateQueries({ queryKey: ['purpose', variables.id] })
     },
   })
 }

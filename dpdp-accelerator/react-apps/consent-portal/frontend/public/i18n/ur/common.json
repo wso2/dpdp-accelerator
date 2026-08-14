@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "رضامندی پورٹل"
+  },
+  "language": {
+    "label": "زبان",
+    "selectAria": "زبان منتخب کریں"
+  },
+  "authorization": {
+    "loading": "آپ کا سیشن لوڈ ہو رہا ہے",
+    "loadFailed": "آپ کا سیشن لوڈ کرنے میں ناکامی ہوئی۔",
+    "tryAgain": "دوبارہ کوشش کریں",
+    "noAccessTitle": "پورٹل تک رسائی نہیں ہے",
+    "noAccessDescription": "آپ کے اکاؤنٹ کو پورٹل کے کسی بھی صفحے تک رسائی کی اجازت نہیں ہے۔"
+  },
+  "copyableText": {
+    "copy": "کاپی کریں",
+    "copied": "کاپی ہو گیا",
+    "copyLabel": "{{label}} کاپی کریں",
+    "copyValue": "{{label}} {{value}} کاپی کریں",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "بنیادی نیویگیشن",
+    "dashboard": "ڈیش بورڈ",
+    "consent": "رضامندی",
+    "allConsents": "تمام رضامندیاں",
+    "pendingConsents": "زیر التواء رضامندیاں",
+    "catalog": "تعریفات",
+    "purposes": "مقاصد",
+    "elements": "عناصر",
+    "administration": "انتظامیہ",
+    "adminConsents": "رضامندیاں",
+    "nominations": "نامزدگیاں",
+    "nomineeActivation": "نامزد فرد کی فعال کاری",
+    "myComplaints": "میری شکایتیں",
+    "complaintManagement": "شکایتیں",
+    "dataProcessors": "ڈیٹا پروسیسرز",
+    "dataProcessorTopics": "موضوعات",
+    "dataProcessorSubscriptions": "سبسکرپشنز",
+    "dataProcessorEvents": "تقریبات (Events)"
+  },
+  "layout": {
+    "home": "ہوم",
+    "breadcrumbAriaLabel": "بریڈ کرمب",
+    "userMenu": {
+      "unknownUser": "نامعلوم صارف",
+      "noEmail": "ای میل دستیاب نہیں ہے",
+      "signOut": "سائن آؤٹ کریں",
+      "signOutError": "سائن آؤٹ کرنے میں ناکامی ہوئی۔ براہ کرم دوبارہ کوشش کریں۔",
+      "tryAgain": "دوبارہ کوشش کریں"
+    }
+  },
+  "dashboard": {
+    "active": "فعال رضامندیاں",
+    "attention": "آپ کی توجہ درکار ہے",
+    "commonPurposes": "سب سے زیادہ شیئر کیے گئے مقاصد",
+    "commonPurposesSubtitle": "آپ کی فعال رضامندیوں میں شامل مقاصد",
+    "consentCount": "{{count}} رضامندیاں",
+    "consentCount_one": "{{count}} رضامندی",
+    "consentCount_other": "{{count}} رضامندیاں",
+    "expiringSoon": "جلد ختم ہونے والی",
+    "loadFailed": "اس وقت آپ کا ڈیش بورڈ لوڈ کرنے میں ناکامی ہوئی۔",
+    "noExpiring": "اگلے {{days}} دنوں میں کوئی فعال رضامندی ختم نہیں ہو رہی ہے۔",
+    "noPending": "جائزہ لینے کے لیے کوئی زیر التواء رضامندی نہیں ہے۔",
+    "noPurposes": "ابھی تک کوئی شیئر شدہ مقصد دستیاب نہیں ہے۔",
+    "pending": "زیر التواء رضامندیاں",
+    "pendingConsents": "زیر التواء رضامندیاں",
+    "subtitle": "آپ کی رضامندی کی سرگرمی اور آنے والے اقدامات کا خلاصہ۔",
+    "title": "ڈیش بورڈ",
+    "typeBreakdown": "رضامندی کی قسم کی تفصیل",
+    "typeBreakdownSubtitle": "قسم کے لحاظ سے آپ کی تمام رضامندیاں",
+    "noTypes": "ابھی تک رضامندی کی کوئی قسم دستیاب نہیں ہے۔",
+    "viewPending": "تمام زیر التواء رضامندیاں دیکھیں"
+  },
+  "adminConsents": {
+    "title": "رضامندیاں",
+    "filters": {
+      "sectionAriaLabel": "انتظامی رضامندی فلٹرز",
+      "consentIdSearchPlaceholder": "رضامندی ID سے تلاش کریں",
+      "removeConsentIdForAdvanced": "ایڈوانسڈ فلٹرز استعمال کرنے کے لیے رضامندی ID کا فلٹر ہٹائیں۔",
+      "removeConsentIdForStatus": "اسٹیٹس فلٹر استعمال کرنے کے لیے رضامندی ID کا فلٹر ہٹائیں۔",
+      "userIds": "صارف IDs",
+      "groupIds": "گروپ IDs",
+      "commaSeparatedUsers": "متعدد صارف IDs کو کوما (,) سے الگ کریں",
+      "active": "فعال فلٹرز"
+    }
+  },
+  "consentRegistry": {
+    "title": "تمام رضامندیاں",
+    "details": {
+      "title": "رضامندی کی تفصیلات",
+      "consentId": "رضامندی ID",
+      "status": "اسٹیٹس",
+      "type": "رضامندی کی قسم",
+      "frequency": "رسائی کی حد",
+      "frequencyHelp": "یہ ظاہر کرتا ہے کہ روزانہ اس رضامندی تک کتنی بار رسائی حاصل کی جا سکتی ہے۔",
+      "frequencyUnitSingular": "بار فی دن",
+      "frequencyUnitPlural": "بار فی دن",
+      "purposes": "مقاصد",
+      "duration": "ماضی کے ڈیٹا تک رسائی کا دورانیہ",
+      "durationHelp": "یہ طے کرتا ہے کہ کتنے پرانے ڈیٹا تک رسائی حاصل کی جا سکتی ہے۔ مثال کے طور پر، اگر 6 ماہ مقرر ہے، تو 6 ماہ پرانے ڈیٹا تک رسائی ہو سکتی ہے۔",
+      "durationUnitHourSingular": "گھنٹہ",
+      "durationUnitHourPlural": "گھنٹے",
+      "durationUnitDaySingular": "دن",
+      "durationUnitDayPlural": "دن",
+      "durationUnitYearSingular": "سال",
+      "durationUnitYearPlural": "سال",
+      "created": "تخلیق شدہ",
+      "updated": "اپ ڈیٹ شدہ",
+      "validUntil": "تک درست",
+      "groupId": "گروپ ID",
+      "recurring": "بار بار ہونے والی",
+      "back": "رجسٹری پر واپس جائیں",
+      "notFound": "رضامندی کا ریکارڈ نہیں ملا",
+      "approved": "منظور شدہ",
+      "notApproved": "غیر منظور شدہ",
+      "approvedCount": "{{total}} میں سے {{approved}} منظور شدہ",
+      "section": {
+        "purposes": "رضامندی کے مقاصد",
+        "authorizations": "اختیارات",
+        "lifecycle": "رضامندی کا لائف سائیکل"
+      },
+      "table": {
+        "element": "عنصر",
+        "approved": "منظور شدہ",
+        "required": "ضروری",
+        "description": "تفصیل",
+        "user": "صارف",
+        "status": "اسٹیٹس",
+        "updated": "اپ ڈیٹ شدہ",
+        "resources": "وسائل",
+        "eventType": "تقریب کی قسم",
+        "date": "تاریخ",
+        "time": "وقت"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "رضامندی کا لائف سائیکل",
+        "empty": "لائف سائیکل کے کوئی واقعات دستیاب نہیں ہیں۔",
+        "noDescription": "کوئی تفصیل دستیاب نہیں ہے۔"
+      },
+      "actions": {
+        "viewResources": "وسائل دیکھیں",
+        "noResourcesTooltip": "کوئی وسائل دستیاب نہیں ہیں"
+      },
+      "resourcesModal": {
+        "title": "توثیقی وسائل",
+        "authRef": "Auth",
+        "close": "بند کریں"
+      },
+      "values": {
+        "yes": "ہاں",
+        "no": "نہیں",
+        "required": "ضروری",
+        "optional": "اختیاری"
+      }
+    },
+    "actions": {
+      "view": "دیکھیں",
+      "revoke": "منسوخ کریں",
+      "approve": "منظور کریں",
+      "reject": "مسترد کریں",
+      "copyConsentId": "رضامندی ID کاپی کریں",
+      "copyConsentIdAriaLabel": "رضامندی ID {{id}} کاپی کریں"
+    },
+    "modals": {
+      "consentId": "رضامندی ID",
+      "actions": {
+        "cancel": "منسوخ کریں",
+        "processing": "کارروائی جاری ہے..."
+      },
+      "approval": {
+        "title": "رضامندی کا جائزہ لیں اور منظور کریں",
+        "subtitle": "براہ کرم منظوری سے پہلے رضامندی کے عناصر کا جائزہ لیں۔",
+        "mandatory": "لازمی عناصر (ضروری)",
+        "optional": "اختیاری عناصر",
+        "required": "ضروری",
+        "toggle": "اجازت کی حالت بدلیں",
+        "toggleWithDetails": "{{purposeLabel}} میں {{elementLabel}} کے لیے اجازت کی حالت بدلیں",
+        "loading": "رضامندی کی تفصیلات لوڈ ہو رہی ہیں...",
+        "noMandatory": "اس رضامندی کے لیے کوئی لازمی ضروریات نہیں ہیں۔",
+        "confirm": "منظور کریں اور آگے بڑھیں"
+      },
+      "rejection": {
+        "title": "مسترد کرنے کی تصدیق کریں",
+        "message": "کیا آپ واقعی اس رضامندی کو مسترد کرنا چاہتے ہیں؟",
+        "note": "اس رضامندی کو مسترد کرنے کا مطلب ہے کہ درخواست کردہ رضامندیاں نہیں دی جائیں گی۔",
+        "confirm": "رضامندی مسترد کریں",
+        "cancel": "منسوخ کریں"
+      },
+      "revocation": {
+        "title": "منسوخی کی تصدیق کریں",
+        "message": "کیا آپ واقعی رضامندی منسوخ کرنا چاہتے ہیں؟",
+        "note": "یہ عمل تمام متعلقہ مقاصد کے لیے دی گئی لازمی اور اختیاری دونوں رضامندیوں کو منسوخ کر دے گا۔",
+        "confirm": "رضامندیاں منسوخ کریں",
+        "cancel": "منسوخ کریں"
+      }
+    },
+    "status": {
+      "all": "تمام",
+      "active": "فعال",
+      "pending": "زیر التواء",
+      "created": "تخلیق شدہ",
+      "approved": "منظور شدہ",
+      "rejected": "مسترد شدہ",
+      "revoked": "منسوخ شدہ",
+      "expired": "میعاد ختم",
+      "systemExpired": "سسٹم کے ذریعے میعاد ختم",
+      "systemRevoked": "سسٹم کے ذریعے منسوخ"
+    },
+    "filters": {
+      "sectionAriaLabel": "رضامندی کے فلٹرز",
+      "purposeSearchPlaceholder": "مقصد کے نام سے تلاش کریں",
+      "status": "اسٹیٹس",
+      "groupIds": "گروپ ID",
+      "elementName": "عنصر کا نام",
+      "elementVersion": "عنصر کا ورژن",
+      "advanced": "ایڈوانسڈ فلٹرز",
+      "apply": "لاگو کریں",
+      "cancel": "منسوخ کریں",
+      "startDate": "شروعاتی تاریخ",
+      "startDateAriaLabel": "شروعاتی تاریخ کا فلٹر",
+      "endDate": "آخری تاریخ",
+      "endDateAriaLabel": "آخری تاریخ کا فلٹر",
+      "clear": "سب صاف کریں",
+      "clearAriaLabel": "تمام فلٹرز صاف کریں"
+    },
+    "messages": {
+      "loading": "رضامندیاں لوڈ ہو رہی ہیں...",
+      "loadFailed": "اس وقت رضامندیاں لوڈ کرنے میں ناکامی ہوئی۔",
+      "emptyTitle": "کوئی رضامندی نہیں ملی",
+      "empty": "منتخب کردہ فلٹرز کے لیے کوئی رضامندی نہیں ملی۔"
+    },
+    "table": {
+      "tableAriaLabel": "رضامندی رجسٹری ٹیبل",
+      "consentIdAriaLabel": "رضامندی ID: {{id}}",
+      "groupLabel": "گروپ ID: {{groupId}}",
+      "notApplicable": "لاگو نہیں ہوتا",
+      "purposes": {
+        "more": "+{{count}} مزید",
+        "title": "رضامندی کے مقاصد",
+        "hint": "رضامندی کے تمام مقاصد دکھائے جا رہے ہیں"
+      },
+      "headers": {
+        "consentId": "رضامندی ID",
+        "type": "قسم",
+        "status": "اسٹیٹس",
+        "purposes": "مقاصد",
+        "updated": "اپ ڈیٹ شدہ",
+        "expiration": "میعاد ختم ہونے کی تاریخ",
+        "actions": "اقدامات"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "عنصر شامل کریں",
+      "addProperty": "پراپرٹی شامل کریں",
+      "apply": "لاگو کریں",
+      "cancel": "منسوخ کریں",
+      "clear": "صاف کریں",
+      "clearAll": "سب صاف کریں",
+      "create": "تخلیق کریں",
+      "delete": "حذف کریں",
+      "deleting": "حذف ہو رہا ہے...",
+      "deleteVersion": "ورژن حذف کریں",
+      "filters": "فلٹرز",
+      "removeElement": "عنصر ہٹائیں",
+      "removeProperty": "پراپرٹی ہٹائیں",
+      "retry": "دوبارہ کوشش کریں",
+      "saving": "محفوظ ہو رہا ہے...",
+      "view": "دیکھیں",
+      "viewElement": "{{name}} دیکھیں",
+      "viewPurpose": "{{name}} دیکھیں"
+    },
+    "fields": {
+      "actions": "اقدامات",
+      "created": "تخلیق شدہ",
+      "description": "تفصیل",
+      "displayName": "ڈسپلے کا نام",
+      "element": "عنصر",
+      "elementId": "عنصر ID",
+      "elementName": "عنصر کا نام",
+      "elementNamespace": "عنصر کا نیم اسپیس",
+      "elements": "عناصر",
+      "elementVersion": "عنصر کا ورژن",
+      "groupId": "گروپ ID",
+      "groupIds": "گروپ IDs",
+      "mandatory": "لازمی",
+      "name": "نام",
+      "namespace": "نیم اسپیس",
+      "properties": "پراپرٹیز",
+      "propertyKey": "Key",
+      "propertyValue": "Value",
+      "purpose": "مقصد",
+      "purposeId": "مقصد ID",
+      "purposeName": "مقصد کا نام",
+      "scope": "اسکوپ",
+      "purposeScope": "مقصد کا اسکوپ",
+      "purposeVersion": "مقصد کا ورژن",
+      "requirement": "ضرورت",
+      "schema": "اسکیما",
+      "type": "قسم",
+      "version": "ورژن"
+    },
+    "help": {
+      "commaSeparatedGroups": "متعدد گروپ IDs کو کوما (,) سے الگ کریں",
+      "defaultNamespace": "خالی ہونے پر ڈیفالٹ نیم اسپیس کا استعمال کرتا ہے",
+      "elementVersionRequiresIdentity": "پہلے عنصر کا نام یا نیم اسپیس درج کریں",
+      "organizationPurpose": "تنظیم کی سطح کا مقصد بنانے کے لیے خالی چھوڑ دیں",
+      "purposeVersionRequiresName": "پہلے مقصد کا نام درج کریں",
+      "schemaElementTypes": "اسکیما صرف JSON اور XML عناصر کے لیے تعاون یافتہ ہیں۔",
+      "selectElementFirst": "پہلے کوئی عنصر منتخب کریں"
+    },
+    "values": {
+      "all": "تمام",
+      "any": "کوئی بھی",
+      "customNamespace": "کسٹم نیم اسپیس",
+      "defaultNamespace": "ڈیفالٹ نیم اسپیس",
+      "mandatory": "لازمی",
+      "matches": "میچز",
+      "noDescription": "کوئی تفصیل نہیں",
+      "optional": "اختیاری",
+      "specificGroup": "مخصوص گروپ",
+      "itemCount": "{{count}} منتخب شدہ",
+      "latest": "تازہ ترین",
+      "viewing": "دیکھ رہے ہیں"
+    },
+    "elements": {
+      "add": "عنصر شامل کریں",
+      "activeFilters": "فعال فلٹرز",
+      "back": "عناصر پر واپس جائیں",
+      "createTitle": "عنصر بنائیں",
+      "detailsSection": "عنصر کی تفصیلات",
+      "empty": "منتخب کردہ فلٹرز سے کوئی عنصر میچ نہیں کرتا۔",
+      "emptyTitle": "کوئی عنصر نہیں ملا",
+      "filterTitle": "عناصر کو فلٹر کریں",
+      "loadFailed": "اس وقت عناصر لوڈ کرنے میں ناکامی ہوئی۔",
+      "newVersion": "نیا ورژن بنائیں",
+      "refreshing": "ریفریش ہو رہا ہے...",
+      "results": "{{count}} عناصر",
+      "searchPlaceholder": "عنصر کے نام سے تلاش کریں",
+      "subtitle": "دوبارہ قابل استعمال رضامندی کے عناصر اور ان کی ورژن شدہ تعریفات کا انتظام کریں۔",
+      "tableLabel": "رضامندی کے عناصر",
+      "title": "عناصر"
+    },
+    "purposes": {
+      "add": "مقصد شامل کریں",
+      "activeFilters": "فعال فلٹرز",
+      "allPurposes": "تمام مقاصد",
+      "back": "مقاصد پر واپس جائیں",
+      "createTitle": "مقصد بنائیں",
+      "detailsSection": "مقصد کی تفصیلات",
+      "empty": "منتخب کردہ فلٹرز سے کوئی مقصد میچ نہیں کرتا۔",
+      "emptyTitle": "کوئی مقصد نہیں ملا",
+      "filterTitle": "مقاصد کو فلٹر کریں",
+      "loadFailed": "اس وقت مقاصد لوڈ کرنے میں ناکامی ہوئی۔",
+      "newVersion": "نیا ورژن بنائیں",
+      "orgWide": "پوری تنظیم کی سطح پر",
+      "refreshing": "ریفریش ہو رہا ہے...",
+      "results": "{{count}} مقاصد",
+      "searchLabel": "مقاصد تلاش کریں",
+      "searchPlaceholder": "مقصد کے نام سے تلاش کریں",
+      "scopeFilter": "مقصد کا اسکوپ",
+      "subtitle": "دوبارہ قابل استعمال رضامندی کے مقاصد اور ان کے عنصر کی تعریفات کا انتظام کریں۔",
+      "tableLabel": "رضامندی کے مقاصد",
+      "title": "مقاصد"
+    },
+    "details": {
+      "definition": "تعریف",
+      "elementIdentity": "عنصر کی شناخت",
+      "elements": "عناصر",
+      "identity": "مقصد کی شناخت",
+      "overview": "جائزہ",
+      "versionDetails": "ورژن کی تفصیلات",
+      "versions": "ورژن ہسٹری"
+    },
+    "messages": {
+      "createElementFirst": "مقصد متعین کرنے سے پہلے ایک عنصر بنائیں۔",
+      "immutableElement": "{{namespace}}:{{name}} ایک {{type}} عنصر ہی رہے گا۔ ورژنز کے درمیان شناخت کے شعبے تبدیل نہیں ہو سکتے۔",
+      "immutablePurpose": "{{name}} کا مالک {{groupId}} ہی رہے گا۔ ورژنز کے درمیان شناخت کے شعبے تبدیل نہیں ہو سکتے۔",
+      "immutableOrganizationPurpose": "{{name}} پوری تنظیم کی سطح پر ہے۔ ورژنز کے درمیان اس کی شناخت اور اسکوپ تبدیل نہیں ہو سکتے۔",
+      "immutableGroupPurpose": "{{name}} کا اسکوپ گروپ {{groupId}} تک محدود ہے۔ ورژنز کے درمیان اس کی شناخت اور اسکوپ تبدیل نہیں ہو سکتے۔",
+      "loadingElements": "دستیاب عناصر لوڈ ہو رہے ہیں...",
+      "loadingVersions": "عنصر کے ورژنز لوڈ ہو رہے ہیں...",
+      "noElementsFound": "کوئی مماثل عناصر نہیں ملے",
+      "noElements": "اس ورژن کے لیے کوئی عنصر کنفیگر نہیں ہے۔",
+      "noProperties": "کوئی کسٹم پراپرٹیز نہیں ہیں۔",
+      "noSchema": "اس ورژن کے لیے کوئی اسکیما کنفیگر نہیں ہے۔",
+      "noPurposeElements": "ابھی تک کوئی عنصر شامل نہیں کیا گیا۔ مقصد بنانے کے لیے کم از کم ایک عنصر شامل کریں۔",
+      "noVersions": "کوئی ورژن دستیاب نہیں ہے۔",
+      "versionsLoadFailed": "اس وقت ورژن ہسٹری لوڈ کرنے میں ناکامی ہوئی۔"
+    },
+    "validation": {
+      "duplicateElements": "ہر عنصر کو صرف ایک بار شامل کیا جا سکتا ہے۔",
+      "duplicatePropertyKeys": "پراپرٹی کیز (Keys) منفرد ہونی چاہئیں۔",
+      "elementRequired": "کم از کم ایک عنصر منتخب کریں۔",
+      "groupIdRequired": "گروپ کے مخصوص مقصد کے لیے گروپ ID ضروری ہے۔",
+      "nameRequired": "نام ضروری ہے۔",
+      "namespaceRequired": "کسٹم منتخب ہونے پر نیم اسپیس ضروری ہے۔",
+      "schemaRequired": "JSON اور XML عناصر کے لیے اسکیما ضروری ہے۔"
+    },
+    "delete": {
+      "title": "ورژن حذف کریں",
+      "message": "کیا ورژن {{version}} حذف کریں؟",
+      "warning": "اسے واپس نہیں لایا جا سکتا۔ جن ورژنز کا حوالہ دیا گیا ہے انہیں حذف نہیں کیا جا سکتا، اور آخری ورژن حذف کرنے سے پوری انٹری حذف ہو جائے گی۔"
+    }
+  },
+  "nominee": {
+    "title": "نامزدگیاں",
+    "messages": {
+      "loadFailed": "اس وقت نامزدگیاں لوڈ کرنے میں ناکامی ہوئی۔"
+    },
+    "nominatedFor": {
+      "openAccount": "اکاؤنٹ کھولیں ←",
+      "accept": "قبول کریں",
+      "reject": "مسترد کریں",
+      "actionNeeded": "اقدام درکار ہے",
+      "ariaLabel": "نامزد کردہ اکاؤنٹس",
+      "empty": "ابھی تک کسی نے آپ کو نامزد نہیں کیا ہے۔",
+      "title": "نامزد کردہ اکاؤنٹس",
+      "table": {
+        "account": "اکاؤنٹ",
+        "status": "اسٹیٹس",
+        "actions": "اقدامات"
+      }
+    },
+    "acting": {
+      "starting": "اکاؤنٹ کھل رہا ہے…",
+      "startFailed": "آپ اس اکاؤنٹ کے لیے نامزد فرد نہیں ہیں۔",
+      "startFailedHint": "نامزدگیوں پر واپس جائیں اور دوبارہ کوشش کریں۔",
+      "blockedTitle": "نامزد شخص کی رسائی میں دستیاب نہیں ہے",
+      "blockedFenced": "اکاؤنٹ سیٹنگز، کریڈنشیلز اور نامزدگیوں کو کبھی بھی کسی دوسرے شخص کی طرف سے استعمال نہیں کیا جا سکتا۔",
+      "blockedScope": "مالک نے آپ کو اس شعبے کی اجازت نہیں دی ہے۔",
+      "backToAllowed": "اس پر جائیں جس تک مجھے رسائی کی اجازت ہے",
+      "exit": "باہر نکلیں"
+    },
+    "permissions": {
+      "consentView": "رضامندیاں دیکھیں",
+      "consentRevoke": "رضامندیاں منسوخ کریں",
+      "consentApprove": "زیر التواء رضامندیاں منظور کریں",
+      "accountView": "ذاتی اکاؤنٹ دیکھیں",
+      "accountUpdate": "ذاتی اکاؤنٹ اپ ڈیٹ کریں",
+      "accountDelete": "ذاتی اکاؤنٹ حذف کریں"
+    },
+    "mine": {
+      "add": "نامزد فرد شامل کریں",
+      "remove": "ہٹائیں",
+      "empty": "آپ نے ابھی تک کسی کو نامزد نہیں کیا ہے۔",
+      "status": {
+        "active": "فعال",
+        "pending": "قبولیت کا انتظار ہے",
+        "rejected": "مسترد کر دیا گیا",
+        "accepted": "منظوری کا انتظار ہے",
+        "deactivated": "معطل شدہ"
+      },
+      "ariaLabel": "نامزد افراد",
+      "title": "نامزد افراد",
+      "table": {
+        "person": "شخص",
+        "permissions": "اجازتیں",
+        "status": "اسٹیٹس",
+        "actions": "اقدامات",
+        "morePermissions": "+{{count}} مزید"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "نامزد فرد شامل کریں",
+        "editTitle": "نامزد فرد میں ترمیم کریں",
+        "saveChanges": "تبدیلیاں محفوظ کریں",
+        "emailLabel": "نامزد فرد کی رجسٹرڈ ای میل",
+        "permissionsTitle": "یہ نامزد فرد کیا کر سکتا ہے؟",
+        "permissionsSubtitle": "صرف انہی کو ٹک کریں جن کی آپ اجازت دینا چاہتے ہیں۔ یہ وہ رسائی بن جائیں گے جو استعمال کرنے کی اس نامزد شخص کو اجازت ہے۔",
+        "sensitive": "حساس",
+        "cancel": "منسوخ کریں",
+        "processing": "محفوظ ہو رہا ہے...",
+        "confirm": "نامزدگی بھیجیں",
+        "processingEdit": "محفوظ ہو رہا ہے…"
+      },
+      "removeDialog": {
+        "title": "نامزد فرد کو ہٹائیں",
+        "message": "{{nomineeEmail}} اب آپ کی رضامندیوں کا انتظام نہیں کر سکے گا۔",
+        "confirm": "نامزد فرد کو ہٹائیں",
+        "cancel": "منسوخ کریں",
+        "processing": "ہٹایا جا رہا ہے..."
+      }
+    },
+    "manage": {
+      "title": "مالک کی رضامندیوں کا انتظام",
+      "back": "نامزد شخص کے ویو سے باہر نکلیں",
+      "consents": {
+        "title": "رضامندیاں",
+        "subtitle": "اس اکاؤنٹ کے ذریعہ دی گئی رضامندیاں دیکھیں اور، جہاں اجازت ہو، انہیں منسوخ کریں۔"
+      },
+      "selectedCount": "{{count}} منتخب شدہ",
+      "revokeSelected": "منتخب کردہ منسوخ کریں",
+      "messages": {
+        "loadFailed": "اس وقت رضامندیاں لوڈ کرنے میں ناکامی ہوئی۔",
+        "empty": "اس اکاؤنٹ کے لیے کوئی رضامندی نہیں ملی۔"
+      },
+      "table": {
+        "ariaLabel": "نامزد فرد کے ذریعہ منظم کردہ رضامندی کا ٹیبل",
+        "purposes": "مقاصد",
+        "type": "قسم",
+        "status": "اسٹیٹس",
+        "updated": "اپ ڈیٹ شدہ",
+        "actions": "اقدامات",
+        "revoke": "منسوخ کریں",
+        "notRevokable": "صرف فعال رضامندیاں منسوخ کی جا سکتی ہیں",
+        "clientLabel": "تنظیم: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "ایک ساتھ منسوخی (Bulk Revocation) کی تصدیق کریں",
+        "message": "یہ {{count}} رضامندیوں کو منسوخ کر دے گا۔ اسے واپس نہیں لایا جا سکتا۔",
+        "note": "ہر منسوخی کو الگ سے ایک ایسے اقدام کے طور پر ریکارڈ کیا جاتا ہے جو آپ نے مالک کی طرف سے انجام دیا ہے۔",
+        "progress": "{{count}} میں سے {{processed}} منسوخ ہو رہی ہیں...",
+        "confirm": "منتخب کردہ منسوخ کریں",
+        "cancel": "منسوخ کریں",
+        "processing": "کارروائی جاری ہے..."
+      },
+      "subtitle": "آپ اس اکاؤنٹ کی طرف سے کام کر رہے ہیں۔ آپ صرف وہی کر سکتے ہیں جس کی مالکن/مالک نے آپ کو اجازت دی ہے۔",
+      "account": {
+        "title": "اکاؤنٹ تک رسائی",
+        "subtitle": "وہ اقدامات جنہیں انجام دینے کے لیے مالک نے آپ کو اپنے اکاؤنٹ پر مجاز بنایا ہے۔",
+        "notGranted": "مالک کی طرف سے اجازت نہیں دی گئی ہے"
+      }
+    },
+    "detail": {
+      "title": "رضامندی کی تفصیلات",
+      "back": "واپس"
+    }
+  },
+  "admin": {
+    "title": "نامزد فرد کی فعال کاری",
+    "status": {
+      "active": "فعال",
+      "accepted": "منظوری کا انتظار ہے",
+      "pending": "نامزد شخص کے جواب کا انتظار ہے",
+      "rejected": "مسترد کر دیا گیا",
+      "deactivated": "غیر فعال کر دیا گیا"
+    },
+    "pending": {
+      "title": "آپ کی منظوری کا انتظار ہے",
+      "empty": "اس وقت کچھ بھی آپ کے انتظار میں نہیں ہے۔",
+      "count": "{{count}} منظوری کا انتظار کر رہے ہیں",
+      "appointed": "{{email}} کو مقرر کیا گیا",
+      "accepted": "{{date}} کو قبول کیا گیا"
+    },
+    "search": {
+      "label": "نام یا ای میل سے تلاش کریں",
+      "empty": "کوئی مماثل اکاؤنٹ نہیں ملا۔",
+      "results": "اکاؤنٹس"
+    },
+    "table": {
+      "ariaLabel": "نامزدگیاں",
+      "owner": "اکاؤنٹ",
+      "nominee": "نامزد فرد",
+      "permissions": "دی گئی اجازتیں",
+      "status": "اسٹیٹس",
+      "nominated": "نامزد شدہ",
+      "actions": "اقدامات"
+    },
+    "controls": {
+      "title": "نامزد افراد",
+      "titleNamed": "{{name}} کے نامزد افراد",
+      "nominated": "{{date}} کو نامزد کیا گیا",
+      "ticket": "ٹکٹ {{ticket}}",
+      "waitingNominee": "ابھی تک کرنے کے لیے کچھ نہیں ہے - نامزد فرد نے قبول نہیں کیا ہے۔",
+      "activate": "رسائی فعال کریں",
+      "noAction": "-",
+      "owner": "اکاؤنٹ",
+      "deactivate": "رسائی واپس لیں",
+      "none": "اس اکاؤنٹ نے کسی کو مقرر نہیں کیا ہے۔"
+    },
+    "activateDialog": {
+      "title": "نامزد فرد کی رسائی فعال کریں",
+      "ticketLabel": "قانونی/سپورٹ ٹکٹ نمبر",
+      "confirm": "رسائی فعال کریں",
+      "cancel": "منسوخ کریں",
+      "processing": "فعال ہو رہا ہے...",
+      "subtitle": "یہ {{nomineeName}} کو {{ownerName}} کے لیے رضامندیوں کا انتظام کرنے کی رسائی دیتا ہے۔"
+    },
+    "deactivateDialog": {
+      "title": "نامزد فرد کی رسائی غیر فعال کریں",
+      "reasonLabel": "وجہ",
+      "confirm": "رسائی غیر فعال کریں",
+      "cancel": "منسوخ کریں",
+      "processing": "غیر فعال ہو رہا ہے...",
+      "subtitle": "یہ فوری طور پر {{ownerName}} کی رضامندیوں تک نامزد فرد کی رسائی منسوخ کر دیتا ہے۔"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ڈیٹا کی خلاف ورزی",
+      "UNAUTHORIZED_DATA_SHARING": "غیر مجاز ڈیٹا شیئرنگ",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "رضامندی کی منسوخی کا مسئلہ",
+      "PURPOSE_VIOLATION": "مقصد کی خلاف ورزی",
+      "DATA_ERASURE_NOT_COMPLETED": "ڈیٹا مٹانے کی درخواست پوری نہیں ہوئی",
+      "DATA_CORRECTION_NOT_COMPLETED": "ڈیٹا کی تصحیح کی درخواست پوری نہیں ہوئی",
+      "CONSENT_LIFECYCLE_ISSUE": "رضامندی مینیجر کا مسئلہ",
+      "DATA_ACCESS_DENIED": "ڈیٹا تک رسائی کی درخواست کا انکار",
+      "EXCESSIVE_DATA_COLLECTION": "حد سے زیادہ ڈیٹا کا جمع کیا جانا",
+      "OTHER": "دیگر"
+    },
+    "status": {
+      "open": "کھلی",
+      "investigation": "تحقیقات جاری ہے",
+      "awaitingInfo": "کلائنٹ کے جواب کا انتظار ہے",
+      "waitingOnDpo": "اندرونی جائزے کا انتظار ہے",
+      "resolved": "حل شدہ"
+    },
+    "priority": {
+      "CRITICAL": "انتہائی اہم",
+      "HIGH": "اعلیٰ",
+      "MEDIUM": "متوسط",
+      "LOW": "کم"
+    },
+    "sla": {
+      "dueDate": "آخری تاریخ: {{date}}",
+      "dueToday": "آج آخری دن ہے",
+      "overdueSingular": "{{count}} دن کی تاخیر",
+      "overduePlural": "{{count}} دنوں کی تاخیر",
+      "daysLeftSingular": "{{count}} دن باقی ہے",
+      "daysLeftPlural": "{{count}} دن باقی ہیں"
+    },
+    "timeline": {
+      "complaintReceived": "شکایت موصول ہوئی",
+      "statusChangePrefix": "اسٹیٹس تبدیل کر دیا گیا:",
+      "statusChangeJoiner": "سے"
+    },
+    "list": {
+      "title": "میری شکایتیں",
+      "subtitle": "اپنی درج کردہ شکایتوں اور ان کی پیش رفت کو ٹریک کریں۔",
+      "submitNew": "شکایت درج کریں",
+      "loadFailed": "اس وقت آپ کی شکایتیں لوڈ کرنے میں ناکامی ہوئی۔",
+      "empty": "آپ نے ابھی تک کوئی شکایت درج نہیں کی ہے۔",
+      "emptyFiltered": "منتخب کردہ فلٹر سے کوئی شکایت میچ نہیں کرتی۔",
+      "filters": {
+        "status": "اسٹیٹس",
+        "all": "تمام"
+      },
+      "table": {
+        "tableAriaLabel": "میری شکایتوں کا ٹیبل",
+        "headers": {
+          "referenceId": "ریفرنس ID",
+          "category": "زمرہ",
+          "status": "اسٹیٹس",
+          "submitted": "درج کی گئی",
+          "updated": "اپ ڈیٹ شدہ"
+        }
+      }
+    },
+    "detail": {
+      "back": "میری شکایتوں پر واپس جائیں",
+      "notFound": "شکایت نہیں ملی",
+      "description": "تفصیل",
+      "submittedOn": "{{date}} کو درج کی گئی",
+      "awaitingInfo": {
+        "note": "شکایت افسر آپ سے مزید معلومات کا منتظر ہے۔ براہ کرم نیچے جواب دیں۔"
+      },
+      "resolved": {
+        "note": "یہ شکایت حل کر دی گئی ہے۔"
+      }
+    },
+    "submit": {
+      "title": "شکایت درج کریں",
+      "subtitle": "ہمیں بتائیں کہ کیا ہوا ہے اور ہم اسے صحیح ٹیم تک پہنچائیں گے۔",
+      "submitFailed": "اس وقت آپ کی شکایت درج کرنے میں ناکامی ہوئی۔ براہ کرم دوبارہ کوشش کریں۔",
+      "fields": {
+        "category": "زمرہ",
+        "categoryPlaceholder": "ایک زمرہ منتخب کریں",
+        "categoryHelp": "وہ آپشن منتخب کریں جو آپ کی شکایت کی بہترین وضاحت کرتا ہے۔",
+        "categoriesLoadFailed": "اس وقت شکایت کے زمرے لوڈ کرنے میں ناکامی ہوئی۔",
+        "description": "تفصیل",
+        "descriptionPlaceholder": "اپنی شکایت کی تفصیلی وضاحت کریں",
+        "descriptionHelp": "اسے جلد حل کرنے میں ہماری مدد کے لیے زیادہ سے زیادہ تفصیلات شامل کریں۔",
+        "attachments": "منسلکات (اختیاری)",
+        "attachmentsHelp": "ہر ایک فائل {{maxSize}} تک PDF, DOCX, PNG, یا JPG میں۔",
+        "uploadButton": "فائلیں اپ لوڈ کریں"
+      },
+      "validation": {
+        "categoryRequired": "آگے بڑھنے کے لیے ایک زمرہ منتخب کریں۔",
+        "descriptionRequired": "آگے بڑھنے کے لیے اپنی شکایت بیان کریں۔",
+        "attachmentTooLarge": "{{fileNames}} کی سائز حد {{maxSize}} سے زیادہ ہے۔"
+      },
+      "success": {
+        "message": "آپ کی شکایت {{referenceId}} درج کر لی گئی ہے۔",
+        "attachmentFailedMessage": "آپ کی شکایت {{referenceId}} درج کر لی گئی ہے، لیکن منسلک فائلیں اپ لوڈ نہیں ہو سکیں۔ آپ شکایت کی تفصیلات والے صفحے سے انہیں شامل کر سکتے ہیں۔"
+      },
+      "actions": {
+        "cancel": "منسوخ کریں",
+        "submit": "شکایت درج کریں"
+      }
+    },
+    "activity": {
+      "title": "سرگرمی",
+      "send": "بھیجیں",
+      "sendOnly": "صرف بھیجیں",
+      "sendOptions": "بھیجنے کے مزید اختیارات",
+      "sendAndChangeStatusTo": "بھیجیں اور اسٹیٹس تبدیل کریں:",
+      "sendAndUpdateStatus": "بھیجیں اور {{status}} کے طور پر مارک کریں",
+      "publicReply": "جواب دیں",
+      "internalNote": "اندرونی نوٹ",
+      "internalTag": "اندرونی",
+      "dataPrincipalRoleLabel": "کلائنٹ",
+      "officerRoleLabel": "شکایت افسر",
+      "composerPlaceholderPublic": "صارف کو جواب لکھیں...",
+      "composerPlaceholderInternal": "اندرونی نوٹ لکھیں (جو صارف کو نظر نہیں آئے گا)...",
+      "attach": "منسلک کریں",
+      "attachmentsHelp": "فی فائل {{maxSize}} تک PDF, DOCX, PNG, یا JPG۔",
+      "attachmentTooLarge": "{{fileNames}} کی سائز حد {{maxSize}} سے زیادہ ہے۔",
+      "removeAttachment": "منسلکہ ہٹائیں"
+    },
+    "attachments": {
+      "tabLabel": "منسلکات",
+      "tabLabelWithCount": "منسلکات ({{count}})",
+      "empty": "اس شکایت میں کوئی منسلک فائل شامل نہیں کی گئی ہے۔",
+      "initialSubmission": "ابتدائی شکایت",
+      "internalNote": "اندرونی",
+      "overflowMore": "+{{count}} مزید"
+    },
+    "management": {
+      "queue": {
+        "title": "شکایتیں",
+        "loadFailed": "اس وقت شکایتوں کی قطار لوڈ کرنے میں ناکامی ہوئی۔",
+        "empty": "منتخب کردہ فلٹرز سے کوئی شکایت میچ نہیں کرتی۔",
+        "stats": {
+          "open": "کھلی",
+          "awaitingInfo": "جواب کا انتظار ہے",
+          "resolved": "حل شدہ",
+          "slaBreached": "SLA کی خلاف ورزی"
+        },
+        "filters": {
+          "sectionAriaLabel": "شکایتوں کی قطار کے فلٹرز",
+          "status": "اسٹیٹس",
+          "priority": "ترجیح",
+          "search": "ریفرنس ID یا صارف سے تلاش کریں",
+          "all": "تمام",
+          "clear": "فلٹرز صاف کریں",
+          "clearAriaLabel": "تمام فلٹرز صاف کریں"
+        },
+        "table": {
+          "tableAriaLabel": "شکایتوں کی قطار کا ٹیبل",
+          "headers": {
+            "referenceId": "ریفرنس ID",
+            "dataPrincipal": "صارف (Data Principal)",
+            "category": "زمرہ",
+            "priority": "ترجیح",
+            "status": "اسٹیٹس",
+            "sla": "SLA",
+            "updated": "اپ ڈیٹ شدہ"
+          }
+        }
+      },
+      "case": {
+        "back": "قطار میں واپس جائیں",
+        "notFound": "شکایت نہیں ملی",
+        "dataPrincipal": "صارف (Data Principal)"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "سبسکرپشنز",
+      "subtitle": "ایونٹ نوٹیفکیشن فریم ورک میں رجسٹرڈ تمام سبسکرپشنز۔",
+      "addAction": "سبسکرپشن شامل کریں",
+      "filters": {
+        "sectionAriaLabel": "سبسکرپشن فلٹرز",
+        "status": "اسٹیٹس",
+        "topic": "موضوع",
+        "clear": "فلٹرز صاف کریں",
+        "statusOptions": {
+          "all": "تمام اسٹیٹس",
+          "active": "فعال",
+          "pendingVerification": "زیر التواء",
+          "stale": "پرانا / غیر فعال"
+        },
+        "topicOptions": {
+          "all": "تمام موضوعات"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "سبسکرپشن کی دوبارہ کامیابی سے توثیق ہو گئی۔ اسٹیٹس اب ACTIVE ہے۔",
+        "reverifyStillStale": "توثیق دوبارہ ناکام ہو گئی۔ سبسکرپشن STALE رہی۔",
+        "reverifyFailed": "دوبارہ توثیق ناکام ہو گئی۔"
+      }
+    },
+    "events": {
+      "title": "تقریبات (Events)",
+      "subtitle": "ایونٹ نوٹیفکیشن فریم ورک کے تمام ایونٹ ڈیلیوریز۔",
+      "filters": {
+        "sectionAriaLabel": "ایونٹ فلٹرز",
+        "status": "اسٹیٹس",
+        "topic": "موضوع",
+        "search": "ایونٹس تلاش کریں",
+        "searchPlaceholder": "مقصد یا سبسکرائبر ID سے تلاش کریں...",
+        "clear": "فلٹرز صاف کریں",
+        "statusOptions": {
+          "all": "تمام اسٹیٹس"
+        },
+        "topicOptions": {
+          "all": "تمام موضوعات"
+        }
+      },
+      "emptyTitle": "کوئی ایونٹ نہیں ملا",
+      "emptyMessage": "منتخب کردہ معیار سے کوئی شائع شدہ ایونٹ میچ نہیں کرتا۔",
+      "table": {
+        "eventId": "ایونٹ ID",
+        "topic": "موضوع",
+        "purposes": "مقاصد",
+        "deliveries": "ڈیلیوریز",
+        "occurredAt": "وقوع پذیر ہونے کا وقت",
+        "action": "اقدام",
+        "all": "تمام",
+        "noSubscribers": "کوئی سبسکرائبر نہیں",
+        "viewEvent": "ایونٹ دیکھیں",
+        "subscriberCount_one": "{{count}} سبسکرائبر",
+        "subscriberCount_other": "{{count}} سبسکرائبرز"
+      },
+      "detail": {
+        "notFoundTitle": "ایونٹ نہیں ملا",
+        "notFoundMessage": "ID \"{{eventId}}\" کے ساتھ کوئی ایونٹ نہیں ملا۔",
+        "backToEvents": "ایونٹس پر واپس جائیں",
+        "topic": "موضوع",
+        "purposes": "مقاصد",
+        "occurredAt": "وقوع پذیر ہونے کا وقت",
+        "deliveries": "ڈیلیوریز",
+        "all": "تمام",
+        "noSubscribers": "کوئی سبسکرائبر نہیں",
+        "subscriberCount_one": "{{count}} سبسکرائبر",
+        "subscriberCount_other": "{{count}} سبسکرائبرز"
+      },
+      "dialog": {
+        "title": "دوبارہ کوشش کی ہسٹری",
+        "deliveryId": "ڈیلیوری ID",
+        "loading": "ایونٹ ڈیلیوری ہسٹری لوڈ ہو رہی ہے…",
+        "noRetries": "ابتدائی کوشش مکمل ہو گئی۔ کوئی دوبارہ کوششیں ریکارڈ نہیں ہوئیں۔",
+        "attempt": "کوشش {{attempt}}",
+        "retrySuffix": " (دوبارہ کوشش)",
+        "webhookDescription": "HTTP ڈیلیوری اور ری ٹرائز کی تاریخ وار ہسٹری۔",
+        "pollTitle": "پول کی تکمیل کا اسٹیٹس اور اعتراف",
+        "completionStatus": "تکمیل کا اسٹیٹس",
+        "completionTimestamp": "تکمیل کا وقت",
+        "erasureMethod": "ڈیٹا مٹانے کا طریقہ",
+        "recordsAffected": "متاثرہ ریکارڈز",
+        "referenceId": "ریفرنس ID",
+        "submittedBy": "درج کنندہ",
+        "notes": "نوٹس",
+        "noAcknowledgment": "ابھی تک پول کی تکمیل کا کوئی اعتراف جمع نہیں کیا گیا ہے۔",
+        "close": "بند کریں"
+      }
+    }
+  }
+}

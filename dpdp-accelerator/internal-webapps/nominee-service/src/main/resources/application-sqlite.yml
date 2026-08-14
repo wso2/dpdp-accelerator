@@ -1,0 +1,10 @@
+# Create the schema first:
+#   sqlite3 <path> < dbscripts/db_schema_sqlite.sql
+spring:
+  datasource:
+    url: jdbc:sqlite:${NOMINEE_DB_PATH:./data/nominee-service.db}
+    driver-class-name: org.sqlite.JDBC
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.community.dialect.SQLiteDialect

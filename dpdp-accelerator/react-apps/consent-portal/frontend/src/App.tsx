@@ -31,6 +31,12 @@ import ConsentDetailsPage from './features/consent-registry/ConsentDetailsPage'
 import ConsentRegistryPage from './features/consent-registry/ConsentRegistryPage'
 import DashboardPage from './features/dashboard/DashboardPage'
 import { AuthorizationProvider } from './features/auth/AuthorizationProvider'
+import ActingAsGuard from './features/nominee/actingAs/ActingAsGuard'
+import ActingAsProvider from './features/nominee/actingAs/ActingAsProvider'
+import ActingCallbackPage from './features/nominee/actingAs/ActingCallbackPage'
+import StartActingPage from './features/nominee/actingAs/StartActingPage'
+import NominationsPage from './features/nominee/NominationsPage'
+import AdminNomineeActivationPage from './features/admin/AdminNomineeActivationPage'
 import useAuthorization from './features/auth/useAuthorization'
 import firstAuthorizedPath from './features/auth/authorizationRoutes'
 import NoAccessPage from './features/auth/NoAccessPage'
@@ -126,83 +132,112 @@ function AuthorizedFallback(): React.JSX.Element {
 function App(): React.JSX.Element {
   return (
     <AuthenticationGate>
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route
-            path="/dashboard"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_SELF}>
-                <DashboardPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/consents"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_SELF}>
-                <ConsentRegistryPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/consents/:id"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_SELF}>
-                <ConsentDetailsPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/purposes"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.PURPOSES_READ}>
-                <PurposeListPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/purposes/:id"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.PURPOSES_READ}>
-                <PurposeDetailsPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/elements"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.ELEMENTS_READ}>
-                <ElementListPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/elements/:id"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.ELEMENTS_READ}>
-                <ElementDetailsPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/administration/consents"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_ANY}>
-                <AdminConsentRegistryPage />
-              </AuthorizedRoute>
-            }
-          />
-          <Route
-            path="/administration/consents/:id"
-            element={
-              <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_ANY}>
-                <ConsentDetailsPage variant="admin" />
-              </AuthorizedRoute>
-            }
-          />
-          <Route path="*" element={<AuthorizedFallback />} />
-        </Route>
-      </Routes>
+      <ActingAsProvider>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route element={<ActingAsGuard />}>
+              <Route
+                path="/dashboard"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_SELF}>
+                    <DashboardPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/consents"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_SELF}>
+                    <ConsentRegistryPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/consents/:id"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_SELF}>
+                    <ConsentDetailsPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/purposes"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.PURPOSES_READ}>
+                    <PurposeListPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/purposes/:id"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.PURPOSES_READ}>
+                    <PurposeDetailsPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/elements"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.ELEMENTS_READ}>
+                    <ElementListPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/elements/:id"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.ELEMENTS_READ}>
+                    <ElementDetailsPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/administration/consents"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_ANY}>
+                    <AdminConsentRegistryPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route
+                path="/administration/consents/:id"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.CONSENTS_READ_ANY}>
+                    <ConsentDetailsPage variant="admin" />
+                  </AuthorizedRoute>
+                }
+              />
+              {/* Managing your own nominees is a self-service action, so it needs
+              nothing more than the profile scope every user holds. */}
+              <Route
+                path="/nominations"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.PROFILE_READ_SELF}>
+                    <NominationsPage />
+                  </AuthorizedRoute>
+                }
+              />
+              {/* Reviewing somebody else's nomination is administrative, and is
+              gated on the same :any scope as the rest of administration. */}
+              <Route
+                path="/administration/nominees"
+                element={
+                  <AuthorizedRoute scope={PORTAL_SCOPES.PROFILE_READ_ANY}>
+                    <AdminNomineeActivationPage />
+                  </AuthorizedRoute>
+                }
+              />
+              <Route path="*" element={<AuthorizedFallback />} />
+            </Route>
+          </Route>
+
+          {/* Outside MainLayout: both are brief redirect stops in the delegation
+            handshake, not pages a person reads. */}
+          <Route path="/acting/callback" element={<ActingCallbackPage />} />
+          <Route path="/acting/:ownerId" element={<StartActingPage />} />
+        </Routes>
+      </ActingAsProvider>
     </AuthenticationGate>
   )
 }

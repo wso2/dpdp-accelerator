@@ -21,7 +21,11 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSearchParams } from 'react-router-dom'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
-import type { AdminConsentRegistryFilters } from '../../types/consent'
+import type {
+  AdminConsentRegistryFilters,
+  ConsentRegistrySortDirection,
+  ConsentRegistrySortField,
+} from '../../types/consent'
 import { PORTAL_SCOPES } from '../../utils/portalScopes'
 import useAuthorization from '../auth/useAuthorization'
 import ConsentRegistryTable from '../consent-registry/components/ConsentRegistryTable'
@@ -38,16 +42,19 @@ import {
   normalizeAdminConsentFilters,
 } from './utils/adminConsentFilters'
 
+const DEFAULT_PAGE = 0
 const DEFAULT_ROWS_PER_PAGE = 10
+const DEFAULT_SORT_FIELD: ConsentRegistrySortField = 'updatedTime'
+const DEFAULT_SORT_DIRECTION: ConsentRegistrySortDirection = 'desc'
+const SORT_FIELDS: ConsentRegistrySortField[] = ['status', 'updatedTime', 'validityTime']
 
-interface AdminConsentCursor {
-  after?: string
-  before?: string
+function getPage(searchParams: URLSearchParams): number {
+  const value = Number(searchParams.get('page') ?? '1')
+  return Number.isInteger(value) && value > 0 ? value - 1 : DEFAULT_PAGE
 }
 
 function getRowsPerPage(searchParams: URLSearchParams): number {
   const value = Number(searchParams.get('rowsPerPage') ?? String(DEFAULT_ROWS_PER_PAGE))
-
   return CONSENT_REGISTRY_ROWS_PER_PAGE_OPTIONS.includes(
     value as (typeof CONSENT_REGISTRY_ROWS_PER_PAGE_OPTIONS)[number],
   )
@@ -55,28 +62,39 @@ function getRowsPerPage(searchParams: URLSearchParams): number {
     : DEFAULT_ROWS_PER_PAGE
 }
 
-function getCursor(searchParams: URLSearchParams): AdminConsentCursor {
-  return {
-    after: searchParams.get('after') ?? undefined,
-    before: searchParams.get('before') ?? undefined,
+function getSort(searchParams: URLSearchParams): {
+  field: ConsentRegistrySortField
+  direction: ConsentRegistrySortDirection
+} {
+  const value = searchParams.get('sort')
+  if (!value || value.includes(',')) {
+    return { field: DEFAULT_SORT_FIELD, direction: DEFAULT_SORT_DIRECTION }
   }
+  const [field, direction = DEFAULT_SORT_DIRECTION, ...extra] = value.split(':')
+  return SORT_FIELDS.includes(field as ConsentRegistrySortField) &&
+    (direction === 'asc' || direction === 'desc') &&
+    extra.length === 0
+    ? { field: field as ConsentRegistrySortField, direction }
+    : { field: DEFAULT_SORT_FIELD, direction: DEFAULT_SORT_DIRECTION }
 }
 
 function toSearchParams(
   rawFilters: AdminConsentRegistryFilters,
-  cursor: AdminConsentCursor,
+  page = DEFAULT_PAGE,
   rowsPerPage = DEFAULT_ROWS_PER_PAGE,
+  sortField = DEFAULT_SORT_FIELD,
+  sortDirection = DEFAULT_SORT_DIRECTION,
 ): URLSearchParams {
   const filters = normalizeAdminConsentFilters(rawFilters)
   const params = new URLSearchParams()
-
   Object.entries(filters).forEach(([key, value]) => {
-    if (key === 'state' ? value !== 'All' : Boolean(value)) params.set(key, value)
+    if (key === 'status' ? value !== 'All' : Boolean(value)) params.set(key, value)
   })
-  if (cursor.after) params.set('after', cursor.after)
-  if (cursor.before) params.set('before', cursor.before)
+  if (page > 0) params.set('page', String(page + 1))
   if (rowsPerPage !== DEFAULT_ROWS_PER_PAGE) params.set('rowsPerPage', String(rowsPerPage))
-
+  if (sortField !== DEFAULT_SORT_FIELD || sortDirection !== DEFAULT_SORT_DIRECTION) {
+    params.set('sort', `${sortField}:${sortDirection}`)
+  }
   return params
 }
 
@@ -85,38 +103,62 @@ export default function AdminConsentRegistryPage(): React.JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams()
   const [selectedRevocationConsentID, setSelectedRevocationConsentID] = useState<string>()
   const filters = useMemo(() => getAdminConsentFilters(searchParams), [searchParams])
+  const page = useMemo(() => getPage(searchParams), [searchParams])
   const rowsPerPage = useMemo(() => getRowsPerPage(searchParams), [searchParams])
-  const cursor = useMemo(() => getCursor(searchParams), [searchParams])
-  const consentListQuery = useAdminConsentListQuery(filters, rowsPerPage, cursor)
+  const sort = useMemo(() => getSort(searchParams), [searchParams])
+  const consentListQuery = useAdminConsentListQuery(
+    filters,
+    page,
+    rowsPerPage,
+    sort.field,
+    sort.direction,
+  )
   const revokeMutation = useAdminRevokeConsentMutation()
-  const { hasScope } = useAuthorization()
+  const { currentUser, hasScope } = useAuthorization()
   const canWriteAny = hasScope(PORTAL_SCOPES.CONSENTS_WRITE_ANY)
+  const canReadElements = hasScope(PORTAL_SCOPES.ELEMENTS_READ)
 
   const updateParams = (
     nextFilters: AdminConsentRegistryFilters,
-    nextCursor: AdminConsentCursor = {},
+    nextPage = DEFAULT_PAGE,
     nextRowsPerPage = rowsPerPage,
+    sortField = sort.field,
+    sortDirection = sort.direction,
   ): void => {
-    setSearchParams(toSearchParams(nextFilters, nextCursor, nextRowsPerPage), { replace: true })
+    setSearchParams(
+      toSearchParams(nextFilters, nextPage, nextRowsPerPage, sortField, sortDirection),
+      { replace: true },
+    )
   }
 
   const activeFilters = Object.entries(filters).filter(([key, value]) => {
-    if (key === 'state') return value !== 'All'
+    if (key === 'status') return value !== 'All'
     return Boolean(value)
   }) as Array<[keyof AdminConsentRegistryFilters, string]>
 
   const filterLabels: Record<keyof AdminConsentRegistryFilters, string> = {
-    state: t('consentRegistry.filters.state'),
+    status: t('consentRegistry.filters.status'),
     consentId: t('consentRegistry.details.consentId'),
-    subjectId: t('adminConsents.filters.subjectId'),
-    serviceId: t('adminConsents.filters.serviceId'),
+    purposeName: t('catalog.fields.purposeName'),
+    purposeVersion: t('catalog.fields.purposeVersion'),
+    userIds: t('adminConsents.filters.userIds'),
+    groupIds: t('adminConsents.filters.groupIds'),
+    elementName: t('catalog.fields.elementName'),
+    elementNamespace: t('catalog.fields.elementNamespace'),
+    elementVersion: t('catalog.fields.elementVersion'),
+    startDate: t('consentRegistry.filters.startDate'),
+    endDate: t('consentRegistry.filters.endDate'),
   }
 
   const removeFilter = (key: keyof AdminConsentRegistryFilters): void => {
-    updateParams({
+    const nextFilters = {
       ...filters,
-      [key]: key === 'state' ? 'All' : '',
-    } as AdminConsentRegistryFilters)
+      [key]: key === 'status' ? 'All' : '',
+    } as AdminConsentRegistryFilters
+    if (key === 'purposeName') nextFilters.purposeVersion = ''
+    if (key === 'elementName' && !filters.elementNamespace) nextFilters.elementVersion = ''
+    if (key === 'elementNamespace' && !filters.elementName) nextFilters.elementVersion = ''
+    updateParams(nextFilters)
   }
 
   return (
@@ -132,6 +174,7 @@ export default function AdminConsentRegistryPage(): React.JSX.Element {
         <AdminConsentFilters
           key={searchParams.toString()}
           filters={filters}
+          canReadElements={canReadElements}
           onFilterChange={(nextFilters) => updateParams(nextFilters)}
           onClear={() => updateParams(EMPTY_ADMIN_CONSENT_FILTERS)}
         />
@@ -158,21 +201,24 @@ export default function AdminConsentRegistryPage(): React.JSX.Element {
 
         <ConsentRegistryTable
           rows={consentListQuery.data?.rows ?? []}
+          totalCount={consentListQuery.data?.total ?? 0}
           isLoading={consentListQuery.isPending || consentListQuery.isPlaceholderData}
           isError={consentListQuery.isError}
+          page={page}
           rowsPerPage={rowsPerPage}
-          hasPreviousPage={Boolean(consentListQuery.data?.previousCursor)}
-          hasNextPage={Boolean(consentListQuery.data?.nextCursor)}
-          onPreviousPage={() =>
-            updateParams(filters, { before: consentListQuery.data?.previousCursor })
-          }
-          onNextPage={() => updateParams(filters, { after: consentListQuery.data?.nextCursor })}
-          onRowsPerPageChange={(nextRowsPerPage) => updateParams(filters, {}, nextRowsPerPage)}
-          onRetry={() => consentListQuery.refetch()}
+          sortField={sort.field}
+          sortDirection={sort.direction}
           detailBasePath="/administration/consents"
-          showSubject
-          showPurposes={Boolean(filters.consentId)}
-          canRevoke={canWriteAny}
+          showApproveAction={false}
+          showMutationActions={canWriteAny}
+          onPageChange={(nextPage) => updateParams(filters, nextPage)}
+          onRowsPerPageChange={(nextRowsPerPage) =>
+            updateParams(filters, DEFAULT_PAGE, nextRowsPerPage)
+          }
+          onSortChange={(sortField, sortDirection) =>
+            updateParams(filters, DEFAULT_PAGE, rowsPerPage, sortField, sortDirection)
+          }
+          onRetry={() => consentListQuery.refetch()}
           onRevoke={setSelectedRevocationConsentID}
           isMutating={revokeMutation.isPending}
         />
@@ -182,15 +228,12 @@ export default function AdminConsentRegistryPage(): React.JSX.Element {
             open
             consentId={selectedRevocationConsentID}
             loading={revokeMutation.isPending}
-            error={revokeMutation.error?.message}
-            onClose={() => {
-              setSelectedRevocationConsentID(undefined)
-              revokeMutation.reset()
-            }}
+            onClose={() => setSelectedRevocationConsentID(undefined)}
             onConfirm={() =>
-              revokeMutation.mutate(selectedRevocationConsentID, {
-                onSuccess: () => setSelectedRevocationConsentID(undefined),
-              })
+              revokeMutation.mutate(
+                { consentID: selectedRevocationConsentID, actionBy: currentUser.userId },
+                { onSuccess: () => setSelectedRevocationConsentID(undefined) },
+              )
             }
           />
         ) : null}

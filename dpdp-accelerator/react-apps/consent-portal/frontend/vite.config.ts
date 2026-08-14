@@ -16,13 +16,15 @@
  * under the License.
  */
 
+import { writeFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 import react from '@vitejs/plugin-react'
 import { loadEnv } from 'vite'
 import type { Plugin } from 'vite'
 import { defineConfig } from 'vitest/config'
-import { contentSecurityPolicy } from './src/security/contentSecurityPolicy'
+import { contentSecurityPolicy, staticHeadersFile } from './src/security/contentSecurityPolicy'
 
-function securityHeadersPlugin(metaPolicy: string): Plugin {
+function securityHeadersPlugin(metaPolicy: string, headersFilePolicy: string, outDir: string): Plugin {
   return {
     name: 'portal-security-headers',
     transformIndexHtml: {
@@ -36,6 +38,9 @@ function securityHeadersPlugin(metaPolicy: string): Plugin {
           },
         ]
       },
+    },
+    closeBundle() {
+      writeFileSync(resolve(outDir, '_headers'), staticHeadersFile(headersFilePolicy))
     },
   }
 }
@@ -63,7 +68,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     base: basePath,
-    plugins: [react(), ...(production ? [securityHeadersPlugin(metaPolicy)] : [])],
+    plugins: [
+      react(),
+      ...(production ? [securityHeadersPlugin(metaPolicy, policy, resolve(process.cwd(), 'dist'))] : []),
+    ],
     preview: {
       headers: {
         'Content-Security-Policy': policy,

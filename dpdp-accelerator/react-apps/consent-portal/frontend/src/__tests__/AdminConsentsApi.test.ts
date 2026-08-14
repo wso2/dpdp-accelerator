@@ -22,7 +22,6 @@ import {
   fetchAdminConsents,
   revokeAdminConsent,
 } from '../features/admin-consents/api/adminConsentsApi'
-import { getNextCursor, getPreviousCursor } from '../utils/cursorPagination'
 
 const fetchMock = vi.fn()
 
@@ -41,61 +40,48 @@ function mockJSONResponse(payload: unknown = {}): void {
 }
 
 describe('administrative consent API', () => {
-  it('passes the supported cursor and filter parameters to the BFF', async () => {
-    mockJSONResponse({ totalResults: 0, links: [], Consents: [] })
+  it('passes all supported administrative filters to the BFF', async () => {
+    mockJSONResponse({ data: [], metadata: { total: 0, offset: 0, count: 0, limit: 25 } })
 
     await fetchAdminConsents({
+      consentStatuses: 'ACTIVE',
+      userIds: 'user-1,user-2',
+      groupIds: 'group-1,group-2',
+      purposeName: 'payments',
+      purposeVersion: 'v2',
+      elementName: 'account-number',
+      elementNamespace: 'banking',
+      elementVersion: 'v3',
+      sort: 'updatedTime:desc',
+      fromTime: 1000,
+      toTime: 2000,
       limit: 25,
-      after: 'Mg==',
-      subjectId: 'admin',
-      serviceId: 'dpdp-portal',
-      state: 'ACTIVE',
+      offset: 50,
     })
 
     const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? []
     const url = new URL(String(requestUrl))
     expect(url.pathname).toBe('/api/consents')
     expect(Object.fromEntries(url.searchParams)).toEqual({
+      consentStatuses: 'ACTIVE',
+      userIds: 'user-1,user-2',
+      groupIds: 'group-1,group-2',
+      purposeName: 'payments',
+      purposeVersion: 'v2',
+      elementName: 'account-number',
+      elementNamespace: 'banking',
+      elementVersion: 'v3',
+      sort: 'updatedTime:desc',
+      fromTime: '1000',
+      toTime: '2000',
       limit: '25',
-      after: 'Mg==',
-      subjectId: 'admin',
-      serviceId: 'dpdp-portal',
-      state: 'ACTIVE',
+      offset: '50',
+      details: 'true',
     })
     expect(requestInit).toMatchObject({ method: 'GET', credentials: 'include' })
   })
 
-  it('sends a before cursor when paging backwards and omits unset filters', async () => {
-    mockJSONResponse({ totalResults: 0, links: [], Consents: [] })
-
-    await fetchAdminConsents({ limit: 10, before: 'MQ==' })
-
-    const [requestUrl] = fetchMock.mock.calls[0] ?? []
-    expect(Object.fromEntries(new URL(String(requestUrl)).searchParams)).toEqual({
-      limit: '10',
-      before: 'MQ==',
-    })
-  })
-
-  it('reads next and previous cursors out of the returned links', async () => {
-    const links = [
-      {
-        rel: 'next',
-        href: 'https://localhost:9443/api/identity/consent-mgt/v2.0/consents?limit=2&after=Mg==',
-      },
-      {
-        rel: 'previous',
-        href: 'https://localhost:9443/api/identity/consent-mgt/v2.0/consents?limit=2&before=MA==',
-      },
-    ]
-
-    expect(getNextCursor(links)).toBe('Mg==')
-    expect(getPreviousCursor(links)).toBe('MA==')
-    expect(getNextCursor([])).toBeUndefined()
-    expect(getPreviousCursor(undefined)).toBeUndefined()
-  })
-
-  it('loads encoded consent details without extra query parameters', async () => {
+  it('loads encoded consent details with history', async () => {
     mockJSONResponse({ id: 'consent/123' })
 
     await fetchAdminConsentByID('consent/123')
@@ -103,20 +89,22 @@ describe('administrative consent API', () => {
     const [requestUrl] = fetchMock.mock.calls[0] ?? []
     const url = new URL(String(requestUrl))
     expect(url.pathname).toBe('/api/consents/consent%2F123')
-    expect(Object.fromEntries(url.searchParams)).toEqual({})
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      details: 'true',
+      includeStatusHistory: 'true',
+    })
   })
 
-  it('revokes with an empty JSON body', async () => {
-    mockJSONResponse({ status: 'OK' })
+  it('sends the current user as actionBy when revoking', async () => {
+    mockJSONResponse()
 
-    await revokeAdminConsent('consent-123')
+    await revokeAdminConsent('consent-123', 'user-from-me')
 
-    const [requestUrl, requestInit] = fetchMock.mock.calls[0] ?? []
-    expect(String(requestUrl)).toContain('/api/consents/consent-123/revoke')
+    const [, requestInit] = fetchMock.mock.calls[0] ?? []
     expect(requestInit).toMatchObject({
       method: 'POST',
       credentials: 'include',
-      body: JSON.stringify({}),
+      body: JSON.stringify({ actionBy: 'user-from-me' }),
     })
     expect(new Headers(requestInit?.headers as HeadersInit).get('Content-Type')).toBe(
       'application/json',

@@ -30,20 +30,22 @@ import {
   Stack,
   Typography,
 } from '@wso2/oxygen-ui'
-import { ArrowRight, ChartPie, Clock3, ShieldCheck } from '@wso2/oxygen-ui-icons-react'
+import { AlarmClock, ArrowRight, ChartPie, Clock3, ShieldCheck } from '@wso2/oxygen-ui-icons-react'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
-import type { ConsentDetail } from '../../types/consent'
-import { formatEpochTimestamp } from '../../utils/dateTime'
-import { normalizeConsentState } from '../consent-registry/utils/statusChip'
+import type { ConsentDetailAPI } from '../../types/consent'
+import { formatEpochTimestamp, toEpochMilliseconds } from '../../utils/dateTime'
+import { normalizeConsentStatus } from '../consent-registry/utils/statusChip'
 import useDashboardConsentsQuery from './hooks/useDashboardConsentsQuery'
 
+const EXPIRING_SOON_DAYS = 30
+const DAY_IN_MILLISECONDS = 24 * 60 * 60 * 1000
 const ATTENTION_ITEM_LIMIT = 5
 const PURPOSE_ITEM_LIMIT = 5
 
-interface LabelledCount {
+interface PurposeFrequency {
   id: string
   label: string
   count: number
@@ -52,20 +54,29 @@ interface LabelledCount {
 interface DashboardData {
   activeCount: number
   pendingCount: number
-  pending: ConsentDetail[]
-  purposes: LabelledCount[]
-  services: LabelledCount[]
+  pending: ConsentDetailAPI[]
+  expiring: ConsentDetailAPI[]
+  purposes: PurposeFrequency[]
+  types: PurposeFrequency[]
 }
 
-function summarizePurposes(consent: ConsentDetail): string {
-  const labels = consent.purposes.map((purpose) => purpose.name)
+function consentUpdatedTime(consent: ConsentDetailAPI): number {
+  return toEpochMilliseconds(consent.updatedTime) ?? 0
+}
+
+function consentExpirationTime(consent: ConsentDetailAPI): number {
+  return toEpochMilliseconds(consent.expirationTime) ?? 0
+}
+
+function summarizePurposes(consent: ConsentDetailAPI): string {
+  const labels = consent.purposes.map((purpose) => purpose.displayName ?? purpose.name)
 
   if (labels.length === 0) return '-'
   if (labels.length === 1) return labels[0]
   return `${labels[0]} +${String(labels.length - 1)}`
 }
 
-function PendingConsentRow({ consent }: { consent: ConsentDetail }): React.JSX.Element {
+function AttentionRow({ consent, dateLabel }: { consent: ConsentDetailAPI; dateLabel: string }) {
   const navigate = useNavigate()
   const consentPath = `/consents/${encodeURIComponent(consent.id)}`
 
@@ -92,7 +103,7 @@ function PendingConsentRow({ consent }: { consent: ConsentDetail }): React.JSX.E
       <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={2}>
         <Stack spacing={0.25} minWidth={0}>
           <Typography variant="body2" fontWeight={600} noWrap>
-            {consent.serviceId}
+            {consent.type}
           </Typography>
           <Typography variant="caption" color="text.secondary" noWrap>
             {summarizePurposes(consent)}
@@ -100,18 +111,12 @@ function PendingConsentRow({ consent }: { consent: ConsentDetail }): React.JSX.E
         </Stack>
         <Stack direction="row" spacing={1} alignItems="center" flexShrink={0}>
           <Typography variant="caption" color="text.secondary">
-            {formatEpochTimestamp(consent.timestamp)}
+            {dateLabel}
           </Typography>
           <ArrowRight size={16} />
         </Stack>
       </Stack>
     </Box>
-  )
-}
-
-function toSortedCounts(counts: Map<string, LabelledCount>): LabelledCount[] {
-  return [...counts.values()].sort(
-    (left, right) => right.count - left.count || left.label.localeCompare(right.label),
   )
 }
 
@@ -121,27 +126,37 @@ function DashboardPage(): React.JSX.Element {
 
   const data = useMemo<DashboardData>(() => {
     const consents = consentsQuery.data ?? []
-    const active = consents.filter((consent) => normalizeConsentState(consent.state) === 'ACTIVE')
-    const pending = consents.filter((consent) => normalizeConsentState(consent.state) === 'PENDING')
+    const active = consents.filter((consent) => normalizeConsentStatus(consent.status) === 'ACTIVE')
+    const pending = consents.filter(
+      (consent) => normalizeConsentStatus(consent.status) === 'CREATED',
+    )
+    const now = consentsQuery.dataUpdatedAt
+    const expirationCutoff = now + EXPIRING_SOON_DAYS * DAY_IN_MILLISECONDS
+    const expiring = active
+      .filter((consent) => {
+        const expiration = consentExpirationTime(consent)
+        return expiration > now && expiration <= expirationCutoff
+      })
+      .sort((left, right) => consentExpirationTime(left) - consentExpirationTime(right))
 
-    const purposeCounts = new Map<string, LabelledCount>()
+    const purposeCounts = new Map<string, PurposeFrequency>()
     active.forEach((consent) => {
       consent.purposes.forEach((purpose) => {
-        const existing = purposeCounts.get(purpose.id)
-        purposeCounts.set(purpose.id, {
-          id: purpose.id,
-          label: purpose.name,
+        const existing = purposeCounts.get(purpose.purposeId)
+        purposeCounts.set(purpose.purposeId, {
+          id: purpose.purposeId,
+          label: purpose.displayName ?? purpose.name,
           count: (existing?.count ?? 0) + 1,
         })
       })
     })
 
-    const serviceCounts = new Map<string, LabelledCount>()
+    const typeCounts = new Map<string, PurposeFrequency>()
     consents.forEach((consent) => {
-      const existing = serviceCounts.get(consent.serviceId)
-      serviceCounts.set(consent.serviceId, {
-        id: consent.serviceId,
-        label: consent.serviceId,
+      const existing = typeCounts.get(consent.type)
+      typeCounts.set(consent.type, {
+        id: consent.type,
+        label: consent.type,
         count: (existing?.count ?? 0) + 1,
       })
     })
@@ -150,15 +165,20 @@ function DashboardPage(): React.JSX.Element {
       activeCount: active.length,
       pendingCount: pending.length,
       pending: [...pending]
-        .sort((left, right) => right.timestamp - left.timestamp)
+        .sort((left, right) => consentUpdatedTime(right) - consentUpdatedTime(left))
         .slice(0, ATTENTION_ITEM_LIMIT),
-      purposes: toSortedCounts(purposeCounts).slice(0, PURPOSE_ITEM_LIMIT),
-      services: toSortedCounts(serviceCounts),
+      expiring: expiring.slice(0, ATTENTION_ITEM_LIMIT),
+      purposes: [...purposeCounts.values()]
+        .sort((left, right) => right.count - left.count || left.label.localeCompare(right.label))
+        .slice(0, PURPOSE_ITEM_LIMIT),
+      types: [...typeCounts.values()].sort(
+        (left, right) => right.count - left.count || left.label.localeCompare(right.label),
+      ),
     }
-  }, [consentsQuery.data])
+  }, [consentsQuery.data, consentsQuery.dataUpdatedAt])
 
   const maximumPurposeCount = data.purposes[0]?.count ?? 1
-  const maximumServiceCount = data.services[0]?.count ?? 1
+  const maximumTypeCount = data.types[0]?.count ?? 1
 
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
@@ -235,42 +255,84 @@ function DashboardPage(): React.JSX.Element {
           {t('dashboard.attention')}
         </Typography>
 
-        <Card sx={{ boxShadow: 1 }}>
-          <CardHeader
-            avatar={<Clock3 size={20} />}
-            title={<Typography fontWeight={600}>{t('dashboard.pendingConsents')}</Typography>}
-            action={<Chip size="small" label={data.pendingCount} />}
-          />
-          <Divider />
-          <CardContent>
-            {consentsQuery.isLoading ? (
-              <Stack spacing={1}>
-                <Skeleton height={40} />
-                <Skeleton height={40} />
-                <Skeleton height={40} />
-              </Stack>
-            ) : null}
-            {!consentsQuery.isLoading && data.pending.length === 0 ? (
-              <Typography variant="body2" color="text.secondary">
-                {t('dashboard.noPending')}
-              </Typography>
-            ) : null}
-            {data.pending.map((consent) => (
-              <PendingConsentRow key={consent.id} consent={consent} />
-            ))}
-            {data.pendingCount > 0 ? (
-              <Button
-                component={RouterLink}
-                to="/consents?state=PENDING"
-                size="small"
-                endIcon={<ArrowRight size={15} />}
-                sx={{ mt: 1 }}
-              >
-                {t('dashboard.viewPending')}
-              </Button>
-            ) : null}
-          </CardContent>
-        </Card>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', lg: 'repeat(2, minmax(0, 1fr))' },
+            gap: 2,
+          }}
+        >
+          <Card sx={{ boxShadow: 1 }}>
+            <CardHeader
+              avatar={<Clock3 size={20} />}
+              title={<Typography fontWeight={600}>{t('dashboard.pendingConsents')}</Typography>}
+              action={<Chip size="small" label={data.pendingCount} />}
+            />
+            <Divider />
+            <CardContent>
+              {consentsQuery.isLoading ? (
+                <Stack spacing={1}>
+                  <Skeleton height={40} />
+                  <Skeleton height={40} />
+                  <Skeleton height={40} />
+                </Stack>
+              ) : null}
+              {!consentsQuery.isLoading && data.pending.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  {t('dashboard.noPending')}
+                </Typography>
+              ) : null}
+              {data.pending.map((consent) => (
+                <AttentionRow
+                  key={consent.id}
+                  consent={consent}
+                  dateLabel={formatEpochTimestamp(consent.updatedTime)}
+                />
+              ))}
+              {data.pendingCount > 0 ? (
+                <Button
+                  component={RouterLink}
+                  to="/consents?status=Pending"
+                  size="small"
+                  endIcon={<ArrowRight size={15} />}
+                  sx={{ mt: 1 }}
+                >
+                  {t('dashboard.viewPending')}
+                </Button>
+              ) : null}
+            </CardContent>
+          </Card>
+
+          <Card sx={{ boxShadow: 1 }}>
+            <CardHeader
+              avatar={<AlarmClock size={20} />}
+              title={<Typography fontWeight={600}>{t('dashboard.expiringSoon')}</Typography>}
+              action={<Chip size="small" label={data.expiring.length} />}
+            />
+            <Divider />
+            <CardContent>
+              {consentsQuery.isLoading ? (
+                <Stack spacing={1}>
+                  <Skeleton height={40} />
+                  <Skeleton height={40} />
+                  <Skeleton height={40} />
+                </Stack>
+              ) : null}
+              {!consentsQuery.isLoading && data.expiring.length === 0 ? (
+                <Typography variant="body2" color="text.secondary">
+                  {t('dashboard.noExpiring', { days: EXPIRING_SOON_DAYS })}
+                </Typography>
+              ) : null}
+              {data.expiring.map((consent) => (
+                <AttentionRow
+                  key={consent.id}
+                  consent={consent}
+                  dateLabel={formatEpochTimestamp(consent.expirationTime)}
+                />
+              ))}
+            </CardContent>
+          </Card>
+        </Box>
 
         <Box
           sx={{
@@ -323,8 +385,8 @@ function DashboardPage(): React.JSX.Element {
           <Card sx={{ boxShadow: 1 }}>
             <CardHeader
               avatar={<ChartPie size={20} />}
-              title={<Typography fontWeight={600}>{t('dashboard.serviceBreakdown')}</Typography>}
-              subheader={t('dashboard.serviceBreakdownSubtitle')}
+              title={<Typography fontWeight={600}>{t('dashboard.typeBreakdown')}</Typography>}
+              subheader={t('dashboard.typeBreakdownSubtitle')}
             />
             <Divider />
             <CardContent>
@@ -335,25 +397,25 @@ function DashboardPage(): React.JSX.Element {
                   <Skeleton height={32} />
                 </Stack>
               ) : null}
-              {!consentsQuery.isLoading && data.services.length === 0 ? (
+              {!consentsQuery.isLoading && data.types.length === 0 ? (
                 <Typography variant="body2" color="text.secondary">
-                  {t('dashboard.noServices')}
+                  {t('dashboard.noTypes')}
                 </Typography>
               ) : null}
               <Stack spacing={2}>
-                {data.services.map((service) => (
-                  <Stack key={service.id} spacing={0.75}>
+                {data.types.map((type) => (
+                  <Stack key={type.id} spacing={0.75}>
                     <Stack direction="row" justifyContent="space-between" spacing={2}>
                       <Typography variant="body2" fontWeight={600} noWrap>
-                        {service.label}
+                        {type.label}
                       </Typography>
                       <Typography variant="caption" color="text.secondary">
-                        {t('dashboard.consentCount', { count: service.count })}
+                        {t('dashboard.consentCount', { count: type.count })}
                       </Typography>
                     </Stack>
                     <LinearProgress
                       variant="determinate"
-                      value={(service.count / maximumServiceCount) * 100}
+                      value={(type.count / maximumTypeCount) * 100}
                       sx={{ height: 6, borderRadius: 3 }}
                     />
                   </Stack>

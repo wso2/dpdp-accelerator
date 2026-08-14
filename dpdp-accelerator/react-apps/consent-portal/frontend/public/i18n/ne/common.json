@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "सहमति पोर्टल"
+  },
+  "language": {
+    "label": "भाषा",
+    "selectAria": "भाषा छान्नुहोस्"
+  },
+  "authorization": {
+    "loading": "तपाईंको सेसन लोड हुँदैछ",
+    "loadFailed": "तपाईंको सेसन लोड गर्न सकिएन।",
+    "tryAgain": "पुनः प्रयास गर्नुहोस्",
+    "noAccessTitle": "पोर्टल पहुँच छैन",
+    "noAccessDescription": "तपाईंको खातासँग कुनै पनि पोर्टल पृष्ठ पहुँच गर्ने अनुमति छैन।"
+  },
+  "copyableText": {
+    "copy": "प्रतिलिपि गर्नुहोस्",
+    "copied": "प्रतिलिपि गरियो",
+    "copyLabel": "{{label}} प्रतिलिपि गर्नुहोस्",
+    "copyValue": "{{label}} {{value}} प्रतिलिपि गर्नुहोस्",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "मुख्य नाभिगेसन",
+    "dashboard": "ड्यासबोर्ड",
+    "consent": "सहमति",
+    "allConsents": "सबै सहमतिहरू",
+    "pendingConsents": "पेन्डिङ सहमतिहरू",
+    "catalog": "परिभाषाहरू",
+    "purposes": "उद्देश्यहरू",
+    "elements": "तत्वहरू",
+    "administration": "प्रशासन",
+    "adminConsents": "सहमतिहरू",
+    "nominations": "मनोनयनहरू",
+    "nomineeActivation": "मनोनीत सक्रियता",
+    "myComplaints": "मेरो उजुरीहरू",
+    "complaintManagement": "उजुरीहरू",
+    "dataProcessors": "डाटा प्रोसेसरहरू",
+    "dataProcessorTopics": "विषयहरू",
+    "dataProcessorSubscriptions": "सदस्यताहरू",
+    "dataProcessorEvents": "घटनाहरू"
+  },
+  "layout": {
+    "home": "गृहपृष्ठ",
+    "breadcrumbAriaLabel": "ब्रेडक्रम्ब",
+    "userMenu": {
+      "unknownUser": "अज्ञात प्रयोगकर्ता",
+      "noEmail": "इमेल उपलब्ध छैन",
+      "signOut": "साइन आउट गर्नुहोस्",
+      "signOutError": "साइन आउट गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्।",
+      "tryAgain": "पुनः प्रयास गर्नुहोस्"
+    }
+  },
+  "dashboard": {
+    "active": "सक्रिय सहमतिहरू",
+    "attention": "तपाईंको ध्यान आवश्यक छ",
+    "commonPurposes": "सबैभन्दा धेरै साझा गरिएका उद्देश्यहरू",
+    "commonPurposesSubtitle": "तपाईंको सक्रिय सहमतिहरूमा समाविष्ट उद्देश्यहरू",
+    "consentCount": "{{count}} सहमतिहरू",
+    "consentCount_one": "{{count}} सहमति",
+    "consentCount_other": "{{count}} सहमतिहरू",
+    "expiringSoon": "छिट्टै समाप्त हुँदैछ",
+    "loadFailed": "अहिले तपाईंको ड्यासबोर्ड लोड गर्न सकिएन।",
+    "noExpiring": "आगामी {{days}} दिनभित्र कुनै पनि सक्रिय सहमति समाप्त हुँदैन।",
+    "noPending": "तपाईंसँग समीक्षार्थ कुनै पेन्डिङ सहमति छैन।",
+    "noPurposes": "कुनै पनि साझा गरिएका उद्देश्यहरू अझै उपलब्ध छैनन्।",
+    "pending": "पेन्डिङ सहमतिहरू",
+    "pendingConsents": "पेन्डिङ सहमतिहरू",
+    "subtitle": "तपाईंको सहमति गतिविधि र आगामी कार्यहरूको अवलोकन।",
+    "title": "ड्यासबोर्ड",
+    "typeBreakdown": "सहमति प्रकार वर्गीकरण",
+    "typeBreakdownSubtitle": "प्रकार अनुसार समूहबद्ध गरिएका सहमतिहरू",
+    "noTypes": "कुनै पनि सहमति प्रकार अझै उपलब्ध छैनन्।",
+    "viewPending": "सबै पेन्डिङ सहमतिहरू हेर्नुहोस्"
+  },
+  "adminConsents": {
+    "title": "सहमतिहरू",
+    "filters": {
+      "sectionAriaLabel": "प्रशासकीय सहमति फिल्टरहरू",
+      "consentIdSearchPlaceholder": "सहमति ID द्वारा खोज्नुहोस्",
+      "removeConsentIdForAdvanced": "उन्नत फिल्टरहरू प्रयोग गर्न सहमति ID फिल्टर हटाउनुहोस्।",
+      "removeConsentIdForStatus": "स्थिति फिल्टर प्रयोग गर्न सहमति ID फिल्टर हटाउनुहोस्।",
+      "userIds": "प्रयोगकर्ता IDs",
+      "groupIds": "समूह IDs",
+      "commaSeparatedUsers": "धेरै प्रयोगकर्ता ID हरू अल्पविरामले छुट्याउनुहोस्",
+      "active": "सक्रिय फिल्टरहरू"
+    }
+  },
+  "consentRegistry": {
+    "title": "सबै सहमतिहरू",
+    "details": {
+      "title": "सहमति विवरण",
+      "consentId": "सहमति ID",
+      "status": "स्थिति",
+      "type": "सहमति प्रकार",
+      "frequency": "पहुँच सीमा",
+      "frequencyHelp": "यसले यो सहमति प्रतिदिन कति पटक पहुँच गर्न सकिन्छ भन्ने देखाउँछ।",
+      "frequencyUnitSingular": "पटक प्रति दिन",
+      "frequencyUnitPlural": "पटक प्रति दिन",
+      "purposes": "उद्देश्यहरू",
+      "duration": "पछाडि हेर्ने अवधि",
+      "durationHelp": "यसले कति पछाडिसम्मको डाटा पहुँच गर्न सकिन्छ भन्ने निर्धारण गर्छ। उदाहरणका लागि, ६ महिना तोकिएको छ भने ६ महिनाअघिसम्मको डाटा पहुँचयोग्य हुन्छ।",
+      "durationUnitHourSingular": "घण्टा",
+      "durationUnitHourPlural": "घण्टा",
+      "durationUnitDaySingular": "दिन",
+      "durationUnitDayPlural": "दिन",
+      "durationUnitYearSingular": "वर्ष",
+      "durationUnitYearPlural": "वर्ष",
+      "created": "सिर्जना गरिएको",
+      "updated": "अद्यावधिक गरिएको",
+      "validUntil": "मान्य अवधि",
+      "groupId": "समूह ID",
+      "recurring": "दोहोरिने",
+      "back": "दर्ता सूचीमा फर्कनुहोस्",
+      "notFound": "सहमति रेकर्ड भेटिएन",
+      "approved": "स्वीकृत",
+      "notApproved": "अस्वीकृत",
+      "approvedCount": "{{approved}}/{{total}} स्वीकृत",
+      "section": {
+        "purposes": "सहमति उद्देश्यहरू",
+        "authorizations": "प्राधिकरणहरू",
+        "lifecycle": "सहमति जीवनचक्र"
+      },
+      "table": {
+        "element": "तत्व",
+        "approved": "स्वीकृत",
+        "required": "अनिवार्य",
+        "description": "विवरण",
+        "user": "प्रयोगकर्ता",
+        "status": "स्थिति",
+        "updated": "अद्यावधिक गरिएको",
+        "resources": "स्रोतहरू",
+        "eventType": "घटना प्रकार",
+        "date": "मिति",
+        "time": "समय"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "सहमति जीवनचक्र",
+        "empty": "कुनै जीवनचक्र घटनाहरू उपलब्ध छैनन्।",
+        "noDescription": "कुनै विवरण उपलब्ध छैन।"
+      },
+      "actions": {
+        "viewResources": "स्रोतहरू हेर्नुहोस्",
+        "noResourcesTooltip": "कुनै स्रोतहरू उपलब्ध छैनन्"
+      },
+      "resourcesModal": {
+        "title": "प्राधिकरण स्रोतहरू",
+        "authRef": "प्राधिकरण",
+        "close": "बन्द गर्नुहोस्"
+      },
+      "values": {
+        "yes": "हो",
+        "no": "होइन",
+        "required": "अनिवार्य",
+        "optional": "ऐच्छिक"
+      }
+    },
+    "actions": {
+      "view": "हेर्नुहोस्",
+      "revoke": "फिर्ता लिनुहोस्",
+      "approve": "स्वीकृत गर्नुहोस्",
+      "reject": "अस्वीकार गर्नुहोस्",
+      "copyConsentId": "सहमति ID प्रतिलिपि गर्नुहोस्",
+      "copyConsentIdAriaLabel": "सहमति ID {{id}} प्रतिलिपि गर्नुहोस्"
+    },
+    "modals": {
+      "consentId": "सहमति ID",
+      "actions": {
+        "cancel": "रद्द गर्नुहोस्",
+        "processing": "प्रक्रिया हुँदैछ..."
+      },
+      "approval": {
+        "title": "सहमति समीक्षा र स्वीकृति",
+        "subtitle": "कृपया स्वीकृत गर्नुअघि सहमति तत्वहरूको समीक्षा गर्नुहोस्।",
+        "mandatory": "अनिवार्य तत्वहरू (आवश्यक)",
+        "optional": "ऐच्छिक तत्वहरू",
+        "required": "आवश्यक",
+        "toggle": "अनुमति टोगल गर्नुहोस्",
+        "toggleWithDetails": "{{purposeLabel}} मा {{elementLabel}} को लागि अनुमति टोगल गर्नुहोस्",
+        "loading": "सहमति विवरण लोड हुँदैछ...",
+        "noMandatory": "यस सहमतिको लागि कुनै अनिवार्य आवश्यकताहरू छैनन्।",
+        "confirm": "स्वीकृत गरी अगाडि बढ्नुहोस्"
+      },
+      "rejection": {
+        "title": "अस्वीकृति पुष्टि गर्नुहोस्",
+        "message": "के तपाईं निश्चित रूपमा यो सहमति अस्वीकार गर्न चाहनुहुन्छ?",
+        "note": "यो सहमति अस्वीकार गर्दा अनुरोध गरिएका सहमतिहरू प्रदान गरिने छैनन्।",
+        "confirm": "सहमति अस्वीकार गर्नुहोस्",
+        "cancel": "रद्द गर्नुहोस्"
+      },
+      "revocation": {
+        "title": "सहमति फिर्ताको पुष्टि गर्नुहोस्",
+        "message": "के तपाईं निश्चित रूपमा सहमति फिर्ता लिन चाहनुहुन्छ?",
+        "note": "यो कार्यले सबै सम्बद्ध उद्देश्यहरूका लागि प्रदान गरिएका अनिवार्य र ऐच्छिक सहमतिहरू दुवै फिर्ता लिन्छ।",
+        "confirm": "सहमतिहरू फिर्ता लिनुहोस्",
+        "cancel": "रद्द गर्नुहोस्"
+      }
+    },
+    "status": {
+      "all": "सबै",
+      "active": "सक्रिय",
+      "pending": "पेन्डिङ",
+      "created": "सिर्जना गरिएको",
+      "approved": "स्वीकृत",
+      "rejected": "अस्वीकृत",
+      "revoked": "फिर्ता लिइएको",
+      "expired": "समाप्त",
+      "systemExpired": "प्रणाली द्वारा समाप्त",
+      "systemRevoked": "प्रणाली द्वारा फिर्ता लिइएको"
+    },
+    "filters": {
+      "sectionAriaLabel": "सहमति फिल्टरहरू",
+      "purposeSearchPlaceholder": "उद्देश्यको नाम द्वारा खोज्नुहोस्",
+      "status": "स्थिति",
+      "groupIds": "समूह ID",
+      "elementName": "तत्वको नाम",
+      "elementVersion": "तत्वको संस्करण",
+      "advanced": "उन्नत फिल्टरहरू",
+      "apply": "लागू गर्नुहोस्",
+      "cancel": "रद्द गर्नुहोस्",
+      "startDate": "सुरु मिति",
+      "startDateAriaLabel": "सुरु मिति फिल्टर",
+      "endDate": "अन्तिम मिति",
+      "endDateAriaLabel": "अन्तिम मिति फिल्टर",
+      "clear": "सबै हटाउनुहोस्",
+      "clearAriaLabel": "सबै फिल्टरहरू हटाउनुहोस्"
+    },
+    "messages": {
+      "loading": "सहमतिहरू लोड हुँदैछन्...",
+      "loadFailed": "अहिले सहमतिहरू लोड गर्न सकिएन।",
+      "emptyTitle": "कुनै सहमति भेटिएन",
+      "empty": "चयन गरिएका फिल्टरहरूका लागि कुनै सहमति भेटिएन।"
+    },
+    "table": {
+      "tableAriaLabel": "सहमति दर्ता तालिका",
+      "consentIdAriaLabel": "सहमति ID: {{id}}",
+      "groupLabel": "समूह ID: {{groupId}}",
+      "notApplicable": "लागू नहुने",
+      "purposes": {
+        "more": "+{{count}} थप",
+        "title": "सहमति उद्देश्यहरू",
+        "hint": "सहमतिका सबै उद्देश्यहरू देखाउँदै"
+      },
+      "headers": {
+        "consentId": "सहमति ID",
+        "type": "प्रकार",
+        "status": "स्थिति",
+        "purposes": "उद्देश्यहरू",
+        "updated": "अद्यावधिक गरिएको",
+        "expiration": "समाप्ति मिति",
+        "actions": "कार्यहरू"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "तत्व थप्नुहोस्",
+      "addProperty": "गुण थप्नुहोस्",
+      "apply": "लागू गर्नुहोस्",
+      "cancel": "रद्द गर्नुहोस्",
+      "clear": "हटाउनुहोस्",
+      "clearAll": "सबै हटाउनुहोस्",
+      "create": "सिर्जना गर्नुहोस्",
+      "delete": "हटाउनुहोस्",
+      "deleting": "हटाउँदै...",
+      "deleteVersion": "संस्करण हटाउनुहोस्",
+      "filters": "फिल्टरहरू",
+      "removeElement": "तत्व हटाउनुहोस्",
+      "removeProperty": "गुण हटाउनुहोस्",
+      "retry": "पुनः प्रयास गर्नुहोस्",
+      "saving": "बचत हुँदैछ...",
+      "view": "हेर्नुहोस्",
+      "viewElement": "{{name}} हेर्नुहोस्",
+      "viewPurpose": "{{name}} हेर्नुहोस्"
+    },
+    "fields": {
+      "actions": "कार्यहरू",
+      "created": "सिर्जना गरिएको",
+      "description": "विवरण",
+      "displayName": "देखाउने नाम",
+      "element": "तत्व",
+      "elementId": "तत्व ID",
+      "elementName": "तत्वको नाम",
+      "elementNamespace": "तत्वको नेमस्पेस",
+      "elements": "तत्वहरू",
+      "elementVersion": "तत्वको संस्करण",
+      "groupId": "समूह ID",
+      "groupIds": "समूह IDs",
+      "mandatory": "अनिवार्य",
+      "name": "नाम",
+      "namespace": "नेमस्पेस",
+      "properties": "गुणहरू",
+      "propertyKey": "की (Key)",
+      "propertyValue": "मान (Value)",
+      "purpose": "उद्देश्य",
+      "purposeId": "उद्देश्य ID",
+      "purposeName": "उद्देश्यको नाम",
+      "scope": "दायरा",
+      "purposeScope": "उद्देश्यको दायरा",
+      "purposeVersion": "उद्देश्यको संस्करण",
+      "requirement": "आवश्यकता",
+      "schema": "स्कीमा",
+      "type": "प्रकार",
+      "version": "संस्करण"
+    },
+    "help": {
+      "commaSeparatedGroups": "धेरै समूह ID हरू अल्पविरामले छुट्याउनुहोस्",
+      "defaultNamespace": "खाली हुँदा पूर्वनिर्धारित नेमस्पेस प्रयोग गर्दछ",
+      "elementVersionRequiresIdentity": "पहिले तत्वको नाम वा नेमस्पेस प्रविष्ट गर्नुहोस्",
+      "organizationPurpose": "संस्था-स्तरको उद्देश्य सिर्जना गर्न खाली छोड्नुहोस्",
+      "purposeVersionRequiresName": "पहिले उद्देश्यको नाम प्रविष्ट गर्नुहोस्",
+      "schemaElementTypes": "स्कीमाहरू केवल JSON र XML तत्वहरूका लागि समर्थित छन्।",
+      "selectElementFirst": "पहिले एउटा तत्व छान्नुहोस्"
+    },
+    "values": {
+      "all": "सबै",
+      "any": "कुनै पनि",
+      "customNamespace": "कस्टम नेमस्पेस",
+      "defaultNamespace": "पूर्वनिर्धारित नेमस्पेस",
+      "mandatory": "अनिवार्य",
+      "matches": "मेल खान्छ",
+      "noDescription": "कुनै विवरण छैन",
+      "optional": "ऐच्छिक",
+      "specificGroup": "विशिष्ट समूह",
+      "itemCount": "{{count}} चयन गरियो",
+      "latest": "नवीनतम",
+      "viewing": "हेर्दै"
+    },
+    "elements": {
+      "add": "तत्व थप्नुहोस्",
+      "activeFilters": "सक्रिय फिल्टरहरू",
+      "back": "तत्वहरूमा फर्कनुहोस्",
+      "createTitle": "तत्व सिर्जना गर्नुहोस्",
+      "detailsSection": "तत्व विवरण",
+      "empty": "चयन गरिएका फिल्टरहरूसँग कुनै तत्व मेल खाँदैन।",
+      "emptyTitle": "कुनै तत्व भेटिएन",
+      "filterTitle": "तत्वहरू फिल्टर गर्नुहोस्",
+      "loadFailed": "अहिले तत्वहरू लोड गर्न सकिएन।",
+      "newVersion": "नयाँ संस्करण सिर्जना गर्नुहोस्",
+      "refreshing": "ताजा गर्दै...",
+      "results": "{{count}} तत्वहरू",
+      "searchPlaceholder": "तत्वको नाम द्वारा खोज्नुहोस्",
+      "subtitle": "पुनः प्रयोगयोग्य सहमति तत्वहरू र तिनका संस्करण परिभाषाहरू प्रबन्ध गर्नुहोस्।",
+      "tableLabel": "सहमति तत्वहरू",
+      "title": "तत्वहरू"
+    },
+    "purposes": {
+      "add": "उद्देश्य थप्नुहोस्",
+      "activeFilters": "सक्रिय फिल्टरहरू",
+      "allPurposes": "सबै उद्देश्यहरू",
+      "back": "उद्देश्यहरूमा फर्कनुहोस्",
+      "createTitle": "उद्देश्य सिर्जना गर्नुहोस्",
+      "detailsSection": "उद्देश्य विवरण",
+      "empty": "चयन गरिएका फिल्टरहरूसँग कुनै उद्देश्य मेल खाँदैन।",
+      "emptyTitle": "कुनै उद्देश्य भेटिएन",
+      "filterTitle": "उद्देश्यहरू फिल्टर गर्नुहोस्",
+      "loadFailed": "अहिले उद्देश्यहरू लोड गर्न सकिएन।",
+      "newVersion": "नयाँ संस्करण सिर्जना गर्नुहोस्",
+      "orgWide": "संस्था-व्यापी",
+      "refreshing": "ताजा गर्दै...",
+      "results": "{{count}} उद्देश्यहरू",
+      "searchLabel": "उद्देश्यहरू खोज्नुहोस्",
+      "searchPlaceholder": "उद्देश्यको नाम द्वारा खोज्नुहोस्",
+      "scopeFilter": "उद्देश्यको दायरा",
+      "subtitle": "पुनः प्रयोगयोग्य सहमति उद्देश्यहरू र तिनका तत्व परिभाषाहरू प्रबन्ध गर्नुहोस्।",
+      "tableLabel": "सहमति उद्देश्यहरू",
+      "title": "उद्देश्यहरू"
+    },
+    "details": {
+      "definition": "परिभाषा",
+      "elementIdentity": "तत्व पहिचान",
+      "elements": "तत्वहरू",
+      "identity": "उद्देश्य पहिचान",
+      "overview": "अवलोकन",
+      "versionDetails": "संस्करण विवरण",
+      "versions": "संस्करण इतिहास"
+    },
+    "messages": {
+      "createElementFirst": "उद्देश्य परिभाषित गर्नुअघि एउटा तत्व सिर्जना गर्नुहोस्।",
+      "immutableElement": "{{namespace}}:{{name}} एउटा {{type}} तत्व नै रहन्छ। संस्करणहरू बीच पहिचान क्षेत्रहरू परिवर्तन हुन सक्दैनन्।",
+      "immutablePurpose": "{{name}} समूह {{groupId}} को स्वामित्वमा रहन्छ। संस्करणहरू बीच पहिचान क्षेत्रहरू परिवर्तन हुन सक्दैनन्।",
+      "immutableOrganizationPurpose": "{{name}} संस्था-व्यापी छ। यसको पहिचान र दायरा संस्करणहरू बीच परिवर्तन हुन सक्दैन।",
+      "immutableGroupPurpose": "{{name}} समूह {{groupId}} मा सीमित छ। यसको पहिचान र दायरा संस्करणहरू बीच परिवर्तन हुन सक्दैन।",
+      "loadingElements": "उपलब्ध तत्वहरू लोड हुँदैछन्...",
+      "loadingVersions": "तत्व संस्करणहरू लोड हुँदैछन्...",
+      "noElementsFound": "कुनै मेल खाने तत्व भेटिएन",
+      "noElements": "यस संस्करणका लागि कुनै तत्वहरू कन्फिगर गरिएका छैनन्।",
+      "noProperties": "कुनै कस्टम गुणहरू छैनन्।",
+      "noSchema": "यस संस्करणका लागि कुनै स्कीमा कन्फिगर गरिएको छैन।",
+      "noPurposeElements": "अझै कुनै तत्व थपिएको छैन। उद्देश्य सिर्जना गर्न कम्तिमा एउटा तत्व थप्नुहोस्।",
+      "noVersions": "कुनै संस्करणहरू उपलब्ध छैनन्।",
+      "versionsLoadFailed": "अहिले संस्करण इतिहास लोड गर्न सकिएन।"
+    },
+    "validation": {
+      "duplicateElements": "प्रत्येक तत्व एक पटक मात्र समाविष्ट गर्न सकिन्छ।",
+      "duplicatePropertyKeys": "गुण की (Property keys) अद्वितीय हुनुपर्छ।",
+      "elementRequired": "कम्तिमा एउटा तत्व छान्नुहोस्।",
+      "groupIdRequired": "समूह-विशिष्ट उद्देश्यका लागि समूह ID आवश्यक छ।",
+      "nameRequired": "नाम आवश्यक छ।",
+      "namespaceRequired": "Custom चयन गर्दा नेमस्पेस आवश्यक छ।",
+      "schemaRequired": "JSON र XML तत्वहरूका लागि स्कीमा आवश्यक छ।"
+    },
+    "delete": {
+      "title": "संस्करण हटाउनुहोस्",
+      "message": "संस्करण {{version}} हटाउने हो?",
+      "warning": "यो कार्य पूर्ववत गर्न सकिँदैन। सन्दर्भ गरिएका संस्करणहरू हटाउन सकिँदैन, र अन्तिम संस्करण हटाउँदा सम्पूर्ण प्रविष्टि हट्छ।"
+    }
+  },
+  "nominee": {
+    "title": "मनोनयनहरू",
+    "messages": {
+      "loadFailed": "अहिले मनोनयनहरू लोड गर्न सकिएन।"
+    },
+    "nominatedFor": {
+      "openAccount": "खाता खोल्नुहोस् →",
+      "accept": "स्वीकार गर्नुहोस्",
+      "reject": "अस्वीकार गर्नुहोस्",
+      "actionNeeded": "कार्य आवश्यक",
+      "ariaLabel": "मनोनीत खाताहरू",
+      "empty": "कसैले पनि तपाईंलाई अझै मनोनीत गरेको छैन।",
+      "title": "मनोनीत खाताहरू",
+      "table": {
+        "account": "खाता",
+        "status": "स्थिति",
+        "actions": "कार्यहरू"
+      }
+    },
+    "acting": {
+      "starting": "खाता खोल्दै…",
+      "startFailed": "तपाईं यस खाताका लागि मनोनीत व्यक्ति हुनुहुन्न।",
+      "startFailedHint": "मनोनयनमा फर्कनुहोस् र पुनः प्रयास गर्नुहोस्।",
+      "blockedTitle": "मनोनीत पहुँचमा उपलब्ध छैन",
+      "blockedFenced": "खाता सेटिङहरू, प्रमाणहरू र मनोनयनहरू अर्को व्यक्तिको तर्फबाट कहिल्यै प्रयोग गर्न सकिँदैन।",
+      "blockedScope": "मालिकले तपाईंलाई यस क्षेत्रको अनुमति दिएको छैन।",
+      "backToAllowed": "म पहुँच गर्न सक्ने ठाउँमा जानुहोस्",
+      "exit": "बाहिर निस्कनुहोस्"
+    },
+    "permissions": {
+      "consentView": "सहमतिहरू हेर्नुहोस्",
+      "consentRevoke": "सहमतिहरू फिर्ता लिनुहोस्",
+      "consentApprove": "पेन्डिङ सहमतिहरू स्वीकृत गर्नुहोस्",
+      "accountView": "व्यक्तिगत खाता हेर्नुहोस्",
+      "accountUpdate": "व्यक्तिगत खाता अद्यावधिक गर्नुहोस्",
+      "accountDelete": "व्यक्तिगत खाता हटाउनुहोस्"
+    },
+    "mine": {
+      "add": "मनोनीत व्यक्ति थप्नुहोस्",
+      "remove": "हटाउनुहोस्",
+      "empty": "तपाईंले अझै कसैलाई मनोनीत गर्नुभएको छैन।",
+      "status": {
+        "active": "सक्रिय",
+        "pending": "स्वीकृतिको पर्खाइमा",
+        "rejected": "अस्वीकार गरिएको",
+        "accepted": "अनुमोदनको पर्खाइमा",
+        "deactivated": "निलम्बित"
+      },
+      "ariaLabel": "मनोनीत व्यक्तिहरू",
+      "title": "मनोनीत व्यक्तिहरू",
+      "table": {
+        "person": "व्यक्ति",
+        "permissions": "अनुमतिहरू",
+        "status": "स्थिति",
+        "actions": "कार्यहरू",
+        "morePermissions": "+{{count}} थप"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "मनोनीत व्यक्ति थप्नुहोस्",
+        "editTitle": "मनोनीत व्यक्ति सम्पादन गर्नुहोस्",
+        "saveChanges": "परिवर्तनहरू बचत गर्नुहोस्",
+        "emailLabel": "मनोनीत व्यक्तिको दर्ता गरिएको इमेल",
+        "permissionsTitle": "यो मनोनीत व्यक्तिले के गर्न सक्छ?",
+        "permissionsSubtitle": "तपाईंले प्रदान गर्न चाहेको अधिकार मात्र चयन गर्नुहोस्। यो मनोनीत व्यक्तिले प्रयोग गर्न पाउने पहुँच बन्नेछ।",
+        "sensitive": "संवेदनशील",
+        "cancel": "रद्द गर्नुहोस्",
+        "processing": "बचत हुँदैछ...",
+        "confirm": "मनोनयन पठाउनुहोस्",
+        "processingEdit": "बचत हुँदैछ…"
+      },
+      "removeDialog": {
+        "title": "मनोनीत व्यक्ति हटाउनुहोस्",
+        "message": "{{nomineeEmail}} ले अब तपाईंको सहमतिहरू प्रबन्ध गर्न सक्ने छैन।",
+        "confirm": "मनोनीत व्यक्ति हटाउनुहोस्",
+        "cancel": "रद्द गर्नुहोस्",
+        "processing": "हटाउँदै..."
+      }
+    },
+    "manage": {
+      "title": "मालिकको सहमति प्रबन्ध गर्दै",
+      "back": "मनोनीत दृश्यबाट बाहिर निस्कनुहोस्",
+      "consents": {
+        "title": "सहमतिहरू",
+        "subtitle": "यस खाताद्वारा प्रदान गरिएका सहमतिहरू हेर्नुहोस् र अनुमति भएमा फिर्ता लिनुहोस्।"
+      },
+      "selectedCount": "{{count}} चयन गरियो",
+      "revokeSelected": "चयन गरिएका फिर्ता लिनुहोस्",
+      "messages": {
+        "loadFailed": "अहिले सहमतिहरू लोड गर्न सकिएन।",
+        "empty": "यस खाताका लागि कुनै सहमति भेटिएन।"
+      },
+      "table": {
+        "ariaLabel": "मनोनीत-प्रबन्धित सहमति तालिका",
+        "purposes": "उद्देश्यहरू",
+        "type": "प्रकार",
+        "status": "स्थिति",
+        "updated": "अद्यावधिक गरिएको",
+        "actions": "कार्यहरू",
+        "revoke": "फिर्ता लिनुहोस्",
+        "notRevokable": "सक्रिय सहमतिहरू मात्र फिर्ता लिन सकिन्छ",
+        "clientLabel": "संस्था: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "सामूहिक रद्दीकरण पुष्टि गर्नुहोस्",
+        "message": "यसले {{count}} सहमति(हरू) फिर्ता लिनेछ। यो कार्य पूर्ववत गर्न सकिँदैन।",
+        "note": "प्रत्येक सहमति फिर्ता तपाईंले मालिकको तर्फबाट गर्नुभएको कार्यको रूपमा छुट्टै रेकर्ड गरिन्छ।",
+        "progress": "{{count}} मध्ये {{processed}} फिर्ता लिइँदैछ...",
+        "confirm": "चयन गरिएका फिर्ता लिनुहोस्",
+        "cancel": "रद्द गर्नुहोस्",
+        "processing": "प्रक्रिया हुँदैछ..."
+      },
+      "subtitle": "तपाईं यस खाताको तर्फबाट कार्य गर्दै हुनुहुन्छ। मालिकले अधिकार दिएका कार्यहरू मात्र गर्न सक्नुहुन्छ।",
+      "account": {
+        "title": "खाता पहुँच",
+        "subtitle": "मालिकले उनीहरूको खातामा सम्पादन गर्न अधिकार दिएका कार्यहरू।",
+        "notGranted": "मालिकद्वारा प्रदान नगरिएको"
+      }
+    },
+    "detail": {
+      "title": "सहमति विवरण",
+      "back": "फर्कनुहोस्"
+    }
+  },
+  "admin": {
+    "title": "मनोनीत सक्रियता",
+    "status": {
+      "active": "सक्रिय",
+      "accepted": "अनुमोदनको पर्खाइमा",
+      "pending": "मनोनीत व्यक्तिको पर्खाइमा",
+      "rejected": "अस्वीकार गरिएको",
+      "deactivated": "निष्क्रिय गरिएको"
+    },
+    "pending": {
+      "title": "तपाईंको अनुमोदनको पर्खाइमा",
+      "empty": "अहिले तपाईंको प्रतीक्षामा केही छैन।",
+      "count": "{{count}} अनुमोदनको पर्खाइमा",
+      "appointed": "{{email}} नियुक्त गरियो",
+      "accepted": "{{date}} मा स्वीकृत भयो"
+    },
+    "search": {
+      "label": "नाम वा इमेल द्वारा खोज्नुहोस्",
+      "empty": "कुनै मेल खाने खाता भेटिएन।",
+      "results": "खाताहरू"
+    },
+    "table": {
+      "ariaLabel": "मनोनयनहरू",
+      "owner": "खाता",
+      "nominee": "मनोनीत व्यक्ति",
+      "permissions": "प्रदान गरिएको",
+      "status": "स्थिति",
+      "nominated": "मनोनीत गरियो",
+      "actions": "कार्यहरू"
+    },
+    "controls": {
+      "title": "मनोनीत व्यक्तिहरू",
+      "titleNamed": "{{name}} का मनोनीत व्यक्तिहरू",
+      "nominated": "{{date}} मा मनोनीत गरिएको",
+      "ticket": "टिकट {{ticket}}",
+      "waitingNominee": "अझै केही गर्न बाँकी छैन - मनोनीत व्यक्तिले स्वीकार गरेको छैन।",
+      "activate": "पहुँच सक्रिय गर्नुहोस्",
+      "noAction": "-",
+      "owner": "खाता",
+      "deactivate": "पहुँच फिर्ता लिनुहोस्",
+      "none": "यस खाताले कसैलाई पनि नियुक्त गरेको छैन।"
+    },
+    "activateDialog": {
+      "title": "मनोनीत पहुँच सक्रिय गर्नुहोस्",
+      "ticketLabel": "कानूनी/सपोर्ट टिकट सन्दर्भ",
+      "confirm": "पहुँच सक्रिय गर्नुहोस्",
+      "cancel": "रद्द गर्नुहोस्",
+      "processing": "सक्रिय हुँदैछ...",
+      "subtitle": "यसले {{nomineeName}} लाई {{ownerName}} को सहमतिहरू प्रबन्ध गर्ने पहुँच प्रदान गर्दछ।"
+    },
+    "deactivateDialog": {
+      "title": "मनोनीत पहुँच निष्क्रिय गर्नुहोस्",
+      "reasonLabel": "कारण",
+      "confirm": "पहुँच निष्क्रिय गर्नुहोस्",
+      "cancel": "रद्द गर्नुहोस्",
+      "processing": "निष्क्रिय हुँदैछ...",
+      "subtitle": "यसले तुरुन्तै {{ownerName}} को सहमतिहरूमा मनोनीत व्यक्तिको पहुँच फिर्ता लिन्छ।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "डाटा उल्लंघन",
+      "UNAUTHORIZED_DATA_SHARING": "अनधिकृत डाटा साझेदारी",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "सहमति फिर्ता लिँदा पनि डाटा प्रयोग भएको",
+      "PURPOSE_VIOLATION": "उद्देश्य उल्लंघन",
+      "DATA_ERASURE_NOT_COMPLETED": "डाटा हटाउने अनुरोध पुरा नभएको",
+      "DATA_CORRECTION_NOT_COMPLETED": "डाटा सच्याउने अनुरोध पुरा नभएको",
+      "CONSENT_LIFECYCLE_ISSUE": "सहमति प्रबन्धक समस्या",
+      "DATA_ACCESS_DENIED": "डाटा पहुँच अनुरोध अस्वीकृत",
+      "EXCESSIVE_DATA_COLLECTION": "अत्यधिक डाटा संकलन",
+      "OTHER": "अन्य"
+    },
+    "status": {
+      "open": "खुल्ला",
+      "investigation": "प्रक्रियामा",
+      "awaitingInfo": "ग्राहकको पर्खाइमा",
+      "waitingOnDpo": "आन्तरिक समीक्षाको पर्खाइमा",
+      "resolved": "समाधान भयो"
+    },
+    "priority": {
+      "CRITICAL": "अति गम्भीर",
+      "HIGH": "उच्च",
+      "MEDIUM": "मध्यम",
+      "LOW": "निम्न"
+    },
+    "sla": {
+      "dueDate": "अन्तिम मिति {{date}}",
+      "dueToday": "आज अन्तिम दिन",
+      "overdueSingular": "{{count}} दिन ढिलो",
+      "overduePlural": "{{count}} दिन ढिलो",
+      "daysLeftSingular": "{{count}} दिन बाँकी",
+      "daysLeftPlural": "{{count}} दिन बाँकी"
+    },
+    "timeline": {
+      "complaintReceived": "उजुरी प्राप्त भयो",
+      "statusChangePrefix": "स्थिति परिवर्तन भयो:",
+      "statusChangeJoiner": "बाट"
+    },
+    "list": {
+      "title": "मेरो उजुरीहरू",
+      "subtitle": "तपाईंले पेश गर्नुभएका उजुरीहरू र तिनको प्रगति ट्रयाक गर्नुहोस्।",
+      "submitNew": "उजुरी दर्ता गर्नुहोस्",
+      "loadFailed": "अहिले तपाईंको उजुरीहरू लोड गर्न सकिएन।",
+      "empty": "तपाईंले अझै कुनै उजुरी दर्ता गर्नुभएको छैन।",
+      "emptyFiltered": "चयन गरिएको फिल्टरसँग कुनै उजुरी मेल खाँदैन।",
+      "filters": {
+        "status": "स्थिति",
+        "all": "सबै"
+      },
+      "table": {
+        "tableAriaLabel": "मेरो उजुरी तालिका",
+        "headers": {
+          "referenceId": "सन्दर्भ ID",
+          "category": "वर्ग",
+          "status": "स्थिति",
+          "submitted": "पेश गरिएको",
+          "updated": "अद्यावधिक गरिएको"
+        }
+      }
+    },
+    "detail": {
+      "back": "मेरो उजुरीहरूमा फर्कनुहोस्",
+      "notFound": "उजुरी भेटिएन",
+      "description": "विवरण",
+      "submittedOn": "{{date}} मा पेश गरिएको",
+      "awaitingInfo": {
+        "note": "उजुरी अधिकारी तपाईंको थप जानकारीको प्रतीक्षामा हुनुहुन्छ। कृपया तल जवाफ दिनुहोस्।"
+      },
+      "resolved": {
+        "note": "यो उजुरी समाधान गरिएको छ।"
+      }
+    },
+    "submit": {
+      "title": "उजुरी दर्ता गर्नुहोस्",
+      "subtitle": "के भयो हामीलाई भन्नुहोस्, र हामी यसलाई सही टोलीमा पठाउनेछौं।",
+      "submitFailed": "अहिले उजुरी पेश गर्न सकिएन। कृपया पुनः प्रयास गर्नुहोस्।",
+      "fields": {
+        "category": "वर्ग",
+        "categoryPlaceholder": "वर्ग चयन गर्नुहोस्",
+        "categoryHelp": "तपाईंको उजुरीलाई राम्रोसँग वर्णन गर्ने विकल्प छान्नुहोस्।",
+        "categoriesLoadFailed": "अहिले उजुरी वर्गहरू लोड गर्न सकिएन।",
+        "description": "विवरण",
+        "descriptionPlaceholder": "तपाईंको उजुरी विस्तारमा वर्णन गर्नुहोस्",
+        "descriptionHelp": "यसलाई छिटो समाधान गर्न मद्दतको लागि सकेसम्म धेरै विवरण समावेश गर्नुहोस्।",
+        "attachments": "संलग्नकहरू (ऐच्छिक)",
+        "attachmentsHelp": "PDF, DOCX, PNG, वा JPG प्रत्येक {{maxSize}} सम्म।",
+        "uploadButton": "फाइलहरू अपलोड गर्नुहोस्"
+      },
+      "validation": {
+        "categoryRequired": "अगाडि बढ्नको लागि एउटा वर्ग चयन गर्नुहोस्।",
+        "descriptionRequired": "अगाडि बढ्नको लागि आफ्नो उजुरीको वर्णन गर्नुहोस्।",
+        "attachmentTooLarge": "{{fileNames}} ले {{maxSize}} को सीमा नाघेको छ।"
+      },
+      "success": {
+        "message": "तपाईंको उजुरी {{referenceId}} दर्ता भएको छ।",
+        "attachmentFailedMessage": "तपाईंको उजुरी {{referenceId}} दर्ता भएको छ, तर संलग्नकहरू अपलोड हुन सकेनन्। तपाईं उजुरी विवरण पृष्ठबाट ती थप्न सक्नुहुन्छ।"
+      },
+      "actions": {
+        "cancel": "रद्द गर्नुहोस्",
+        "submit": "उजुरी पेश गर्नुहोस्"
+      }
+    },
+    "activity": {
+      "title": "गतिविधि",
+      "send": "पठाउनुहोस्",
+      "sendOnly": "पठाउनुहोस् मात्र",
+      "sendOptions": "थप पठाउने विकल्पहरू",
+      "sendAndChangeStatusTo": "पठाउनुहोस् र स्थिति यसमा परिवर्तन गर्नुहोस्",
+      "sendAndUpdateStatus": "पठाउनुहोस् र {{status}} को रूपमा चिन्ह लगाउनुहोस्",
+      "publicReply": "जवाफ दिनुहोस्",
+      "internalNote": "आन्तरिक टिप्पणी",
+      "internalTag": "आन्तरिक",
+      "dataPrincipalRoleLabel": "ग्राहक",
+      "officerRoleLabel": "उजुरी अधिकारी",
+      "composerPlaceholderPublic": "प्रयोगकर्तालाई जवाफ लेख्नुहोस्...",
+      "composerPlaceholderInternal": "आन्तरिक टिप्पणी लेख्नुहोस् (प्रयोगकर्तालाई देखिँदैन)...",
+      "attach": "संलग्न गर्नुहोस्",
+      "attachmentsHelp": "PDF, DOCX, PNG, वा JPG प्रति फाइल {{maxSize}} सम्म।",
+      "attachmentTooLarge": "{{fileNames}} ले {{maxSize}} को सीमा नाघेको छ।",
+      "removeAttachment": "संलग्नक हटाउनुहोस्"
+    },
+    "attachments": {
+      "tabLabel": "संलग्नकहरू",
+      "tabLabelWithCount": "संलग्नकहरू ({{count}})",
+      "empty": "यस उजुरीमा कुनै संलग्नक थपिएको छैन।",
+      "initialSubmission": "प्रारम्भिक उजुरी",
+      "internalNote": "आन्तरिक",
+      "overflowMore": "+{{count}} थप"
+    },
+    "management": {
+      "queue": {
+        "title": "उजुरीहरू",
+        "loadFailed": "अहिले उजुरी लाइन लोड गर्न सकिएन।",
+        "empty": "चयन गरिएका फिल्टरहरूसँग कुनै उजुरी मेल खाँदैन।",
+        "stats": {
+          "open": "खुल्ला",
+          "awaitingInfo": "प्रतिक्रियाको पर्खाइमा",
+          "resolved": "समाधान भयो",
+          "slaBreached": "SLA समय नाघेको"
+        },
+        "filters": {
+          "sectionAriaLabel": "उजुरी लाइन फिल्टरहरू",
+          "status": "स्थिति",
+          "priority": "प्राथमिकता",
+          "search": "सन्दर्भ ID वा प्रयोगकर्ता द्वारा खोज्नुहोस्",
+          "all": "सबै",
+          "clear": "फिल्टरहरू हटाउनुहोस्",
+          "clearAriaLabel": "सबै फिल्टरहरू हटाउनुहोस्"
+        },
+        "table": {
+          "tableAriaLabel": "उजुरी लाइन तालिका",
+          "headers": {
+            "referenceId": "सन्दर्भ ID",
+            "dataPrincipal": "प्रयोगकर्ता",
+            "category": "वर्ग",
+            "priority": "प्राथमिकता",
+            "status": "स्थिति",
+            "sla": "SLA",
+            "updated": "अद्यावधिक गरिएको"
+          }
+        }
+      },
+      "case": {
+        "back": "लाइनमा फर्कनुहोस्",
+        "notFound": "उजुरी भेटिएन",
+        "dataPrincipal": "प्रयोगकर्ता"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "सदस्यताहरू",
+      "subtitle": "घटना अधिसूचना संरचनामा दर्ता गरिएका सबै सदस्यताहरू।",
+      "addAction": "सदस्यता थप्नुहोस्",
+      "filters": {
+        "sectionAriaLabel": "सदस्यता फिल्टरहरू",
+        "status": "स्थिति",
+        "topic": "विषय",
+        "clear": "फिल्टरहरू हटाउनुहोस्",
+        "statusOptions": {
+          "all": "सबै स्थितिहरू",
+          "active": "सक्रिय",
+          "pendingVerification": "पेन्डिङ",
+          "stale": "निष्क्रिय"
+        },
+        "topicOptions": {
+          "all": "सबै विषयहरू"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "सदस्यता पुनः सफलतापूर्वक प्रमाणीकरण भयो। स्थिति अब ACTIVE छ।",
+        "reverifyStillStale": "प्रमाणीकरण पुनः असफल भयो। सदस्यता STALE नै छ।",
+        "reverifyFailed": "पुनः प्रमाणीकरण असफल भयो।"
+      }
+    },
+    "events": {
+      "title": "घटनाहरू",
+      "subtitle": "घटना अधिसूचना संरचना मार्फत भएका सबै घटना वितरणहरू।",
+      "filters": {
+        "sectionAriaLabel": "घटना फिल्टरहरू",
+        "status": "स्थिति",
+        "topic": "विषय",
+        "search": "घटनाहरू खोज्नुहोस्",
+        "searchPlaceholder": "उद्देश्य वा ग्राहक ID द्वारा खोज्नुहोस्...",
+        "clear": "फिल्टरहरू हटाउनुहोस्",
+        "statusOptions": {
+          "all": "सबै स्थितिहरू"
+        },
+        "topicOptions": {
+          "all": "सबै विषयहरू"
+        }
+      },
+      "emptyTitle": "कुनै घटना भेटिएन",
+      "emptyMessage": "चयन गरिएका मापदण्डहरूसँग कुनै प्रकाशित घटनाहरू मेल खाँदैनन्।",
+      "table": {
+        "eventId": "घटना ID",
+        "topic": "विषय",
+        "purposes": "उद्देश्यहरू",
+        "deliveries": "वितरणहरू",
+        "occurredAt": "घटेको समय",
+        "action": "कार्य",
+        "all": "सबै",
+        "noSubscribers": "कुनै ग्राहक छैनन्",
+        "viewEvent": "घटना हेर्नुहोस्",
+        "subscriberCount_one": "{{count}} ग्राहक",
+        "subscriberCount_other": "{{count}} ग्राहकहरू"
+      },
+      "detail": {
+        "notFoundTitle": "घटना भेटिएन",
+        "notFoundMessage": "ID \"{{eventId}}\" भएको कुनै घटना भेटिएन।",
+        "backToEvents": "घटनाहरूमा फर्कनुहोस्",
+        "topic": "विषय",
+        "purposes": "उद्देश्यहरू",
+        "occurredAt": "घटेको समय",
+        "deliveries": "वितरणहरू",
+        "all": "सबै",
+        "noSubscribers": "कुनै ग्राहक छैनन्",
+        "subscriberCount_one": "{{count}} ग्राहक",
+        "subscriberCount_other": "{{count}} ग्राहकहरू"
+      },
+      "dialog": {
+        "title": "पुनः प्रयास इतिहास",
+        "deliveryId": "वितरण ID",
+        "loading": "घटना वितरण इतिहास लोड हुँदैछ…",
+        "noRetries": "प्रारम्भिक प्रयास सम्पन्न भयो। कुनै पुनः प्रयास रेकर्ड गरिएको छैन।",
+        "attempt": "प्रयास {{attempt}}",
+        "retrySuffix": " (पुनः प्रयास)",
+        "webhookDescription": "HTTP वितरण प्रयासहरू र पुनः प्रयासहरूको कालानुक्रमिक इतिहास।",
+        "pollTitle": "सर्वेक्षण समाप्ति स्थिति र प्राप्ति स्वीकार",
+        "completionStatus": "समाप्ति स्थिति",
+        "completionTimestamp": "समाप्ति समय छाप",
+        "erasureMethod": "डाटा हटाउने विधि",
+        "recordsAffected": "प्रभावित रेकर्डहरू",
+        "referenceId": "सन्दर्भ ID",
+        "submittedBy": "पेश गर्ने व्यक्ति",
+        "notes": "नोटहरू",
+        "noAcknowledgment": "कुनै सर्वेक्षण समाप्ति स्वीकृति अझै पेश गरिएको छैन।",
+        "close": "बन्द गर्नुहोस्"
+      }
+    }
+  }
+}

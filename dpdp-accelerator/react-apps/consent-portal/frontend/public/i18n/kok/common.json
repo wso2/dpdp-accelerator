@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "संमती पोर्टल"
+  },
+  "language": {
+    "label": "भास",
+    "selectAria": "भास वेंचून काडात"
+  },
+  "authorization": {
+    "loading": "तुमचे सत्र लोड जाता",
+    "loadFailed": "तुमचे सत्र लोड करपाक अपयश आयले.",
+    "tryAgain": "परत यत्न करात",
+    "noAccessTitle": "पोर्टल प्रवेश ना",
+    "noAccessDescription": "तुमच्या खात्याक खंयच्याय पोर्टल पानांचेर प्रवेश करपाची परवानगी ना."
+  },
+  "copyableText": {
+    "copy": "कॉपी करात",
+    "copied": "कॉपी केले",
+    "copyLabel": "{{label}} कॉपी करात",
+    "copyValue": "{{label}} {{value}} कॉपी करात",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "प्राथमिक नॅव्हिगेशन",
+    "dashboard": "डॅशबोर्ड",
+    "consent": "संमती",
+    "allConsents": "सगळ्यो संमती",
+    "pendingConsents": "प्रलंबित संमती",
+    "catalog": "व्याख्या",
+    "purposes": "उद्देश",
+    "elements": "घटक",
+    "administration": "प्रशासन",
+    "adminConsents": "संमती",
+    "nominations": "नामनिर्देशनां",
+    "nomineeActivation": "नामनिर्देशित सक्रियकरण",
+    "myComplaints": "म्हज्यो कागाळी",
+    "complaintManagement": "कागाळी",
+    "dataProcessors": "डेटा प्रोसेसर",
+    "dataProcessorTopics": "विषय",
+    "dataProcessorSubscriptions": "सबस्क्रिप्शन",
+    "dataProcessorEvents": "घडणुको"
+  },
+  "layout": {
+    "home": "मुखेल पान",
+    "breadcrumbAriaLabel": "ब्रेडक्रंब",
+    "userMenu": {
+      "unknownUser": "अज्ञात वापरपी",
+      "noEmail": "ईमेल उपलब्ध ना",
+      "signOut": "भायर वचात",
+      "signOutError": "भायर वचपाक अपयश. उपकार करून परत यत्न करात.",
+      "tryAgain": "परत यत्न करात"
+    }
+  },
+  "dashboard": {
+    "active": "सक्रिय संमती",
+    "attention": "तुमच्या लक्ष दिवपाची गरज आसा",
+    "commonPurposes": "चड करून वांटून घेतिल्ले उद्देश",
+    "commonPurposesSubtitle": "तुमच्या सक्रिय संमतींत आस्पावलेले उद्देश",
+    "consentCount": "{{count}} संमती",
+    "consentCount_one": "{{count}} संमती",
+    "consentCount_other": "{{count}} संमती",
+    "expiringSoon": "रोखडीच मुदत सोंपता",
+    "loadFailed": "सद्या तुमचो डॅशबोर्ड लोड करपाक अपयश आयले.",
+    "noExpiring": "फुडल्या {{days}} दिसांत खंयचीच सक्रिय संमती सोंपना.",
+    "noPending": "तपासणी खातीर खंयचीच संमती प्रलंबित ना.",
+    "noPurposes": "अजून खंयचेच वांटून घेतिल्ले उद्देश उपलब्ध नात.",
+    "pending": "प्रलंबित संमती",
+    "pendingConsents": "प्रलंबित संमती",
+    "subtitle": "तुमच्या संमती कार्याची आणि मुखावयल्या कृतींची एक वळख.",
+    "title": "डॅशबोर्ड",
+    "typeBreakdown": "संमती प्रकाराचे वर्गीकरण",
+    "typeBreakdownSubtitle": "तुमच्यो सगळ्यो संमती प्रकारानुसार गट केल्यात",
+    "noTypes": "अजून खंयचेच संमती प्रकार उपलब्ध नात.",
+    "viewPending": "सगळ्यो प्रलंबित संमती पळयात"
+  },
+  "adminConsents": {
+    "title": "संमती",
+    "filters": {
+      "sectionAriaLabel": "प्रशासकीय संमती फिल्टर",
+      "consentIdSearchPlaceholder": "संमती आयडी वरवीं सोदात",
+      "removeConsentIdForAdvanced": "प्रगत फिल्टर वापरपाक संमती आयडी फिल्टर काडून उडयात.",
+      "removeConsentIdForStatus": "स्थिती फिल्टर वापरपाक संमती आयडी फिल्टर काडून उडयात.",
+      "userIds": "वापरपी आयडी",
+      "groupIds": "गट आयडी",
+      "commaSeparatedUsers": "एका परस चड वापरपी आयडी स्वल्पविरामान वेगळे करात",
+      "active": "सक्रिय फिल्टर"
+    }
+  },
+  "consentRegistry": {
+    "title": "सगळ्यो संमती",
+    "details": {
+      "title": "संमतीची म्हायती",
+      "consentId": "संमती आयडी",
+      "status": "स्थिती",
+      "type": "संमती प्रकार",
+      "frequency": "प्रवेश मर्यादा",
+      "frequencyHelp": "ही संमती दिसाक किती फावटी वापरूंक मेळटा तें हें दाखयता.",
+      "frequencyUnitSingular": "दिसाक एक फावट",
+      "frequencyUnitPlural": "दिसाक फावटी",
+      "purposes": "उद्देश",
+      "duration": "फाटल्या काळाची मर्यादा",
+      "durationHelp": "फाटलो किती काळ डेटा वापरूंक मेळटा तें हें थारायता. देखीक, 6 म्हयने थारायल्यार, 6 म्हयन्यां पयलींचो डेटा वापरूंक मेळटा.",
+      "durationUnitHourSingular": "वर",
+      "durationUnitHourPlural": "वरां",
+      "durationUnitDaySingular": "दीस",
+      "durationUnitDayPlural": "दीस",
+      "durationUnitYearSingular": "वर्स",
+      "durationUnitYearPlural": "वर्सां",
+      "created": "तयार केलां",
+      "updated": "अद्ययावत केलां",
+      "validUntil": "ह्या वेळामेरेन वैध",
+      "groupId": "गट आयडी",
+      "recurring": "परत-परत जावपी",
+      "back": "नोंदणी कडेन परत वचात",
+      "notFound": "संमतीची नोंद मेळ्ळी ना",
+      "approved": "मान्यताय दिल्ली",
+      "notApproved": "मान्यताय मेळ्ळी ना",
+      "approvedCount": "{{total}} पैकी {{approved}} मान्यताय दिल्ली",
+      "section": {
+        "purposes": "संमतीचे उद्देश",
+        "authorizations": "अधिकार",
+        "lifecycle": "संमतीचे जीवनचक्र"
+      },
+      "table": {
+        "element": "घटक",
+        "approved": "मान्यताय दिल्ली",
+        "required": "गरजेचे",
+        "description": "वर्णन",
+        "user": "वापरपी",
+        "status": "स्थिती",
+        "updated": "अद्ययावत केलां",
+        "resources": "संसाधनां",
+        "eventType": "घडणुकेचो प्रकार",
+        "date": "तारीख",
+        "time": "वेळ"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "संमतीचे जीवनचक्र",
+        "empty": "खंयच्योच जीवनचक्र घडणुको उपलब्ध नात.",
+        "noDescription": "वर्णन उपलब्ध ना."
+      },
+      "actions": {
+        "viewResources": "संसाधनां पळयात",
+        "noResourcesTooltip": "खंयचीच संसाधनां उपलब्ध नात"
+      },
+      "resourcesModal": {
+        "title": "अधिकार संसाधनां",
+        "authRef": "अधिकार",
+        "close": "बंद करात"
+      },
+      "values": {
+        "yes": "हय",
+        "no": "ना",
+        "required": "गरजेचे",
+        "optional": "विकल्पीक"
+      }
+    },
+    "actions": {
+      "view": "पळयात",
+      "revoke": "रद्द करात",
+      "approve": "मान्यताय दियात",
+      "reject": "नकार दियात",
+      "copyConsentId": "संमती आयडी कॉपी करात",
+      "copyConsentIdAriaLabel": "संमती आयडी {{id}} कॉपी करात"
+    },
+    "modals": {
+      "consentId": "संमती आयडी",
+      "actions": {
+        "cancel": "रद्द करात",
+        "processing": "प्रक्रिया चालू आसा..."
+      },
+      "approval": {
+        "title": "संमती तपासात आणि मान्यताय दियात",
+        "subtitle": "उपकार करून मान्यताय दिवचे पयलीं संमती घटकांचे पुनरावलोकन करात.",
+        "mandatory": "अनिवार्य घटक (गरजेचे)",
+        "optional": "विकल्पीक घटक",
+        "required": "गरजेचे",
+        "toggle": "परवानगी बदला",
+        "toggleWithDetails": "{{purposeLabel}} मधील {{elementLabel}} खातीर परवानगी बदला",
+        "loading": "संमतीची म्हायती लोड जाता...",
+        "noMandatory": "हे संमती खातीर खंयच्याच अनिवार्य गजालींची गरज ना.",
+        "confirm": "मान्यताय दियात आणि फुडे वचात"
+      },
+      "rejection": {
+        "title": "नकार निश्चित करात",
+        "message": "तुमी खरोच हे संमतीक नकार दिवपाक सोदतात?",
+        "note": "हे संमतीक नकार दिल्यार मागिल्ल्यो संमती मंजूर जावच्यो नात.",
+        "confirm": "संमतीक नकार दियात",
+        "cancel": "रद्द करात"
+      },
+      "revocation": {
+        "title": "रद्दीकरण निश्चित करात",
+        "message": "तुमी खरोच संमती रद्द करपाक सोदतात?",
+        "note": "हे कृती वरवीं जोडिल्ल्या सगळ्या उद्देशां खातीर दिल्ल्यो अनिवार्य आणि विकल्पीक संमती रद्द जातात.",
+        "confirm": "संमती रद्द करात",
+        "cancel": "रद्द करात"
+      }
+    },
+    "status": {
+      "all": "सगळे",
+      "active": "सक्रिय",
+      "pending": "प्रलंबित",
+      "created": "तयार केलां",
+      "approved": "मान्यताय दिल्ली",
+      "rejected": "नकार दिला",
+      "revoked": "रद्द केलां",
+      "expired": "मुदत सोंपल्या",
+      "systemExpired": "प्रणाली मुदत सोंपल्या",
+      "systemRevoked": "प्रणाली रद्द केल्या"
+    },
+    "filters": {
+      "sectionAriaLabel": "संमती फिल्टर",
+      "purposeSearchPlaceholder": "उद्देशाच्या नावां वरवीं सोदात",
+      "status": "स्थिती",
+      "groupIds": "गट आयडी",
+      "elementName": "घटकाचे नाव",
+      "elementVersion": "घटकाची आवृत्ती",
+      "advanced": "प्रगत फिल्टर",
+      "apply": "लागू करात",
+      "cancel": "रद्द करात",
+      "startDate": "सुरुवातीची तारीख",
+      "startDateAriaLabel": "सुरुवातीची तारीख फिल्टर",
+      "endDate": "शेवटाची तारीख",
+      "endDateAriaLabel": "शेवटाची तारीख फिल्टर",
+      "clear": "सगळे पुसून उडयात",
+      "clearAriaLabel": "सगळे फिल्टर पुसून उडयात"
+    },
+    "messages": {
+      "loading": "संमती लोड जाता...",
+      "loadFailed": "सद्या संमती लोड करपाक अपयश आयले.",
+      "emptyTitle": "खंयचीच संमती मेळ्ळी ना",
+      "empty": "वेंचिल्ल्या फिल्टरां खातीर खंयचीच संमती मेळ्ळी ना."
+    },
+    "table": {
+      "tableAriaLabel": "संमती नोंदणी तक्तो",
+      "consentIdAriaLabel": "संमती आयडी: {{id}}",
+      "groupLabel": "गट आयडी: {{groupId}}",
+      "notApplicable": "लागू जायना",
+      "purposes": {
+        "more": "+{{count}} आनीक",
+        "title": "संमतीचे उद्देश",
+        "hint": "संमतीचे सगळे उद्देश दाखयता"
+      },
+      "headers": {
+        "consentId": "संमती आयडी",
+        "type": "प्रकार",
+        "status": "स्थिती",
+        "purposes": "उद्देश",
+        "updated": "अद्ययावत केलां",
+        "expiration": "मुदत सोंपल्या",
+        "actions": "कृती"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "घटक जोडा",
+      "addProperty": "गुणधर्म जोडा",
+      "apply": "लागू करात",
+      "cancel": "रद्द करात",
+      "clear": "पुसून उडयात",
+      "clearAll": "सगळे पुसून उडयात",
+      "create": "तयार करात",
+      "delete": "काडून उडयात",
+      "deleting": "काडून उडयता...",
+      "deleteVersion": "आवृत्ती काडून उडयात",
+      "filters": "फिल्टर",
+      "removeElement": "घटक काडून उडयात",
+      "removeProperty": "गुणधर्म काडून उडयात",
+      "retry": "परत यत्न करात",
+      "saving": "साठयता...",
+      "view": "पळयात",
+      "viewElement": "{{name}} पळयात",
+      "viewPurpose": "{{name}} पळयात"
+    },
+    "fields": {
+      "actions": "कृती",
+      "created": "तयार केलां",
+      "description": "वर्णन",
+      "displayName": "दाखवपाचे नाव",
+      "element": "घटक",
+      "elementId": "घटक आयडी",
+      "elementName": "घटकाचे नाव",
+      "elementNamespace": "घटक नेमस्पेस",
+      "elements": "घटक",
+      "elementVersion": "घटकाची आवृत्ती",
+      "groupId": "गट आयडी",
+      "groupIds": "गट आयडी",
+      "mandatory": "अनिवार्य",
+      "name": "नाव",
+      "namespace": "नेमस्पेस",
+      "properties": "गुणधर्म",
+      "propertyKey": "किल्ली",
+      "propertyValue": "मूल्य",
+      "purpose": "उद्देश",
+      "purposeId": "उद्देश आयडी",
+      "purposeName": "उद्देशाचे नाव",
+      "scope": "व्याप्ती",
+      "purposeScope": "उद्देशाची व्याप्ती",
+      "purposeVersion": "उद्देशाची आवृत्ती",
+      "requirement": "गरज",
+      "schema": "स्कीमा (Schema)",
+      "type": "प्रकार",
+      "version": "आवृत्ती"
+    },
+    "help": {
+      "commaSeparatedGroups": "एका परस चड गट आयडी स्वल्पविरामान वेगळे करात",
+      "defaultNamespace": "रिकामे आसतना मुळावो नेमस्पेस वापरता",
+      "elementVersionRequiresIdentity": "पयलीं घटकाचे नाव वा नेमस्पेस घालात",
+      "organizationPurpose": "संस्था-पातळेचे उद्देश तयार करपाक रिकामे सोदात",
+      "purposeVersionRequiresName": "पयलीं उद्देशाचे नाव घालात",
+      "schemaElementTypes": "फकत JSON आणि XML घटकां खातीर स्कीमा समर्थित आसा.",
+      "selectElementFirst": "पयलीं घटक वेंचून काडात"
+    },
+    "values": {
+      "all": "सगळे",
+      "any": "खंयचेय",
+      "customNamespace": "कस्टम नेमस्पेस",
+      "defaultNamespace": "मुळावो नेमस्पेस",
+      "mandatory": "अनिवार्य",
+      "matches": "जुळटा",
+      "noDescription": "वर्णन ना",
+      "optional": "विकल्पीक",
+      "specificGroup": "विशिष्ट गट",
+      "itemCount": "{{count}} वेंचून काडल्यात",
+      "latest": "नवे",
+      "viewing": "पळयता"
+    },
+    "elements": {
+      "add": "घटक जोडा",
+      "activeFilters": "सक्रिय फिल्टर",
+      "back": "घटकांक परत वचात",
+      "createTitle": "घटक तयार करात",
+      "detailsSection": "घटकाची म्हायती",
+      "empty": "वेंचून काडिल्ल्या फिल्टरांक खंयचेच घटक जुळनात.",
+      "emptyTitle": "खंयचेच घटक मेळ्ळे नात",
+      "filterTitle": "घटक फिल्टर करात",
+      "loadFailed": "सद्या घटक लोड करपाक अपयश आयले.",
+      "newVersion": "नवी आवृत्ती तयार करात",
+      "refreshing": "रिफ्रेश जाता...",
+      "results": "{{count}} घटक",
+      "searchPlaceholder": "घटकाच्या नावां वरवीं सोदात",
+      "subtitle": "परत वापरूंक येवपी संमती घटक आणि तांच्या आवृत्ती व्याख्यांचे व्यवस्थापन करात.",
+      "tableLabel": "संमती घटक",
+      "title": "घटक"
+    },
+    "purposes": {
+      "add": "उद्देश जोडा",
+      "activeFilters": "सक्रिय फिल्टर",
+      "allPurposes": "सगळे उद्देश",
+      "back": "उद्देशांक परत वचात",
+      "createTitle": "उद्देश तयार करात",
+      "detailsSection": "उद्देशाची म्हायती",
+      "empty": "वेंचून काडिल्ल्या फिल्टरांक खंयचेच उद्देश जुळनात.",
+      "emptyTitle": "खंयचेच उद्देश मेळ्ळे नात",
+      "filterTitle": "उद्देश फिल्टर करात",
+      "loadFailed": "सद्या उद्देश लोड करपाक अपयश आयले.",
+      "newVersion": "नवी आवृत्ती तयार करात",
+      "orgWide": "संपूर्ण संस्थेंत",
+      "refreshing": "रिफ्रेश जाता...",
+      "results": "{{count}} उद्देश",
+      "searchLabel": "उद्देश सोदात",
+      "searchPlaceholder": "उद्देशाच्या नावां वरवीं सोदात",
+      "scopeFilter": "उद्देशाची व्याप्ती",
+      "subtitle": "परत वापरूंक येवपी संमती उद्देश आणि तांच्या घटक व्याख्यांचे व्यवस्थापन करात.",
+      "tableLabel": "संमती उद्देश",
+      "title": "उद्देश"
+    },
+    "details": {
+      "definition": "व्याख्या",
+      "elementIdentity": "घटकाची ओळख",
+      "elements": "घटक",
+      "identity": "उद्देशाची ओळख",
+      "overview": "आढावो",
+      "versionDetails": "आवृत्तीची म्हायती",
+      "versions": "आवृत्तीचो इतिहास"
+    },
+    "messages": {
+      "createElementFirst": "उद्देश थारावचे पयलीं घटक तयार करात.",
+      "immutableElement": "{{namespace}}:{{name}} हो {{type}} घटक रावीत. आवृत्त्यांमदीं ओळख क्षेत्रां बदलूंक मेळनात.",
+      "immutablePurpose": "{{name}} ची मालकी {{groupId}} कडेन रावीत. आवृत्त्यांमदीं ओळख क्षेत्रां बदलूंक मेळनात.",
+      "immutableOrganizationPurpose": "{{name}} संपूर्ण संस्थे खातीर आसा. ताची ओळख आणि व्याप्ती आवृत्त्यांमदीं बदलूंक मेळना.",
+      "immutableGroupPurpose": "{{name}} गट {{groupId}} खातीर मर्यादित आसा. ताची ओळख आणि व्याप्ती आवृत्त्यांमदीं बदलूंक मेळना.",
+      "loadingElements": "उपलब्ध घटक लोड जाता...",
+      "loadingVersions": "घटकाच्यो आवृत्त्या लोड जाता...",
+      "noElementsFound": "खंयचेच जुळपी घटक नात",
+      "noElements": "हे आवृत्ती खातीर खंयचेच घटक थारायल्ले नात.",
+      "noProperties": "खंयचेच कस्टम गुणधर्म नात.",
+      "noSchema": "हे आवृत्ती खातीर खंयचोच स्कीमा थारायल्लो ना.",
+      "noPurposeElements": "अजून खंयचेच घटक जोडले नात. उद्देश तयार करपाक उण्यांत उणो एक घटक जोडा.",
+      "noVersions": "खंयच्योच आवृत्त्या उपलब्ध नात.",
+      "versionsLoadFailed": "सद्या आवृत्ती इतिहास लोड करपाक अपयश आयले."
+    },
+    "validation": {
+      "duplicateElements": "दर एक घटक फकत एक फावट आस्पावूंक येता.",
+      "duplicatePropertyKeys": "गुणधर्माच्यो किल्ल्यो वेगळ्यो आसूंक जाय.",
+      "elementRequired": "उण्यांत उणो एक घटक वेंचून काडात.",
+      "groupIdRequired": "गट-विशिष्ट उद्देशा खातीर गट आयडी गरजेचो आसा.",
+      "nameRequired": "नाव गरजेचे आसा.",
+      "namespaceRequired": "कस्टम वेंचून काडल्यार नेमस्पेस गरजेचो आसा.",
+      "schemaRequired": "JSON आणि XML घटकां खातीर स्कीमा गरजेचो आसा."
+    },
+    "delete": {
+      "title": "आवृत्ती काडून उडयात",
+      "message": "आवृत्ती {{version}} काडून उडोवची?",
+      "warning": "हे परत करुंक मेळचे ना. संदर्भ दिल्ल्यो आवृत्त्या काडून उडोवंक मेळनात, आणि निमाणी आवृत्ती काडून उडयल्यार पुराय नोंद काडून उडयतात."
+    }
+  },
+  "nominee": {
+    "title": "नामनिर्देशनां",
+    "messages": {
+      "loadFailed": "सद्या नामनिर्देशनां लोड करपाक अपयश आयले."
+    },
+    "nominatedFor": {
+      "openAccount": "खातें उघडा →",
+      "accept": "आपणावप",
+      "reject": "नकार दिवप",
+      "actionNeeded": "कारवाय करपाची गरज आसा",
+      "ariaLabel": "नामनिर्देशित खातीं",
+      "empty": "अजून तुका कोणेंच नामनिर्देशित करूंक ना.",
+      "title": "नामनिर्देशित खातीं",
+      "table": {
+        "account": "खातें",
+        "status": "स्थिती",
+        "actions": "कृती"
+      }
+    },
+    "acting": {
+      "starting": "खातें उघडटा…",
+      "startFailed": "तुमी ह्या खात्या खातीर नामनिर्देशित नात.",
+      "startFailedHint": "नामनिर्देशनांक परत वचात आणि परत यत्न करात.",
+      "blockedTitle": "नामनिर्देशित प्रवेशांत उपलब्ध ना",
+      "blockedFenced": "खाते सेटिंग्ज, क्रेडेन्शियल्स आणि नामनिर्देशनां केन्नाच दुसऱ्या व्यक्तीच्या वतीन वापरूंक मेळनात.",
+      "blockedScope": "मालकान तुमकां ह्या वाठारा खातीर परवानगी दिवंक ना.",
+      "backToAllowed": "जंय म्हाका प्रवेश आसा थंय वचात",
+      "exit": "भायर वचात"
+    },
+    "permissions": {
+      "consentView": "संमती पळयात",
+      "consentRevoke": "संमती रद्द करात",
+      "consentApprove": "प्रलंबित संमतीक मान्यताय दियात",
+      "accountView": "खाजगी खातें पळयात",
+      "accountUpdate": "खाजगी खातें अद्ययावत करात",
+      "accountDelete": "खाजगी खातें काडून उडयात"
+    },
+    "mine": {
+      "add": "नामनिर्देशित जोडा",
+      "remove": "काडून उडयात",
+      "empty": "तुमी अजून कोणाकूच नामनिर्देशित करूंक ना.",
+      "status": {
+        "active": "सक्रिय",
+        "pending": "स्वीकृतीची वाट पळयता",
+        "rejected": "नकार दिला",
+        "accepted": "मान्यतेची वाट पळयता",
+        "deactivated": "निलंबित केला"
+      },
+      "ariaLabel": "नामनिर्देशित",
+      "title": "नामनिर्देशित",
+      "table": {
+        "person": "व्यक्ती",
+        "permissions": "परवानग्यो",
+        "status": "स्थिती",
+        "actions": "कृती",
+        "morePermissions": "+{{count}} आनीक"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "नामनिर्देशित जोडा",
+        "editTitle": "नामनिर्देशित संपादित करात",
+        "saveChanges": "बदल साठयात",
+        "emailLabel": "नामनिर्देशिताचो नोंदणीकृत ईमेल",
+        "permissionsTitle": "हो नामनिर्देशित किते करूंक शकता?",
+        "permissionsSubtitle": "तुमकां जी परवानगी दिवपाची आसा तिचेरच खूण करात. हीच प्रवेशाची परवानगी नामनिर्देशिताक मेळटली.",
+        "sensitive": "संवेदनशील",
+        "cancel": "रद्द करात",
+        "processing": "साठयता...",
+        "confirm": "नामनिर्देशन धाडा",
+        "processingEdit": "साठयता…"
+      },
+      "removeDialog": {
+        "title": "नामनिर्देशित काडून उडयात",
+        "message": "{{nomineeEmail}} हाका तुमची संमती हाताळपाक मेळची ना.",
+        "confirm": "नामनिर्देशित काडून उडयात",
+        "cancel": "रद्द करात",
+        "processing": "काडून उडयता..."
+      }
+    },
+    "manage": {
+      "title": "मालकाची संमती हाताळप",
+      "back": "नामनिर्देशित दृश्य सोडून वचात",
+      "consents": {
+        "title": "संमती",
+        "subtitle": "ह्या खात्यान दिल्ल्यो संमती पळयात आणि, जंय परवानगी आसा थंय रद्द करात."
+      },
+      "selectedCount": "{{count}} वेंचून काडल्यात",
+      "revokeSelected": "वेंचिल्ले रद्द करात",
+      "messages": {
+        "loadFailed": "सद्या संमती लोड करपाक अपयश आयले.",
+        "empty": "ह्या खात्या खातीर खंयचीच संमती मेळ्ळी ना."
+      },
+      "table": {
+        "ariaLabel": "नामनिर्देशितान-हाताळिल्ली संमती तक्तो",
+        "purposes": "उद्देश",
+        "type": "प्रकार",
+        "status": "स्थिती",
+        "updated": "अद्ययावत केलां",
+        "actions": "कृती",
+        "revoke": "रद्द करात",
+        "notRevokable": "फकत सक्रिय संमती रद्द करूंक मेळटात",
+        "clientLabel": "संस्था: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "सामुहिक रद्दीकरण निश्चित करात",
+        "message": "ह्या वरवीं {{count}} संमती रद्द जातली. हे परत करुंक मेळचे ना.",
+        "note": "दर एक रद्दीकरण तुमी मालकाच्या वतीन केल्ली कृती म्हण स्वतंत्रपणान नोंद जाता.",
+        "progress": "{{count}} पैकी {{processed}} रद्द करता...",
+        "confirm": "वेंचिल्ले रद्द करात",
+        "cancel": "रद्द करात",
+        "processing": "प्रक्रिया चालू आसा..."
+      },
+      "subtitle": "तुमी ह्या खात्याच्या वतीन वावुरतात. मालकान तुमकां जी परवानगी दिल्या तितलेच तुमी करूंक शकतात.",
+      "account": {
+        "title": "खात्याचो प्रवेश",
+        "subtitle": "मालकान तुमकां तांच्या खात्याचेर करपाक दिल्ल्यो कृती.",
+        "notGranted": "मालकान परवानगी दिवंक ना"
+      }
+    },
+    "detail": {
+      "title": "संमतीची म्हायती",
+      "back": "फाटीं वचात"
+    }
+  },
+  "admin": {
+    "title": "नामनिर्देशित सक्रियकरण",
+    "status": {
+      "active": "सक्रिय",
+      "accepted": "मान्यतेची वाट पळयता",
+      "pending": "नामनिर्देशिताची वाट पळयता",
+      "rejected": "नकार दिला",
+      "deactivated": "निष्क्रिय केला"
+    },
+    "pending": {
+      "title": "तुमचे मान्यतेची वाट पळयता",
+      "empty": "सद्या तुमच्या खातीर खंयचेच काम प्रलंबित ना.",
+      "count": "{{count}} मान्यतेची वाट पळयतात",
+      "appointed": "नेमणुक केल्ली {{email}}",
+      "accepted": "आपणावप {{date}}"
+    },
+    "search": {
+      "label": "नाव वा ईमेला वरवीं सोदात",
+      "empty": "खंयचेच जुळपी खातीं मेळ्ळी नात.",
+      "results": "खातीं"
+    },
+    "table": {
+      "ariaLabel": "नामनिर्देशनां",
+      "owner": "खातें",
+      "nominee": "नामनिर्देशित",
+      "permissions": "मंजूर केल्यात",
+      "status": "स्थिती",
+      "nominated": "नामनिर्देशित केला",
+      "actions": "कृती"
+    },
+    "controls": {
+      "title": "नामनिर्देशित",
+      "titleNamed": "{{name}} चे नामनिर्देशित",
+      "nominated": "नामनिर्देशित केला {{date}}",
+      "ticket": "तिकीट {{ticket}}",
+      "waitingNominee": "अजून कितेच करपाचे ना - नामनिर्देशितान आपणावंक ना.",
+      "activate": "प्रवेश सक्रिय करात",
+      "noAction": "-",
+      "owner": "खातें",
+      "deactivate": "प्रवेश फाटीं घेयात",
+      "none": "ह्या खात्यान कोणाचीच नेमणूक करूंक ना."
+    },
+    "activateDialog": {
+      "title": "नामनिर्देशित प्रवेश सक्रिय करात",
+      "ticketLabel": "कायदेशीर/मदत तिकीट संदर्भ",
+      "confirm": "प्रवेश सक्रिय करात",
+      "cancel": "रद्द करात",
+      "processing": "सक्रिय करता...",
+      "subtitle": "ह्या वरवीं {{nomineeName}} हाका {{ownerName}} च्यो संमती हाताळपाचो प्रवेश मेळटा."
+    },
+    "deactivateDialog": {
+      "title": "नामनिर्देशित प्रवेश निष्क्रिय करात",
+      "reasonLabel": "कारण",
+      "confirm": "प्रवेश निष्क्रिय करात",
+      "cancel": "रद्द करात",
+      "processing": "निष्क्रिय करता...",
+      "subtitle": "ह्या वरवीं {{ownerName}} च्या संमती खातीर नामनिर्देशिताचो प्रवेश रोखडोच रद्द जाता."
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "डेटा भंग",
+      "UNAUTHORIZED_DATA_SHARING": "अनधिकृत डेटा वांटप",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "संमती काडून घेतल्या उपरांतूय डेटा वापरप",
+      "PURPOSE_VIOLATION": "उद्देशाचें उल्लंघन",
+      "DATA_ERASURE_NOT_COMPLETED": "डेटा काडून उडोवपाची विनंती पुराय करूंक ना",
+      "DATA_CORRECTION_NOT_COMPLETED": "डेटा दुरुस्तीची विनंती पुराय करूंक ना",
+      "CONSENT_LIFECYCLE_ISSUE": "संमती व्यवस्थापक समस्या",
+      "DATA_ACCESS_DENIED": "डेटा प्रवेशाची विनंती न्हयकारली",
+      "EXCESSIVE_DATA_COLLECTION": "अती डेटा एकठांय करप",
+      "OTHER": "हेर"
+    },
+    "status": {
+      "open": "उकतें",
+      "investigation": "प्रगतीर आसा",
+      "awaitingInfo": "क्लायंटाची वाट पळयता",
+      "waitingOnDpo": "अंतर्गत पुनरावलोकनाची वाट पळयता",
+      "resolved": "सोडवणूक जाली"
+    },
+    "priority": {
+      "CRITICAL": "गंभीर",
+      "HIGH": "उच्च",
+      "MEDIUM": "मध्यम",
+      "LOW": "उणे"
+    },
+    "sla": {
+      "dueDate": "मुदत {{date}}",
+      "dueToday": "आयज मुदत",
+      "overdueSingular": "{{count}} दीस मुदत सोंपल्या",
+      "overduePlural": "{{count}} दीस मुदत सोंपल्या",
+      "daysLeftSingular": "{{count}} दीस उरला",
+      "daysLeftPlural": "{{count}} दीस उरल्यात"
+    },
+    "timeline": {
+      "complaintReceived": "कागाळ मेळ्ळी",
+      "statusChangePrefix": "स्थिती बदलल्या",
+      "statusChangeJoiner": "ते"
+    },
+    "list": {
+      "title": "म्हज्यो कागाळी",
+      "subtitle": "तुमी नोंद केल्ल्यो कागाळी आणि तांची प्रगती पळयात.",
+      "submitNew": "कागाळ नोंद करात",
+      "loadFailed": "सद्या तुमच्यो कागाळी लोड करपाक अपयश आयले.",
+      "empty": "तुमी अजून खंयचीच कागाळ नोंद करूंक ना.",
+      "emptyFiltered": "वेंचून काडिल्ल्या फिल्टराक खंयचीच कागाळ जुळना.",
+      "filters": {
+        "status": "स्थिती",
+        "all": "सगळे"
+      },
+      "table": {
+        "tableAriaLabel": "म्हज्या कागाळींचो तक्तो",
+        "headers": {
+          "referenceId": "संदर्भ आयडी",
+          "category": "वर्ग",
+          "status": "स्थिती",
+          "submitted": "नोंद केल्या",
+          "updated": "अद्ययावत केल्या"
+        }
+      }
+    },
+    "detail": {
+      "back": "म्हज्या कागाळींक परत वचात",
+      "notFound": "कागाळ मेळ्ळी ना",
+      "description": "वर्णन",
+      "submittedOn": "{{date}} दिसा नोंद केल्या",
+      "awaitingInfo": {
+        "note": "कागाळ अधिकारी तुमच्य कडल्यान आनीक म्हायतीची वाट पळयता. उपकार करून सकयल जाप दियात."
+      },
+      "resolved": {
+        "note": "हे कागाळीची सोडवणूक जाल्या."
+      }
+    },
+    "submit": {
+      "title": "कागाळ नोंद करात",
+      "subtitle": "किते जालें ते आमकां सांगात आणि आमी तें योग्य पंगडा कडेन धाडटले.",
+      "submitFailed": "सद्या तुमची कागाळ नोंद करपाक अपयश आयले. उपकार करून परत यत्न करात.",
+      "fields": {
+        "category": "वर्ग",
+        "categoryPlaceholder": "वर्ग वेंचून काडात",
+        "categoryHelp": "तुमचे कागाळीचे योग्य वर्णन करपी पर्याय वेंचून काडात.",
+        "categoriesLoadFailed": "सद्या कागाळींचे वर्ग लोड करपाक अपयश आयले.",
+        "description": "वर्णन",
+        "descriptionPlaceholder": "तुमचे कागाळीचे सविस्तर वर्णन करात",
+        "descriptionHelp": "आमकां ही कागाळ बेगीन सोडवपाक मदत जावची म्हणून जावंक शकता तितली सविस्तर म्हायती दियात.",
+        "attachments": "जोडपत्र (विकल्पीक)",
+        "attachmentsHelp": "PDF, DOCX, PNG, वा JPG दर एकाची मर्यादा {{maxSize}}.",
+        "uploadButton": "फायली अपलोड करात"
+      },
+      "validation": {
+        "categoryRequired": "फुडे वचपाक वर्ग वेंचून काडात.",
+        "descriptionRequired": "फुडे वचपाक तुमचे कागाळीचे वर्णन करात.",
+        "attachmentTooLarge": "{{fileNames}} ची मर्यादा {{maxSize}} जोडपत्र आकारा परस चड आसा."
+      },
+      "success": {
+        "message": "तुमची कागाळ {{referenceId}} नोंद जाल्या.",
+        "attachmentFailedMessage": "तुमची कागाळ {{referenceId}} नोंद जाल्या, पूण जोडपत्रां अपलोड जावंक नात. तुमी कागाळीचे म्हायती पाना वेल्यान तीं जोडूंक शकतात."
+      },
+      "actions": {
+        "cancel": "रद्द करात",
+        "submit": "कागाळ नोंद करात"
+      }
+    },
+    "activity": {
+      "title": "कारवाय",
+      "send": "धाडा",
+      "sendOnly": "फकत धाडा",
+      "sendOptions": "आनीक धाडपाचे पर्याय",
+      "sendAndChangeStatusTo": "धाडा आणि स्थिती अशी बदला",
+      "sendAndUpdateStatus": "धाडा आणि {{status}} म्हण खूण करात",
+      "publicReply": "जाप दियात",
+      "internalNote": "अंतर्गत नोंद",
+      "internalTag": "अंतर्गत",
+      "dataPrincipalRoleLabel": "क्लायंट",
+      "officerRoleLabel": "कागाळ अधिकारी",
+      "composerPlaceholderPublic": "वापरप्याक जाप बरयात...",
+      "composerPlaceholderInternal": "अंतर्गत नोंद बरयात (वापरप्याक दिसची ना)...",
+      "attach": "जोडा",
+      "attachmentsHelp": "PDF, DOCX, PNG, वा JPG दर एक फायलीची मर्यादा {{maxSize}}.",
+      "attachmentTooLarge": "{{fileNames}} ची मर्यादा {{maxSize}} जोडपत्र आकारा परस चड आसा.",
+      "removeAttachment": "जोडपत्र काडून उडयात"
+    },
+    "attachments": {
+      "tabLabel": "जोडपत्रां",
+      "tabLabelWithCount": "जोडपत्रां ({{count}})",
+      "empty": "हे कागाळीक खंयचेच जोडपत्र जोडले ना.",
+      "initialSubmission": "सुरुवातीची नोंद",
+      "internalNote": "अंतर्गत",
+      "overflowMore": "+{{count}} आनीक"
+    },
+    "management": {
+      "queue": {
+        "title": "कागाळी",
+        "loadFailed": "सद्या कागाळींची रांग लोड करपाक अपयश आयले.",
+        "empty": "वेंचून काडिल्ल्या फिल्टरांक खंयचीच कागाळ जुळना.",
+        "stats": {
+          "open": "उकतें",
+          "awaitingInfo": "जापीची वाट पळयता",
+          "resolved": "सोडवणूक जाली",
+          "slaBreached": "SLA उल्लंघीत जाला"
+        },
+        "filters": {
+          "sectionAriaLabel": "कागाळी रांग फिल्टर",
+          "status": "स्थिती",
+          "priority": "प्राधान्य",
+          "search": "संदर्भ आयडी वा वापरप्या वरवीं सोदात",
+          "all": "सगळे",
+          "clear": "फिल्टर पुसून उडयात",
+          "clearAriaLabel": "सगळे फिल्टर पुसून उडयात"
+        },
+        "table": {
+          "tableAriaLabel": "कागाळी रांग तक्तो",
+          "headers": {
+            "referenceId": "संदर्भ आयडी",
+            "dataPrincipal": "वापरपी",
+            "category": "वर्ग",
+            "priority": "प्राधान्य",
+            "status": "स्थिती",
+            "sla": "SLA",
+            "updated": "अद्ययावत केल्या"
+          }
+        }
+      },
+      "case": {
+        "back": "रांगे कडेन परत वचात",
+        "notFound": "कागाळ मेळ्ळी ना",
+        "dataPrincipal": "वापरपी"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "सबस्क्रिप्शन",
+      "subtitle": "Event Notification Framework मदीं सगळी नोंद जाल्ली सबस्क्रिप्शन.",
+      "addAction": "सबस्क्रिप्शन जोडा",
+      "filters": {
+        "sectionAriaLabel": "सबस्क्रिप्शन फिल्टर",
+        "status": "स्थिती",
+        "topic": "विषय",
+        "clear": "फिल्टर पुसून उडयात",
+        "statusOptions": {
+          "all": "सगळ्यो स्थिती",
+          "active": "सक्रिय",
+          "pendingVerification": "प्रलंबित",
+          "stale": "शिळे (Stale)"
+        },
+        "topicOptions": {
+          "all": "सगळे विषय"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "सबस्क्रिप्शन परत-तपासणी यशस्वी जाली. स्थिती आतां सक्रिय आसा.",
+        "reverifyStillStale": "तपासणी परत अपयशी जाली. सबस्क्रिप्शन शिळेच उरलां.",
+        "reverifyFailed": "परत-तपासणी अपयशी जाली."
+      }
+    },
+    "events": {
+      "title": "घडणुको",
+      "subtitle": "Event Notification Framework मदीं सगळ्यो घडणुको पावोवप.",
+      "filters": {
+        "sectionAriaLabel": "घडणुक फिल्टर",
+        "status": "स्थिती",
+        "topic": "विषय",
+        "search": "घडणुको सोदात",
+        "searchPlaceholder": "उद्देश वा सबस्क्रायबर आयडी वरवीं सोदात...",
+        "clear": "फिल्टर पुसून उडयात",
+        "statusOptions": {
+          "all": "सगळ्यो स्थिती"
+        },
+        "topicOptions": {
+          "all": "सगळे विषय"
+        }
+      },
+      "emptyTitle": "खंयच्योच घडणुको मेळ्ळ्यो नात",
+      "emptyMessage": "वेंचून काडिल्ल्या निकषांक खंयच्योच उजवाडाक आयिल्ल्यो घडणुको जुळनात.",
+      "table": {
+        "eventId": "घडणुक आयडी",
+        "topic": "विषय",
+        "purposes": "उद्देश",
+        "deliveries": "वितरण",
+        "occurredAt": "घडल्या ती वेळ",
+        "action": "कृती",
+        "all": "सगळे",
+        "noSubscribers": "सबस्क्रायबर नात",
+        "viewEvent": "घडणुक पळयात",
+        "subscriberCount_one": "{{count}} सबस्क्रायबर",
+        "subscriberCount_other": "{{count}} सबस्क्रायबर"
+      },
+      "detail": {
+        "notFoundTitle": "घडणुक मेळ्ळी ना",
+        "notFoundMessage": "\"{{eventId}}\" आयडी ची खंयचीच घडणुक मेळ्ळी ना.",
+        "backToEvents": "घडणुकांक परत वचात",
+        "topic": "विषय",
+        "purposes": "उद्देश",
+        "occurredAt": "घडल्या ती वेळ",
+        "deliveries": "वितरण",
+        "all": "सगळे",
+        "noSubscribers": "सबस्क्रायबर नात",
+        "subscriberCount_one": "{{count}} सबस्क्रायबर",
+        "subscriberCount_other": "{{count}} सबस्क्रायबर"
+      },
+      "dialog": {
+        "title": "परत यत्न केल्लो इतिहास",
+        "deliveryId": "वितरण आयडी",
+        "loading": "घडणुक वितरणाचो इतिहास लोड जाता…",
+        "noRetries": "पयलो यत्न पुराय जाला. परत केल्ले यत्न नोंद नात.",
+        "attempt": "यत्न {{attempt}}",
+        "retrySuffix": " (परत यत्न)",
+        "webhookDescription": "HTTP वितरण यत्न आणि परत केल्ल्या यत्नांचो कालक्रमानुसार इतिहास.",
+        "pollTitle": "मतदान पुराय जाल्ल्याची स्थिती आणि पोचपावती",
+        "completionStatus": "पुराय जाल्ल्याची स्थिती",
+        "completionTimestamp": "पुराय जाल्लो वेळ",
+        "erasureMethod": "काडून उडोवपाची पद्धत",
+        "recordsAffected": "परिणाम जाल्ल्यो नोंदी",
+        "referenceId": "संदर्भ आयडी",
+        "submittedBy": "नोंद करपी",
+        "notes": "नोंद",
+        "noAcknowledgment": "अजून मतदान पुराय जाल्ल्याची पोचपावती नोंद करूंक ना.",
+        "close": "बंद करात"
+      }
+    }
+  }
+}

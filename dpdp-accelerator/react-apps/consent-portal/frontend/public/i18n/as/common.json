@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "সন্মতি প'ৰ্টেল"
+  },
+  "language": {
+    "label": "ভাষা",
+    "selectAria": "ভাষা বাছক"
+  },
+  "authorization": {
+    "loading": "আপোনাৰ চেচন ল'ড হৈ আছে",
+    "loadFailed": "আপোনাৰ চেচন ল'ড কৰিব পৰা নগ'ল।",
+    "tryAgain": "পুনৰ চেষ্টা কৰক",
+    "noAccessTitle": "প'ৰ্টেল ব্যৱহাৰৰ অনুমতি নাই",
+    "noAccessDescription": "আপোনাৰ একাউণ্টৰ এই প'ৰ্টেলৰ কোনো পৃষ্ঠাত প্ৰৱেশ কৰাৰ অনুমতি নাই।"
+  },
+  "copyableText": {
+    "copy": "কপি কৰক",
+    "copied": "কপি কৰা হ'ল",
+    "copyLabel": "{{label}} কপি কৰক",
+    "copyValue": "{{label}} {{value}} কপি কৰক",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "প্ৰাথমিক নেভিগেচন",
+    "dashboard": "ডেছব’ৰ্ড",
+    "consent": "সন্মতি",
+    "allConsents": "সকলো সন্মতি",
+    "pendingConsents": "বাকী থকা সন্মতিসমূহ",
+    "catalog": "সংজ্ঞাসমূহ",
+    "purposes": "উদ্দেশ্যসমূহ",
+    "elements": "উপাদানসমূহ",
+    "administration": "প্ৰশাসন",
+    "adminConsents": "সন্মতিসমূহ",
+    "nominations": "মনোনয়নসমূহ",
+    "nomineeActivation": "মনোনীত ব্যক্তি সক্ৰিয়কৰণ",
+    "myComplaints": "মোৰ অভিযোগসমূহ",
+    "complaintManagement": "অভিযোগসমূহ",
+    "dataProcessors": "তথ্য প্ৰক্ৰিয়াকৰ্তা",
+    "dataProcessorTopics": "বিষয়সমূহ",
+    "dataProcessorSubscriptions": "গ্ৰাহকভুক্তি",
+    "dataProcessorEvents": "ইভেণ্টসমূহ"
+  },
+  "layout": {
+    "home": "হ'ম",
+    "breadcrumbAriaLabel": "ব্ৰেডক্ৰাম্ব",
+    "userMenu": {
+      "unknownUser": "অজ্ঞাত ব্যৱহাৰকাৰী",
+      "noEmail": "কোনো ইমেইল উপলব্ধ নহয়",
+      "signOut": "ছাইন আউট কৰক",
+      "signOutError": "ছাইন আউট কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+      "tryAgain": "পুনৰ চেষ্টা কৰক"
+    }
+  },
+  "dashboard": {
+    "active": "সক্ৰিয় সন্মতিসমূহ",
+    "attention": "আপোনাৰ মনোযোগৰ প্ৰয়োজন",
+    "commonPurposes": "সৰ্বাধিক অংশীদাৰী কৰা উদ্দেশ্যসমূহ",
+    "commonPurposesSubtitle": "আপোনাৰ সক্ৰিয় সন্মতিসমূহত অন্তৰ্ভুক্ত উদ্দেশ্যসমূহ",
+    "consentCount": "{{count}} সন্মতি",
+    "consentCount_one": "{{count}} সন্মতি",
+    "consentCount_other": "{{count}} সন্মতি",
+    "expiringSoon": "শীঘ্ৰেই ম্যাদ উকলিব",
+    "loadFailed": "বৰ্তমান আপোনাৰ ডেছব’ৰ্ড ল'ড কৰিব পৰা নগ'ল।",
+    "noExpiring": "অহা {{days}} দিনৰ ভিতৰত কোনো সক্ৰিয় সন্মতিৰ ম্যাদ নুকলয়।",
+    "noPending": "পৰ্যালোচনা কৰিবলৈ আপোনাৰ কোনো সন্মতি বাকী নাই।",
+    "noPurposes": "এতিয়ালৈকে কোনো অংশীদাৰী উদ্দেশ্য উপলব্ধ নাই।",
+    "pending": "বাকী থকা সন্মতিসমূহ",
+    "pendingConsents": "বাকী থকা সন্মতিসমূহ",
+    "subtitle": "আপোনাৰ সন্মতি কাৰ্যকলাপ আৰু আগন্তুক কাৰ্যসমূহৰ এক অৱলোকন।",
+    "title": "ডেছব’ৰ্ড",
+    "typeBreakdown": "সন্মতিৰ প্ৰকাৰৰ বিৱৰণ",
+    "typeBreakdownSubtitle": "আপোনাৰ সকলো সন্মতি প্ৰকাৰ অনুসৰি গোট কৰা হৈছে",
+    "noTypes": "এতিয়ালৈকে কোনো সন্মতিৰ প্ৰকাৰ উপলব্ধ নাই।",
+    "viewPending": "সকলো বাকী থকা সন্মতি চাওক"
+  },
+  "adminConsents": {
+    "title": "সন্মতিসমূহ",
+    "filters": {
+      "sectionAriaLabel": "প্ৰশাসনিক সন্মতি ফিল্টাৰ",
+      "consentIdSearchPlaceholder": "সন্মতি আইডিৰ দ্বাৰা সন্ধান কৰক",
+      "removeConsentIdForAdvanced": "উন্নত ফিল্টাৰ ব্যৱহাৰ কৰিবলৈ সন্মতি আইডি ফিল্টাৰ আঁতৰাওক।",
+      "removeConsentIdForStatus": "স্থিতি ফিল্টাৰ ব্যৱহাৰ কৰিবলৈ সন্মতি আইডি ফিল্টাৰ আঁতৰাওক।",
+      "userIds": "ব্যৱহাৰকাৰী আইডি",
+      "groupIds": "গোট আইডি",
+      "commaSeparatedUsers": "একাধিক ব্যৱহাৰকাৰী আইডিক কমাৰ সৈতে পৃথক কৰক",
+      "active": "সক্ৰিয় ফিল্টাৰ"
+    }
+  },
+  "consentRegistry": {
+    "title": "সকলো সন্মতি",
+    "details": {
+      "title": "সন্মতিৰ বিৱৰণ",
+      "consentId": "সন্মতি আইডি",
+      "status": "স্থিতি",
+      "type": "সন্মতিৰ প্ৰকাৰ",
+      "frequency": "প্ৰৱেশৰ সীমা",
+      "frequencyHelp": "ইয়াৰ অৰ্থ হৈছে প্ৰতিদিনে এই সন্মতি কিমানবাৰ ব্যৱহাৰ কৰিব পাৰি।",
+      "frequencyUnitSingular": "বাৰ প্ৰতিদিনে",
+      "frequencyUnitPlural": "বাৰ প্ৰতিদিনে",
+      "purposes": "উদ্দেশ্যসমূহ",
+      "duration": "অতীত তথ্যৰ সময়সীমা",
+      "durationHelp": "ইয়াৰ দ্বাৰা নিৰ্ধাৰণ কৰা হয় যে কিমান পুৰণি তথ্য চাব পৰা যাব। উদাহৰণস্বৰূপে, যদি ৬ মাহ নিৰ্ধাৰণ কৰা হয়, তেন্তে ৬ মাহলৈকে পুৰণি তথ্য চাব পাৰি।",
+      "durationUnitHourSingular": "ঘণ্টা",
+      "durationUnitHourPlural": "ঘণ্টা",
+      "durationUnitDaySingular": "দিন",
+      "durationUnitDayPlural": "দিন",
+      "durationUnitYearSingular": "বছৰ",
+      "durationUnitYearPlural": "বছৰ",
+      "created": "সৃষ্টি কৰা হৈছে",
+      "updated": "আপডেট কৰা হৈছে",
+      "validUntil": "বৈধ অৱধি",
+      "groupId": "গোট আইডি",
+      "recurring": "পুনৰাবৃত্তিমূলক",
+      "back": "ৰেজিস্ট্ৰীলৈ উভতি যাওক",
+      "notFound": "সন্মতিৰ ৰেকৰ্ড পোৱা নগ'ল",
+      "approved": "অনুমোদিত",
+      "notApproved": "অনুমোদিত নহয়",
+      "approvedCount": "{{approved}}/{{total}} অনুমোদিত",
+      "section": {
+        "purposes": "সন্মতিৰ উদ্দেশ্যসমূহ",
+        "authorizations": "অনুমোদনসমূহ",
+        "lifecycle": "সন্মতিৰ জীৱনচক্ৰ"
+      },
+      "table": {
+        "element": "উপাদান",
+        "approved": "অনুমোদিত",
+        "required": "প্ৰয়োজনীয়",
+        "description": "বিৱৰণ",
+        "user": "ব্যৱহাৰকাৰী",
+        "status": "স্থিতি",
+        "updated": "আপডেট কৰা হৈছে",
+        "resources": "সম্পদসমূহ",
+        "eventType": "ইভেণ্টৰ প্ৰকাৰ",
+        "date": "তাৰিখ",
+        "time": "সময়"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "সন্মতিৰ জীৱনচক্ৰ",
+        "empty": "কোনো জীৱনচক্ৰ ইভেণ্ট উপলব্ধ নহয়।",
+        "noDescription": "কোনো বিৱৰণ উপলব্ধ নহয়।"
+      },
+      "actions": {
+        "viewResources": "সম্পদ চাওক",
+        "noResourcesTooltip": "কোনো সম্পদ উপলব্ধ নহয়"
+      },
+      "resourcesModal": {
+        "title": "অনুমোদনৰ সম্পদসমূহ",
+        "authRef": "প্ৰমাণীকৰণ",
+        "close": "বন্ধ কৰক"
+      },
+      "values": {
+        "yes": "হয়",
+        "no": "নহয়",
+        "required": "প্ৰয়োজনীয়",
+        "optional": "ঐচ্ছিক"
+      }
+    },
+    "actions": {
+      "view": "চাওক",
+      "revoke": "প্ৰত্যাহাৰ কৰক",
+      "approve": "অনুমোদন কৰক",
+      "reject": "প্ৰত্যাখ্যান কৰক",
+      "copyConsentId": "সন্মতি আইডি কপি কৰক",
+      "copyConsentIdAriaLabel": "সন্মতি আইডি {{id}} কপি কৰক"
+    },
+    "modals": {
+      "consentId": "সন্মতি আইডি",
+      "actions": {
+        "cancel": "বাতিল কৰক",
+        "processing": "প্ৰক্ৰিয়া কৰা হৈছে..."
+      },
+      "approval": {
+        "title": "সন্মতি পৰ্যালোচনা আৰু অনুমোদন কৰক",
+        "subtitle": "অনুমোদনৰ পূৰ্বে অনুগ্ৰহ কৰি সন্মতিৰ উপাদানসমূহ পৰ্যালোচনা কৰক।",
+        "mandatory": "বাধ্যতামূলক উপাদানসমূহ (প্ৰয়োজনীয়)",
+        "optional": "ঐচ্ছিক উপাদানসমূহ",
+        "required": "প্ৰয়োজনীয়",
+        "toggle": "অনুমতি সলনি কৰক",
+        "toggleWithDetails": "{{purposeLabel}} ত {{elementLabel}} ৰ বাবে অনুমতি সলনি কৰক",
+        "loading": "সন্মতিৰ বিৱৰণ ল'ড হৈ আছে...",
+        "noMandatory": "এই সন্মতিৰ বাবে কোনো বাধ্যতামূলক প্ৰয়োজনীয়তা নাই।",
+        "confirm": "অনুমোদন কৰক আৰু আগবাঢ়ক"
+      },
+      "rejection": {
+        "title": "প্ৰত্যাখ্যান নিশ্চিত কৰক",
+        "message": "আপুনি এই সন্মতি প্ৰত্যাখ্যান কৰিবলৈ নিশ্চিত নে?",
+        "note": "এই সন্মতি প্ৰত্যাখ্যান কৰাৰ অৰ্থ হ'ল অনুৰোধ কৰা সন্মতিসমূহ প্ৰদান কৰা নহ'ব।",
+        "confirm": "সন্মতি প্ৰত্যাখ্যান কৰক",
+        "cancel": "বাতিল কৰক"
+      },
+      "revocation": {
+        "title": "প্ৰত্যাহাৰ নিশ্চিত কৰক",
+        "message": "আপুনি সন্মতি প্ৰত্যাহাৰ কৰিবলৈ নিশ্চিত নে?",
+        "note": "এই কাৰ্যই সকলো আনুষংগিক উদ্দেশ্যৰ বাবে প্ৰদান কৰা বাধ্যতামূলক আৰু ঐচ্ছিক দুয়োটা সন্মতি প্ৰত্যাহাৰ কৰে।",
+        "confirm": "সন্মতিসমূহ প্ৰত্যাহাৰ কৰক",
+        "cancel": "বাতিল কৰক"
+      }
+    },
+    "status": {
+      "all": "সকলো",
+      "active": "সক্ৰিয়",
+      "pending": "অপেক্ষাৰত",
+      "created": "সৃষ্টি কৰা হৈছে",
+      "approved": "অনুমোদিত",
+      "rejected": "প্ৰত্যাখ্যাত",
+      "revoked": "প্ৰত্যাহাৰ কৰা হৈছে",
+      "expired": "ম্যাদ উকলিছে",
+      "systemExpired": "চিষ্টেমৰ ম্যাদ উকলিছে",
+      "systemRevoked": "চিষ্টেমে প্ৰত্যাহাৰ কৰিছে"
+    },
+    "filters": {
+      "sectionAriaLabel": "সন্মতি ফিল্টাৰসমূহ",
+      "purposeSearchPlaceholder": "উদ্দেশ্যৰ নামৰ দ্বাৰা সন্ধান কৰক",
+      "status": "স্থিতি",
+      "groupIds": "গোট আইডি",
+      "elementName": "উপাদানৰ নাম",
+      "elementVersion": "উপাদানৰ সংস্কৰণ",
+      "advanced": "উন্নত ফিল্টাৰসমূহ",
+      "apply": "প্ৰয়োগ কৰক",
+      "cancel": "বাতিল কৰক",
+      "startDate": "আৰম্ভণিৰ তাৰিখ",
+      "startDateAriaLabel": "আৰম্ভণিৰ তাৰিখৰ ফিল্টাৰ",
+      "endDate": "সমাপ্তিৰ তাৰিখ",
+      "endDateAriaLabel": "সমাপ্তিৰ তাৰিখৰ ফিল্টাৰ",
+      "clear": "সকলো মচি পেলাওক",
+      "clearAriaLabel": "সকলো ফিল্টাৰ মচি পেলাওক"
+    },
+    "messages": {
+      "loading": "সন্মতিসমূহ ল'ড হৈ আছে...",
+      "loadFailed": "বৰ্তমান সন্মতিসমূহ ল'ড কৰিব পৰা নগ'ল।",
+      "emptyTitle": "কোনো সন্মতি পোৱা নগ'ল",
+      "empty": "নিৰ্বাচিত ফিল্টাৰসমূহৰ বাবে কোনো সন্মতি পোৱা নগ'ল।"
+    },
+    "table": {
+      "tableAriaLabel": "সন্মতি ৰেজিস্ট্ৰী তালিকা",
+      "consentIdAriaLabel": "সন্মতি আইডি: {{id}}",
+      "groupLabel": "গোট আইডি: {{groupId}}",
+      "notApplicable": "প্ৰযোজ্য নহয়",
+      "purposes": {
+        "more": "আৰু +{{count}}",
+        "title": "সন্মতিৰ উদ্দেশ্যসমূহ",
+        "hint": "সন্মতিৰ সকলো উদ্দেশ্য দেখুওৱা হৈছে"
+      },
+      "headers": {
+        "consentId": "সন্মতি আইডি",
+        "type": "প্ৰকাৰ",
+        "status": "স্থিতি",
+        "purposes": "উদ্দেশ্যসমূহ",
+        "updated": "আপডেট কৰা হৈছে",
+        "expiration": "ম্যাদ",
+        "actions": "কাৰ্যসমূহ"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "উপাদান যোগ কৰক",
+      "addProperty": "গুণ যোগ কৰক",
+      "apply": "প্ৰয়োগ কৰক",
+      "cancel": "বাতিল কৰক",
+      "clear": "মচি পেলাওক",
+      "clearAll": "সকলো মচি পেলাওক",
+      "create": "সৃষ্টি কৰক",
+      "delete": "মচি পেলাওক",
+      "deleting": "মচি পেলোৱা হৈছে...",
+      "deleteVersion": "সংস্কৰণ মচি পেলাওক",
+      "filters": "ফিল্টাৰসমূহ",
+      "removeElement": "উপাদান আঁতৰাওক",
+      "removeProperty": "গুণ আঁতৰাওক",
+      "retry": "পুনৰ চেষ্টা কৰক",
+      "saving": "ছেভ কৰা হৈছে...",
+      "view": "চাওক",
+      "viewElement": "{{name}} চাওক",
+      "viewPurpose": "{{name}} চাওক"
+    },
+    "fields": {
+      "actions": "কাৰ্যসমূহ",
+      "created": "সৃষ্টি কৰা হৈছে",
+      "description": "বিৱৰণ",
+      "displayName": "প্ৰদৰ্শনৰ নাম",
+      "element": "উপাদান",
+      "elementId": "উপাদান আইডি",
+      "elementName": "উপাদানৰ নাম",
+      "elementNamespace": "উপাদানৰ নেমস্পেচ",
+      "elements": "উপাদানসমূহ",
+      "elementVersion": "উপাদানৰ সংস্কৰণ",
+      "groupId": "গোট আইডি",
+      "groupIds": "গোট আইডিসমূহ",
+      "mandatory": "বাধ্যতামূলক",
+      "name": "নাম",
+      "namespace": "নেমস্পেচ",
+      "properties": "গুণসমূহ",
+      "propertyKey": "কী",
+      "propertyValue": "মান",
+      "purpose": "উদ্দেশ্য",
+      "purposeId": "উদ্দেশ্য আইডি",
+      "purposeName": "উদ্দেশ্যৰ নাম",
+      "scope": "পৰিসৰ",
+      "purposeScope": "উদ্দেশ্যৰ পৰিসৰ",
+      "purposeVersion": "উদ্দেশ্যৰ সংস্কৰণ",
+      "requirement": "প্ৰয়োজনীয়তা",
+      "schema": "স্কিমা",
+      "type": "প্ৰকাৰ",
+      "version": "সংস্কৰণ"
+    },
+    "help": {
+      "commaSeparatedGroups": "একাধিক গোট আইডিক কমাৰ সৈতে পৃথক কৰক",
+      "defaultNamespace": "খালী থাকিলে ডিফ'ল্ট নেমস্পেচ ব্যৱহাৰ কৰে",
+      "elementVersionRequiresIdentity": "প্ৰথমে উপাদানৰ নাম বা নেমস্পেচ দিয়ক",
+      "organizationPurpose": "সংগঠন পৰ্যায়ৰ উদ্দেশ্য সৃষ্টি কৰিবলৈ খালী ৰাখক",
+      "purposeVersionRequiresName": "প্ৰথমে এটা উদ্দেশ্যৰ নাম দিয়ক",
+      "schemaElementTypes": "স্কিমাসমূহ কেৱল JSON আৰু XML উপাদানৰ বাবে সমৰ্থিত।",
+      "selectElementFirst": "প্ৰথমে এটা উপাদান বাছনি কৰক"
+    },
+    "values": {
+      "all": "সকলো",
+      "any": "যিকোনো",
+      "customNamespace": "কাষ্টম নেমস্পেচ",
+      "defaultNamespace": "ডিফ'ল্ট নেমস্পেচ",
+      "mandatory": "বাধ্যতামূলক",
+      "matches": "মিলে",
+      "noDescription": "কোনো বিৱৰণ নাই",
+      "optional": "ঐচ্ছিক",
+      "specificGroup": "নিৰ্দিষ্ট গোট",
+      "itemCount": "{{count}} নিৰ্বাচিত",
+      "latest": "শেহতীয়া",
+      "viewing": "দৰ্শন কৰা হৈছে"
+    },
+    "elements": {
+      "add": "উপাদান যোগ কৰক",
+      "activeFilters": "সক্ৰিয় ফিল্টাৰসমূহ",
+      "back": "উপাদানলৈ উভতি যাওক",
+      "createTitle": "উপাদান সৃষ্টি কৰক",
+      "detailsSection": "উপাদানৰ বিৱৰণ",
+      "empty": "নিৰ্বাচিত ফিল্টাৰসমূহৰ সৈতে কোনো উপাদানৰ মিল নাই।",
+      "emptyTitle": "কোনো উপাদান পোৱা নগ'ল",
+      "filterTitle": "উপাদান ফিল্টাৰ কৰক",
+      "loadFailed": "বৰ্তমান উপাদানসমূহ ল'ড কৰিব পৰা নগ'ল।",
+      "newVersion": "নতুন সংস্কৰণ সৃষ্টি কৰক",
+      "refreshing": "ৰিফ্ৰেছ কৰা হৈছে...",
+      "results": "{{count}} উপাদান",
+      "searchPlaceholder": "উপাদানৰ নামৰ দ্বাৰা সন্ধান কৰক",
+      "subtitle": "পুনৰ ব্যৱহাৰযোগ্য সন্মতি উপাদান আৰু সেইবোৰৰ সংস্কৰণ সংজ্ঞাসমূহ পৰিচালনা কৰক।",
+      "tableLabel": "সন্মতি উপাদানসমূহ",
+      "title": "উপাদানসমূহ"
+    },
+    "purposes": {
+      "add": "উদ্দেশ্য যোগ কৰক",
+      "activeFilters": "সক্ৰিয় ফিল্টাৰসমূহ",
+      "allPurposes": "সকলো উদ্দেশ্য",
+      "back": "উদ্দেশ্যলৈ উভতি যাওক",
+      "createTitle": "উদ্দেশ্য সৃষ্টি কৰক",
+      "detailsSection": "উদ্দেশ্যৰ বিৱৰণ",
+      "empty": "নিৰ্বাচিত ফিল্টাৰসমূহৰ সৈতে কোনো উদ্দেশ্যৰ মিল নাই।",
+      "emptyTitle": "কোনো উদ্দেশ্য পোৱা নগ'ল",
+      "filterTitle": "উদ্দেশ্যসমূহ ফিল্টাৰ কৰক",
+      "loadFailed": "বৰ্তমান উদ্দেশ্যসমূহ ল'ড কৰিব পৰা নগ'ল।",
+      "newVersion": "নতুন সংস্কৰণ সৃষ্টি কৰক",
+      "orgWide": "সমগ্ৰ সংগঠনত",
+      "refreshing": "ৰিফ্ৰেছ কৰা হৈছে...",
+      "results": "{{count}} উদ্দেশ্য",
+      "searchLabel": "উদ্দেশ্য সন্ধান কৰক",
+      "searchPlaceholder": "উদ্দেশ্যৰ নামৰ দ্বাৰা সন্ধান কৰক",
+      "scopeFilter": "উদ্দেশ্যৰ পৰিসৰ",
+      "subtitle": "পুনৰ ব্যৱহাৰযোগ্য সন্মতিৰ উদ্দেশ্য আৰু সেইবোৰৰ উপাদানৰ সংজ্ঞাসমূহ পৰিচালনা কৰক।",
+      "tableLabel": "সন্মতিৰ উদ্দেশ্যসমূহ",
+      "title": "উদ্দেশ্যসমূহ"
+    },
+    "details": {
+      "definition": "সংজ্ঞা",
+      "elementIdentity": "উপাদানৰ পৰিচয়",
+      "elements": "উপাদানসমূহ",
+      "identity": "উদ্দেশ্যৰ পৰিচয়",
+      "overview": "অৱলোকন",
+      "versionDetails": "সংস্কৰণৰ বিৱৰণ",
+      "versions": "সংস্কৰণৰ ইতিহাস"
+    },
+    "messages": {
+      "createElementFirst": "উদ্দেশ্য নিৰ্ধাৰণ কৰাৰ আগতে এটা উপাদান সৃষ্টি কৰক।",
+      "immutableElement": "{{namespace}}:{{name}} এটা {{type}} উপাদান হৈয়ে থাকিব। পৰিচয় ক্ষেত্ৰসমূহ সংস্কৰণৰ মাজত সলনি হ'ব নোৱাৰে।",
+      "immutablePurpose": "{{name}} ৰ মালিকীস্বত্ব {{groupId}} ৰ হাততে থাকিব। পৰিচয় ক্ষেত্ৰসমূহ সংস্কৰণৰ মাজত সলনি হ'ব নোৱাৰে।",
+      "immutableOrganizationPurpose": "{{name}} সমগ্ৰ সংগঠনৰ বাবে। ইয়াৰ পৰিচয় আৰু পৰিসৰ সংস্কৰণৰ মাজত সলনি হ'ব নোৱাৰে।",
+      "immutableGroupPurpose": "{{name}} গোট {{groupId}} ৰ সৈতে সীমাবদ্ধ। ইয়াৰ পৰিচয় আৰু পৰিসৰ সংস্কৰণৰ মাজত সলনি হ'ব নোৱাৰে।",
+      "loadingElements": "উপলব্ধ উপাদানসমূহ ল'ড হৈ আছে...",
+      "loadingVersions": "উপাদানৰ সংস্কৰণসমূহ ল'ড হৈ আছে...",
+      "noElementsFound": "কোনো মিল থকা উপাদান নাই",
+      "noElements": "এই সংস্কৰণৰ বাবে কোনো উপাদান কনফিগাৰ কৰা হোৱা নাই।",
+      "noProperties": "কোনো কাষ্টম গুণ নাই।",
+      "noSchema": "এই সংস্কৰণৰ বাবে কোনো স্কিমা কনফিগাৰ কৰা হোৱা নাই।",
+      "noPurposeElements": "এতিয়ালৈকে কোনো উপাদান যোগ কৰা হোৱা নাই। উদ্দেশ্য সৃষ্টি কৰিবলৈ কমেও এটা উপাদান যোগ কৰক।",
+      "noVersions": "কোনো সংস্কৰণ উপলব্ধ নাই।",
+      "versionsLoadFailed": "বৰ্তমান সংস্কৰণৰ ইতিহাস ল'ড কৰিব পৰা নগ'ল।"
+    },
+    "validation": {
+      "duplicateElements": "প্ৰতিটো উপাদান কেৱল এবাৰহে অন্তৰ্ভুক্ত কৰিব পাৰি।",
+      "duplicatePropertyKeys": "গুণৰ কী অনন্য হ'ব লাগিব।",
+      "elementRequired": "কমেও এটা উপাদান বাছনি কৰক।",
+      "groupIdRequired": "গোট-নিৰ্দিষ্ট উদ্দেশ্যৰ বাবে গোট আইডি প্ৰয়োজনীয়।",
+      "nameRequired": "নাম প্ৰয়োজনীয়।",
+      "namespaceRequired": "কাষ্টম বাছনি কৰিলে নেমস্পেচ প্ৰয়োজনীয়।",
+      "schemaRequired": "JSON আৰু XML উপাদানৰ বাবে স্কিমা প্ৰয়োজনীয়।"
+    },
+    "delete": {
+      "title": "সংস্কৰণ মচি পেলাওক",
+      "message": "সংস্কৰণ {{version}} মচি পেলাব নেকি?",
+      "warning": "এইটো ঘূৰাই আনিব নোৱাৰি। প্ৰসংগ থকা সংস্কৰণসমূহ মচি পেলাব নোৱাৰি, আৰু চূড়ান্ত সংস্কৰণ মচি পেলালে সমগ্ৰ এণ্ট্ৰিটো মচি পেলোৱা হ'ব।"
+    }
+  },
+  "nominee": {
+    "title": "মনোনয়নসমূহ",
+    "messages": {
+      "loadFailed": "বৰ্তমান মনোনয়নসমূহ ল'ড কৰিব পৰা নগ'ল।"
+    },
+    "nominatedFor": {
+      "openAccount": "একাউণ্ট খোলক →",
+      "accept": "গ্ৰহণ কৰক",
+      "reject": "অগ্ৰাহ্য কৰক",
+      "actionNeeded": "পদক্ষেপৰ প্ৰয়োজন",
+      "ariaLabel": "মনোনীত একাউণ্টসমূহ",
+      "empty": "এতিয়ালৈকে কোনেও আপোনাক মনোনীত কৰা নাই।",
+      "title": "মনোনীত একাউণ্টসমূহ",
+      "table": {
+        "account": "একাউণ্ট",
+        "status": "স্থিতি",
+        "actions": "কাৰ্যসমূহ"
+      }
+    },
+    "acting": {
+      "starting": "একাউণ্ট খোলা হৈছে…",
+      "startFailed": "আপুনি এই একাউণ্টৰ মনোনীত ব্যক্তি নহয়।",
+      "startFailedHint": "মনোনয়নলৈ ঘূৰি যাওক আৰু পুনৰ চেষ্টা কৰক।",
+      "blockedTitle": "মনোনীত ব্যক্তিৰ প্ৰৱেশত উপলব্ধ নহয়",
+      "blockedFenced": "একাউণ্টৰ ছেটিংছ, ক্ৰেডেন্সিয়েল আৰু মনোনয়ন কেতিয়াও আন এজন ব্যক্তিৰ হৈ ব্যৱহাৰ কৰিব নোৱাৰি।",
+      "blockedScope": "মালিকে আপোনাক এই অংশৰ বাবে অনুমতি দিয়া নাই।",
+      "backToAllowed": "যিটো মই চাব পাৰোঁ তালৈ যাওক",
+      "exit": "প্ৰস্থান কৰক"
+    },
+    "permissions": {
+      "consentView": "সন্মতিসমূহ চাওক",
+      "consentRevoke": "সন্মতি প্ৰত্যাহাৰ কৰক",
+      "consentApprove": "বাকী থকা সন্মতিসমূহ অনুমোদন কৰক",
+      "accountView": "ব্যক্তিগত একাউণ্ট চাওক",
+      "accountUpdate": "ব্যক্তিগত একাউণ্ট আপডেট কৰক",
+      "accountDelete": "ব্যক্তিগত একাউণ্ট মচি পেলাওক"
+    },
+    "mine": {
+      "add": "মনোনীত ব্যক্তি যোগ কৰক",
+      "remove": "আঁতৰাওক",
+      "empty": "আপুনি এতিয়ালৈকে কাকো মনোনীত কৰা নাই।",
+      "status": {
+        "active": "সক্ৰিয়",
+        "pending": "গ্ৰহণৰ বাবে অপেক্ষাৰত",
+        "rejected": "অগ্ৰাহ্য কৰা হৈছে",
+        "accepted": "অনুমোদনৰ বাবে অপেক্ষা কৰি থকা হৈছে",
+        "deactivated": "স্থগিত কৰা হৈছে"
+      },
+      "ariaLabel": "মনোনীত ব্যক্তিসকল",
+      "title": "মনোনীত ব্যক্তিসকল",
+      "table": {
+        "person": "ব্যক্তি",
+        "permissions": "অনুমতিসমূহ",
+        "status": "স্থিতি",
+        "actions": "কাৰ্যসমূহ",
+        "morePermissions": "আৰু +{{count}}"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "মনোনীত ব্যক্তি যোগ কৰক",
+        "editTitle": "মনোনীত ব্যক্তি সম্পাদনা কৰক",
+        "saveChanges": "সলনিসমূহ ছেভ কৰক",
+        "emailLabel": "মনোনীত ব্যক্তিৰ পঞ্জীভুক্ত ইমেইল",
+        "permissionsTitle": "এই মনোনীত ব্যক্তিয়ে কি কৰিব পাৰিব?",
+        "permissionsSubtitle": "কেৱল আপুনি প্ৰদান কৰিব বিচৰা অনুমতিসমূহত টিক দিয়ক। এইবোৰেই মনোনীত ব্যক্তিয়ে ব্যৱহাৰ কৰিব পৰা প্ৰৱেশাধিকাৰ হ'ব।",
+        "sensitive": "সংবেদনশীল",
+        "cancel": "বাতিল কৰক",
+        "processing": "ছেভ কৰা হৈছে...",
+        "confirm": "মনোনয়ন প্ৰেৰণ কৰক",
+        "processingEdit": "ছেভ কৰা হৈছে…"
+      },
+      "removeDialog": {
+        "title": "মনোনীত ব্যক্তিক আঁতৰাওক",
+        "message": "{{nomineeEmail}} য়ে আৰু আপোনাৰ সন্মতিসমূহ পৰিচালনা কৰিব নোৱাৰিব।",
+        "confirm": "মনোনীত ব্যক্তিক আঁতৰাওক",
+        "cancel": "বাতিল কৰক",
+        "processing": "আঁতৰোৱা হৈছে..."
+      }
+    },
+    "manage": {
+      "title": "মালিকৰ সন্মতি পৰিচালনা",
+      "back": "মনোনীত ব্যক্তিৰ দৰ্শনৰ পৰা প্ৰস্থান কৰক",
+      "consents": {
+        "title": "সন্মতিসমূহ",
+        "subtitle": "এই একাউণ্টে প্ৰদান কৰা সন্মতিসমূহ চাওক আৰু অনুমতি থাকিলে প্ৰত্যাহাৰ কৰক।"
+      },
+      "selectedCount": "{{count}} নিৰ্বাচিত",
+      "revokeSelected": "নিৰ্বাচিতসমূহ প্ৰত্যাহাৰ কৰক",
+      "messages": {
+        "loadFailed": "বৰ্তমান সন্মতিসমূহ ল'ড কৰিব পৰা নগ'ল।",
+        "empty": "এই একাউণ্টৰ বাবে কোনো সন্মতি পোৱা নগ'ল।"
+      },
+      "table": {
+        "ariaLabel": "মনোনীত ব্যক্তিয়ে পৰিচালনা কৰা সন্মতিৰ তালিকা",
+        "purposes": "উদ্দেশ্যসমূহ",
+        "type": "প্ৰকাৰ",
+        "status": "স্থিতি",
+        "updated": "আপডেট কৰা হৈছে",
+        "actions": "কাৰ্যসমূহ",
+        "revoke": "প্ৰত্যাহাৰ কৰক",
+        "notRevokable": "কেৱল সক্ৰিয় সন্মতিসমূহহে প্ৰত্যাহাৰ কৰিব পাৰি",
+        "clientLabel": "সংগঠন: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "একত্ৰিত প্ৰত্যাহাৰ নিশ্চিত কৰক",
+        "message": "ইয়াৰ দ্বাৰা {{count}} সন্মতি প্ৰত্যাহাৰ হ'ব। এইটো ঘূৰাই আনিব নোৱাৰি।",
+        "note": "প্ৰতিটো প্ৰত্যাহাৰ মালিকৰ হৈ আপুনি কৰা কাৰ্য হিচাপে পৃথকে ৰেকৰ্ড কৰা হয়।",
+        "progress": "{{count}} ৰ ভিতৰত {{processed}} প্ৰত্যাহাৰ কৰা হৈছে...",
+        "confirm": "নিৰ্বাচিতসমূহ প্ৰত্যাহাৰ কৰক",
+        "cancel": "বাতিল কৰক",
+        "processing": "প্ৰক্ৰিয়া কৰা হৈছে..."
+      },
+      "subtitle": "আপুনি এই একাউণ্টৰ হৈ কাম কৰি আছে। আপুনি কেৱল মালিকে আপোনাক অনুমতি দিয়া কামহে কৰিব পাৰে।",
+      "account": {
+        "title": "একাউণ্টৰ প্ৰৱেশাধিকাৰ",
+        "subtitle": "মালিকে তেওঁলোকৰ একাউণ্টত কৰিবলৈ আপোনাক অনুমতি দিয়া কামসমূহ।",
+        "notGranted": "মালিকৰ দ্বাৰা প্ৰদান কৰা হোৱা নাই"
+      }
+    },
+    "detail": {
+      "title": "সন্মতিৰ বিৱৰণ",
+      "back": "উভতি যাওক"
+    }
+  },
+  "admin": {
+    "title": "মনোনীত ব্যক্তি সক্ৰিয়কৰণ",
+    "status": {
+      "active": "সক্ৰিয়",
+      "accepted": "অনুমোদনৰ বাবে অপেক্ষা কৰি থকা হৈছে",
+      "pending": "অপেক্ষাৰত",
+      "rejected": "অগ্ৰাহ্য কৰা হৈছে",
+      "deactivated": "নিষ্ক্ৰিয় কৰা হৈছে"
+    },
+    "pending": {
+      "title": "আপোনাৰ অনুমোদনৰ বাবে অপেক্ষা কৰি থকা হৈছে",
+      "empty": "আপোনাৰ বাবে একোৱেই অপেক্ষা কৰি থকা নাই।",
+      "count": "{{count}} অনুমোদনৰ বাবে অপেক্ষা কৰি থকা হৈছে",
+      "appointed": "নিযুক্তি দিয়া হ'ল {{email}}",
+      "accepted": "গ্ৰহণ কৰা হ'ল {{date}}"
+    },
+    "search": {
+      "label": "নাম বা ইমেইলৰ দ্বাৰা সন্ধান কৰক",
+      "empty": "কোনো মিল থকা একাউণ্ট পোৱা নগ'ল।",
+      "results": "একাউণ্টসমূহ"
+    },
+    "table": {
+      "ariaLabel": "মনোনয়নসমূহ",
+      "owner": "একাউণ্ট",
+      "nominee": "মনোনীত ব্যক্তি",
+      "permissions": "প্ৰদান কৰা হ'ল",
+      "status": "স্থিতি",
+      "nominated": "মনোনীত কৰা হ'ল",
+      "actions": "কাৰ্যসমূহ"
+    },
+    "controls": {
+      "title": "মনোনীত ব্যক্তিসকল",
+      "titleNamed": "{{name}} ৰ মনোনীত ব্যক্তিসকল",
+      "nominated": "মনোনীত কৰা হ'ল {{date}}",
+      "ticket": "টিকেট {{ticket}}",
+      "waitingNominee": "এতিয়ালৈকে কৰিবলগীয়া একো নাই - মনোনীত ব্যক্তিয়ে গ্ৰহণ কৰা নাই।",
+      "activate": "প্ৰৱেশাধিকাৰ সক্ৰিয় কৰক",
+      "noAction": "-",
+      "owner": "একাউণ্ট",
+      "deactivate": "প্ৰৱেশাধিকাৰ প্ৰত্যাহাৰ কৰক",
+      "none": "এই একাউণ্টে কাকো নিযুক্তি দিয়া নাই।"
+    },
+    "activateDialog": {
+      "title": "মনোনীত ব্যক্তিৰ প্ৰৱেশাধিকাৰ সক্ৰিয় কৰক",
+      "ticketLabel": "আইনী/সহায় টিকেটৰ প্ৰসংগ",
+      "confirm": "প্ৰৱেশাধিকাৰ সক্ৰিয় কৰক",
+      "cancel": "বাতিল কৰক",
+      "processing": "সক্ৰিয় কৰা হৈছে...",
+      "subtitle": "ইয়াৰ দ্বাৰা {{nomineeName}} ক {{ownerName}} ৰ সন্মতিসমূহ পৰিচালনা কৰাৰ প্ৰৱেশাধিকাৰ দিয়া হয়।"
+    },
+    "deactivateDialog": {
+      "title": "মনোনীত ব্যক্তিৰ প্ৰৱেশাধিকাৰ নিষ্ক্ৰিয় কৰক",
+      "reasonLabel": "কাৰণ",
+      "confirm": "প্ৰৱেশাধিকাৰ নিষ্ক্ৰিয় কৰক",
+      "cancel": "বাতিল কৰক",
+      "processing": "নিষ্ক্ৰিয় কৰা হৈছে...",
+      "subtitle": "ইয়াৰ দ্বাৰা মনোনীত ব্যক্তিৰ {{ownerName}} ৰ সন্মতিসমূহত প্ৰৱেশাধিকাৰ লগে লগে প্ৰত্যাহাৰ কৰা হয়।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "তথ্য উলংঘন",
+      "UNAUTHORIZED_DATA_SHARING": "অননুমোদিত তথ্য অংশীদাৰিত্ব",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "সন্মতি প্ৰত্যাহাৰৰ পিছতো তথ্য ব্যৱহাৰ",
+      "PURPOSE_VIOLATION": "উদ্দেশ্য উলংঘন",
+      "DATA_ERASURE_NOT_COMPLETED": "তথ্য বিলোপৰ অনুৰোধ সম্পূৰ্ণ হোৱা নাই",
+      "DATA_CORRECTION_NOT_COMPLETED": "তথ্য সংশোধনৰ অনুৰোধ সম্পূৰ্ণ হোৱা নাই",
+      "CONSENT_LIFECYCLE_ISSUE": "সন্মতি পৰিচালকৰ সমস্যা",
+      "DATA_ACCESS_DENIED": "তথ্য প্ৰৱেশৰ অনুৰোধ প্ৰত্যাখ্যান",
+      "EXCESSIVE_DATA_COLLECTION": "অত্যধিক তথ্য সংগ্ৰহ",
+      "OTHER": "অন্যান্য"
+    },
+    "status": {
+      "open": "মুক্ত",
+      "investigation": "প্ৰক্ৰিয়াধীন",
+      "awaitingInfo": "গ্ৰাহকৰ বাবে অপেক্ষা কৰা হৈছে",
+      "waitingOnDpo": "আভ্যন্তৰীণ পৰ্যালোচনাৰ বাবে অপেক্ষা কৰা হৈছে",
+      "resolved": "সমাধান কৰা হ'ল"
+    },
+    "priority": {
+      "CRITICAL": "গুৰুতৰ",
+      "HIGH": "উচ্চ",
+      "MEDIUM": "মধ্যম",
+      "LOW": "নিম্ন"
+    },
+    "sla": {
+      "dueDate": "অন্তিম তাৰিখ {{date}}",
+      "dueToday": "আজি অন্তিম তাৰিখ",
+      "overdueSingular": "{{count}} দিন পাৰ হৈ গৈছে",
+      "overduePlural": "{{count}} দিন পাৰ হৈ গৈছে",
+      "daysLeftSingular": "{{count}} দিন বাকী আছে",
+      "daysLeftPlural": "{{count}} দিন বাকী আছে"
+    },
+    "timeline": {
+      "complaintReceived": "অভিযোগ পোৱা গৈছে",
+      "statusChangePrefix": "স্থিতি পৰিৱৰ্তন:",
+      "statusChangeJoiner": "ৰ পৰা"
+    },
+    "list": {
+      "title": "মোৰ অভিযোগসমূহ",
+      "subtitle": "আপুনি দাখিল কৰা অভিযোগসমূহ আৰু সেইবোৰৰ অগ্ৰগতি নিৰীক্ষণ কৰক।",
+      "submitNew": "এটা অভিযোগ দাখিল কৰক",
+      "loadFailed": "বৰ্তমান আপোনাৰ অভিযোগসমূহ ল'ড কৰিব পৰা নগ'ল।",
+      "empty": "আপুনি এতিয়ালৈকে কোনো অভিযোগ দাখিল কৰা নাই।",
+      "emptyFiltered": "নিৰ্বাচিত ফিল্টাৰৰ সৈতে কোনো অভিযোগৰ মিল নাই।",
+      "filters": {
+        "status": "স্থিতি",
+        "all": "সকলো"
+      },
+      "table": {
+        "tableAriaLabel": "মোৰ অভিযোগৰ তালিকা",
+        "headers": {
+          "referenceId": "প্ৰসংগ আইডি",
+          "category": "শ্ৰেণী",
+          "status": "স্থিতি",
+          "submitted": "দাখিল কৰা হৈছে",
+          "updated": "আপডেট কৰা হৈছে"
+        }
+      }
+    },
+    "detail": {
+      "back": "মোৰ অভিযোগসমূহলৈ উভতি যাওক",
+      "notFound": "অভিযোগ পোৱা নগ'ল",
+      "description": "বিৱৰণ",
+      "submittedOn": "{{date}} তাৰিখে দাখিল কৰা হৈছে",
+      "awaitingInfo": {
+        "note": "অভিযোগ বিষয়াই আপোনাৰ পৰা অধিক তথ্যৰ বাবে অপেক্ষা কৰি আছে। অনুগ্ৰহ কৰি তলত উত্তৰ দিয়ক।"
+      },
+      "resolved": {
+        "note": "এই অভিযোগটো সমাধান কৰা হৈছে।"
+      }
+    },
+    "submit": {
+      "title": "এটা অভিযোগ দাখিল কৰক",
+      "subtitle": "কি হৈছিল আমাক জনাওক আৰু আমি ইয়াক সঠিক দললৈ প্ৰেৰণ কৰিম।",
+      "submitFailed": "বৰ্তমান আপোনাৰ অভিযোগ দাখিল কৰিব পৰা নগ'ল। অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক।",
+      "fields": {
+        "category": "শ্ৰেণী",
+        "categoryPlaceholder": "এটা শ্ৰেণী বাছনি কৰক",
+        "categoryHelp": "আপোনাৰ অভিযোগটো আটাইতকৈ ভালদৰে বৰ্ণনা কৰা বিকল্পটো বাছক।",
+        "categoriesLoadFailed": "বৰ্তমান অভিযোগ শ্ৰেণীসমূহ ল'ড কৰিব পৰা নগ'ল।",
+        "description": "বিৱৰণ",
+        "descriptionPlaceholder": "আপোনাৰ অভিযোগটো বিতংভাৱে বৰ্ণনা কৰক",
+        "descriptionHelp": "আমি যাতে ইয়াক সোনকালে সমাধান কৰিব পাৰোঁ তাৰ বাবে যিমান সম্ভৱ সিমান তথ্য অন্তৰ্ভুক্ত কৰক।",
+        "attachments": "সংলগ্ন ফাইলসমূহ (ঐচ্ছিক)",
+        "attachmentsHelp": "PDF, DOCX, PNG, বা JPG প্ৰতিটো {{maxSize}} লৈকে।",
+        "uploadButton": "ফাইল আপলোড কৰক"
+      },
+      "validation": {
+        "categoryRequired": "আগবাঢ়িবলৈ এটা শ্ৰেণী বাছনি কৰক।",
+        "descriptionRequired": "আগবাঢ়িবলৈ আপোনাৰ অভিযোগটো বৰ্ণনা কৰক।",
+        "attachmentTooLarge": "{{fileNames}} এ {{maxSize}} সংলগ্ন ফাইলৰ আকাৰৰ সীমা অতিক্ৰম কৰিছে।"
+      },
+      "success": {
+        "message": "আপোনাৰ অভিযোগ {{referenceId}} দাখিল কৰা হৈছে।",
+        "attachmentFailedMessage": "আপোনাৰ অভিযোগ {{referenceId}} দাখিল কৰা হৈছে, কিন্তু সংলগ্ন ফাইলসমূহ আপলোড কৰিব পৰা নগ'ল। আপুনি সেইবোৰক অভিযোগৰ বিৱৰণ পৃষ্ঠাৰ পৰা যোগ কৰিব পাৰিব।"
+      },
+      "actions": {
+        "cancel": "বাতিল কৰক",
+        "submit": "অভিযোগ দাখিল কৰক"
+      }
+    },
+    "activity": {
+      "title": "কাৰ্যকলাপ",
+      "send": "প্ৰেৰণ কৰক",
+      "sendOnly": "কেৱল প্ৰেৰণ কৰক",
+      "sendOptions": "অধিক প্ৰেৰণৰ বিকল্প",
+      "sendAndChangeStatusTo": "প্ৰেৰণ কৰক আৰু স্থিতি সলনি কৰক",
+      "sendAndUpdateStatus": "প্ৰেৰণ কৰক আৰু {{status}} হিচাপে চিহ্নিত কৰক",
+      "publicReply": "উত্তৰ দিয়ক",
+      "internalNote": "আভ্যন্তৰীণ টোকা",
+      "internalTag": "আভ্যন্তৰীণ",
+      "dataPrincipalRoleLabel": "গ্ৰাহক",
+      "officerRoleLabel": "অভিযোগ বিষয়া",
+      "composerPlaceholderPublic": "ব্যৱহাৰকাৰীলৈ এটা উত্তৰ লিখক...",
+      "composerPlaceholderInternal": "এটা আভ্যন্তৰীণ টোকা লিখক (ব্যৱহাৰকাৰীৰ বাবে দৃশ্যমান নহয়)...",
+      "attach": "সংলগ্ন কৰক",
+      "attachmentsHelp": "PDF, DOCX, PNG, বা JPG প্ৰতিটো ফাইল {{maxSize}} লৈকে।",
+      "attachmentTooLarge": "{{fileNames}} এ {{maxSize}} সংলগ্ন ফাইলৰ আকাৰৰ সীমা অতিক্ৰম কৰিছে।",
+      "removeAttachment": "সংলগ্ন ফাইল আঁতৰাওক"
+    },
+    "attachments": {
+      "tabLabel": "সংলগ্ন ফাইলসমূহ",
+      "tabLabelWithCount": "সংলগ্ন ফাইলসমূহ ({{count}})",
+      "empty": "এই অভিযোগত কোনো সংলগ্ন ফাইল যোগ কৰা হোৱা নাই।",
+      "initialSubmission": "প্ৰাৰম্ভিক দাখিল",
+      "internalNote": "আভ্যন্তৰীণ",
+      "overflowMore": "আৰু +{{count}}"
+    },
+    "management": {
+      "queue": {
+        "title": "অভিযোগসমূহ",
+        "loadFailed": "বৰ্তমান অভিযোগৰ শাৰী ল'ড কৰিব পৰা নগ'ল।",
+        "empty": "নিৰ্বাচিত ফিল্টাৰসমূহৰ সৈতে কোনো অভিযোগৰ মিল নাই।",
+        "stats": {
+          "open": "মুক্ত",
+          "awaitingInfo": "প্ৰতিক্ৰিয়াৰ বাবে অপেক্ষা কৰা হৈছে",
+          "resolved": "সমাধান কৰা হ'ল",
+          "slaBreached": "SLA উলংঘিত"
+        },
+        "filters": {
+          "sectionAriaLabel": "অভিযোগৰ শাৰীৰ ফিল্টাৰসমূহ",
+          "status": "স্থিতি",
+          "priority": "প্ৰাথমিকতা",
+          "search": "প্ৰসংগ আইডি বা ব্যৱহাৰকাৰীৰ দ্বাৰা সন্ধান কৰক",
+          "all": "সকলো",
+          "clear": "ফিল্টাৰসমূহ মচি পেলাওক",
+          "clearAriaLabel": "সকলো ফিল্টাৰ মচি পেলাওক"
+        },
+        "table": {
+          "tableAriaLabel": "অভিযোগৰ শাৰীৰ তালিকা",
+          "headers": {
+            "referenceId": "প্ৰসংগ আইডি",
+            "dataPrincipal": "ব্যৱহাৰকাৰী",
+            "category": "শ্ৰেণী",
+            "priority": "প্ৰাথমিকতা",
+            "status": "স্থিতি",
+            "sla": "SLA",
+            "updated": "আপডেট কৰা হৈছে"
+          }
+        }
+      },
+      "case": {
+        "back": "শাৰীলৈ উভতি যাওক",
+        "notFound": "অভিযোগ পোৱা নগ'ল",
+        "dataPrincipal": "ব্যৱহাৰকাৰী"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "গ্ৰাহকভুক্তিসমূহ",
+      "subtitle": "ইভেণ্ট অধিসূচনা ফ্ৰেমৱৰ্কৰ মাজেৰে সকলো পঞ্জীভুক্ত গ্ৰাহকভুক্তি।",
+      "addAction": "গ্ৰাহকভুক্তি যোগ কৰক",
+      "filters": {
+        "sectionAriaLabel": "গ্ৰাহকভুক্তিৰ ফিল্টাৰসমূহ",
+        "status": "স্থিতি",
+        "topic": "বিষয়",
+        "clear": "ফিল্টাৰসমূহ মচি পেলাওক",
+        "statusOptions": {
+          "all": "সকলো স্থিতি",
+          "active": "সক্ৰিয়",
+          "pendingVerification": "অপেক্ষাৰত",
+          "stale": "পুৰণি"
+        },
+        "topicOptions": {
+          "all": "সকলো বিষয়"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "গ্ৰাহকভুক্তি সফলতাৰে পুনৰ-প্ৰমাণীকৰণ কৰা হ'ল। স্থিতি এতিয়া সক্ৰিয়।",
+        "reverifyStillStale": "প্ৰমাণীকৰণ পুনৰ বিফল হৈছে। গ্ৰাহকভুক্তি পুৰণি হৈয়েই আছে।",
+        "reverifyFailed": "পুনৰ-প্ৰমাণীকৰণ বিফল হৈছে।"
+      }
+    },
+    "events": {
+      "title": "ইভেণ্টসমূহ",
+      "subtitle": "ইভেণ্ট অধিসূচনা ফ্ৰেমৱৰ্কৰ মাজেৰে সকলো ইভেণ্ট বিতৰণ।",
+      "filters": {
+        "sectionAriaLabel": "ইভেণ্টৰ ফিল্টাৰসমূহ",
+        "status": "স্থিতি",
+        "topic": "বিষয়",
+        "search": "ইভেণ্টসমূহ সন্ধান কৰক",
+        "searchPlaceholder": "উদ্দেশ্য বা গ্ৰাহক আইডিৰ দ্বাৰা সন্ধান কৰক...",
+        "clear": "ফিল্টাৰসমূহ মচি পেলাওক",
+        "statusOptions": {
+          "all": "সকলো স্থিতি"
+        },
+        "topicOptions": {
+          "all": "সকলো বিষয়"
+        }
+      },
+      "emptyTitle": "কোনো ইভেণ্ট পোৱা নগ'ল",
+      "emptyMessage": "নিৰ্বাচিত মাপকাঠীৰ সৈতে কোনো প্ৰকাশিত ইভেণ্টৰ মিল নাই।",
+      "table": {
+        "eventId": "ইভেণ্ট আইডি",
+        "topic": "বিষয়",
+        "purposes": "উদ্দেশ্যসমূহ",
+        "deliveries": "বিতৰণসমূহ",
+        "occurredAt": "সংঘটিত হোৱাৰ সময়",
+        "action": "কাৰ্য",
+        "all": "সকলো",
+        "noSubscribers": "কোনো গ্ৰাহক নাই",
+        "viewEvent": "ইভেণ্ট চাওক",
+        "subscriberCount_one": "{{count}} গ্ৰাহক",
+        "subscriberCount_other": "{{count}} গ্ৰাহক"
+      },
+      "detail": {
+        "notFoundTitle": "ইভেণ্ট পোৱা নগ'ল",
+        "notFoundMessage": "\"{{eventId}}\" আইডিৰ সৈতে কোনো ইভেণ্ট পোৱা নগ'ল।",
+        "backToEvents": "ইভেণ্টসমূহলৈ উভতি যাওক",
+        "topic": "বিষয়",
+        "purposes": "উদ্দেশ্যসমূহ",
+        "occurredAt": "সংঘটিত হোৱাৰ সময়",
+        "deliveries": "বিতৰণসমূহ",
+        "all": "সকলো",
+        "noSubscribers": "কোনো গ্ৰাহক নাই",
+        "subscriberCount_one": "{{count}} গ্ৰাহক",
+        "subscriberCount_other": "{{count}} গ্ৰাহক"
+      },
+      "dialog": {
+        "title": "পুনৰ চেষ্টাৰ ইতিহাস",
+        "deliveryId": "বিতৰণ আইডি",
+        "loading": "ইভেণ্ট বিতৰণৰ ইতিহাস ল'ড হৈ আছে…",
+        "noRetries": "প্ৰাৰম্ভিক প্ৰয়াস সম্পূৰ্ণ হৈছে। কোনো পুনৰ চেষ্টা ৰেকৰ্ড কৰা হোৱা নাই।",
+        "attempt": "প্ৰয়াস {{attempt}}",
+        "retrySuffix": " (পুনৰ চেষ্টা)",
+        "webhookDescription": "HTTP বিতৰণ প্ৰয়াস আৰু পুনৰ চেষ্টাসমূহৰ কালানুক্ৰমিক ইতিহাস।",
+        "pollTitle": "সমীক্ষা সম্পূৰ্ণ স্থিতি আৰু স্বীকৃতি",
+        "completionStatus": "সম্পূৰ্ণ স্থিতি",
+        "completionTimestamp": "সম্পূৰ্ণ সময়ৰ মোহৰ",
+        "erasureMethod": "বিলোপৰ পদ্ধতি",
+        "recordsAffected": "প্ৰভাৱিত ৰেকৰ্ডসমূহ",
+        "referenceId": "প্ৰসংগ আইডি",
+        "submittedBy": "দাখিল কৰিছে",
+        "notes": "টোকাসমূহ",
+        "noAcknowledgment": "এতিয়ালৈকে কোনো সমীক্ষা সম্পূৰ্ণ হোৱাৰ স্বীকৃতি দাখিল কৰা হোৱা নাই।",
+        "close": "বন্ধ কৰক"
+      }
+    }
+  }
+}

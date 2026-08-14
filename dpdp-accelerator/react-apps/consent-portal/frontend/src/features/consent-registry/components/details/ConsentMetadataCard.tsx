@@ -24,62 +24,125 @@ import {
   Chip,
   Divider,
   Stack,
+  Tooltip,
   Typography,
 } from '@wso2/oxygen-ui'
 import {
   CalendarClock,
   CalendarPlus,
+  CircleHelp,
   Fingerprint,
-  Globe,
-  Server,
-  UserRound,
+  Gauge,
+  History,
+  RefreshCw,
+  Repeat2,
+  Users,
 } from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
 import CopyableText from '../../../../components/CopyableText'
-import type { ConsentDetail } from '../../../../types/consent'
+import type { ConsentDetailAPI } from '../../../../types/consent'
 import { formatEpochTimestamp } from '../../../../utils/dateTime'
-import { getConsentStateChipColor, getConsentStateLabelKey } from '../../utils/statusChip'
+import { getConsentStatusChipColor, getConsentStatusLabelKey } from '../../utils/statusChip'
+
+type DurationUnit = 'hour' | 'day' | 'year'
+
+interface DurationDisplayParts {
+  value: number
+  unit: DurationUnit
+}
 
 interface ConsentMetadataCardProps {
   consentId: string
-  detail: ConsentDetail
+  detail: ConsentDetailAPI
 }
 
-interface MetadataFieldProps {
+interface MetadataLabelProps {
+  help: string | undefined
   icon: React.ReactNode
   label: string
-  value: React.ReactNode
 }
 
-function MetadataField({ icon, label, value }: MetadataFieldProps): React.JSX.Element {
+function MetadataLabel({ help, icon, label }: MetadataLabelProps): React.JSX.Element {
   return (
-    <Box>
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        fontWeight={700}
-        sx={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 0.5,
-          mb: 1,
-          textTransform: 'uppercase',
-          letterSpacing: 0.5,
-        }}
-      >
-        {icon}
-        {label}
-      </Typography>
-      <Typography component="div" variant="body2" fontWeight={500}>
-        {value}
-      </Typography>
-    </Box>
+    <Typography
+      variant="caption"
+      color="text.secondary"
+      fontWeight={700}
+      sx={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: 0.5,
+        mb: 1,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+      }}
+    >
+      {icon}
+      {label}
+      {help ? (
+        <Tooltip title={help}>
+          <Box
+            component="span"
+            sx={{ display: 'inline-flex', alignItems: 'center', color: 'text.disabled' }}
+          >
+            <CircleHelp size={14} />
+          </Box>
+        </Tooltip>
+      ) : null}
+    </Typography>
   )
+}
+
+function getDurationDisplayParts(
+  durationInSeconds: number | undefined,
+): DurationDisplayParts | null {
+  if (!durationInSeconds || durationInSeconds <= 0) {
+    return null
+  }
+
+  const totalHours = durationInSeconds / 3600
+
+  if (totalHours < 24) {
+    return { value: Math.max(1, Math.floor(totalHours)), unit: 'hour' }
+  }
+
+  const totalDays = totalHours / 24
+
+  if (totalDays < 365) {
+    return { value: Math.floor(totalDays), unit: 'day' }
+  }
+
+  return { value: Math.floor(totalDays / 365), unit: 'year' }
+}
+
+function getDurationUnitLabelKey(unit: DurationUnit, isSingular: boolean): string {
+  if (unit === 'hour') {
+    return isSingular
+      ? 'consentRegistry.details.durationUnitHourSingular'
+      : 'consentRegistry.details.durationUnitHourPlural'
+  }
+
+  if (unit === 'day') {
+    return isSingular
+      ? 'consentRegistry.details.durationUnitDaySingular'
+      : 'consentRegistry.details.durationUnitDayPlural'
+  }
+
+  return isSingular
+    ? 'consentRegistry.details.durationUnitYearSingular'
+    : 'consentRegistry.details.durationUnitYearPlural'
 }
 
 function ConsentMetadataCard({ consentId, detail }: ConsentMetadataCardProps): React.JSX.Element {
   const { t } = useTranslation('common')
-  const hasExpiryTime = detail.expiryTime != null && detail.expiryTime !== 0
+  const hasFrequency = detail.frequency != null && detail.frequency !== 0
+  const hasDuration =
+    detail.dataAccessValidityDuration != null && detail.dataAccessValidityDuration !== 0
+  const hasExpirationTime = detail.expirationTime != null && detail.expirationTime !== 0
+  const durationDisplay = getDurationDisplayParts(detail.dataAccessValidityDuration)
+  const durationUnitLabel = durationDisplay
+    ? t(getDurationUnitLabelKey(durationDisplay.unit, durationDisplay.value === 1))
+    : ''
 
   return (
     <Card sx={{ boxShadow: 1 }}>
@@ -88,7 +151,7 @@ function ConsentMetadataCard({ consentId, detail }: ConsentMetadataCardProps): R
           <Stack direction="row" spacing={1} alignItems="center">
             <Fingerprint size={15} />
             <Typography variant="body2" fontWeight={400}>
-              {t('consentRegistry.details.consentId')}:
+              {t('consentRegistry.details.consentId', 'Consent ID')}:
             </Typography>
             <CopyableText
               value={consentId}
@@ -108,12 +171,15 @@ function ConsentMetadataCard({ consentId, detail }: ConsentMetadataCardProps): R
           </Stack>
         }
         action={
-          <Chip
-            label={t(`consentRegistry.status.${getConsentStateLabelKey(detail.state)}`)}
-            color={getConsentStateChipColor(detail.state)}
-            size="small"
-            variant="outlined"
-          />
+          <Stack direction="row" spacing={1}>
+            <Chip
+              label={t(`consentRegistry.status.${getConsentStatusLabelKey(detail.status)}`)}
+              color={getConsentStatusChipColor(detail.status)}
+              size="small"
+              variant="outlined"
+            />
+            <Chip label={detail.type} color="default" size="small" variant="outlined" />
+          </Stack>
         }
         sx={{ pb: 1 }}
       />
@@ -126,40 +192,98 @@ function ConsentMetadataCard({ consentId, detail }: ConsentMetadataCardProps): R
             gap: { xs: 3, md: 4 },
           }}
         >
-          <MetadataField
-            icon={<UserRound size={14} />}
-            label={t('consentRegistry.details.subject')}
-            value={detail.subjectId}
-          />
-          <MetadataField
-            icon={<Server size={14} />}
-            label={t('consentRegistry.details.service')}
-            value={detail.serviceId}
-          />
-          <MetadataField
-            icon={<CalendarPlus size={14} />}
-            label={t('consentRegistry.details.created')}
-            value={formatEpochTimestamp(detail.timestamp)}
-          />
-          <MetadataField
-            icon={<Globe size={14} />}
-            label={t('consentRegistry.details.language')}
-            value={detail.language ?? '-'}
-          />
-          <MetadataField
-            icon={<CalendarClock size={14} />}
-            label={t('consentRegistry.details.validUntil')}
-            value={
+          <Box>
+            <MetadataLabel
+              help={undefined}
+              icon={<CalendarPlus size={14} />}
+              label={t('consentRegistry.details.created', 'Created')}
+            />
+            <Typography variant="body2" fontWeight={500}>
+              {formatEpochTimestamp(detail.createdTime)}
+            </Typography>
+          </Box>
+          <Box>
+            <MetadataLabel
+              help={undefined}
+              icon={<RefreshCw size={14} />}
+              label={t('consentRegistry.details.updated', 'Updated')}
+            />
+            <Typography variant="body2" fontWeight={500}>
+              {formatEpochTimestamp(detail.updatedTime)}
+            </Typography>
+          </Box>
+          <Box>
+            <MetadataLabel
+              help={undefined}
+              icon={<CalendarClock size={14} />}
+              label={t('consentRegistry.details.validUntil', 'Valid Until')}
+            />
+            <Typography variant="body2" fontWeight={500}>
               <Box
                 component="span"
-                sx={{ color: hasExpiryTime ? 'text.primary' : 'text.disabled' }}
+                sx={{ color: hasExpirationTime ? 'text.primary' : 'text.disabled' }}
               >
-                {hasExpiryTime
-                  ? formatEpochTimestamp(detail.expiryTime)
-                  : t('consentRegistry.table.notApplicable')}
+                {hasExpirationTime
+                  ? formatEpochTimestamp(detail.expirationTime)
+                  : t('consentRegistry.table.notApplicable', 'Not applicable')}
               </Box>
-            }
-          />
+            </Typography>
+          </Box>
+          <Box>
+            <MetadataLabel
+              help={undefined}
+              icon={<Users size={14} />}
+              label={t('consentRegistry.details.groupId', 'Group ID')}
+            />
+            <Typography variant="body2" fontWeight={500}>
+              {detail.groupId}
+            </Typography>
+          </Box>
+          <Box>
+            <MetadataLabel
+              help={undefined}
+              icon={<Repeat2 size={14} />}
+              label={t('consentRegistry.details.recurring', 'Recurring')}
+            />
+            <Typography variant="body2" fontWeight={500}>
+              {detail.recurringIndicator
+                ? t('consentRegistry.details.values.yes', 'Yes')
+                : t('consentRegistry.details.values.no', 'No')}
+            </Typography>
+          </Box>
+          {hasFrequency ? (
+            <Box>
+              <MetadataLabel
+                icon={<Gauge size={14} />}
+                label={t('consentRegistry.details.frequency', 'Access Limit')}
+                help={t(
+                  'consentRegistry.details.frequencyHelp',
+                  'This indicates how many times this consent can be accessed per day.',
+                )}
+              />
+              <Typography variant="body2" fontWeight={500}>
+                {detail.frequency}{' '}
+                {detail.frequency === 1
+                  ? t('consentRegistry.details.frequencyUnitSingular', 'time per day')
+                  : t('consentRegistry.details.frequencyUnitPlural', 'times per day')}
+              </Typography>
+            </Box>
+          ) : null}
+          {hasDuration ? (
+            <Box>
+              <MetadataLabel
+                icon={<History size={14} />}
+                label={t('consentRegistry.details.duration', 'Lookback Period')}
+                help={t(
+                  'consentRegistry.details.durationHelp',
+                  'This defines how far back data can be accessed. For example, if set to 6 months, data from up to 6 months ago is accessible.',
+                )}
+              />
+              <Typography variant="body2" fontWeight={500}>
+                {durationDisplay ? `${durationDisplay.value} ${durationUnitLabel}` : '-'}
+              </Typography>
+            </Box>
+          ) : null}
         </Box>
       </CardContent>
     </Card>

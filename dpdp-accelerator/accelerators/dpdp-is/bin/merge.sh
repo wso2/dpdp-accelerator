@@ -49,11 +49,10 @@ if [ -f "${PORTAL_PROPERTIES}" ]; then
 fi
 
 if [ -d "${PORTAL_PATH}" ]; then
-  # A stale exploded webapp from an older accelerator version would be
-  # redeployed alongside the fresh WAR otherwise.
   echo "Removing the previously deployed consent portal"
   rm -rf "${PORTAL_PATH}"
 fi
+# A stale packed WAR would be redeployed over the exploded webapp.
 rm -f "${WEBAPPS_PATH}/consent-portal.war"
 
 echo "Copying accelerator artifacts"

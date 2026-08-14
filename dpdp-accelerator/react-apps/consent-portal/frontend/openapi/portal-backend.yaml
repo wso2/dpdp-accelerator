@@ -16,6 +16,8 @@ tags:
   - name: Health
   - name: Authentication
   - name: User
+  - name: Acting
+  - name: Directory
   - name: Passthrough
 paths:
   /health:
@@ -228,7 +230,7 @@ paths:
       tags: [User]
       summary: Approve selected optional elements
       security:
-        - PortalOAuthDocumentation: [portal:consents:write:self]
+        - PortalOAuthDocumentation: [portal:consents:approve:self]
           AccessTokenPart2: []
       description: >-
         Fetches the current consent with `details=true`, validates selected
@@ -334,6 +336,307 @@ paths:
         '413': { $ref: '#/components/responses/ProxyError' }
         '502': { $ref: '#/components/responses/ProxyError' }
         '503': { $ref: '#/components/responses/ProxyError' }
+
+  /acting/start:
+    get:
+      tags: [Acting]
+      summary: Begin acting for another user
+      description: >-
+        The identity provider identifies the nominee from its own session rather than from a token this
+        service could forward, so the request has to originate in the browser.
+        Redirects to the identity provider, which returns a `subject_token` in the
+        URL fragment. The fragment is readable only by the browser, which posts it
+        back to `/acting/exchange`.
+      security:
+        - PortalOAuthDocumentation: []
+          AccessTokenPart2: []
+      parameters:
+        - in: query
+          name: ownerId
+          required: true
+          description: The account the caller wishes to act for.
+          schema: { type: string, format: uuid }
+      responses:
+        '302':
+          description: >-
+            Redirect to the identity provider, with a one-time acting state
+            cookie issued alongside it.
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+  /acting/exchange:
+    post:
+      tags: [Acting]
+      summary: Exchange the subject token for an acting session
+      description: >-
+        Performs the RFC 8693 token exchange server-side, pairing the subject
+        token with the caller's own access token as `actor_token`. The identity
+        provider compares that token's subject against the subject token's
+        `may_act` claim, so possession of a leaked subject token is not by itself
+        enough. On success the delegated token is stored in an HttpOnly cookie and
+        is never returned to the browser.
+      security:
+        - PortalOAuthDocumentation: []
+          AccessTokenPart2: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [subjectToken, state]
+              properties:
+                subjectToken:
+                  type: string
+                  description: Read from the fragment the identity provider redirected to.
+                state:
+                  type: string
+                  description: Must match the one-time state cookie issued by `/acting/start`.
+      responses:
+        '200':
+          description: Acting session established.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ActingSession' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/ActingForbidden' }
+  /acting/stop:
+    post:
+      tags: [Acting]
+      summary: End the acting session
+      description: >-
+        Clears the delegated token cookie. The cookie is browser-wide, so this
+        ends acting in every tab rather than only the calling one.
+      security:
+        - ActingToken: []
+      responses:
+        '204': { description: Acting session ended. }
+
+  /acting/consents:
+    get:
+      tags: [Acting]
+      summary: List the owner's consents
+      description: >-
+        Requires `portal:consents:read:self` in the delegated token and a live
+        `CONSENT_VIEW` grant. The owner is taken from the delegated token's
+        subject; nothing the browser sends decides whose data is returned.
+      security:
+        - ActingToken: []
+      parameters:
+        - $ref: '#/components/parameters/ActingOwner'
+        - in: query
+          name: consentStatuses
+          description: Comma-separated consent statuses.
+          schema: { type: string }
+        - in: query
+          name: consentTypes
+          description: Comma-separated consent types.
+          schema: { type: string }
+        - in: query
+          name: fromTime
+          description: Inclusive lower bound for updated time, in Unix milliseconds.
+          schema: { type: integer, format: int64 }
+        - in: query
+          name: toTime
+          description: Inclusive upper bound for updated time, in Unix milliseconds.
+          schema: { type: integer, format: int64 }
+        - in: query
+          name: limit
+          description: Maximum number of consents to return.
+          schema: { type: integer }
+        - in: query
+          name: offset
+          description: Zero-based result offset.
+          schema: { type: integer }
+      responses:
+        '200':
+          description: A page of the owner's consents.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentSearchResponse' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/ActingForbidden' }
+        '409': { $ref: '#/components/responses/ActingOwnerMismatch' }
+        '502': { $ref: '#/components/responses/GateUnavailable' }
+        '503': { $ref: '#/components/responses/ProxyError' }
+  /acting/consents/{consentId}:
+    get:
+      tags: [Acting]
+      summary: Read one of the owner's consents
+      description: >-
+        Requires `portal:consents:read:self` and a live `CONSENT_VIEW` grant.
+      security:
+        - ActingToken: []
+      parameters:
+        - $ref: '#/components/parameters/ActingOwner'
+        - $ref: '#/components/parameters/ConsentID'
+      responses:
+        '200':
+          description: Detailed consent snapshot
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentDetail' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/ActingForbidden' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '409': { $ref: '#/components/responses/ActingOwnerMismatch' }
+        '502': { $ref: '#/components/responses/GateUnavailable' }
+  /acting/consents/{consentId}/revoke:
+    post:
+      tags: [Acting]
+      summary: Revoke one of the owner's consents
+      description: >-
+        Requires `portal:consents:write:self` and a live `CONSENT_REVOKE` grant,
+        so a view-only nominee is refused before the consent server is contacted.
+        The consent's immutable `groupId` is sent as the trusted upstream
+        `group-id` header. The audit trail records the nominee as the actor,
+        never the owner.
+      security:
+        - ActingToken: []
+      parameters:
+        - $ref: '#/components/parameters/ActingOwner'
+        - $ref: '#/components/parameters/ConsentID'
+      requestBody:
+        required: false
+        description: Optional revocation details. `actionBy` is controlled by the BFF.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                revocationReason: { type: string }
+      responses:
+        '200':
+          description: Consent server revocation response, returned unchanged.
+          content:
+            application/json:
+              schema:
+                type: object
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/ActingForbidden' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '409': { $ref: '#/components/responses/ActingOwnerMismatch' }
+        '502': { $ref: '#/components/responses/GateUnavailable' }
+  /acting/consents/{consentId}/approve:
+    post:
+      tags: [Acting]
+      summary: Approve one of the owner's pending consents
+      description: >-
+        Requires `portal:consents:approve:self` and a live `CONSENT_APPROVE`
+        grant, which is separate from `CONSENT_REVOKE` and not implied by it:
+        revoking withdraws processing the owner already chose, while approving
+        authorises new processing in their name. The approval is recorded against
+        the owner, whose consent it is; who performed it is carried by the audit
+        trail.
+      security:
+        - ActingToken: []
+      parameters:
+        - $ref: '#/components/parameters/ActingOwner'
+        - $ref: '#/components/parameters/ConsentID'
+      requestBody:
+        required: false
+        description: |
+          Optional elements to approve. An omitted or empty array still causes
+          mandatory elements to be approved and updates the owner's authorization.
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: '#/components/schemas/ConsentApprovalSelection' }
+      responses:
+        '200':
+          description: Consent server update response, returned unchanged.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentDetail' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/ActingForbidden' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+        '409': { $ref: '#/components/responses/ActingOwnerMismatch' }
+        '502': { $ref: '#/components/responses/GateUnavailable' }
+
+  /users/{id}:
+    get:
+      tags: [Directory]
+      summary: Resolve a user ID to a display name
+      description: >-
+        Lets the portal show a readable identity wherever it holds only an ID,
+        such as an owner or nominee returned by the nominee service, which has no
+        directory access of its own.
+
+
+        Either scope is sufficient, and neither implies the other: an ordinary
+        user resolves the people they have nominated, while an administrator
+        resolves anyone at all and holds only the `:any` scope.
+      security:
+        - PortalOAuthDocumentation: [portal:profile:read:self]
+          AccessTokenPart2: []
+        - PortalOAuthDocumentation: [portal:profile:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        '200':
+          description: The user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserSummary' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+  /nominees/lookup:
+    get:
+      tags: [Directory]
+      summary: Find a nominee candidate by email
+      description: >-
+        Nominations are keyed on the user ID, but an owner knows their nominee by
+        email address. This resolves one to the other. The match is exact; no
+        partial or wildcard search is supported.
+      security:
+        - PortalOAuthDocumentation: [portal:profile:read:self]
+          AccessTokenPart2: []
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema: { type: string, format: email }
+      responses:
+        '200':
+          description: The user.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/UserSummary' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '404': { $ref: '#/components/responses/ProxyError' }
+  /admin/users/search:
+    get:
+      tags: [Directory]
+      summary: Search users
+      description: Administrative user search, used to attribute nominations to people.
+      security:
+        - PortalOAuthDocumentation: [portal:profile:read:any]
+          AccessTokenPart2: []
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching users.
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/UserSummary' }
+        '400': { $ref: '#/components/responses/ProxyError' }
+        '401': { $ref: '#/components/responses/AuthError' }
+        '403': { $ref: '#/components/responses/AuthError' }
 
   /api/consents:
     get:
@@ -621,20 +924,47 @@ components:
           tokenUrl: https://idp.example.com/oauth2/token
           scopes:
             'portal:consents:read:self': Read the current user's consents.
-            'portal:consents:write:self': Approve or revoke the current user's consents.
+            'portal:consents:write:self': Revoke the current user's consents.
+            'portal:consents:approve:self': Approve the current user's pending consents. Separate from write because approving authorises new processing, while revoking withdraws processing already chosen.
             'portal:consents:read:any': Read consents through passthrough APIs.
             'portal:consents:write:any': Modify consents through passthrough APIs.
             'portal:elements:read': Read consent elements.
             'portal:elements:write': Modify consent elements.
             'portal:purposes:read': Read consent purposes.
+            'portal:profile:read:self': Read the current user's profile.
+            'portal:profile:write:self': Change the current user's profile.
+            'portal:profile:delete:self': Close the current user's account.
+            'portal:profile:read:any': Read any user's profile (administrative).
+            'portal:profile:write:any': Change any user's profile (administrative).
             'portal:purposes:write': Modify consent purposes.
     AccessTokenPart2:
       type: apiKey
       in: cookie
       name: portal-at-p2
       description: Configurable HttpOnly second-half access-token cookie.
+    ActingToken:
+      type: apiKey
+      in: cookie
+      name: portal-acting-token
+      description: >-
+        Configurable HttpOnly cookie holding the delegated token obtained by
+        `/acting/exchange`. It is not split, because it is never read by
+        JavaScript, and it authenticates the acting routes in place of the
+        caller's own access token. Its subject is the owner and its scopes were
+        narrowed to the owner's grant when it was minted, so it cannot be used to
+        widen access later.
   parameters:
     ConsentID: { in: path, name: consentId, required: true, schema: { type: string } }
+    ActingOwner:
+      in: header
+      name: X-Acting-Owner
+      required: true
+      description: >-
+        The owner the caller believes it is acting for. Compared against the
+        delegated token's subject and rejected with `409` when they differ, so a
+        tab whose acting session was replaced by another tab fails loudly instead
+        of silently operating on the wrong account.
+      schema: { type: string, format: uuid }
     PurposeID: { in: path, name: purposeId, required: true, schema: { type: string } }
     ElementID: { in: path, name: elementId, required: true, schema: { type: string } }
     Version: { in: path, name: version, required: true, schema: { type: string, pattern: '^v[1-9][0-9]*$' } }
@@ -764,6 +1094,35 @@ components:
       properties:
         code: { type: string, example: UPSTREAM_UNAVAILABLE }
         message: { type: string, example: upstream unavailable }
+    ActingSession:
+      type: object
+      description: >-
+        What the caller may do for this owner. The delegated token itself is
+        never returned; it is held in an HttpOnly cookie.
+      required: [ownerId, nomineeId, scopes]
+      properties:
+        ownerId: { type: string, format: uuid }
+        nomineeId:
+          type: string
+          format: uuid
+          description: >-
+            The real person acting, recorded so the portal can always name them
+            rather than presenting the session as the owner's own.
+        scopes:
+          type: array
+          uniqueItems: true
+          items: { type: string }
+          description: >-
+            Narrowed at mint time to what the owner granted, forming a ceiling
+            that no later request can raise.
+        expiresAt: { type: string, format: date-time }
+    UserSummary:
+      type: object
+      required: [id]
+      properties:
+        id: { type: string, format: uuid }
+        name: { type: string }
+        email: { type: string, format: email }
   responses:
     AuthError:
       description: Authentication request rejected.
@@ -772,6 +1131,48 @@ components:
           schema: { $ref: '#/components/schemas/ProxyError' }
     ProxyError:
       description: BFF or upstream proxy error
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ProxyError' }
+    ActingForbidden:
+      description: >-
+        Refused by one of the two independent checks. `INSUFFICIENT_SCOPE` means
+        the delegated token never carried the scope, which was fixed when the
+        token was minted. `NOT_ACTIVE_NOMINEE` and `PERMISSION_DENIED` come from
+        the live nomination gate, read fresh on every request, which is what makes
+        withdrawal take effect at once rather than at token expiry.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ProxyError' }
+          examples:
+            insufficientScope:
+              value:
+                code: INSUFFICIENT_SCOPE
+                message: delegated token does not carry portal:consents:write:self
+            notActiveNominee:
+              value:
+                code: NOT_ACTIVE_NOMINEE
+                message: no active nomination for this owner
+            permissionDenied:
+              value:
+                code: PERMISSION_DENIED
+                message: owner did not grant CONSENT_APPROVE to this nominee
+    ActingOwnerMismatch:
+      description: >-
+        The caller named an owner that is not this session's, because another tab
+        has since started acting for somebody else.
+      content:
+        application/json:
+          schema: { $ref: '#/components/schemas/ProxyError' }
+          example:
+            code: ACTING_OWNER_MISMATCH
+            message: this acting session is for a different owner
+    GateUnavailable:
+      description: >-
+        The nomination gate could not be reached, so the request is refused. A
+        delegation system that allows access when its authority check is
+        unavailable is worse than one with no check, because it appears to have
+        one.
       content:
         application/json:
           schema: { $ref: '#/components/schemas/ProxyError' }

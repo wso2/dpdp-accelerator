@@ -165,12 +165,12 @@ describe('authenticated API client', () => {
     })
   })
 
-  it('treats an empty API base URL as same-origin', async () => {
+  it('rejects a missing API base URL before calling fetch', async () => {
     vi.stubEnv('VITE_API_BASE_URL', '')
-    const fetchMock = vi.fn().mockResolvedValue(jsonResponse({}))
+    const fetchMock = vi.fn()
     vi.stubGlobal('fetch', fetchMock)
 
-    await apiRequest('/consents')
-    expect(fetchMock).toHaveBeenCalledWith(`${window.location.origin}/consents`, expect.anything())
+    await expect(apiRequest('/consents')).rejects.toThrow('VITE_API_BASE_URL is required')
+    expect(fetchMock).not.toHaveBeenCalled()
   })
 })

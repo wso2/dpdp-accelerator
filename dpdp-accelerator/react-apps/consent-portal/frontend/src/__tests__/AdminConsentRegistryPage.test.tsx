@@ -18,7 +18,7 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AcrylicOrangeTheme, CssBaseline, OxygenUIThemeProvider } from '@wso2/oxygen-ui'
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, describe, expect, it, vi } from 'vitest'
@@ -35,141 +35,60 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
-function renderAdminPage(initialEntry = '/administration/consents'): void {
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-
-  render(
-    <OxygenUIThemeProvider theme={AcrylicOrangeTheme}>
-      <CssBaseline />
-      <I18nextProvider i18n={i18n}>
-        <QueryClientProvider client={queryClient}>
-          <MemoryRouter initialEntries={[initialEntry]}>
-            <TestAuthorizationProvider scopes={[PORTAL_SCOPES.CONSENTS_READ_ANY]}>
-              <Routes>
-                <Route path="/administration/consents" element={<AdminConsentRegistryPage />} />
-              </Routes>
-            </TestAuthorizationProvider>
-          </MemoryRouter>
-        </QueryClientProvider>
-      </I18nextProvider>
-    </OxygenUIThemeProvider>,
-  )
-}
-
 describe('AdminConsentRegistryPage', () => {
-  it('renders the native Consents envelope and labels subjects as users', async () => {
-    vi.stubGlobal('fetch', fetchMock)
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        totalResults: 2,
-        links: [
-          {
-            rel: 'next',
-            href: 'https://localhost:9443/api/identity/consent-mgt/v2.0/consents?limit=10&after=Mg==',
-          },
-        ],
-        Consents: [
-          {
-            id: 'db0759de-c098-4f44-b78d-6718226db8b2',
-            subjectId: 'admin',
-            serviceId: 'dpdp-portal-spike',
-            state: 'PENDING',
-            timestamp: 1785833928316,
-          },
-        ],
-      }),
-    })
-
-    renderAdminPage()
-
-    expect(await screen.findByText('admin')).toBeInTheDocument()
-    expect(screen.getByText('dpdp-portal-spike')).toBeInTheDocument()
-    expect(screen.getByRole('columnheader', { name: 'User' })).toBeInTheDocument()
-    expect(screen.getByText('Pending')).toBeInTheDocument()
-
-    const [requestUrl] = fetchMock.mock.calls[0] ?? []
-    const url = new URL(String(requestUrl))
-    expect(url.pathname).toBe('/api/consents')
-    expect(Object.fromEntries(url.searchParams)).toEqual({ limit: '10' })
-  })
-
-  it('pages forward with the after cursor taken from links', async () => {
-    vi.stubGlobal('fetch', fetchMock)
-    fetchMock.mockResolvedValue({
-      ok: true,
-      status: 200,
-      json: async () => ({
-        totalResults: 2,
-        links: [
-          {
-            rel: 'next',
-            href: 'https://localhost:9443/api/identity/consent-mgt/v2.0/consents?limit=10&after=Mg==',
-          },
-        ],
-        Consents: [
-          {
-            id: 'consent-1',
-            subjectId: 'admin',
-            serviceId: 'dpdp-portal',
-            state: 'ACTIVE',
-            timestamp: 1785833928316,
-          },
-        ],
-      }),
-    })
-
-    renderAdminPage()
-
-    const nextButton = await screen.findByRole('button', { name: 'Next' })
-    await waitFor(() => expect(nextButton).toBeEnabled())
-    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
-
-    fireEvent.click(nextButton)
-
-    await waitFor(() => {
-      const cursors = fetchMock.mock.calls.map(([requestUrl]) =>
-        new URL(String(requestUrl)).searchParams.get('after'),
-      )
-      expect(cursors).toContain('Mg==')
-    })
-  })
-
-  it('uses the consent details endpoint for a Consent ID search', async () => {
+  it('uses the consent details endpoint and lists its result for a Consent ID search', async () => {
     vi.stubGlobal('fetch', fetchMock)
     fetchMock.mockResolvedValue({
       ok: true,
       status: 200,
       json: async () => ({
         id: 'consent/123',
-        subjectId: 'admin',
-        serviceId: 'dpdp-portal',
-        state: 'ACTIVE',
-        timestamp: 1785833928316,
+        groupId: 'group-1',
+        type: 'accounts',
+        status: 'ACTIVE',
+        updatedTime: 1_780_000_000_000,
+        expirationTime: 0,
         purposes: [
           {
-            id: 'purpose-1',
-            name: 'marketing-spike',
-            type: 'CONSENT',
-            versionId: 'version-1',
-            version: '1.0.0',
+            purposeId: 'purpose-1',
+            name: 'account_access',
+            displayName: 'Account access',
+            version: 'v1',
             elements: [],
           },
         ],
-        authorizations: [],
       }),
     })
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
 
-    renderAdminPage('/administration/consents?consentId=consent%2F123')
+    render(
+      <OxygenUIThemeProvider theme={AcrylicOrangeTheme}>
+        <CssBaseline />
+        <I18nextProvider i18n={i18n}>
+          <QueryClientProvider client={queryClient}>
+            <MemoryRouter initialEntries={['/administration/consents?consentId=consent%2F123']}>
+              <TestAuthorizationProvider scopes={[PORTAL_SCOPES.CONSENTS_READ_ANY]}>
+                <Routes>
+                  <Route path="/administration/consents" element={<AdminConsentRegistryPage />} />
+                </Routes>
+              </TestAuthorizationProvider>
+            </MemoryRouter>
+          </QueryClientProvider>
+        </I18nextProvider>
+      </OxygenUIThemeProvider>,
+    )
 
-    expect(await screen.findByText('marketing-spike')).toBeInTheDocument()
+    expect(await screen.findByText('Account access')).toBeInTheDocument()
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1))
-
     const [requestUrl] = fetchMock.mock.calls[0] ?? []
     const url = new URL(String(requestUrl))
     expect(url.pathname).toBe('/api/consents/consent%2F123')
-    expect(Object.fromEntries(url.searchParams)).toEqual({})
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      details: 'true',
+      includeStatusHistory: 'true',
+    })
     expect(screen.getByRole('link', { name: 'View' })).toHaveAttribute(
       'href',
       '/administration/consents/consent%2F123',

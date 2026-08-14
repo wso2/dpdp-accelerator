@@ -16,6 +16,7 @@
  * under the License.
  */
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { AcrylicOrangeTheme, OxygenUIThemeProvider } from '@wso2/oxygen-ui'
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { I18nextProvider } from 'react-i18next'
@@ -23,108 +24,100 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import AdminConsentFilters from '../features/admin-consents/components/AdminConsentFilters'
 import {
   EMPTY_ADMIN_CONSENT_FILTERS,
-  getAdminConsentFilters,
   normalizeAdminConsentFilters,
 } from '../features/admin-consents/utils/adminConsentFilters'
 import i18n from '../i18n/i18n'
 
-function renderFilters(
-  filters = EMPTY_ADMIN_CONSENT_FILTERS,
-  onFilterChange = vi.fn(),
-  onClear = vi.fn(),
-): void {
-  render(
-    <OxygenUIThemeProvider theme={AcrylicOrangeTheme}>
-      <I18nextProvider i18n={i18n}>
-        <AdminConsentFilters filters={filters} onFilterChange={onFilterChange} onClear={onClear} />
-      </I18nextProvider>
-    </OxygenUIThemeProvider>,
-  )
-}
-
 afterEach(cleanup)
 
 describe('administrative consent filters', () => {
-  it('trims the supported filter values', () => {
+  it('normalizes ID lists and removes dependent versions without their identity', () => {
     expect(
       normalizeAdminConsentFilters({
-        state: 'ACTIVE',
-        consentId: '  consent-1 ',
-        subjectId: ' admin ',
-        serviceId: ' dpdp-portal ',
+        ...EMPTY_ADMIN_CONSENT_FILTERS,
+        userIds: ' user-1, user-2, user-1, ,',
+        groupIds: 'group-1, group-1,group-2',
+        purposeVersion: 'v2',
+        elementVersion: 'v3',
       }),
-    ).toEqual({
-      state: 'ACTIVE',
-      consentId: 'consent-1',
-      subjectId: 'admin',
-      serviceId: 'dpdp-portal',
+    ).toMatchObject({
+      userIds: 'user-1,user-2',
+      groupIds: 'group-1,group-2',
+      purposeVersion: '',
+      elementVersion: '',
     })
   })
 
-  it('reads native consent states from the URL and ignores unknown ones', () => {
-    expect(getAdminConsentFilters(new URLSearchParams('state=PENDING')).state).toBe('PENDING')
-    expect(getAdminConsentFilters(new URLSearchParams('state=CREATED')).state).toBe('All')
-    expect(getAdminConsentFilters(new URLSearchParams('subjectId=admin')).subjectId).toBe('admin')
-  })
+  it('uses free-text element fields when ELEMENTS_READ is unavailable', () => {
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
 
-  it('offers only the subject and service advanced filters', () => {
-    const onFilterChange = vi.fn()
-    renderFilters(EMPTY_ADMIN_CONSENT_FILTERS, onFilterChange)
+    render(
+      <OxygenUIThemeProvider theme={AcrylicOrangeTheme}>
+        <I18nextProvider i18n={i18n}>
+          <QueryClientProvider client={queryClient}>
+            <AdminConsentFilters
+              filters={{ ...EMPTY_ADMIN_CONSENT_FILTERS }}
+              canReadElements={false}
+              onFilterChange={vi.fn()}
+              onClear={vi.fn()}
+            />
+          </QueryClientProvider>
+        </I18nextProvider>
+      </OxygenUIThemeProvider>,
+    )
 
     expect(screen.getByPlaceholderText('Search by consent ID')).toBeInTheDocument()
+    expect(screen.queryByPlaceholderText('Search by purpose name')).not.toBeInTheDocument()
 
     fireEvent.click(screen.getByRole('button', { name: 'Advanced filters' }))
 
-    const subjectId = screen.getByRole('textbox', { name: 'User' })
-    const serviceId = screen.getByRole('textbox', { name: 'Service' })
-    expect(subjectId).toBeEnabled()
-    expect(serviceId).toBeEnabled()
-    expect(screen.queryByRole('textbox', { name: /element/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('textbox', { name: /group/i })).not.toBeInTheDocument()
-    expect(screen.queryByRole('textbox', { name: /purpose/i })).not.toBeInTheDocument()
+    expect(screen.getByRole('textbox', { name: 'Purpose name' })).toBeEnabled()
+    const elementName = screen.getByRole('textbox', { name: 'Element name' })
+    const elementNamespace = screen.getByRole('textbox', { name: 'Element namespace' })
+    const elementVersion = screen.getByRole('textbox', { name: 'Element version' })
+    expect(elementName).toBeEnabled()
+    expect(elementNamespace).toBeEnabled()
+    expect(elementVersion).toBeDisabled()
 
-    fireEvent.change(subjectId, { target: { value: ' admin ' } })
-    fireEvent.change(serviceId, { target: { value: 'dpdp-portal' } })
-    fireEvent.click(screen.getByRole('button', { name: 'Apply' }))
-
-    expect(onFilterChange).toHaveBeenCalledWith({
-      state: 'All',
-      consentId: '',
-      subjectId: 'admin',
-      serviceId: 'dpdp-portal',
-    })
-  })
-
-  it('lists every native consent state in the state filter', () => {
-    renderFilters()
-
-    fireEvent.mouseDown(screen.getByRole('combobox', { name: 'State' }))
-
-    expect(screen.getByRole('option', { name: 'All' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'Pending' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'Active' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'Rejected' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'Revoked' })).toBeInTheDocument()
-    expect(screen.getByRole('option', { name: 'Expired' })).toBeInTheDocument()
-    expect(screen.queryByRole('option', { name: 'Created' })).not.toBeInTheDocument()
+    fireEvent.change(elementName, { target: { value: 'account-number' } })
+    expect(elementVersion).toBeEnabled()
   })
 
   it('disables advanced filters and explains why when a Consent ID filter is active', async () => {
-    renderFilters({ ...EMPTY_ADMIN_CONSENT_FILTERS, consentId: 'consent-123' })
+    const queryClient = new QueryClient({
+      defaultOptions: { queries: { retry: false } },
+    })
+
+    render(
+      <OxygenUIThemeProvider theme={AcrylicOrangeTheme}>
+        <I18nextProvider i18n={i18n}>
+          <QueryClientProvider client={queryClient}>
+            <AdminConsentFilters
+              filters={{ ...EMPTY_ADMIN_CONSENT_FILTERS, consentId: 'consent-123' }}
+              canReadElements={false}
+              onFilterChange={vi.fn()}
+              onClear={vi.fn()}
+            />
+          </QueryClientProvider>
+        </I18nextProvider>
+      </OxygenUIThemeProvider>,
+    )
 
     const advancedFiltersButton = screen.getByRole('button', { name: 'Advanced filters' })
-    const stateSelect = screen.getByRole('combobox', { name: 'State' })
+    const statusSelect = screen.getByRole('combobox', { name: 'Status' })
     expect(advancedFiltersButton).toBeDisabled()
-    expect(stateSelect).toHaveAttribute('aria-disabled', 'true')
+    expect(statusSelect).toHaveAttribute('aria-disabled', 'true')
 
     fireEvent.mouseOver(advancedFiltersButton.parentElement as HTMLElement)
     expect(
       await screen.findByText('Remove the Consent ID filter to use advanced filters.'),
     ).toBeInTheDocument()
 
-    fireEvent.mouseOver(stateSelect.closest('[aria-label]') as HTMLElement)
+    fireEvent.mouseOver(statusSelect.closest('[aria-label]') as HTMLElement)
     expect(
-      await screen.findByText('Remove the Consent ID filter to use the state filter.'),
+      await screen.findByText('Remove the Consent ID filter to use the status filter.'),
     ).toBeInTheDocument()
   })
 })

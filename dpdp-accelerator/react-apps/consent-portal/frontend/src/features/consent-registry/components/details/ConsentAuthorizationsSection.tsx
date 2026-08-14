@@ -18,6 +18,7 @@
 
 import {
   Avatar,
+  Button,
   Card,
   CardHeader,
   Chip,
@@ -29,19 +30,43 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from '@wso2/oxygen-ui'
+import { Eye } from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
-import type { ConsentAuthorization } from '../../../../types/consent'
+import type { ConsentAuthorizationResource } from '../../../../types/consent'
 import { formatEpochTimestamp } from '../../../../utils/dateTime'
-import { getConsentStateChipColor, getConsentStateLabelKey } from '../../utils/statusChip'
+import { getConsentStatusChipColor, getConsentStatusLabelKey } from '../../utils/statusChip'
 
 interface ConsentAuthorizationsSectionProps {
-  authorizations: ConsentAuthorization[]
+  authorizations: ConsentAuthorizationResource[]
+  onViewResources: (resources: unknown) => void
+}
+
+function isEmptyAuthorizationResources(resources: unknown): boolean {
+  if (resources == null) {
+    return true
+  }
+
+  if (typeof resources === 'string') {
+    return resources.trim().length === 0
+  }
+
+  if (Array.isArray(resources)) {
+    return resources.length === 0
+  }
+
+  if (typeof resources === 'object') {
+    return Object.keys(resources as Record<string, unknown>).length === 0
+  }
+
+  return false
 }
 
 function ConsentAuthorizationsSection({
   authorizations,
+  onViewResources,
 }: ConsentAuthorizationsSectionProps): React.JSX.Element {
   const { t } = useTranslation('common')
 
@@ -50,70 +75,89 @@ function ConsentAuthorizationsSection({
       <CardHeader
         title={
           <Typography variant="h5" fontWeight={600}>
-            {t('consentRegistry.details.section.authorizations')}
+            {t('consentRegistry.details.section.authorizations', 'Authorizations')}
           </Typography>
         }
         sx={{ pb: 1 }}
       />
       <Divider />
       <TableContainer>
-        <Table
-          aria-label={t('consentRegistry.details.section.authorizations')}
-          sx={{ '& tbody tr:hover': { bgcolor: 'action.hover' } }}
-        >
+        <Table sx={{ '& tbody tr:hover': { bgcolor: 'action.hover' } }}>
           <TableHead>
             <TableRow sx={{ bgcolor: 'action.default' }}>
               <TableCell sx={{ fontWeight: 700 }}>
-                {t('consentRegistry.details.table.user')}
+                {t('consentRegistry.details.table.user', 'User')}
               </TableCell>
               <TableCell sx={{ fontWeight: 700 }}>
-                {t('consentRegistry.details.table.state')}
+                {t('consentRegistry.details.table.status', 'Status')}
               </TableCell>
               <TableCell sx={{ fontWeight: 700 }}>
-                {t('consentRegistry.details.table.updated')}
+                {t('consentRegistry.details.table.updated', 'Updated')}
+              </TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>
+                {t('consentRegistry.details.table.resources', 'Resources')}
               </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {authorizations.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={3}>
-                  <Typography variant="body2" color="text.secondary" align="center">
-                    {t('consentRegistry.details.noAuthorizations')}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ) : null}
-            {authorizations.map((authorization) => (
-              <TableRow key={`${authorization.userId}-${String(authorization.updatedTime)}`}>
-                <TableCell>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>
-                      {authorization.userId.charAt(0).toUpperCase()}
-                    </Avatar>
-                    <Typography variant="body2">{authorization.userId}</Typography>
-                  </Stack>
-                </TableCell>
-                <TableCell>
-                  <Chip
-                    label={t(
-                      `consentRegistry.status.${getConsentStateLabelKey(
-                        authorization.state,
-                        'authorization',
-                      )}`,
-                    )}
-                    color={getConsentStateChipColor(authorization.state)}
-                    size="small"
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">
-                    {formatEpochTimestamp(authorization.updatedTime)}
-                  </Typography>
-                </TableCell>
-              </TableRow>
-            ))}
+            {authorizations.map((authorization) => {
+              const resourcesEmpty = isEmptyAuthorizationResources(authorization.resources)
+
+              return (
+                <TableRow key={authorization.id}>
+                  <TableCell>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>
+                        {(authorization.userId ?? 'U').charAt(0).toUpperCase()}
+                      </Avatar>
+                      <Typography variant="body2">{authorization.userId ?? '-'}</Typography>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      label={t(
+                        `consentRegistry.status.${getConsentStatusLabelKey(
+                          authorization.status,
+                          'authorization',
+                        )}`,
+                      )}
+                      color={getConsentStatusChipColor(authorization.status)}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">
+                      {formatEpochTimestamp(authorization.updatedTime)}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip
+                      title={t(
+                        'consentRegistry.details.actions.noResourcesTooltip',
+                        'No resources available',
+                      )}
+                      disableHoverListener={!resourcesEmpty}
+                    >
+                      <span>
+                        <Button
+                          size="small"
+                          variant="contained"
+                          color="secondary"
+                          startIcon={<Eye size={14} />}
+                          disabled={resourcesEmpty}
+                          onClick={() => {
+                            onViewResources(authorization.resources)
+                          }}
+                        >
+                          {t('consentRegistry.details.actions.viewResources', 'View Resources')}
+                        </Button>
+                      </span>
+                    </Tooltip>
+                  </TableCell>
+                </TableRow>
+              )
+            })}
           </TableBody>
         </Table>
       </TableContainer>

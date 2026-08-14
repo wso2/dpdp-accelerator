@@ -30,8 +30,15 @@ function httpOrigin(value: string): string {
   return url.origin
 }
 
+/**
+ * Builds the connect-src directive.
+ *
+ * The base may be an absolute origin, when the BFF is deployed separately, or a
+ * path such as "/consent-portal" when the SPA is packaged into the BFF's own
+ * webapp. A path means same-origin, which 'self' already covers - and it is not
+ * a valid URL, so it must never reach the URL parser.
+ */
 function connectSrc(apiBaseURL: string): string {
-  // A relative or empty base means the BFF is same-origin: 'self' covers it.
   if (!apiBaseURL || apiBaseURL.startsWith('/')) {
     return "connect-src 'self'"
   }
@@ -48,7 +55,7 @@ export function contentSecurityPolicy(options: ContentSecurityPolicyOptions): st
     "style-src 'self' 'unsafe-inline'",
     connectSrc(options.apiBaseURL),
     "img-src 'self' data:",
-    "font-src 'self'",
+    "font-src 'self' data:",
     "object-src 'none'",
     "base-uri 'none'",
     "form-action 'self'",

@@ -29,9 +29,13 @@ function envCookieName(key: string, fallback: string): string {
 }
 
 function apiURL(path: string): string {
-  const baseURL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? ''
+  const baseURL = import.meta.env.VITE_API_BASE_URL
+  if (!baseURL) {
+    throw new Error('VITE_API_BASE_URL is required for authentication.')
+  }
   const normalizedBase = baseURL.endsWith('/') ? baseURL.slice(0, -1) : baseURL
-  // Resolve same-origin bases such as "/consent-portal" to an absolute URL.
+  // Absolute so the navigation-origin allowlist can compare origins; a
+  // same-origin path base resolves against the page.
   return new URL(`${normalizedBase}${path}`, window.location.origin).toString()
 }
 

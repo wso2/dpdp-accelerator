@@ -1,0 +1,33 @@
+# Tests run against MySQL, the same engine the service runs on, in a database of
+# their own so they never touch real data. The schema is created and dropped per
+# run, so no script has to be applied first.
+#
+# Requires a reachable MySQL and the database to exist:
+#   mysql -u root -p -e "CREATE DATABASE IF NOT EXISTS nominee_mgt_test;"
+spring:
+  profiles:
+    active: test
+  datasource:
+    url: jdbc:mysql://${NOMINEE_DB_HOST:localhost}:${NOMINEE_DB_PORT:3306}/${NOMINEE_TEST_DB_NAME:nominee_mgt_test}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${NOMINEE_DB_USER:root}
+    password: ${NOMINEE_DB_PASSWORD:}
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.MySQLDialect
+    open-in-view: false
+bff:
+  base-url: http://localhost:0
+  internal-api-key: test-key
+identityserver:
+  issuer-uri: http://localhost:0
+  jwk-set-uri: http://localhost:0/jwks
+  audience: test-audience
+  tls-skip-verify: true
+impersonation-gate:
+  internal-api-key: test-gate-key
+access-token:
+  part2-cookie: portal-at-p2
+cors:
+  allowed-origins: http://localhost:5173

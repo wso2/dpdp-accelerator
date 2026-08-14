@@ -1,0 +1,12 @@
+# Create the schema first:
+#   psql -U <user> -d <database> -f dbscripts/db_schema_postgres.sql
+spring:
+  datasource:
+    url: jdbc:postgresql://${NOMINEE_DB_HOST:localhost}:${NOMINEE_DB_PORT:5432}/${NOMINEE_DB_NAME:nominee_mgt}
+    driver-class-name: org.postgresql.Driver
+    username: ${NOMINEE_DB_USER}
+    password: ${NOMINEE_DB_PASSWORD}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQLDialect

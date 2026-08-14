@@ -16,34 +16,76 @@
  * under the License.
  */
 
-import type { AdminConsentRegistryFilters, ConsentState } from '../../../types/consent'
-import { isConsentState } from '../../../types/consent'
+import type { AdminConsentRegistryFilters } from '../../../types/consent'
 
 export const EMPTY_ADMIN_CONSENT_FILTERS: AdminConsentRegistryFilters = {
-  state: 'All',
+  status: 'All',
   consentId: '',
-  subjectId: '',
-  serviceId: '',
+  purposeName: '',
+  purposeVersion: '',
+  userIds: '',
+  groupIds: '',
+  elementName: '',
+  elementNamespace: '',
+  elementVersion: '',
+  startDate: '',
+  endDate: '',
+}
+
+const VALID_STATUSES: AdminConsentRegistryFilters['status'][] = [
+  'All',
+  'Active',
+  'Pending',
+  'Rejected',
+  'Revoked',
+  'Expired',
+]
+
+export function normalizeCommaSeparatedIDs(value: string): string {
+  return Array.from(
+    new Set(
+      value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean),
+    ),
+  ).join(',')
 }
 
 export function normalizeAdminConsentFilters(
   filters: AdminConsentRegistryFilters,
 ): AdminConsentRegistryFilters {
+  const purposeName = filters.purposeName.trim()
+  const elementName = filters.elementName.trim()
+  const elementNamespace = filters.elementNamespace.trim()
   return {
-    state: filters.state,
+    ...filters,
     consentId: filters.consentId.trim(),
-    subjectId: filters.subjectId.trim(),
-    serviceId: filters.serviceId.trim(),
+    purposeName,
+    purposeVersion: purposeName ? filters.purposeVersion.trim() : '',
+    userIds: normalizeCommaSeparatedIDs(filters.userIds),
+    groupIds: normalizeCommaSeparatedIDs(filters.groupIds),
+    elementName,
+    elementNamespace,
+    elementVersion: elementName || elementNamespace ? filters.elementVersion.trim() : '',
   }
 }
 
 export function getAdminConsentFilters(searchParams: URLSearchParams): AdminConsentRegistryFilters {
-  const state = searchParams.get('state') ?? ''
-
+  const status = searchParams.get('status')
   return normalizeAdminConsentFilters({
-    state: isConsentState(state) ? (state as ConsentState) : 'All',
+    status: VALID_STATUSES.includes(status as AdminConsentRegistryFilters['status'])
+      ? (status as AdminConsentRegistryFilters['status'])
+      : 'All',
     consentId: searchParams.get('consentId') ?? '',
-    subjectId: searchParams.get('subjectId') ?? '',
-    serviceId: searchParams.get('serviceId') ?? '',
+    purposeName: searchParams.get('purposeName') ?? '',
+    purposeVersion: searchParams.get('purposeVersion') ?? '',
+    userIds: searchParams.get('userIds') ?? '',
+    groupIds: searchParams.get('groupIds') ?? '',
+    elementName: searchParams.get('elementName') ?? '',
+    elementNamespace: searchParams.get('elementNamespace') ?? '',
+    elementVersion: searchParams.get('elementVersion') ?? '',
+    startDate: searchParams.get('startDate') ?? '',
+    endDate: searchParams.get('endDate') ?? '',
   })
 }

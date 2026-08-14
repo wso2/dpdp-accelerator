@@ -35,13 +35,35 @@ public final class PortalConstants {
     public static final String ID_TOKEN_PART2_COOKIE = "portal-id-p2";
     public static final String AUTH_TRANSACTION_COOKIE = "portal-auth-txn";
 
+    // Acting-as (nominee delegation) cookies. Separate from the login cookies
+    // above so that ending an acting session never disturbs the nominee's own
+    // login, and a mask token can never be mistaken for a first-party access
+    // token (see frontend/src/features/nominee).
+    public static final String ACTING_STATE_COOKIE = "portal-acting-state";
+    public static final String ACTING_TOKEN_COOKIE = "portal-acting-token";
+    public static final String ACTING_OWNER_HEADER = "X-Acting-Owner";
+
     public static final int AUTH_TRANSACTION_MAX_AGE_SECONDS = 300;
     public static final int REFRESH_COOKIE_MAX_AGE_SECONDS = 86400;
+    public static final int ACTING_STATE_MAX_AGE_SECONDS = 300;
 
     public static final String ERROR_UNAUTHORIZED = "UNAUTHORIZED";
     public static final String ERROR_FORBIDDEN = "FORBIDDEN";
     public static final String ERROR_BAD_REQUEST = "BAD_REQUEST";
     public static final String ERROR_UPSTREAM = "UPSTREAM_ERROR";
+    public static final String ERROR_NOT_FOUND = "NOT_FOUND";
+    public static final String ERROR_ADMIN_REQUIRED = "ADMIN_REQUIRED";
+    public static final String ERROR_INVALID_TOKEN = "INVALID_TOKEN";
+    public static final String ERROR_VERIFIER_UNAVAILABLE = "VERIFIER_UNAVAILABLE";
+    public static final String ERROR_ACTING_OWNER_MISMATCH = "ACTING_OWNER_MISMATCH";
+    public static final String ERROR_INSUFFICIENT_SCOPE = "INSUFFICIENT_SCOPE";
+    public static final String ERROR_NOT_ACTIVE_NOMINEE = "NOT_ACTIVE_NOMINEE";
+    public static final String ERROR_PERMISSION_DENIED = "PERMISSION_DENIED";
+    public static final String ERROR_CONSENT_NOT_FOUND = "CONSENT_NOT_FOUND";
+    public static final String ERROR_INVALID_STATE = "INVALID_STATE";
+    public static final String ERROR_NOT_AUTHENTICATED = "NOT_AUTHENTICATED";
+    public static final String ERROR_INVALID_PAYLOAD = "INVALID_PAYLOAD";
+    public static final String ERROR_INTERNAL = "INTERNAL_ERROR";
 
     public static final String CONTENT_TYPE_JSON = "application/json";
     public static final String CONTENT_TYPE_FORM = "application/x-www-form-urlencoded";

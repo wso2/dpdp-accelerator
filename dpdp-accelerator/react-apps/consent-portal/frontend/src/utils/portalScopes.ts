@@ -25,6 +25,20 @@ export const PORTAL_SCOPES = {
   ELEMENTS_WRITE: 'portal:elements:write',
   PURPOSES_READ: 'portal:purposes:read',
   PURPOSES_WRITE: 'portal:purposes:write',
+
+  // Approving is separate from writing because the two are opposite acts:
+  // revoking withdraws processing already chosen, approving authorises new
+  // processing. A nominee granted one must not thereby hold the other.
+  CONSENTS_APPROVE_SELF: 'portal:consents:approve:self',
+
+  PROFILE_READ_SELF: 'portal:profile:read:self',
+  PROFILE_WRITE_SELF: 'portal:profile:write:self',
+  PROFILE_DELETE_SELF: 'portal:profile:delete:self',
+
+  // Administrative. Never delegated: an :any scope would reach beyond the one
+  // owner a nomination concerns.
+  PROFILE_READ_ANY: 'portal:profile:read:any',
+  PROFILE_WRITE_ANY: 'portal:profile:write:any',
 } as const
 
 export type PortalScope = (typeof PORTAL_SCOPES)[keyof typeof PORTAL_SCOPES]

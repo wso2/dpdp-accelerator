@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "સંમતિ પોર્ટલ"
+  },
+  "language": {
+    "label": "ભાષા",
+    "selectAria": "ભાષા પસંદ કરો"
+  },
+  "authorization": {
+    "loading": "તમારું સેશન લોડ થઈ રહ્યું છે",
+    "loadFailed": "તમારું સેશન લોડ કરવામાં અસમર્થ.",
+    "tryAgain": "ફરી પ્રયાસ કરો",
+    "noAccessTitle": "પોર્ટલ એક્સેસ નથી",
+    "noAccessDescription": "તમારા અકાઉન્ટ પાસે કોઈ પોર્ટલ પેજ એક્સેસ કરવાની પરવાનગી નથી."
+  },
+  "copyableText": {
+    "copy": "કોપી કરો",
+    "copied": "કોપી થઈ ગયું",
+    "copyLabel": "{{label}} કોપી કરો",
+    "copyValue": "{{label}} {{value}} કોપી કરો",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "મુખ્ય નેવિગેશન",
+    "dashboard": "ડેશબોર્ડ",
+    "consent": "સંમતિ",
+    "allConsents": "તમામ સંમતિઓ",
+    "pendingConsents": "પેન્ડિંગ સંમતિઓ",
+    "catalog": "વ્યાખ્યાઓ",
+    "purposes": "હેતુઓ",
+    "elements": "ઘટકો",
+    "administration": "વહીવટ",
+    "adminConsents": "સંમતિઓ",
+    "nominations": "નામાંકનો",
+    "nomineeActivation": "નામાંકિત સક્રિયકરણ",
+    "myComplaints": "મારી ફરિયાદો",
+    "complaintManagement": "ફરિયાદો",
+    "dataProcessors": "ડેટા પ્રોસેસર્સ",
+    "dataProcessorTopics": "વિષયો",
+    "dataProcessorSubscriptions": "સબ્સ્ક્રિપ્શન્સ",
+    "dataProcessorEvents": "ઇવેન્ટ્સ"
+  },
+  "layout": {
+    "home": "હોમ",
+    "breadcrumbAriaLabel": "બ્રેડક્રમ્બ",
+    "userMenu": {
+      "unknownUser": "અજ્ઞાત વપરાશકર્તા",
+      "noEmail": "ઈમેલ ઉપલબ્ધ નથી",
+      "signOut": "સાઇન આઉટ",
+      "signOutError": "સાઇન આઉટ કરવામાં અસમર્થ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+      "tryAgain": "ફરી પ્રયાસ કરો"
+    }
+  },
+  "dashboard": {
+    "active": "સક્રિય સંમતિઓ",
+    "attention": "તમારા ધ્યાનની જરૂર છે",
+    "commonPurposes": "સૌથી વધુ શેર કરાયેલા હેતુઓ",
+    "commonPurposesSubtitle": "તમારી સક્રિય સંમતિઓમાં સમાવિષ્ટ હેતુઓ",
+    "consentCount": "{{count}} સંમતિઓ",
+    "consentCount_one": "{{count}} સંમતિ",
+    "consentCount_other": "{{count}} સંમતિઓ",
+    "expiringSoon": "ટૂંક સમયમાં સમાપ્ત થાય છે",
+    "loadFailed": "અત્યારે તમારું ડેશબોર્ડ લોડ કરવામાં અસમર્થ.",
+    "noExpiring": "આગામી {{days}} દિવસોમાં કોઈ સક્રિય સંમતિ સમાપ્ત થતી નથી.",
+    "noPending": "તમારી પાસે સમીક્ષા માટે કોઈ પેન્ડિંગ સંમતિ નથી.",
+    "noPurposes": "હજુ સુધી કોઈ શેર કરેલા હેતુઓ ઉપલબ્ધ નથી.",
+    "pending": "પેન્ડિંગ સંમતિઓ",
+    "pendingConsents": "પેન્ડિંગ સંમતિઓ",
+    "subtitle": "તમારી સંમતિ પ્રવૃત્તિ અને આગામી ક્રિયાઓની વિહંગાવલોકન.",
+    "title": "ડેશબોર્ડ",
+    "typeBreakdown": "સંમતિના પ્રકાર મુજબ વિભાજન",
+    "typeBreakdownSubtitle": "પ્રકાર અનુસાર જૂથબદ્ધ તમારી બધી સંમતિઓ",
+    "noTypes": "હજુ સુધી કોઈ સંમતિ પ્રકારો ઉપલબ્ધ નથી.",
+    "viewPending": "તમામ પેન્ડિંગ સંમતિઓ જુઓ"
+  },
+  "adminConsents": {
+    "title": "સંમતિઓ",
+    "filters": {
+      "sectionAriaLabel": "વહીવટી સંમતિ ફિલ્ટર્સ",
+      "consentIdSearchPlaceholder": "સંમતિ ID દ્વારા શોધો",
+      "removeConsentIdForAdvanced": "એડવાન્સ્ડ ફિલ્ટર્સનો ઉપયોગ કરવા માટે સંમતિ ID ફિલ્ટર દૂર કરો.",
+      "removeConsentIdForStatus": "સ્થિતિ ફિલ્ટરનો ઉપયોગ કરવા માટે સંમતિ ID ફિલ્ટર દૂર કરો.",
+      "userIds": "વપરાશકર્તા ID",
+      "groupIds": "જૂથ ID",
+      "commaSeparatedUsers": "બહુવિધ વપરાશકર્તા IDને અલ્પવિરામથી અલગ કરો",
+      "active": "સક્રિય ફિલ્ટર્સ"
+    }
+  },
+  "consentRegistry": {
+    "title": "તમામ સંમતિઓ",
+    "details": {
+      "title": "સંમતિ વિગતો",
+      "consentId": "સંમતિ ID",
+      "status": "સ્થિતિ",
+      "type": "સંમતિ પ્રકાર",
+      "frequency": "એક્સેસ મર્યાદા",
+      "frequencyHelp": "આ દર્શાવે છે કે આ સંમતિ પ્રતિ દિવસ કેટલી વાર એક્સેસ કરી શકાય છે.",
+      "frequencyUnitSingular": "વખત પ્રતિ દિવસ",
+      "frequencyUnitPlural": "વખત પ્રતિ દિવસ",
+      "purposes": "હેતુઓ",
+      "duration": "લુકબેક અવધિ",
+      "durationHelp": "આ વ્યાખ્યાયિત કરે છે કે કેટલો જૂનો ડેટા એક્સેસ કરી શકાય છે. ઉદાહરણ તરીકે, જો 6 મહિના સેટ કરેલ હોય, તો 6 મહિના જૂનો ડેટા એક્સેસ કરી શકાય છે.",
+      "durationUnitHourSingular": "કલાક",
+      "durationUnitHourPlural": "કલાકો",
+      "durationUnitDaySingular": "દિવસ",
+      "durationUnitDayPlural": "દિવસો",
+      "durationUnitYearSingular": "વર્ષ",
+      "durationUnitYearPlural": "વર્ષો",
+      "created": "બનાવેલ",
+      "updated": "અપડેટ કરેલ",
+      "validUntil": "અહીં સુધી માન્ય",
+      "groupId": "જૂથ ID",
+      "recurring": "પુનરાવર્તિત",
+      "back": "રજિસ્ટ્રી પર પાછા જાઓ",
+      "notFound": "સંમતિ રેકોર્ડ મળ્યો નથી",
+      "approved": "મંજૂર કરેલ",
+      "notApproved": "મંજૂર નથી",
+      "approvedCount": "{{approved}}/{{total}} મંજૂર",
+      "section": {
+        "purposes": "સંમતિના હેતુઓ",
+        "authorizations": "અધિકૃતતાઓ",
+        "lifecycle": "સંમતિ લાઇફસાયકલ"
+      },
+      "table": {
+        "element": "ઘટક",
+        "approved": "મંજૂર કરેલ",
+        "required": "અનિવાર્ય",
+        "description": "વર્ણન",
+        "user": "વપરાશકર્તા",
+        "status": "સ્થિતિ",
+        "updated": "અપડેટ કરેલ",
+        "resources": "સંસાધનો",
+        "eventType": "ઇવેન્ટ પ્રકાર",
+        "date": "તારીખ",
+        "time": "સમય"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "સંમતિ લાઇફસાયકલ",
+        "empty": "કોઈ લાઇફસાયકલ ઇવેન્ટ્સ ઉપલબ્ધ નથી.",
+        "noDescription": "કોઈ વર્ણન ઉપલબ્ધ નથી."
+      },
+      "actions": {
+        "viewResources": "સંસાધનો જુઓ",
+        "noResourcesTooltip": "કોઈ સંસાધનો ઉપલબ્ધ નથી"
+      },
+      "resourcesModal": {
+        "title": "અધિકૃતતા સંસાધનો",
+        "authRef": "ઓથરાઇઝેશન",
+        "close": "બંધ કરો"
+      },
+      "values": {
+        "yes": "હા",
+        "no": "ના",
+        "required": "અનિવાર્ય",
+        "optional": "મરજિયાત"
+      }
+    },
+    "actions": {
+      "view": "જુઓ",
+      "revoke": "રદ કરો",
+      "approve": "મંજૂર કરો",
+      "reject": "અસ્વીકાર કરો",
+      "copyConsentId": "સંમતિ ID કોપી કરો",
+      "copyConsentIdAriaLabel": "સંમતિ ID {{id}} કોપી કરો"
+    },
+    "modals": {
+      "consentId": "સંમતિ ID",
+      "actions": {
+        "cancel": "રદ કરો",
+        "processing": "પ્રક્રિયા ચાલુ છે..."
+      },
+      "approval": {
+        "title": "સંમતિની સમીક્ષા કરો અને મંજૂર કરો",
+        "subtitle": "કૃપા કરીને મંજૂરી આપતા પહેલા સંમતિના ઘટકોની સમીક્ષા કરો.",
+        "mandatory": "અનિવાર્ય ઘટકો",
+        "optional": "મરજિયાત ઘટકો",
+        "required": "જરૂરી",
+        "toggle": "પરવાનગી બદલો",
+        "toggleWithDetails": "{{purposeLabel}} માં {{elementLabel}} માટે પરવાનગી બદલો",
+        "loading": "સંમતિ વિગતો લોડ થઈ રહી છે...",
+        "noMandatory": "આ સંમતિ માટે કોઈ અનિવાર્ય આવશ્યકતાઓ નથી.",
+        "confirm": "મંજૂર કરો અને આગળ વધો"
+      },
+      "rejection": {
+        "title": "અસ્વીકારની પુષ્ટિ કરો",
+        "message": "શું તમે ખરેખર આ સંમતિને અસ્વીકાર કરવા માંગો છો?",
+        "note": "આ સંમતિને અસ્વીકાર કરવાનો અર્થ એ છે કે વિનંતી કરેલી સંમતિઓ આપવામાં આવશે નહીં.",
+        "confirm": "સંમતિ અસ્વીકાર કરો",
+        "cancel": "રદ કરો"
+      },
+      "revocation": {
+        "title": "રદ કરવાની પુષ્ટિ કરો",
+        "message": "શું તમે ખરેખર સંમતિ રદ કરવા માંગો છો?",
+        "note": "આ ક્રિયા તમામ સંબંધિત હેતુઓ માટે આપવામાં આવેલી અનિવાર્ય અને મરજિયાત બંને સંમતિઓને રદ કરે છે.",
+        "confirm": "સંમતિઓ રદ કરો",
+        "cancel": "રદ કરો"
+      }
+    },
+    "status": {
+      "all": "તમામ",
+      "active": "સક્રિય",
+      "pending": "પેન્ડિંગ",
+      "created": "બનાવેલ",
+      "approved": "મંજૂર કરેલ",
+      "rejected": "અસ્વીકૃત",
+      "revoked": "રદ કરેલ",
+      "expired": "સમાપ્ત",
+      "systemExpired": "સિસ્ટમ દ્વારા સમાપ્ત",
+      "systemRevoked": "સિસ્ટમ દ્વારા રદ"
+    },
+    "filters": {
+      "sectionAriaLabel": "સંમતિ ફિલ્ટર્સ",
+      "purposeSearchPlaceholder": "હેતુના નામ દ્વારા શોધો",
+      "status": "સ્થિતિ",
+      "groupIds": "જૂથ ID",
+      "elementName": "ઘટકનું નામ",
+      "elementVersion": "ઘટક સંસ્કરણ",
+      "advanced": "એડવાન્સ્ડ ફિલ્ટર્સ",
+      "apply": "લાગુ કરો",
+      "cancel": "રદ કરો",
+      "startDate": "શરૂઆતની તારીખ",
+      "startDateAriaLabel": "શરૂઆતની તારીખ ફિલ્ટર",
+      "endDate": "અંતિમ તારીખ",
+      "endDateAriaLabel": "અંતિમ તારીખ ફિલ્ટર",
+      "clear": "તમામ સાફ કરો",
+      "clearAriaLabel": "બધા ફિલ્ટર્સ સાફ કરો"
+    },
+    "messages": {
+      "loading": "સંમતિઓ લોડ થઈ રહી છે...",
+      "loadFailed": "અત્યારે સંમતિઓ લોડ કરવામાં અસમર્થ.",
+      "emptyTitle": "કોઈ સંમતિ મળી નથી",
+      "empty": "પસંદ કરેલ ફિલ્ટર્સ માટે કોઈ સંમતિ મળી નથી."
+    },
+    "table": {
+      "tableAriaLabel": "સંમતિ રજિસ્ટ્રી કોષ્ટક",
+      "consentIdAriaLabel": "સંમતિ ID: {{id}}",
+      "groupLabel": "જૂથ ID: {{groupId}}",
+      "notApplicable": "લાગુ પડતું નથી",
+      "purposes": {
+        "more": "+{{count}} વધુ",
+        "title": "સંમતિના હેતુઓ",
+        "hint": "સંમતિના તમામ હેતુઓ દર્શાવવામાં આવી રહ્યા છે"
+      },
+      "headers": {
+        "consentId": "સંમતિ ID",
+        "type": "પ્રકાર",
+        "status": "સ્થિતિ",
+        "purposes": "હેતુઓ",
+        "updated": "અપડેટ કરેલ",
+        "expiration": "સમાપ્તિ તારીખ",
+        "actions": "ક્રિયાઓ"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "ઘટક ઉમેરો",
+      "addProperty": "ગુણધર્મ ઉમેરો",
+      "apply": "લાગુ કરો",
+      "cancel": "રદ કરો",
+      "clear": "સાફ કરો",
+      "clearAll": "તમામ સાફ કરો",
+      "create": "બનાવો",
+      "delete": "કાઢી નાખો",
+      "deleting": "કાઢી નાખવામાં આવી રહ્યું છે...",
+      "deleteVersion": "સંસ્કરણ કાઢી નાખો",
+      "filters": "ફિલ્ટર્સ",
+      "removeElement": "ઘટક દૂર કરો",
+      "removeProperty": "ગુણધર્મ દૂર કરો",
+      "retry": "પુનઃપ્રયાસ કરો",
+      "saving": "સાચવી રહ્યું છે...",
+      "view": "જુઓ",
+      "viewElement": "{{name}} જુઓ",
+      "viewPurpose": "{{name}} જુઓ"
+    },
+    "fields": {
+      "actions": "ક્રિયાઓ",
+      "created": "બનાવેલ",
+      "description": "વર્ણન",
+      "displayName": "દર્શાવવાનું નામ",
+      "element": "ઘટક",
+      "elementId": "ઘટક ID",
+      "elementName": "ઘટકનું નામ",
+      "elementNamespace": "ઘટક નેમસ્પેસ",
+      "elements": "ઘટકો",
+      "elementVersion": "ઘટક સંસ્કરણ",
+      "groupId": "જૂથ ID",
+      "groupIds": "જૂથ IDs",
+      "mandatory": "અનિવાર્ય",
+      "name": "નામ",
+      "namespace": "નેમસ્પેસ",
+      "properties": "ગુણધર્મો",
+      "propertyKey": "કી",
+      "propertyValue": "મૂલ્ય",
+      "purpose": "હેતુ",
+      "purposeId": "હેતુ ID",
+      "purposeName": "હેતુનું નામ",
+      "scope": "સ્કૉપ",
+      "purposeScope": "હેતુનો સ્કૉપ",
+      "purposeVersion": "હેતુનું સંસ્કરણ",
+      "requirement": "આવશ્યકતા",
+      "schema": "સ્કીમા",
+      "type": "પ્રકાર",
+      "version": "સંસ્કરણ"
+    },
+    "help": {
+      "commaSeparatedGroups": "બહુવિધ જૂથ IDsને અલ્પવિરામથી અલગ કરો",
+      "defaultNamespace": "ખાલી હોય ત્યારે ડિફૉલ્ટ નેમસ્પેસનો ઉપયોગ કરે છે",
+      "elementVersionRequiresIdentity": "પહેલાં ઘટકનું નામ અથવા નેમસ્પેસ દાખલ કરો",
+      "organizationPurpose": "સંસ્થા-સ્તરનો હેતુ બનાવવા માટે ખાલી છોડો",
+      "purposeVersionRequiresName": "પહેલાં હેતુનું નામ દાખલ કરો",
+      "schemaElementTypes": "સ્કીમા માત્ર JSON અને XML ઘટકો માટે સમર્થિત છે.",
+      "selectElementFirst": "પહેલાં કોઈ ઘટક પસંદ કરો"
+    },
+    "values": {
+      "all": "તમામ",
+      "any": "કોઈપણ",
+      "customNamespace": "કસ્ટમ નેમસ્પેસ",
+      "defaultNamespace": "ડિફૉલ્ટ નેમસ્પેસ",
+      "mandatory": "અનિવાર્ય",
+      "matches": "મેચ થાય છે",
+      "noDescription": "કોઈ વર્ણન નથી",
+      "optional": "મરજિયાત",
+      "specificGroup": "ચોક્કસ જૂથ",
+      "itemCount": "{{count}} પસંદ કરેલ",
+      "latest": "નવીનતમ",
+      "viewing": "જોઈ રહ્યા છો"
+    },
+    "elements": {
+      "add": "ઘટક ઉમેરો",
+      "activeFilters": "સક્રિય ફિલ્ટર્સ",
+      "back": "ઘટકો પર પાછા જાઓ",
+      "createTitle": "ઘટક બનાવો",
+      "detailsSection": "ઘટક વિગતો",
+      "empty": "પસંદ કરેલ ફિલ્ટર્સ સાથે કોઈ ઘટકો બંધબેસતા નથી.",
+      "emptyTitle": "કોઈ ઘટકો મળ્યા નથી",
+      "filterTitle": "ઘટકો ફિલ્ટર કરો",
+      "loadFailed": "અત્યારે ઘટકો લોડ કરવામાં અસમર્થ.",
+      "newVersion": "નવું સંસ્કરણ બનાવો",
+      "refreshing": "રીફ્રેશ થઈ રહ્યું છે...",
+      "results": "{{count}} ઘટકો",
+      "searchPlaceholder": "ઘટકના નામ દ્વારા શોધો",
+      "subtitle": "પુનઃઉપયોગી સંમતિ ઘટકો અને તેના સંસ્કરણયુક્ત વ્યાખ્યાઓનું સંચાલન કરો.",
+      "tableLabel": "સંમતિ ઘટકો",
+      "title": "ઘટકો"
+    },
+    "purposes": {
+      "add": "હેતુ ઉમેરો",
+      "activeFilters": "સક્રિય ફિલ્ટર્સ",
+      "allPurposes": "તમામ હેતુઓ",
+      "back": "હેતુઓ પર પાછા જાઓ",
+      "createTitle": "હેતુ બનાવો",
+      "detailsSection": "હેતુ વિગતો",
+      "empty": "પસંદ કરેલ ફિલ્ટર્સ સાથે કોઈ હેતુઓ બંધબેસતા નથી.",
+      "emptyTitle": "કોઈ હેતુઓ મળ્યા નથી",
+      "filterTitle": "હેતુઓ ફિલ્ટર કરો",
+      "loadFailed": "અત્યારે હેતુઓ લોડ કરવામાં અસમર્થ.",
+      "newVersion": "નવું સંસ્કરણ બનાવો",
+      "orgWide": "સંસ્થા-વ્યાપી",
+      "refreshing": "રીફ્રેશ થઈ રહ્યું છે...",
+      "results": "{{count}} હેતુઓ",
+      "searchLabel": "હેતુઓ શોધો",
+      "searchPlaceholder": "હેતુના નામ દ્વારા શોધો",
+      "scopeFilter": "હેતુ સ્કૉપ",
+      "subtitle": "પુનઃઉપયોગી સંમતિ હેતુઓ અને તેમની ઘટક વ્યાખ્યાઓનું સંચાલન કરો.",
+      "tableLabel": "સંમતિ હેતુઓ",
+      "title": "હેતુઓ"
+    },
+    "details": {
+      "definition": "વ્યાખ્યા",
+      "elementIdentity": "ઘટક ઓળખ",
+      "elements": "ઘટકો",
+      "identity": "હેતુ ઓળખ",
+      "overview": "વિહંગાવલોકન",
+      "versionDetails": "સંસ્કરણ વિગતો",
+      "versions": "સંસ્કરણ ઇતિહાસ"
+    },
+    "messages": {
+      "createElementFirst": "હેતુ વ્યાખ્યાયિત કરતા પહેલા એક ઘટક બનાવો.",
+      "immutableElement": "{{namespace}}:{{name}} એક {{type}} ઘટક રહે છે. સંસ્કરણો વચ્ચે ઓળખ ક્ષેત્રો બદલાઈ શકતા નથી.",
+      "immutablePurpose": "{{name}} ની માલિકી {{groupId}} પાસે રહે છે. સંસ્કરણો વચ્ચે ઓળખ ક્ષેત્રો બદલાઈ શકતા નથી.",
+      "immutableOrganizationPurpose": "{{name}} સંસ્થા-વ્યાપી છે. તેની ઓળખ અને સ્કૉપ સંસ્કરણો વચ્ચે બદલાઈ શકતા નથી.",
+      "immutableGroupPurpose": "{{name}} જૂથ {{groupId}} સુધી સીમિત છે. તેની ઓળખ અને સ્કૉપ સંસ્કરણો વચ્ચે બદલાઈ શકતા નથી.",
+      "loadingElements": "ઉપલબ્ધ ઘટકો લોડ થઈ રહ્યા છે...",
+      "loadingVersions": "ઘટક સંસ્કરણો લોડ થઈ રહ્યા છે...",
+      "noElementsFound": "કોઈ મેળ ખાતા ઘટકો મળ્યા નથી",
+      "noElements": "આ સંસ્કરણ માટે કોઈ ઘટકો ગોઠવેલા નથી.",
+      "noProperties": "કોઈ કસ્ટમ ગુણધર્મો નથી.",
+      "noSchema": "આ સંસ્કરણ માટે કોઈ સ્કીમા ગોઠવેલ નથી.",
+      "noPurposeElements": "હજુ સુધી કોઈ ઘટકો ઉમેરવામાં આવ્યા નથી. હેતુ બનાવવા માટે ઓછામાં ઓછું એક ઘટક ઉમેરો.",
+      "noVersions": "કોઈ સંસ્કરણ ઉપલબ્ધ નથી.",
+      "versionsLoadFailed": "અત્યારે સંસ્કરણ ઇતિહાસ લોડ કરવામાં અસમર્થ."
+    },
+    "validation": {
+      "duplicateElements": "દરેક ઘટક માત્ર એક જ વાર સમાવિષ્ટ કરી શકાય છે.",
+      "duplicatePropertyKeys": "ગુણધર્મ કી અનન્ય હોવી જોઈએ.",
+      "elementRequired": "ઓછામાં ઓછું એક ઘટક પસંદ કરો.",
+      "groupIdRequired": "જૂથ-વિશિષ્ટ હેતુ માટે જૂથ ID જરૂરી છે.",
+      "nameRequired": "નામ જરૂરી છે.",
+      "namespaceRequired": "જ્યારે કસ્ટમ પસંદ કરેલ હોય ત્યારે નેમસ્પેસ જરૂરી છે.",
+      "schemaRequired": "JSON અને XML ઘટકો માટે સ્કીમા જરૂરી છે."
+    },
+    "delete": {
+      "title": "સંસ્કરણ કાઢી નાખો",
+      "message": "સંસ્કરણ {{version}} કાઢી નાખવું છે?",
+      "warning": "આ ક્રિયા પૂર્વવત કરી શકાતી નથી. સંદર્ભિત સંસ્કરણો કાઢી શકાતા નથી, અને અંતિમ સંસ્કરણ કાઢી નાખવાથી આખી એન્ટ્રી કાઢી નાખવામાં આવશે."
+    }
+  },
+  "nominee": {
+    "title": "નામાંકનો",
+    "messages": {
+      "loadFailed": "અત્યારે નામાંકનો લોડ કરવામાં અસમર્થ."
+    },
+    "nominatedFor": {
+      "openAccount": "અકાઉન્ટ ખોલો →",
+      "accept": "સ્વીકારો",
+      "reject": "અસ્વીકાર કરો",
+      "actionNeeded": "ક્રિયા જરૂરી છે",
+      "ariaLabel": "નામાંકિત અકાઉન્ટ્સ",
+      "empty": "અત્યાર સુધી કોઈએ તમને નામાંકિત કર્યા નથી.",
+      "title": "નામાંકિત અકાઉન્ટ્સ",
+      "table": {
+        "account": "અકાઉન્ટ",
+        "status": "સ્થિતિ",
+        "actions": "ક્રિયાઓ"
+      }
+    },
+    "acting": {
+      "starting": "અકાઉન્ટ ખોલી રહ્યું છે…",
+      "startFailed": "તમે આ અકાઉન્ટ માટે નામાંકિત નથી.",
+      "startFailedHint": "નામાંકન પૃષ્ઠ પર પાછા જાઓ અને ફરી પ્રયાસ કરો.",
+      "blockedTitle": "નામાંકિત એક્સેસમાં ઉપલબ્ધ નથી",
+      "blockedFenced": "અકાઉન્ટ સેટિંગ્સ, ઓળખપત્રો અને નામાંકનો ક્યારેય બીજી વ્યક્તિ વતી વાપરી શકાતા નથી.",
+      "blockedScope": "માલિકે તમને આ વિભાગ માટે પરવાનગી આપી નથી.",
+      "backToAllowed": "હું જે એક્સેસ કરી શકું છું ત્યાં જાઓ",
+      "exit": "બહાર નીકળો"
+    },
+    "permissions": {
+      "consentView": "સંમતિઓ જુઓ",
+      "consentRevoke": "સંમતિઓ રદ કરો",
+      "consentApprove": "પેન્ડિંગ સંમતિઓ મંજૂર કરો",
+      "accountView": "વ્યક્તિગત અકાઉન્ટ જુઓ",
+      "accountUpdate": "વ્યક્તિગત અકાઉન્ટ અપડેટ કરો",
+      "accountDelete": "વ્યક્તિગત અકાઉન્ટ કાઢી નાખો"
+    },
+    "mine": {
+      "add": "નામાંકિત વ્યક્તિ ઉમેરો",
+      "remove": "દૂર કરો",
+      "empty": "તમે હજુ સુધી કોઈને નામાંકિત કર્યા નથી.",
+      "status": {
+        "active": "સક્રિય",
+        "pending": "સ્વીકૃતિની રાહ જોવાઈ રહી છે",
+        "rejected": "અસ્વીકૃત",
+        "accepted": "મંજૂરીની રાહ જોવાઈ રહી છે",
+        "deactivated": "સ્થગિત"
+      },
+      "ariaLabel": "નામાંકિત વ્યક્તિઓ",
+      "title": "નામાંકિત વ્યક્તિઓ",
+      "table": {
+        "person": "વ્યક્તિ",
+        "permissions": "પરવાનગીઓ",
+        "status": "સ્થિતિ",
+        "actions": "ક્રિયાઓ",
+        "morePermissions": "+{{count}} વધુ"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "નામાંકિત વ્યક્તિ ઉમેરો",
+        "editTitle": "નામાંકિત વ્યક્તિ સંપાદિત કરો",
+        "saveChanges": "ફેરફારો સાચવો",
+        "emailLabel": "નામાંકિત વ્યક્તિનો નોંધાયેલ ઈમેલ",
+        "permissionsTitle": "આ નામાંકિત વ્યક્તિ શું કરી શકે છે?",
+        "permissionsSubtitle": "તમે જે મંજૂર કરવા માંગો છો તે જ ટીક કરો. આ જ પરવાનગીઓનો ઉપયોગ કરવાની નામાંકિત વ્યક્તિને મંજૂરી મળશે.",
+        "sensitive": "સંવેદનશીલ",
+        "cancel": "રદ કરો",
+        "processing": "સાચવી રહ્યું છે...",
+        "confirm": "નામાંકન મોકલો",
+        "processingEdit": "સાચવી રહ્યું છે…"
+      },
+      "removeDialog": {
+        "title": "નામાંકિત વ્યક્તિને દૂર કરો",
+        "message": "{{nomineeEmail}} હવે તમારી સંમતિઓનું સંચાલન કરી શકશે નહીં.",
+        "confirm": "નામાંકિત વ્યક્તિને દૂર કરો",
+        "cancel": "રદ કરો",
+        "processing": "દૂર થઈ રહ્યું છે..."
+      }
+    },
+    "manage": {
+      "title": "માલિકની સંમતિઓનું સંચાલન",
+      "back": "નામાંકિત વ્યૂમાંથી બહાર નીકળો",
+      "consents": {
+        "title": "સંમતિઓ",
+        "subtitle": "આ અકાઉન્ટ દ્વારા આપવામાં આવેલી સંમતિઓ જુઓ અને જ્યાં પરવાનગી હોય ત્યાં રદ કરો."
+      },
+      "selectedCount": "{{count}} પસંદ કરેલ",
+      "revokeSelected": "પસંદ કરેલ રદ કરો",
+      "messages": {
+        "loadFailed": "અત્યારે સંમતિઓ લોડ કરવામાં અસમર્થ.",
+        "empty": "આ અકાઉન્ટ માટે કોઈ સંમતિ મળી નથી."
+      },
+      "table": {
+        "ariaLabel": "નામાંકિત-સંચાલિત સંમતિ કોષ્ટક",
+        "purposes": "હેતુઓ",
+        "type": "પ્રકાર",
+        "status": "સ્થિતિ",
+        "updated": "અપડેટ કરેલ",
+        "actions": "ક્રિયાઓ",
+        "revoke": "રદ કરો",
+        "notRevokable": "માત્ર સક્રિય સંમતિઓ જ રદ કરી શકાય છે",
+        "clientLabel": "સંસ્થા: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "એકસાથે રદ કરવાની પુષ્ટિ કરો",
+        "message": "આનાથી {{count}} સંમતિ(ઓ) રદ થશે. આ ક્રિયા પૂર્વવત કરી શકાતી નથી.",
+        "note": "દરેક રદ કરવાની પ્રક્રિયા તમે માલિક વતી કરેલી ક્રિયા તરીકે અલગથી રેકોર્ડ કરવામાં આવે છે.",
+        "progress": "{{count}} માંથી {{processed}} રદ થઈ રહ્યું છે...",
+        "confirm": "પસંદ કરેલ રદ કરો",
+        "cancel": "રદ કરો",
+        "processing": "પ્રક્રિયા ચાલુ છે..."
+      },
+      "subtitle": "તમે આ અકાઉન્ટ વતી કામ કરી રહ્યા છો. માલિકે તમને જે કરવાની અધિકૃતતા આપી છે તે જ તમે કરી શકો છો.",
+      "account": {
+        "title": "અકાઉન્ટ એક્સેસ",
+        "subtitle": "માલિકે તેમના અકાઉન્ટ પર કરવા માટે તમને અધિકૃત કરેલી ક્રિયાઓ.",
+        "notGranted": "માલિક દ્વારા મંજૂર કરવામાં આવી નથી"
+      }
+    },
+    "detail": {
+      "title": "સંમતિ વિગતો",
+      "back": "પાછા જાઓ"
+    }
+  },
+  "admin": {
+    "title": "નામાંકિત સક્રિયકરણ",
+    "status": {
+      "active": "સક્રિય",
+      "accepted": "મંજૂરીની રાહ જોવાઈ રહી છે",
+      "pending": "નામાંકિત વ્યક્તિની રાહ જોવાઈ રહી છે",
+      "rejected": "અસ્વીકૃત",
+      "deactivated": "નિષ્ક્રિય કરેલ"
+    },
+    "pending": {
+      "title": "તમારી મંજૂરીની રાહ જોવાઈ રહી છે",
+      "empty": "અત્યારે કંઈપણ પેન્ડિંગ નથી.",
+      "count": "{{count}} મંજૂરીની રાહ જોઈ રહ્યા છે",
+      "appointed": "{{email}} ને નિમણૂક કરી",
+      "accepted": "{{date}} ના રોજ સ્વીકાર્યું"
+    },
+    "search": {
+      "label": "નામ અથવા ઈમેલ દ્વારા શોધો",
+      "empty": "કોઈ મેળ ખાતા અકાઉન્ટ્સ મળ્યા નથી.",
+      "results": "અકાઉન્ટ્સ"
+    },
+    "table": {
+      "ariaLabel": "નામાંકનો",
+      "owner": "અકાઉન્ટ",
+      "nominee": "નામાંકિત વ્યક્તિ",
+      "permissions": "આપવામાં આવેલ",
+      "status": "સ્થિતિ",
+      "nominated": "નામાંકિત તારીખ",
+      "actions": "ક્રિયાઓ"
+    },
+    "controls": {
+      "title": "નામાંકિત વ્યક્તિઓ",
+      "titleNamed": "{{name}} ના નામાંકિત વ્યક્તિઓ",
+      "nominated": "નામાંકિત તારીખ: {{date}}",
+      "ticket": "ટિકિટ: {{ticket}}",
+      "waitingNominee": "હજી સુધી કશું કરવાનું નથી - નામાંકિત વ્યક્તિએ સ્વીકાર્યું નથી.",
+      "activate": "એક્સેસ સક્રિય કરો",
+      "noAction": "-",
+      "owner": "અકાઉન્ટ",
+      "deactivate": "એક્સેસ પાછો ખેંચો",
+      "none": "આ અકાઉન્ટે કોઈની નિમણૂક કરી નથી."
+    },
+    "activateDialog": {
+      "title": "નામાંકિત એક્સેસ સક્રિય કરો",
+      "ticketLabel": "કાનૂની/સપોર્ટ ટિકિટ સંદર્ભ",
+      "confirm": "એક્સેસ સક્રિય કરો",
+      "cancel": "રદ કરો",
+      "processing": "સક્રિય થઈ રહ્યું છે...",
+      "subtitle": "આ {{ownerName}} માટે સંમતિઓનું સંચાલન કરવા માટે {{nomineeName}} ને એક્સેસ આપે છે."
+    },
+    "deactivateDialog": {
+      "title": "નામાંકિત એક્સેસ નિષ્ક્રિય કરો",
+      "reasonLabel": "કારણ",
+      "confirm": "એક્સેસ નિષ્ક્રિય કરો",
+      "cancel": "રદ કરો",
+      "processing": "નિષ્ક્રિય થઈ રહ્યું છે...",
+      "subtitle": "આ તરત જ {{ownerName}} ની સંમતિઓ માટે નામાંકિત વ્યક્તિનો એક્સેસ રદ કરે છે."
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "ડેટા ઉલ્લંઘન",
+      "UNAUTHORIZED_DATA_SHARING": "અનધિકૃત ડેટા શેરિંગ",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "સંમતિ પાછી ખેંચવા છતાં ડેટાનો ઉપયોગ",
+      "PURPOSE_VIOLATION": "હેતુનું ઉલ્લંઘન",
+      "DATA_ERASURE_NOT_COMPLETED": "ડેટા કાઢી નાખવાની વિનંતી પૂર્ણ થઈ નથી",
+      "DATA_CORRECTION_NOT_COMPLETED": "ડેટા સુધારણા વિનંતી પૂર્ણ થઈ નથી",
+      "CONSENT_LIFECYCLE_ISSUE": "સંમતિ મેનેજર સમસ્યા",
+      "DATA_ACCESS_DENIED": "ડેટા એક્સેસ વિનંતી અસ્વીકાર",
+      "EXCESSIVE_DATA_COLLECTION": "અતિશય ડેટા એકત્રિકરણ",
+      "OTHER": "અન્ય"
+    },
+    "status": {
+      "open": "ખુલ્લી",
+      "investigation": "પ્રગતિમાં છે",
+      "awaitingInfo": "ગ્રાહકના જવાબની રાહ છે",
+      "waitingOnDpo": "આંતરિક સમીક્ષાની રાહ છે",
+      "resolved": "ઉકેલાયેલ"
+    },
+    "priority": {
+      "CRITICAL": "અતિ ગંભીર",
+      "HIGH": "ઉચ્ચ",
+      "MEDIUM": "મધ્યમ",
+      "LOW": "ઓછી"
+    },
+    "sla": {
+      "dueDate": "મર્યાદા તારીખ {{date}}",
+      "dueToday": "આજે જ મર્યાદા પૂરી થાય છે",
+      "overdueSingular": "{{count}} દિવસ વિલંબિત",
+      "overduePlural": "{{count}} દિવસો વિલંબિત",
+      "daysLeftSingular": "{{count}} દિવસ બાકી",
+      "daysLeftPlural": "{{count}} દિવસો બાકી"
+    },
+    "timeline": {
+      "complaintReceived": "ફરિયાદ પ્રાપ્ત થઈ",
+      "statusChangePrefix": "સ્થિતિ માંથી",
+      "statusChangeJoiner": "માં બદલાઈ"
+    },
+    "list": {
+      "title": "મારી ફરિયાદો",
+      "subtitle": "તમે આપેલી ફરિયાદો અને તેની પ્રગતિ પર નજર રાખો.",
+      "submitNew": "ફરિયાદ નોંધાવો",
+      "loadFailed": "અત્યારે તમારી ફરિયાદો લોડ કરવામાં અસમર્થ.",
+      "empty": "તમે હજુ સુધી કોઈ ફરિયાદ નોંધાવી નથી.",
+      "emptyFiltered": "પસંદ કરેલ ફિલ્ટર સાથે કોઈ ફરિયાદ મળતી નથી.",
+      "filters": {
+        "status": "સ્થિતિ",
+        "all": "તમામ"
+      },
+      "table": {
+        "tableAriaLabel": "મારી ફરિયાદોનું કોષ્ટક",
+        "headers": {
+          "referenceId": "સંદર્ભ ID",
+          "category": "શ્રેણી",
+          "status": "સ્થિતિ",
+          "submitted": "સબમિટ કરેલ",
+          "updated": "અપડેટ કરેલ"
+        }
+      }
+    },
+    "detail": {
+      "back": "મારી ફરિયાદો પર પાછા જાઓ",
+      "notFound": "ફરિયાદ મળી નથી",
+      "description": "વર્ણન",
+      "submittedOn": "{{date}} ના રોજ સબમિટ કરેલ",
+      "awaitingInfo": {
+        "note": "ફરિયાદ અધિકારી તમારી પાસેથી વધુ માહિતીની રાહ જોઈ રહ્યા છે. કૃપા કરીને નીચે જવાબ આપો."
+      },
+      "resolved": {
+        "note": "આ ફરિયાદનો ઉકેલ આવી ગયો છે."
+      }
+    },
+    "submit": {
+      "title": "ફરિયાદ નોંધાવો",
+      "subtitle": "શું થયું તે અમને જણાવો અને અમે તેને યોગ્ય ટીમ સુધી પહોંચાડીશું.",
+      "submitFailed": "અત્યારે તમારી ફરિયાદ સબમિટ કરવામાં અસમર્થ. કૃપા કરીને ફરી પ્રયાસ કરો.",
+      "fields": {
+        "category": "શ્રેણી",
+        "categoryPlaceholder": "શ્રેણી પસંદ કરો",
+        "categoryHelp": "તમારી ફરિયાદને શ્રેષ્ઠ રીતે રજૂ કરતો વિકલ્પ પસંદ કરો.",
+        "categoriesLoadFailed": "અત્યારે ફરિયાદ શ્રેણીઓ લોડ કરવામાં અસમર્થ.",
+        "description": "વર્ણન",
+        "descriptionPlaceholder": "તમારી ફરિયાદનું વિગતવાર વર્ણન કરો",
+        "descriptionHelp": "ઝડપી ઉકેલ માટે શક્ય તેટલી વધુ વિગતો આપો.",
+        "attachments": "જોડાણો / ફાઈલો (મરજિયાત)",
+        "attachmentsHelp": "દરેક ફાઇલ મહત્તમ {{maxSize}} સુધીની PDF, DOCX, PNG, અથવા JPG.",
+        "uploadButton": "ફાઇલો અપલોડ કરો"
+      },
+      "validation": {
+        "categoryRequired": "આગળ વધવા માટે એક શ્રેણી પસંદ કરો.",
+        "descriptionRequired": "આગળ વધવા માટે તમારી ફરિયાદનું વર્ણન કરો.",
+        "attachmentTooLarge": "{{fileNames}} એ {{maxSize}} ની ફાઇલ મર્યાદા કરતાં વધુ છે."
+      },
+      "success": {
+        "message": "તમારી ફરિયાદ {{referenceId}} સબમિટ થઈ ગઈ છે.",
+        "attachmentFailedMessage": "તમારી ફરિયાદ {{referenceId}} સબમિટ થઈ ગઈ છે, પરંતુ ફાઇલો અપલોડ કરવામાં નિષ્ફળ રહી. તમે ફરિયાદ વિગતો પૃષ્ઠ પરથી ઉમેરી શકો છો."
+      },
+      "actions": {
+        "cancel": "રદ કરો",
+        "submit": "ફરિયાદ સબમિટ કરો"
+      }
+    },
+    "activity": {
+      "title": "પ્રવૃત્તિ",
+      "send": "મોકલો",
+      "sendOnly": "માત્ર મોકલો",
+      "sendOptions": "વધુ મોકલવાના વિકલ્પો",
+      "sendAndChangeStatusTo": "મોકલો અને સ્થિતિ આમાં બદલો",
+      "sendAndUpdateStatus": "મોકલો અને {{status}} તરીકે ચિહ્નિત કરો",
+      "publicReply": "જવાબ આપો",
+      "internalNote": "આંતરિક નોંધ",
+      "internalTag": "આંતરિક",
+      "dataPrincipalRoleLabel": "ગ્રાહક",
+      "officerRoleLabel": "ફરિયાદ અધિકારી",
+      "composerPlaceholderPublic": "વપરાશકર્તાને જવાબ લખો...",
+      "composerPlaceholderInternal": "આંતરિક નોંધ લખો (વપરાશકર્તાને દેખાશે નહીં)...",
+      "attach": "જોડાણ ઉમેરો",
+      "attachmentsHelp": "ફાઇલ દીઠ મહત્તમ {{maxSize}} સુધીની PDF, DOCX, PNG, અથવા JPG.",
+      "attachmentTooLarge": "{{fileNames}} એ {{maxSize}} ફાઇલ મર્યાદા કરતાં વધુ છે.",
+      "removeAttachment": "જોડાણ દૂર કરો"
+    },
+    "attachments": {
+      "tabLabel": "જોડાણો",
+      "tabLabelWithCount": "જોડાણો ({{count}})",
+      "empty": "આ ફરિયાદમાં કોઈ જોડાણો ઉમેરવામાં આવ્યા નથી.",
+      "initialSubmission": "પ્રારંભિક સબમિશન",
+      "internalNote": "આંતરિક",
+      "overflowMore": "+{{count}} વધુ"
+    },
+    "management": {
+      "queue": {
+        "title": "ફરિયાદો",
+        "loadFailed": "અત્યારે ફરિયાદ ક્યૂ લોડ કરવામાં અસમર્થ.",
+        "empty": "પસંદ કરેલ ફિલ્ટર્સ સાથે કોઈ ફરિયાદ મળતી નથી.",
+        "stats": {
+          "open": "ખુલ્લી",
+          "awaitingInfo": "જવાબની રાહમાં",
+          "resolved": "ઉકેલાયેલ",
+          "slaBreached": "SLA મર્યાદા ઓળંગાઈ"
+        },
+        "filters": {
+          "sectionAriaLabel": "ફરિયાદ ક્યૂ ફિલ્ટર્સ",
+          "status": "સ્થિતિ",
+          "priority": "પ્રાથમિકતા",
+          "search": "સંદર્ભ ID અથવા વપરાશકર્તા દ્વારા શોધો",
+          "all": "તમામ",
+          "clear": "ફિલ્ટર્સ સાફ કરો",
+          "clearAriaLabel": "બધા ફિલ્ટર્સ સાફ કરો"
+        },
+        "table": {
+          "tableAriaLabel": "ફરિયાદ ક્યૂ કોષ્ટક",
+          "headers": {
+            "referenceId": "સંદર્ભ ID",
+            "dataPrincipal": "વપરાશકર્તા",
+            "category": "શ્રેણી",
+            "priority": "પ્રાથમિકતા",
+            "status": "સ્થિતિ",
+            "sla": "SLA",
+            "updated": "અપડેટ કરેલ"
+          }
+        }
+      },
+      "case": {
+        "back": "ક્યૂ પર પાછા જાઓ",
+        "notFound": "ફરિયાદ મળતી નથી",
+        "dataPrincipal": "વપરાશકર્તા"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "સબ્સ્ક્રિપ્શન્સ",
+      "subtitle": "ઇવેન્ટ નોટિફિકેશન ફ્રેમવર્કમાં તમામ નોંધાયેલા સબ્સ્ક્રિપ્શન્સ.",
+      "addAction": "સબ્સ્ક્રિપ્શન ઉમેરો",
+      "filters": {
+        "sectionAriaLabel": "સબ્સ્ક્રિપ્શન ફિલ્ટર્સ",
+        "status": "સ્થિતિ",
+        "topic": "વિષય",
+        "clear": "ફિલ્ટર્સ સાફ કરો",
+        "statusOptions": {
+          "all": "તમામ સ્થિતિઓ",
+          "active": "સક્રિય",
+          "pendingVerification": "પેન્ડિંગ",
+          "stale": "અમાન્ય"
+        },
+        "topicOptions": {
+          "all": "તમામ વિષયો"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "સબ્સ્ક્રિપ્શન સફળતાપૂર્વક પુનઃચકાસણી થયું. સ્થિતિ હવે સક્રિય છે.",
+        "reverifyStillStale": "ચકાસણી ફરીથી નિષ્ફળ ગઈ. સબ્સ્ક્રિપ્શન અમાન્ય રહે છે.",
+        "reverifyFailed": "પુનઃચકાસણી નિષ્ફળ ગઈ."
+      }
+    },
+    "events": {
+      "title": "ઇવેન્ટ્સ",
+      "subtitle": "ઇવેન્ટ નોટિફિકેશન ફ્રેમવર્કમાં તમામ ઇવેન્ટ વિતરણો.",
+      "filters": {
+        "sectionAriaLabel": "ઇવેન્ટ ફિલ્ટર્સ",
+        "status": "સ્થિતિ",
+        "topic": "વિષય",
+        "search": "ઇવેન્ટ્સ શોધો",
+        "searchPlaceholder": "હેતુ અથવા સબ્સ્ક્રાઇબર ID દ્વારા શોધો...",
+        "clear": "ફિલ્ટર્સ સાફ કરો",
+        "statusOptions": {
+          "all": "તમામ સ્થિતિઓ"
+        },
+        "topicOptions": {
+          "all": "તમામ વિષયો"
+        }
+      },
+      "emptyTitle": "કોઈ ઇવેન્ટ્સ મળી નથી",
+      "emptyMessage": "પસંદ કરેલા માપદંડો સાથે કોઈ પ્રકાશિત ઇવેન્ટ્સ મળતી નથી.",
+      "table": {
+        "eventId": "ઇવેન્ટ ID",
+        "topic": "વિષય",
+        "purposes": "હેતુઓ",
+        "deliveries": "વિતરણો",
+        "occurredAt": "ઘટિત સમય",
+        "action": "ક્રિયા",
+        "all": "તમામ",
+        "noSubscribers": "કોઈ સબ્સ્ક્રાઇબર નથી",
+        "viewEvent": "ઇવેન્ટ જુઓ",
+        "subscriberCount_one": "{{count}} સબ્સ્ક્રાઇબર",
+        "subscriberCount_other": "{{count}} સબ્સ્ક્રાઇબર્સ"
+      },
+      "detail": {
+        "notFoundTitle": "ઇવેન્ટ મળી નથી",
+        "notFoundMessage": "ID \"{{eventId}}\" સાથે કોઈ ઇવેન્ટ મળી નથી.",
+        "backToEvents": "ઇવેન્ટ્સ પર પાછા જાઓ",
+        "topic": "વિષય",
+        "purposes": "હેતુઓ",
+        "occurredAt": "ઘટિત સમય",
+        "deliveries": "વિતરણો",
+        "all": "તમામ",
+        "noSubscribers": "કોઈ સબ્સ્ક્રાઇબર નથી",
+        "subscriberCount_one": "{{count}} સબ્સ્ક્રાઇબર",
+        "subscriberCount_other": "{{count}} સબ્સ્ક્રાઇબર્સ"
+      },
+      "dialog": {
+        "title": "પુનઃપ્રયાસ ઇતિહાસ",
+        "deliveryId": "ડિલિવરી ID",
+        "loading": "ઇવેન્ટ ડિલિવરી ઇતિહાસ લોડ થઈ રહ્યો છે…",
+        "noRetries": "પ્રારંભિક પ્રયાસ પૂર્ણ થયો. કોઈ પુનઃપ્રયાસ નોંધાયા નથી.",
+        "attempt": "પ્રયાસ {{attempt}}",
+        "retrySuffix": " (પુનઃપ્રયાસ)",
+        "webhookDescription": "HTTP ડિલિવરી પ્રયાસો અને પુનઃપ્રયાસોનો કાલક્રમિક ઇતિહાસ.",
+        "pollTitle": "પોલ પૂર્ણતા સ્થિતિ અને સ્વીકૃતિ",
+        "completionStatus": "પૂર્ણતા સ્થિતિ",
+        "completionTimestamp": "પૂર્ણતા સમય",
+        "erasureMethod": "ડેટા દૂર કરવાની પદ્ધતિ",
+        "recordsAffected": "અસરગ્રસ્ત રેકોર્ડ્સ",
+        "referenceId": "સંદર્ભ ID",
+        "submittedBy": "સબમિટ કરનાર",
+        "notes": "નોંધો",
+        "noAcknowledgment": "હજી સુધી કોઈ પોલ પૂર્ણતા સ્વીકૃતિ સબમિટ કરવામાં આવી નથી.",
+        "close": "બંધ કરો"
+      }
+    }
+  }
+}

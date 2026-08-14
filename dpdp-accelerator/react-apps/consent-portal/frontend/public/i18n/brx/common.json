@@ -1,0 +1,855 @@
+{
+  "app": {
+    "title": "गनायथि पोर्टेल"
+  },
+  "language": {
+    "label": "राव",
+    "selectAria": "राव सायख'"
+  },
+  "authorization": {
+    "loading": "नोंथांनि सेसनखौ लोड खालामफुगासिनो दं",
+    "loadFailed": "नोंथांनि सेसनखौ लोड खालामनो हायाखै।",
+    "tryAgain": "फिन नाजा",
+    "noAccessTitle": "पोर्टेल हाबनायनि हुदा गैया",
+    "noAccessDescription": "नोंथांनि एकाउन्टनाव जेबो पोर्टेल बिलाइयाव हाबनायनि अनदु थि गैया।"
+  },
+  "copyableText": {
+    "copy": "कपिखौ खालाम",
+    "copied": "कपिखौ खालामबाय",
+    "copyLabel": "{{label}} कपि खालाम",
+    "copyValue": "{{label}} {{value}} कपि खालाम",
+    "valueAriaLabel": "{{label}}: {{value}}"
+  },
+  "sidebar": {
+    "ariaLabel": "गुबै नेभिगेसन",
+    "dashboard": "ड्यासबोर्ड",
+    "consent": "गनायथि",
+    "allConsents": "गासै गनायथिफोर",
+    "pendingConsents": "नेनानाव थानाय गनायथिफोर",
+    "catalog": "बेजायफोर",
+    "purposes": "थांखिफोर",
+    "elements": "बाहागोफोर",
+    "administration": "सालायनाय",
+    "adminConsents": "गनायथिफोर",
+    "nominations": "मुं फोरमायनाय",
+    "nomineeActivation": "मुं फोरमायग्राखौ सोलिहोनाय",
+    "myComplaints": "आंनि अजतफोर",
+    "complaintManagement": "अजतफोर",
+    "dataProcessors": "डेटा संदानग्राफोर",
+    "dataProcessorTopics": "आयदाफोर",
+    "dataProcessorSubscriptions": "सबस्क्रिपसनफोर",
+    "dataProcessorEvents": "जाथायफोर"
+  },
+  "layout": {
+    "home": "न'",
+    "breadcrumbAriaLabel": "ब्रेडक्राम्ब",
+    "userMenu": {
+      "unknownUser": "मिथिमोनै बाहायग्रा",
+      "noEmail": "इमैल गैया",
+      "signOut": "साइन् आउत्",
+      "signOutError": "साइन आउत् खालामनो हायाखै। फिन नाजाना नाय।",
+      "tryAgain": "फिन नाजा"
+    }
+  },
+  "dashboard": {
+    "active": "सोलिफुनाय गनायथिफोर",
+    "attention": "नोंथांनि गोसो होनाय गोनां",
+    "commonPurposes": "गासैसिनिब्यू साधारन राननाय थांखिफोर",
+    "commonPurposesSubtitle": "नोंथांनि सोलिफुनाय गनायथिआव थानाय थांखिफोर",
+    "consentCount": "{{count}} ता गनायथिफोर",
+    "consentCount_one": "{{count}} ता गनायथि",
+    "consentCount_other": "{{count}} ता गनायथिफोर",
+    "expiringSoon": "गोख्रोंआनो सम जोबगोन",
+    "loadFailed": "दा नोंथांनि ड्यासबोर्डखौ लोड खालामनो हायाखै।",
+    "noExpiring": "फैगौ {{days}} साननि मोदाव जेबो सोलिफुनाय गनायथिआ सम जोबा।",
+    "noPending": "बिजिरनो थाखाय जेबो नेनानाव थानाय गनायथि गैया।",
+    "noPurposes": "दासिम जेबो राननाय थांखि गैया।",
+    "pending": "नेनानाव थानाय गनायथिफोर",
+    "pendingConsents": "नेनानाव थानाय गनायथिफोर",
+    "subtitle": "नोंथांनि गनायथि हाबाफारि आरो फैगौ मावथांनि बेजाय।",
+    "title": "ड्यासबोर्ड",
+    "typeBreakdown": "गनायथिनि रोखोम बायदिसिना",
+    "typeBreakdownSubtitle": "नोंथांनि गासै गनायथिफोरखौ रोखोम बादि राननाय जाबाय",
+    "noTypes": "दासिम जेबो गनायथिनि रोखोम गैया।",
+    "viewPending": "गासै नेनानाव थानाय गनायथिफोरखौ नाय"
+  },
+  "adminConsents": {
+    "title": "गनायथिफोर",
+    "filters": {
+      "sectionAriaLabel": "सालायनायनि गनायथि फिल्टरफोर",
+      "consentIdSearchPlaceholder": "गनायथि ID जों नागिर",
+      "removeConsentIdForAdvanced": "सुधारनाय फिल्टर बाहायनो गनायथि ID फिल्टरखौ बोखार",
+      "removeConsentIdForStatus": "थासारि फिल्टर बाहायनो गनायथि ID फिल्टरखौ बोखार",
+      "userIds": "बाहायग्रा ID फोर",
+      "groupIds": "हान्जा ID फोर",
+      "commaSeparatedUsers": "बां बाहायग्रा ID फोरखौ कमा (,) जों आलादा खालाम",
+      "active": "सोलिफुनाय फिल्टरफोर"
+    }
+  },
+  "consentRegistry": {
+    "title": "गासै गनायथिफोर",
+    "details": {
+      "title": "गनायथिनि गुवारै",
+      "consentId": "गनायथि ID",
+      "status": "थासारि",
+      "type": "गनायथिनि रोखोम",
+      "frequency": "हाबनायनि सीमा",
+      "frequencyHelp": "बेयाव दिनैआव बे गनायथिखौ बेसेबां खेब हाबनो हागोन बेखौ दिन्थिओ।",
+      "frequencyUnitSingular": "सानआव खेबसे",
+      "frequencyUnitPlural": "सानआव खेब",
+      "purposes": "थांखिफोर",
+      "duration": "उनफिन नायनाय सम",
+      "durationHelp": "बेयाव बेसेबां उननि डेटाखौ हाबनो हागोन बेखौ दिन्थिओ। जेरै, 6 दान थि खालामब्ला, 6 दान सिगांनि डेटाखौ हाबनो हागोन।",
+      "durationUnitHourSingular": "घन्टा",
+      "durationUnitHourPlural": "घन्टाफोर",
+      "durationUnitDaySingular": "सान",
+      "durationUnitDayPlural": "सानफोर",
+      "durationUnitYearSingular": "बछर",
+      "durationUnitYearPlural": "बछरफोर",
+      "created": "सोर्जियै",
+      "updated": "अपडेट खालामबाय",
+      "validUntil": "बेसेबां समसिम गोहो थानाय",
+      "groupId": "हान्जा ID",
+      "recurring": "खेबसेनि बांसिन जाफिनग्रा",
+      "back": "रजिस्ट्रियाव फिन थां",
+      "notFound": "गनायथिनि रेकर्ड मोनाखै",
+      "approved": "गनायथि होनाय जाबाय",
+      "notApproved": "गनायथि होनाय जायाखै",
+      "approvedCount": "{{approved}}/{{total}} गनायथि होनाय जाबाय",
+      "section": {
+        "purposes": "गनायथिनि थांखिफोर",
+        "authorizations": "गोहो होनायफोर",
+        "lifecycle": "गनायथिनि जिउ-चक्र"
+      },
+      "table": {
+        "element": "गुबै बाहागो",
+        "approved": "गनायथि होनाय जाबाय",
+        "required": "गोनांथार",
+        "description": "बेजाय दिन्थिनाय",
+        "user": "बाहायग्रा",
+        "status": "थासारि",
+        "updated": "अपडेट खालामबाय",
+        "resources": "संपदफोर",
+        "eventType": "जाथायनि रोखोम",
+        "date": "अक्ट'",
+        "time": "सम"
+      },
+      "lifecycle": {
+        "tableAriaLabel": "गनायथिनि जिउ-चक्र",
+        "empty": "जेबो जिउ-चक्र जाथाय गैया।",
+        "noDescription": "जेबो बेजाय दिन्थिनाय गैया।"
+      },
+      "actions": {
+        "viewResources": "संपदफोरखौ नाय",
+        "noResourcesTooltip": "जेबो संपद गैया"
+      },
+      "resourcesModal": {
+        "title": "गोहो होनायनि संपदफोर",
+        "authRef": "Auth",
+        "close": "बंध खालाम"
+      },
+      "values": {
+        "yes": "नंगौ",
+        "no": "नङा",
+        "required": "गोनांथार",
+        "optional": "खुसिबादै"
+      }
+    },
+    "actions": {
+      "view": "नाय",
+      "revoke": "बोखानाय",
+      "approve": "गनायथि हो",
+      "reject": "नेवसि",
+      "copyConsentId": "गनायथि ID कपि खालाम",
+      "copyConsentIdAriaLabel": "गनायथि ID {{id}} कपि खालाम"
+    },
+    "modals": {
+      "consentId": "गनायथि ID",
+      "actions": {
+        "cancel": "खालामथ'नाय",
+        "processing": "मावफुंगासिनो..."
+      },
+      "approval": {
+        "title": "बिजिर आरो गनायथि हो",
+        "subtitle": "गनायथि होनायनि सिगां अननानै गनायथिनि गुबै बाहागोफोरखौ बिजिर।",
+        "mandatory": "गोनांथार बाहागोफोर",
+        "optional": "खुसिबादै थानाय बाहागोफोर",
+        "required": "गोनांथार",
+        "toggle": "गोहो सोलाय",
+        "toggleWithDetails": "{{purposeLabel}} आव {{elementLabel}} नि थाखाय गोहो सोलाय",
+        "loading": "गनायथिनि गुवारै विवरण लोड खालामफुगासिनो...",
+        "noMandatory": "बे गनायथिनि थाखाय जेबो गोनांथार बाहागो गैया।",
+        "confirm": "गनायथि हो आरो सालायलां"
+      },
+      "rejection": {
+        "title": "नेवसिनायखौ थि खालाम",
+        "message": "नोंथाङा बे गनायथिखौ नेवसिखानो थि खालामबाय नामा?",
+        "note": "बे गनायथिखौ नेवसिब्ला खावलायनाय गनायथिफोरखौ होनाय जानाय नङा।",
+        "confirm": "गनायथिखौ नेवसि",
+        "cancel": "खालामथ'नाय"
+      },
+      "revocation": {
+        "title": "बोखानायखौ थि खालाम",
+        "message": "नोंथाङा गनायथिखौ बोखानो थि खालामबाय नामा?",
+        "note": "बे हाबाया गासै सोमोन्दो थानाय थांखिफोरनि थाखाय होनाय गोनांथार आरो खुसिबादै गनायथि मोन्नैखौबो बोखागोन।",
+        "confirm": "गनायथिफोरखौ बोखा",
+        "cancel": "खालामथ'नाय"
+      }
+    },
+    "status": {
+      "all": "गासै",
+      "active": "सोलिफुनाय",
+      "pending": "नेनानाव थानाय",
+      "created": "सोर्जियै",
+      "approved": "गनायथि होनाय",
+      "rejected": "नेवसिनाय",
+      "revoked": "बोखानाय",
+      "expired": "सम जोबनाय",
+      "systemExpired": "सिस्टेमजों सम जोबनाय",
+      "systemRevoked": "सिस्टेमजों बोखानाय"
+    },
+    "filters": {
+      "sectionAriaLabel": "गनायथिनि फिल्टरफोर",
+      "purposeSearchPlaceholder": "थांखिनि मुंजों नागिर",
+      "status": "थासारि",
+      "groupIds": "हान्जा ID",
+      "elementName": "बाहागोनि मुं",
+      "elementVersion": "बाहागोनि भार्जन",
+      "advanced": "सुधारनाय फिल्टरफोर",
+      "apply": "बाहाय",
+      "cancel": "खालामथ'नाय",
+      "startDate": "जानाव अक्ट'",
+      "startDateAriaLabel": "जानाव अक्ट' फिल्टर",
+      "endDate": "जोबनाय अक्ट'",
+      "endDateAriaLabel": "जोबनाय अक्ट' फिल्टर",
+      "clear": "गासै बोखार",
+      "clearAriaLabel": "गासै फिल्टरफोरखौ बोखार"
+    },
+    "messages": {
+      "loading": "गनायथिफोरखौ लोड खालामफुगासिनो...",
+      "loadFailed": "दा गनायथिफोरखौ लोड खालामनो हायाखै।",
+      "emptyTitle": "जेबो गनायथि मोनाखै",
+      "empty": "सायखनाय फिल्टरनि थाखाय जेबो गनायथि मोनाखै।"
+    },
+    "table": {
+      "tableAriaLabel": "गनायथि रजिस्ट्रि टेबल",
+      "consentIdAriaLabel": "गनायथि ID: {{id}}",
+      "groupLabel": "हान्जा ID: {{groupId}}",
+      "notApplicable": "लागु जाया",
+      "purposes": {
+        "more": "+{{count}} बांसिन",
+        "title": "गनायथिनि थांखिफोर",
+        "hint": "गनायथिनि गासै थांखिफोरखौ दिन्थिनाय जाबाय"
+      },
+      "headers": {
+        "consentId": "गनायथि ID",
+        "type": "रोखोम",
+        "status": "थासारि",
+        "purposes": "थांखिफोर",
+        "updated": "अपडेट खालामबाय",
+        "expiration": "सम जोबनाय",
+        "actions": "हाबाफोर"
+      }
+    }
+  },
+  "catalog": {
+    "actions": {
+      "addElement": "बाहागो सोदेर",
+      "addProperty": "गुण सोदेर",
+      "apply": "बाहाय",
+      "cancel": "खालामथ'नाय",
+      "clear": "बोखार",
+      "clearAll": "गासै बोखार",
+      "create": "सोर्जि",
+      "delete": "हुस्राय",
+      "deleting": "हुस्रायगासिनो...",
+      "deleteVersion": "भार्जन हुस्राय",
+      "filters": "फिल्टरफोर",
+      "removeElement": "बाहागो बोखार",
+      "removeProperty": "गुण बोखार",
+      "retry": "फिन नाजा",
+      "saving": "थोंगासिनो...",
+      "view": "नाय",
+      "viewElement": "{{name}} खौ नाय",
+      "viewPurpose": "{{name}} खौ नाय"
+    },
+    "fields": {
+      "actions": "हाबाफोर",
+      "created": "सोर्जियै",
+      "description": "बेजाय दिन्थिनाय",
+      "displayName": "दिन्थिनाय मुं",
+      "element": "गुबै बाहागो",
+      "elementId": "बाहागो ID",
+      "elementName": "बाहागोनि मुं",
+      "elementNamespace": "बाहागोनि नेमस्पेस",
+      "elements": "बाहागोफोर",
+      "elementVersion": "बाहागोनि भार्जन",
+      "groupId": "हान्जा ID",
+      "groupIds": "हान्जा ID फोर",
+      "mandatory": "गोनांथार",
+      "name": "मुं",
+      "namespace": "नेमस्पेस",
+      "properties": "गुणफोर",
+      "propertyKey": "चाबि",
+      "propertyValue": "बेसेन",
+      "purpose": "थांखि",
+      "purposeId": "थांखि ID",
+      "purposeName": "थांखिनि मुं",
+      "scope": "सीमा",
+      "purposeScope": "थांखिनि सीमा",
+      "purposeVersion": "थांखिनि भार्जन",
+      "requirement": "गोनांथारथि",
+      "schema": "स्कीमा",
+      "type": "रोखोम",
+      "version": "भार्जन"
+    },
+    "help": {
+      "commaSeparatedGroups": "बां हान्जा ID फोरखौ कमा (,) जों आलादा खालाम",
+      "defaultNamespace": "लांदां थाब्ला डिफल्ट नेमस्पेस बाहायो",
+      "elementVersionRequiresIdentity": "सिगां बाहागोनि मुं एबा नेमस्पेस सोदेर",
+      "organizationPurpose": "आफात-थाखोनि थांखि सोर्जिनो लांदां होथानो हागोन",
+      "purposeVersionRequiresName": "सिगां थांखिनि मुं सोदेर",
+      "schemaElementTypes": "स्कीमाफोरखौ खालि JSON आरो XML बाहागोफोरनि थाखायसो हेफाजात होनाय जायो।",
+      "selectElementFirst": "सिगां मोनसे बाहागो सायख'"
+    },
+    "values": {
+      "all": "गासै",
+      "any": "जेबो",
+      "customNamespace": "गावनि कस्टम नेमस्पेस",
+      "defaultNamespace": "डिफल्ट नेमस्पेस",
+      "mandatory": "गोनांथार",
+      "matches": "गोरोबो",
+      "noDescription": "जेबो बेजाय दिन्थिनाय गैया",
+      "optional": "खुसिबादै",
+      "specificGroup": "थि हान्जा",
+      "itemCount": "{{count}} सायख'बाय",
+      "latest": "गोदानसिन",
+      "viewing": "नायगासिनो"
+    },
+    "elements": {
+      "add": "बाहागो सोदेर",
+      "activeFilters": "सोलिफुनाय फिल्टरफोर",
+      "back": "बाहागोफोनाव फिन थां",
+      "createTitle": "बाहागो सोर्जि",
+      "detailsSection": "बाहागोनि गुवारै",
+      "empty": "सायखनाय फिल्टरजों जेबो बाहागो गोरोबा।",
+      "emptyTitle": "जेबो बाहागो मोनाखै",
+      "filterTitle": "बाहागोफोरखौ फिल्टर खालाम",
+      "loadFailed": "दा बाहागोफोरखौ लोड खालामनो हायाखै।",
+      "newVersion": "गोदान भार्जन सोर्जि",
+      "refreshing": "फिन गोदान खालामगासिनो...",
+      "results": "{{count}} ता बाहागोफोर",
+      "searchPlaceholder": "बाहागोनि मुंजों नागिर",
+      "subtitle": "बाहायनो हाथाव गनायथि बाहागोफोर आरो बेसेनि भार्जन बेजायफोरखौ सामलाय।",
+      "tableLabel": "गनायथि बाहागोफोर",
+      "title": "बाहागोफोर"
+    },
+    "purposes": {
+      "add": "थांखि सोदेर",
+      "activeFilters": "सोलिफुनाय फिल्टरफोर",
+      "allPurposes": "गासै थांखिफोर",
+      "back": "थांखिफोनाव फिन थां",
+      "createTitle": "थांखि सोर्जि",
+      "detailsSection": "थांखिनि गुवारै",
+      "empty": "सायखनाय फिल्टरजों जेबो थांखि गोरोबा।",
+      "emptyTitle": "जेबो थांखि मोनाखै",
+      "filterTitle": "थांखिफोरखौ फिल्टर खालाम",
+      "loadFailed": "दा थांखिफोरखौ लोड खालामनो हायाखै।",
+      "newVersion": "गोदान भार्जन सोर्जि",
+      "orgWide": "आफात-गुवारै",
+      "refreshing": "फिन गोदान खालामगासिनो...",
+      "results": "{{count}} ता थांखिफोर",
+      "searchLabel": "थांखिफोर नागिर",
+      "searchPlaceholder": "थांखिनि मुंजों नागिर",
+      "scopeFilter": "थांखिनि सीमा",
+      "subtitle": "बाहायनो हाथाव गनायथि थांखिफोर आरो बेसेनि बाहागो बेजायफोरखौ सामलाय।",
+      "tableLabel": "गनायथि थांखिफोर",
+      "title": "थांखिफोर"
+    },
+    "details": {
+      "definition": "बेजाय",
+      "elementIdentity": "बाहागोनि सिनिथि",
+      "elements": "बाहागोफोर",
+      "identity": "थांखिनि सिनिथि",
+      "overview": "गुसुलै",
+      "versionDetails": "भार्जननि गुवारै",
+      "versions": "भार्जन जारिमिन"
+    },
+    "messages": {
+      "createElementFirst": "थांखि थि खालामनायनि सिगां बाहागो सोर्जि।",
+      "immutableElement": "{{namespace}}:{{name}} आ {{type}} बाहागो हिसाबै थाबाय थागोन। भार्जनफोरनि गेजेराव सिनिथि जायगाया सोलायनो हाया।",
+      "immutablePurpose": "{{name}} आ {{groupId}} नि गावनि हिसाबै थाबाय थागोन। भार्जनफोरनि गेजेराव सिनिथि आरो सीमा सोलायनो हाया।",
+      "immutableOrganizationPurpose": "{{name}} आ आफात-गुवारै। बेनि सिनिथि आरो सीमा भार्जनफोरनि गेजेराव सोलायनो हाया।",
+      "immutableGroupPurpose": "{{name}} नि सीमाया {{groupId}} हान्जासिम थि। बेनि सिनिथि आरो सीमा भार्जनफोरनि गेजेराव सोलायनो हाया।",
+      "loadingElements": "थाहाथाव बाहागोफोरखौ लोड खालामफुगासिनो...",
+      "loadingVersions": "बाहागोनि भार्जनफोरखौ लोड खालामफुगासिनो...",
+      "noElementsFound": "गोरोबनाय बाहागो मोनाखै",
+      "noElements": "बे भार्जननि थाखाय जेबो बाहागो थि खालामाखै।",
+      "noProperties": "जेबो गावनि गुण गैया।",
+      "noSchema": "बे भार्जननि थाखाय जेबो स्कीमा थि खालामाखै।",
+      "noPurposeElements": "दासिम जेबो बाहागो सोदेराखै। थांखि सोर्जिनो कम्तिआव मोनसे बाहागो सोदेर।",
+      "noVersions": "जेबो भार्जन थाहाथाव नङा।",
+      "versionsLoadFailed": "दा भार्जन जारिमिनखौ लोड खालामनो हायाखै।"
+    },
+    "validation": {
+      "duplicateElements": "मोनफ्रोम बाहागोखौ खेबसेल' सोदेरनो हागोन।",
+      "duplicatePropertyKeys": "गुण चाबिफोर आलादा-आलादा जानांगोन।",
+      "elementRequired": "कम्तिआव मोनसे बाहागो सायख'।",
+      "groupIdRequired": "हान्जा-थि थांखिनि थाखाय हान्जा ID गोनांथार।",
+      "nameRequired": "मुं गोनांथार।",
+      "namespaceRequired": "कस्टम सायख'ब्ला नेमस्पेस गोनांथार।",
+      "schemaRequired": "JSON आरो XML बाहागोनि थाखाय स्कीमा गोनांथार।"
+    },
+    "delete": {
+      "title": "भार्जन हुस्राय",
+      "message": "भार्जन {{version}} खौ हुस्रायनो नामा?",
+      "warning": "बेखौ फिन बोफानो हानाय नङा। सोमोन्दो थानाय भार्जनफोरखौ हुस्रायनो हाया, आरो जोबथा भार्जनखौ हुस्रायब्ला गासै एन्ट्रियानो हुस्रायजागोन।"
+    }
+  },
+  "nominee": {
+    "title": "मुं फोरमायनायफोर",
+    "messages": {
+      "loadFailed": "दा मुं फोरमायनायफोरखौ लोड खालामनो हायाखै।"
+    },
+    "nominatedFor": {
+      "openAccount": "एकाउन्ट खेव →",
+      "accept": "गनायथि हो",
+      "reject": "नेवसि",
+      "actionNeeded": "हाबा गोनां",
+      "ariaLabel": "मुं फोरमायनाय एकाउन्टफोर",
+      "empty": "रावबो नोंथांखौ दासिम मुं फोरमायाखै।",
+      "title": "मुं फोरमायनाय एकाउन्टफोर",
+      "table": {
+        "account": "एकाउन्ट",
+        "status": "थासारि",
+        "actions": "हाबाफोर"
+      }
+    },
+    "acting": {
+      "starting": "एकाउन्टखौ खेवगासिनो…",
+      "startFailed": "नोंथाङा बे एकाउन्टनि नोमिनी नङा।",
+      "startFailedHint": "मुं फोरमायनायाव फिन थां आरो फिन नाजाना नाय।",
+      "blockedTitle": "नोमिनी हाबनायाव थाहाथाव नङा",
+      "blockedFenced": "एकाउन्ट सेटिंस, क्रेडेन्सियेल आरो मुं फोरमायनायखौ गुबुन मानसिनि अनथाय बाहायनो हाया।",
+      "blockedScope": "गरागिया बे बाहागोनि थाखाय नोंथांनो गोहो होनाखै।",
+      "backToAllowed": "आं हाबनो हानाय बाहागोआव थां",
+      "exit": "अंखारथि"
+    },
+    "permissions": {
+      "consentView": "गनायथिफोरखौ नाय",
+      "consentRevoke": "गनायथिफोरखौ बोखा",
+      "consentApprove": "नेनानाव थानाय गनायथिफोरखौ गनायथि हो",
+      "accountView": "गावनि एकाउन्टखौ नाय",
+      "accountUpdate": "गावनि एकाउन्टखौ अपडेट खालाम",
+      "accountDelete": "गावनि एकाउन्टखौ हुस्राय"
+    },
+    "mine": {
+      "add": "नोमिनी सोदेर",
+      "remove": "बोखार",
+      "empty": "नोंथाङा रावखौबो दासिम नोमिनी खालामाखै।",
+      "status": {
+        "active": "सोलिफुनाय",
+        "pending": "गनायथि नेनानाव थानाय",
+        "rejected": "नेवसिनाय",
+        "accepted": "गनायथि होनायनि नेनानाव थानाय",
+        "deactivated": "हबथानाय"
+      },
+      "ariaLabel": "नोमिनीफोर",
+      "title": "नोमिनीफोर",
+      "table": {
+        "person": "सुबुं",
+        "permissions": "गोहोफोर",
+        "status": "थासारि",
+        "actions": "हाबाफोर",
+        "morePermissions": "+{{count}} बांसिन"
+      }
+    },
+    "setup": {
+      "dialog": {
+        "title": "नोमिनी सोदेर",
+        "editTitle": "नोमिनी सोलाय",
+        "saveChanges": "सोलायनायखौ थों",
+        "emailLabel": "नोमिनीनि रजिस्टार खालामनाय इमैल",
+        "permissionsTitle": "बे नोमीनिया मा खालामनो हागोन?",
+        "permissionsSubtitle": "नोंथाङा होनो गोसो होनाय बाहागोआवलो थिक चिन्ह हो। बेनो नोमीनिया बाहायनो हानाय गोहो जागोन।",
+        "sensitive": "गोनांथार",
+        "cancel": "खालामथ'नाय",
+        "processing": "थोंगासिनो...",
+        "confirm": "मुं फोरमायनाय दैथायहर",
+        "processingEdit": "थोंगासिनो…"
+      },
+      "removeDialog": {
+        "title": "नोमिनी बोखार",
+        "message": "{{nomineeEmail}} आ नोंथांनि गनायथिफोरखौ सामलायनो हागोन नंलिया।",
+        "confirm": "नोमिनी बोखार",
+        "cancel": "खालामथ'नाय",
+        "processing": "बोखारगासिनो..."
+      }
+    },
+    "manage": {
+      "title": "गरागिनि गनायथि सामलायनाय",
+      "back": "नोमिनी नायनायनिफ्राय अंखार",
+      "consents": {
+        "title": "गनायथिफोर",
+        "subtitle": "बे एकाउन्टजों होनाय गनायथिफोरखौ नाय आरो गोहो थाब्ला बोखा।"
+      },
+      "selectedCount": "{{count}} सायख'बाय",
+      "revokeSelected": "सायखनायखौ बोखा",
+      "messages": {
+        "loadFailed": "दा गनायथिफोरखौ लोड खालामनो हायाखै।",
+        "empty": "बे एकाउन्टनि थाखाय जेबो गनायथि मोनाखै।"
+      },
+      "table": {
+        "ariaLabel": "नोमिनीजों सामलायनाय गनायथि टेबल",
+        "purposes": "थांखिफोर",
+        "type": "रोखोम",
+        "status": "थासारि",
+        "updated": "अपडेट खालामबाय",
+        "actions": "हाबाफोर",
+        "revoke": "बोखा",
+        "notRevokable": "सोलिफुनाय गनायथिखौल' बोखानो हागोन",
+        "clientLabel": "आफात: {{client}}"
+      },
+      "bulkRevoke": {
+        "title": "बां बोखानायखौ थि खालाम",
+        "message": "बेयो {{count}} ता गनायथिखौ बोखागोन। बेखौ फिन बोफानो हानाय नङा।",
+        "note": "मोनफ्रोम बोखानाय हाबाया गरागिनि थाखाय नोंथाङा मावनाय हाबा हिसाबै आलादा रेकर्ड जागोन।",
+        "progress": "{{count}} नि गेजेराव {{processed}} बोखागासिनो...",
+        "confirm": "सायखनायखौ बोखा",
+        "cancel": "खालामथ'नाय",
+        "processing": "मावफुंगासिनो..."
+      },
+      "subtitle": "नोंथाङा बे एकाउन्टनि थाखाय हाबा मावगासिनो दं। गरागिया नोंथांनो गोहो होनाय हाबाखौल' मावनो हागोन।",
+      "account": {
+        "title": "एकाउन्ट हाबनाय",
+        "subtitle": "गरागिया नोंथांनो गावनि एकाउन्टआव मावनो गोहो होनाय हाबाफोर।",
+        "notGranted": "गरागिया गोहो होनाखै"
+      }
+    },
+    "detail": {
+      "title": "गनायथिनि गुवारै",
+      "back": "उनफिन थां"
+    }
+  },
+  "admin": {
+    "title": "नोमिनी सोलिहोनाय",
+    "status": {
+      "active": "सोलिफुनाय",
+      "accepted": "गनायथि नेनानाव थानाय",
+      "pending": "नोमिनीनि नेनानाव थानाय",
+      "rejected": "नेवसिनाय",
+      "deactivated": "हबथानाय"
+    },
+    "pending": {
+      "title": "नोंथांनि गनायथिखौ नेगासिनो",
+      "empty": "दा नोंथांनि थाखाय जेबो नेनानाव थानाय गैया।",
+      "count": "{{count}} ता गनायथि नेगासिनो",
+      "appointed": "{{email}} खौ थिसनबाय",
+      "accepted": "{{date}} आव गनायबाय"
+    },
+    "search": {
+      "label": "मुं एबा इमैल जों नागिर",
+      "empty": "गोरोबनाय एकाउन्ट मोनाखै।",
+      "results": "एकाउन्टफोर"
+    },
+    "table": {
+      "ariaLabel": "मुं फोरमायनायफोर",
+      "owner": "एकाउन्ट",
+      "nominee": "नोमिनी",
+      "permissions": "होनाय गोहोफोर",
+      "status": "थासारि",
+      "nominated": "मुं फोरमायबाय",
+      "actions": "हाबाफोर"
+    },
+    "controls": {
+      "title": "नोमिनीफोर",
+      "titleNamed": "{{name}} नि नोमिनीफोर",
+      "nominated": "{{date}} आव मुं फोरमायबाय",
+      "ticket": "टिकेट {{ticket}}",
+      "waitingNominee": "मावनो जेबो गैया - नोमीनिया दासिम गनायाखै।",
+      "activate": "हाबनाय सोलिहो",
+      "noAction": "-",
+      "owner": "एकाउन्ट",
+      "deactivate": "हाबनाय बोखारफिन",
+      "none": "बे एकाउन्टआ रावखौबो थिसनाखै।"
+    },
+    "activateDialog": {
+      "title": "नोमिनी हाबनाय सोलिहो",
+      "ticketLabel": "आईन/हेफाजात टिकेट मखनाय",
+      "confirm": "हाबनाय सोलिहो",
+      "cancel": "खालामथ'नाय",
+      "processing": "सोलिहोगासिनो...",
+      "subtitle": "बेयो {{nomineeName}} नो {{ownerName}} नि गनायथिफोर सामलायनो हाबनाय गोहो होगोन।"
+    },
+    "deactivateDialog": {
+      "title": "नोमिनी हाबनाय हबथा",
+      "reasonLabel": "जाहोन",
+      "confirm": "हाबनाय हबथा",
+      "cancel": "खालामथ'नाय",
+      "processing": "हबथागासिनो...",
+      "subtitle": "बेयो नोमिनीनि {{ownerName}} नि गनायथि हाबनाय गोहोखौ बे समआवनो बोखागोन।"
+    }
+  },
+  "complaints": {
+    "categories": {
+      "DATA_BREACH": "डेटा हेंथा एबा खारनाय",
+      "UNAUTHORIZED_DATA_SHARING": "बिना-गनायथि डेटा राननाय",
+      "CONSENT_WITHDRAWN_DATA_STILL_USED": "गनायथि बोखाब्लाबो डेटा बाहायबाय थानाय",
+      "PURPOSE_VIOLATION": "थांखि हेंथा खालामनाय",
+      "DATA_ERASURE_NOT_COMPLETED": "डेटा हुस्रायनाय खावलायनाय मावफुङाखै",
+      "DATA_CORRECTION_NOT_COMPLETED": "डेटा दाफामनाय खावलायनाय मावफुङाखै",
+      "CONSENT_LIFECYCLE_ISSUE": "गनायथि सामलायग्रा जेंना",
+      "DATA_ACCESS_DENIED": "डेटा हाबनाय खावलायनाय नेवसिनाय",
+      "EXCESSIVE_DATA_COLLECTION": "गोनांनिसाथि बांसिन डेटा जमा खालामनाय",
+      "OTHER": "गुबुन"
+    },
+    "status": {
+      "open": "खेवनाय",
+      "investigation": "मावफुंगासिनो",
+      "awaitingInfo": "ग्राहखनि नेनानाव थानाय",
+      "waitingOnDpo": "सिंनि बिजिरनाय नेनानाव थानाय",
+      "resolved": "सुस्रांबाय"
+    },
+    "priority": {
+      "CRITICAL": "मावथारगोनां",
+      "HIGH": "जोबोद गोनांथार",
+      "MEDIUM": "गेजेरारि",
+      "LOW": "गाहाय एबा सुलभा"
+    },
+    "sla": {
+      "dueDate": "जोबनाय अक्ट' {{date}}",
+      "dueToday": "दिनैनो जोबगोन",
+      "overdueSingular": "{{count}} सान हाहैबाय",
+      "overduePlural": "{{count}} सानफोर हाहैबाय",
+      "daysLeftSingular": "{{count}} सान आगोनां",
+      "daysLeftPlural": "{{count}} सानफोर आगोनां"
+    },
+    "timeline": {
+      "complaintReceived": "अजत मोनबाय",
+      "statusChangePrefix": "थासारिया सोलायबाय",
+      "statusChangeJoiner": "सिम"
+    },
+    "list": {
+      "title": "आंनि अजतफोर",
+      "subtitle": "नोंथाङा गथायनाय अजतफोर आरो बेसेनि दावगानायखौ नाय।",
+      "submitNew": "गोदान अजत गथाय",
+      "loadFailed": "दा नोंथांनि अजतफोरखौ लोड खालामनो हायाखै।",
+      "empty": "नोंथाङा दासिम जेबो अजत गथायाखै।",
+      "emptyFiltered": "सायखनाय फिल्टरजों जेबो अजत गोरोबा।",
+      "filters": {
+        "status": "थासारि",
+        "all": "गासै"
+      },
+      "table": {
+        "tableAriaLabel": "आंनि अजतनि टेबल",
+        "headers": {
+          "referenceId": "मखनाय ID",
+          "category": "विभाग",
+          "status": "थासारि",
+          "submitted": "गथायबाय",
+          "updated": "अपडेट खालामबाय"
+        }
+      }
+    },
+    "detail": {
+      "back": "आंनि अजतफोराव फिन थां",
+      "notFound": "अजत मोनाखै",
+      "description": "बेजाय दिन्थिनाय",
+      "submittedOn": "{{date}} आव गथायबाय",
+      "awaitingInfo": {
+        "note": "अजत आपिसारा नोंथांनिफ्राय बांसिन मिथिसारनाय नेगासिनो दं। अननानै गाहायाव फिननाय हो।"
+      },
+      "resolved": {
+        "note": "बे अजतखौ सुस्रांनाय जाबाय।"
+      }
+    },
+    "submit": {
+      "title": "अजत गथाय",
+      "subtitle": "मा जादों बेखौ फोरमाय आरो जों बेखौ थार हान्जायाव दैथायगोन।",
+      "submitFailed": "दा नोंथांनि अजतखौ गथायनो हायाखै। अननानै फिन नाजा।",
+      "fields": {
+        "category": "विभाग",
+        "categoryPlaceholder": "मोनसे विभाग सायख'",
+        "categoryHelp": "नोंथांनि अजतखौ साबसिन फोरमायनाय सायख'नायखौ बाहाय।",
+        "categoriesLoadFailed": "दा अजतनि विभागफोरखौ लोड खालामनो हायाखै।",
+        "description": "बेजाय दिन्थिनाय",
+        "descriptionPlaceholder": "नोंथांनि अजतखौ गुवारै फोरमाय",
+        "descriptionHelp": "गोख्रै सुस्रांनो हेफाजात होनाय गासै मिथिसारनाय सोदेर।",
+        "attachments": "जोबथापनाय फिफार",
+        "attachmentsHelp": "PDF, DOCX, PNG, एबा JPG मोनफ्रोमआव {{maxSize}} सिम।",
+        "uploadButton": "फाइलफोर आपलोड खालाम"
+      },
+      "validation": {
+        "categoryRequired": "सालायलांनो मोनसे विभाग सायख'।",
+        "descriptionRequired": "सालायलांनो नोंथांनि अजतखौ फोरमाय।",
+        "attachmentTooLarge": "{{fileNames}} आ {{maxSize}} जोबथापनाय फाइल सीमा बिखाबाय।"
+      },
+      "success": {
+        "message": "नोंथांनि अजत {{referenceId}} खौ गथायनाय जाबाय।",
+        "attachmentFailedMessage": "नोंथांनि अजत {{referenceId}} खौ गथायनाय जाबाय, नाथाय जोबथापनाय फाइलफोर आपलोड जायाखै। नोंथाङा अजतनि गुवारै बिलाइनिफ्राय फिन सोदेरनो हागोन।"
+      },
+      "actions": {
+        "cancel": "खालामथ'नाय",
+        "submit": "अजत गथाय"
+      }
+    },
+    "activity": {
+      "title": "हाबाफारि",
+      "send": "दैथायहर",
+      "sendOnly": "दैथायहरल'",
+      "sendOptions": "बांसिन दैथायहरनाय सायख'नाय",
+      "sendAndChangeStatusTo": "दैथायहर आरो थासारिखौ सोलाय",
+      "sendAndUpdateStatus": "दैथायहर आरो {{status}} हिसाबै दिनथि",
+      "publicReply": "फिननाय हो",
+      "internalNote": "सिंनि लिरनाय",
+      "internalTag": "सिंनि",
+      "dataPrincipalRoleLabel": "ग्राहख",
+      "officerRoleLabel": "अजत आपिसार",
+      "composerPlaceholderPublic": "बाहायग्रानो फिननाय लिर...",
+      "composerPlaceholderInternal": "सिंनि लिरनाय लिर (बाहायग्रा नुया)...",
+      "attach": "जोबथाप",
+      "attachmentsHelp": "PDF, DOCX, PNG, एबा JPG मोनफ्रोम फाइलआव {{maxSize}} सिम।",
+      "attachmentTooLarge": "{{fileNames}} आ {{maxSize}} जोबथापनाय सीमा बिखाबाय।",
+      "removeAttachment": "जोबथापनाय बोखार"
+    },
+    "attachments": {
+      "tabLabel": "जोबथापनायफोर",
+      "tabLabelWithCount": "जोबथापनायफोर ({{count}})",
+      "empty": "बे अजतआव जेबो फाइल जोबथापाखै।",
+      "initialSubmission": "गुबै गथायनाय",
+      "internalNote": "सिंनि",
+      "overflowMore": "+{{count}} बांसिन"
+    },
+    "management": {
+      "queue": {
+        "title": "अजतफोर",
+        "loadFailed": "दा अजतनि फारिलाइखौ लोड खालामनो हायाखै।",
+        "empty": "सायखनाय फिल्टरजों जेबो अजत गोरोबा।",
+        "stats": {
+          "open": "खेवनाय",
+          "awaitingInfo": "फिननाय नेनानाव थानाय",
+          "resolved": "सुस्रांबाय",
+          "slaBreached": "SLA सीमा बारबाय"
+        },
+        "filters": {
+          "sectionAriaLabel": "अजत फारिलाइनि फिल्टरफोर",
+          "status": "थासारि",
+          "priority": "गोनांथारथि",
+          "search": "मखनाय ID एबा बाहायग्रानि मुंजों नागिर",
+          "all": "गासै",
+          "clear": "फिल्टर बोखार",
+          "clearAriaLabel": "गासै फिल्टरफोरखौ बोखार"
+        },
+        "table": {
+          "tableAriaLabel": "अजत फारिलाइ टेबल",
+          "headers": {
+            "referenceId": "मखनाय ID",
+            "dataPrincipal": "बाहायग्रा",
+            "category": "विभाग",
+            "priority": "गोनांथारथि",
+            "status": "थासारि",
+            "sla": "SLA",
+            "updated": "अपडेट खालामबाय"
+          }
+        }
+      },
+      "case": {
+        "back": "फारिलाइआव फिन थां",
+        "notFound": "अजत मोनाखै",
+        "dataPrincipal": "बाहायग्रा"
+      }
+    }
+  },
+  "dataProcessors": {
+    "subscriptions": {
+      "title": "सबस्क्रिपसनफोर",
+      "subtitle": "जाथाय मख'नाय नेम-खानथि (Event Notification Framework) नि गासै रजिस्टार खालामनाय सबस्क्रिपसनफोर।",
+      "addAction": "सबस्क्रिपसन सोदेर",
+      "filters": {
+        "sectionAriaLabel": "सबस्क्रिपसन फिल्टरफोर",
+        "status": "थासारि",
+        "topic": "आयदा",
+        "clear": "फिल्टर बोखार",
+        "statusOptions": {
+          "all": "गासै थासारिफोर",
+          "active": "सोलिफुनाय",
+          "pendingVerification": "नेनानाव थानाय",
+          "stale": "मेगोन"
+        },
+        "topicOptions": {
+          "all": "गासै आयदाफोर"
+        }
+      },
+      "messages": {
+        "reverifySuccess": "सबस्क्रिपसनखौ फिन-प्रमान खालामबाय। थासारिया दा ACTIVE जाबाय।",
+        "reverifyStillStale": "फिन-प्रमान खालामनाया फेलें जाबाय। सबस्क्रिपसना STALE थाबाय थागोन।",
+        "reverifyFailed": "फिन-प्रमान खालामनाया फेलें जाबाय।"
+      }
+    },
+    "events": {
+      "title": "जाथायफोर",
+      "subtitle": "जाथाय मख'नाय नेम-खानथि नि गासै जाथाय दैथायनायफोर।",
+      "filters": {
+        "sectionAriaLabel": "जाथाय फिल्टरफोर",
+        "status": "थासारि",
+        "topic": "आयदा",
+        "search": "जाथायफोर नागिर",
+        "searchPlaceholder": "थांखि एबा सबस्क्राइबार ID जों नागिर...",
+        "clear": "फिल्टर बोखार",
+        "statusOptions": {
+          "all": "गासै थासारिफोर"
+        },
+        "topicOptions": {
+          "all": "गासै आयदाफोर"
+        }
+      },
+      "emptyTitle": "जेबो जाथाय मोनाखै",
+      "emptyMessage": "सायखनाय खानथिजों जेबो फोसावनाय जाथाय गोरोबा।",
+      "table": {
+        "eventId": "जाथाय ID",
+        "topic": "आयदा",
+        "purposes": "थांखिफोर",
+        "deliveries": "दैथायनायफोर",
+        "occurredAt": "जानाय सम",
+        "action": "हाबा",
+        "all": "गासै",
+        "noSubscribers": "जेबो सबस्क्राइबार गैया",
+        "viewEvent": "जाथायखौ नाय",
+        "subscriberCount_one": "{{count}} ता सबस्क्राइबार",
+        "subscriberCount_other": "{{count}} ता सबस्क्राइबारफोर"
+      },
+      "detail": {
+        "notFoundTitle": "जाथाय मोनाखै",
+        "notFoundMessage": "ID \"{{eventId}}\" जों जेबो जाथाय मोनाखै।",
+        "backToEvents": "जाथायफोनाव फिन थां",
+        "topic": "आयदा",
+        "purposes": "थांखिफोर",
+        "occurredAt": "जानाय सम",
+        "deliveries": "दैथायनायफोर",
+        "all": "गासै",
+        "noSubscribers": "जेबो सबस्क्राइबार गैया",
+        "subscriberCount_one": "{{count}} ता सबस्क्राइबार",
+        "subscriberCount_other": "{{count}} ता सबस्क्राइबारफोर"
+      },
+      "dialog": {
+        "title": "फिन नाजानाय जारिमिन",
+        "deliveryId": "दैथायनाय ID",
+        "loading": "जाथाय दैथायनाय जारिमिन लोड खालामफुगासिनो…",
+        "noRetries": "गिबि नाजानाया जोबबाय। जेबो फिन नाजानाय रेकर्ड जायाखै।",
+        "attempt": "नाजानाय {{attempt}}",
+        "retrySuffix": " (फिन नाजानाय)",
+        "webhookDescription": "HTTP दैथायनाय आरो फिन नाजानायनि सम-बादि जारिमिन।",
+        "pollTitle": "प'ल जोबनाय थासारि आरो गनायथि-लिरनाय",
+        "completionStatus": "जोबनाय थासारि",
+        "completionTimestamp": "जोबनाय समनि छाप",
+        "erasureMethod": "हुस्रायनाय राहा",
+        "recordsAffected": "सोमोन्दो थानाय रेकर्डफोर",
+        "referenceId": "मखनाय ID",
+        "submittedBy": "गथायग्रा",
+        "notes": "लिरनायफोर",
+        "noAcknowledgment": "दासिम जेबो प'ल जोबनाय गनायथि-लिरनाय गथायाखै।",
+        "close": "बंध खालाम"
+      }
+    }
+  }
+}
