@@ -4,7 +4,7 @@ India's [Digital Personal Data Protection Act, 2023](https://www.indiacode.nic.i
 (DPDP Act) establishes a framework for processing digital personal data that
 recognises both an individual's right to protect personal data and the need to
 process it for lawful purposes. The WSO2 DPDP Accelerator extends WSO2
-Identity Server with consent, complaint, audit, and event-notification
+Identity Server with consent, complaint (grievance), audit, and event-notification
 capabilities that help an organization put parts of that framework into
 operation.
 
