@@ -23,7 +23,7 @@ install or configure WSO2 Identity Server, a database, or the accelerator.
 
 ### Download the Harvester kubeconfig
 
-1. Sign in to Rancher and open [Virtualization Management](https://rancher-us-prod.iaas.sys.wso2.com/dashboard/c/_/harvesterManager/harvesterhci.io.management.cluster).
+1. Sign in to Rancher and open **Virtualization Management**.
 2. Select the target Harvester cluster and choose **Download Kubeconfig**.
 3. Store the downloaded file locally with owner-only permissions, for example
    `~/.kube/us-dc-harvester-cluster.yaml`, and set `harvester_kubeconfig_path`
