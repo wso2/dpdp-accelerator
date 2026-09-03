@@ -32,9 +32,14 @@ variable "vm_user" {
 
 variable "vm_console_password" {
   type        = string
-  description = "Temporary password for vm_user console access. Set null to disable password login."
-  default     = null
+  description = "Temporary password for vm_user console access."
+  nullable    = false
   sensitive   = true
+
+  validation {
+    condition     = trimspace(var.vm_console_password) != ""
+    error_message = "Set vm_console_password so the VMs receive cloud-init and can be accessed through the serial console."
+  }
 }
 
 # The quoted 8 vCPU / 16 GiB / 100 GiB allocation is split across both VMs.

@@ -1,10 +1,3 @@
-check "console_access" {
-  assert {
-    condition     = var.vm_console_password != null
-    error_message = "Set vm_console_password so the VMs receive cloud-init and can be accessed through the serial console."
-  }
-}
-
 locals {
   common = {
     namespace    = var.vm_namespace
