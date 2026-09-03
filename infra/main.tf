@@ -9,7 +9,7 @@ locals {
 }
 
 module "is_vm" {
-  source = "github.com/wso2/open-cloud-datacenter//modules/workloads/vm?ref=v0.8.0"
+  source = "github.com/wso2/open-cloud-datacenter//modules/workloads/vm?ref=fdddf3581607be9d86f9b3f177bfc4467a3cede7"
 
   name      = "${var.prefix}-is"
   cpu       = var.is_vm_cpu
@@ -26,7 +26,7 @@ module "is_vm" {
 }
 
 module "db_vm" {
-  source = "github.com/wso2/open-cloud-datacenter//modules/workloads/vm?ref=v0.8.0"
+  source = "github.com/wso2/open-cloud-datacenter//modules/workloads/vm?ref=fdddf3581607be9d86f9b3f177bfc4467a3cede7"
 
   name      = "${var.prefix}-db"
   cpu       = var.db_vm_cpu
