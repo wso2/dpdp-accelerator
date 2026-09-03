@@ -1,3 +1,8 @@
+---
+title: Localizing the Consent Portal
+sidebar_position: 4
+---
+
 # Localizing the Consent Portal
 
 Complete this after [`configuration-guide.md`](configuration-guide.md). This

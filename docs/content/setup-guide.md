@@ -1,3 +1,8 @@
+---
+title: Setting up the DPDP Identity Server Accelerator
+sidebar_position: 1
+---
+
 # Setting up the DPDP Identity Server Accelerator
 
 Gets the Identity Server running with the consent portal deployed. Complete
@@ -31,7 +36,7 @@ mvn clean install
 
 Run from the repository root — this produces
 `dpdp-accelerator/accelerators/dpdp-is/target/wso2-dpdpiam-accelerator-<version>.zip`.
-See the [repository README](../README.md#build) for details.
+See the [repository README](https://github.com/wso2/dpdp-accelerator#build) for details.
 
 ## 3. Extract the accelerator
 

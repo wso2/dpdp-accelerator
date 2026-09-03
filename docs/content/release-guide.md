@@ -1,9 +1,14 @@
+---
+title: Release guide
+sidebar_position: 5
+---
+
 # Release guide
 
 How to cut a release of the DPDP accelerator, and what the pipeline does on your behalf.
 
 Releases are built by the **Release builder** workflow
-([`.github/workflows/release-builder.yml`](../.github/workflows/release-builder.yml)). It is
+([`.github/workflows/release-builder.yml`](https://github.com/wso2/dpdp-accelerator/blob/main/.github/workflows/release-builder.yml)). It is
 dispatched by hand — nothing releases on a push or a merge.
 
 ## What a release produces
@@ -89,7 +94,7 @@ prepare ─┬─ e2e ──┐
   non-prerelease off `main`. Everything downstream reads its outputs rather than
   re-deriving them.
 - **e2e** — the same suite that gates a PR, via the reusable
-  [`e2e.yml`](../.github/workflows/e2e.yml). Skippable with `run_e2e: off`.
+  [`e2e.yml`](https://github.com/wso2/dpdp-accelerator/blob/main/.github/workflows/e2e.yml). Skippable with `run_e2e: off`.
 - **build** — `versions:set`, then `mvn clean install`, then asserts the zip exists at the
   exact expected path. That assertion is also what proves `versions:set` reached every
   module.

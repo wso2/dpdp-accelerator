@@ -20,6 +20,10 @@ pom.xml.releaseBackup
 **/frontend/npm/
 npm-debug.log*
 
+# Docusaurus (docs site build output and cache)
+docs/.docusaurus/
+docs/build/
+
 # Accelerator overlay: the exploded webapp and OSGi bundle jars are generated
 # at package time.
 **/carbon-home/repository/deployment/server/webapps/

@@ -1,3 +1,8 @@
+---
+title: Using Event Notifications
+sidebar_position: 3
+---
+
 # Using Event Notifications
 
 Complete this after installing the accelerator, configuring the Consent Portal,

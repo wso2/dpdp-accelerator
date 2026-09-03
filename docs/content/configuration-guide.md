@@ -1,3 +1,8 @@
+---
+title: Configuring the Consent Portal application
+sidebar_position: 2
+---
+
 # Configuring the Consent Portal application
 
 Complete this after installing the accelerator and starting the Identity
