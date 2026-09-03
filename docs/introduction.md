@@ -8,7 +8,7 @@ Identity Server with consent, complaint (grievance), audit, and event-notificati
 capabilities that help an organization put parts of that framework into
 operation.
 
-> This page is a product introduction, not legal advice or a statement of
+> Disclaimer: This page is a product introduction, not legal advice or a statement of
 > compliance. An organization remains responsible for determining how the Act,
 > its commencement notifications, and applicable rules affect its processing
 > activities.
