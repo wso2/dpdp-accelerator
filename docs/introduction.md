@@ -148,7 +148,7 @@ response, and legal review.
 
 ## Start using the accelerator
 
-1. Follow the [Quickstart](quickstart.md) for a local H2 deployment and a first
+1. Follow the [Quickstart](quickstart.md) for a local quick setting up of the solution
    tenant.
 2. Run the [Tryout Flows](tryout-flows.md) to exercise the shipped catalog,
    consent, complaint, Event Notification, and account lifecycle capabilities.
