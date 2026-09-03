@@ -18,7 +18,7 @@ operation.
 The DPDP Act applies to digital personal data processed in India, including
 data collected in non-digital form and digitised later. It can also apply to
 processing outside India when that processing is connected with offering
-goods or services to Data Principals in India. The Act excludes specified
+goods or services to Data Principals(individual to whom the personal data relates) in India. The Act excludes specified
 personal or domestic processing and certain personal data made publicly
 available by the Data Principal or by a person legally required to publish it.
 
@@ -67,26 +67,67 @@ The accelerator helps a Data Fiduciary provide consent-management experiences.
 Installing it does **not** register the organization or the product as a
 statutory Consent Manager.
 
-## A sample digital-consent journey
+### Scenario: Digital Healthcare & Teleconsultation
 
-Consider an online service that needs an individual's contact details to
-deliver an order and separately wants permission to send marketing messages.
-A DPDP-oriented implementation can work as follows:
+**Priya Sharma** uses **CarePulse**, an online healthcare app, to book an urgent virtual consultation with a specialist, order prescribed medications, and decide whether she wants her health trends analyzed for wellness perks.
 
-1. The service describes each purpose and the personal-data elements it needs.
-2. The individual reviews the notice and takes an affirmative action for the
-   optional purpose.
-3. The service records the consent and permits processing only for the selected
-   purpose and data elements.
-4. The individual later reviews the consent, changes it, or withdraws it.
-5. The consent change is recorded and relevant downstream systems are
-   notified so that they can apply the new state.
-6. If the individual has a concern, they use the organization's grievance
-   process and can track the response.
+---
 
-Consent is not the only basis for processing under the Act. The Data Fiduciary
-must determine whether consent or one of the Act's certain legitimate uses
-applies to each processing activity.
+#### Data Principal - Priya Sharma *(Patient)*
+
+- **Reviews segregated notices:** Reads distinct requests for medical consultation, prescription home delivery, and optional predictive health tips.
+- **Gives granular consent:** Approves processing for her consult and prescription delivery, while explicitly ticking an opt-in box for weekly health insights.
+- **Exercises control:** Later opens her privacy settings to withdraw permission for marketing and health trend profiling.
+- **Raises issues:** Files a complaint via the portal when she mistakenly receives an unrequested promotional SMS after revoking consent.
+
+#### Data Fiduciary - CarePulse Telehealth *(The Healthcare Platform)*
+
+- **Defines purposes & catalogs data:** Determines why data is required (e.g., vitals for consultation vs. address for courier delivery).
+- **Captures & audits consent:** Employs the WSO2 DPDP Accelerator to record Priya's affirmative choices and log cryptographic audit trails.
+- **Coordinates the ecosystem:** Translates Priya's consent revocation into a `consent.revoke` event topic for downstream consumers.
+- **Maintains accountability:** Ensures legal basis compliance and oversees internal grievance resolution.
+
+#### Data Processor - MedExpress *(Courier Partner)* & CloudEngage *(Marketing Vendor)*
+
+- **Executes under contract:** Processes Priya's delivery address (MedExpress) or email/phone (CloudEngage) strictly under CarePulse's instructions.
+- **Consumes lifecycle events:** CloudEngage listens to the `consent.revoke` webhook topic and instantly purges Priya's contact info from its active campaign pipeline.
+
+#### Grievance Officer / DPO - CarePulse Compliance Desk *(Internal Team)*
+
+- **Investigates concerns:** Receives Priya's grievance ticket regarding the rogue SMS via the DPDP grievance portal.
+- **Reviews audit history:** Checks the consent timeline and confirms that CloudEngage had a delivery lag when processing the revocation event.
+- **Resolves & intimates:** Closes the gap with the vendor, updates the ticket, and delivers an official resolution within mandated statutory timelines.
+
+#### Data Protection Board of India (DPBI) - Statutory Regulatory Body
+
+- **Serves as final arbiter:** Available as an escalation authority if Priya finds CarePulse's grievance response unsatisfactory or unfulfilled.
+- **Enforces accountability:** Evaluates systemic non-compliance or data breaches reported by either Principals or the Fiduciary.
+
+## WSO2 Identity Server vs. The WSO2 DPDP Accelerator
+
+WSO2 Identity Server (IS) provides built-in consent management primitives primarily focused on IAM and authentication flows. The WSO2 DPDP Accelerator builds on this foundation to satisfy the legal, lifecycle, and operational mandates of India's Digital Personal Data Protection (DPDP) Act.
+
+### What WSO2 Identity Server provides
+
+Out of the box, WSO2 IS handles user consent as an integrated facet of Customer Identity and Access Management (CIAM):
+
+- **SSO & federated consent prompts** - Prompts users during single sign-on (SSO/OAuth2/OIDC/SAML) before releasing identity claims or user attributes to third-party client applications.
+- **Basic purpose association** - Allows administrators to map claims to specific purposes and collect consent during self-registration or login.
+- **Consent REST APIs & Kantara receipts** - Offers standard REST endpoints for managing consent records and basic support for Kantara-style consent receipts.
+- **User self-service (My Account)** - A portal where end users can review and revoke permissions granted to registered service providers.
+
+### Where the DPDP Accelerator bridges the gap
+
+The DPDP Act requires organizations to treat consent not merely as a token-issuance gate, but as an auditable, multi-stakeholder governance framework. The DPDP Accelerator extends WSO2 IS across several specialized dimensions:
+
+| Capability area | WSO2 Identity Server | With WSO2 DPDP Accelerator |
+|---|---|---|
+| **Scope of data & purposes** | Confined primarily to IAM user claims and token sharing across service providers. | Decoupled data catalog defines arbitrary enterprise processing purposes, data element categories, and custom notice templates beyond IAM profile fields. |
+| **Notice & language accessibility** | Default UI localization based on standard i18n bundles. | Statutory multilingual support delivers notice and catalog content localized in English and the languages listed in the Eighth Schedule to the Constitution. |
+| **Consent auditing & immutability** | Tracks active/revoked states; limited immutable versioning. | Full audit and snapshot history preserves historical snapshots of each consent iteration - what was consented to, when, and under which exact notice text. |
+| **Downstream propagation** | Downstream apps must query APIs; no native push framework for non-IAM apps. | Event Notification framework publishes lifecycle webhooks and polling topics (`consent.update`, `consent.revoke`, `consent.expire`, `user.account.delete`) to enforce revocation across external processors. |
+| **Grievance redressal mechanism** | Not available (limited to account-level profile updates). | Dedicated grievance portal offers end-to-end complaint ticketing for Data Principals, with triage workflows, assignment, messaging, attachments, and due-date tracking for DPOs. |
+| **Ecosystem governance roles** | Standard IAM roles (Admin, Internal/everyone, Application Owner). | DPDP-specific personas provide granular separation of duties for DPOs, Grievance Officers, external processors, and tenant-wide privacy administrators. |
 
 ## How the WSO2 DPDP Accelerator helps
 
@@ -148,22 +189,24 @@ response, and legal review.
 
 ## Start using the accelerator
 
-1. Follow the [Quickstart](quickstart.md) for a local quick setting up of the solution
+1. Read [Learn through real stories](learn.md) for a role-based introduction
+   to the major journeys.
+2. Follow the [Quickstart](quickstart.md) for a local quick setting up of the solution
    tenant.
-2. Run the [Tryout Flows](tryout-flows.md) to exercise the shipped catalog,
+3. Run the [Tryout Flows](tryout-flows.md) to exercise the shipped catalog,
    consent, complaint, Event Notification, and account lifecycle capabilities.
-3. Use the [Setup Guide](setup-guide.md) to install the accelerator and prepare
+4. Use the [Setup Guide](setup-guide.md) to install the accelerator and prepare
    its databases.
-4. Review the [Configuration Guide](configuration-guide.md) before a production
+5. Review the [Configuration Guide](configuration-guide.md) before a production
    deployment.
-5. Assign portal and integration permissions with the
+6. Assign portal and integration permissions with the
    [Role Management Guide](role-guide.md).
-6. Configure lifecycle delivery with the
+7. Configure lifecycle delivery with the
    [Event Notification Guide](event-notification-guide.md).
-7. Adapt the user interface and catalog content with the
+8. Adapt the user interface and catalog content with the
    [Localization Guide](localization-guide.md).
 
 ## Official references
 
-- [The Digital Personal Data Protection Act, 2023 — India Code](https://www.indiacode.nic.in/indiacode/handle/123456789/22037)
-- [DPDP Act commencement notification, 13 November 2025 — Ministry of Electronics and Information Technology](https://www.meity.gov.in/static/uploads/2025/11/c56ceae6c383460ca69577428d36828b.pdf)
+- [The Digital Personal Data Protection Act, 2023 - India Code](https://www.indiacode.nic.in/indiacode/handle/123456789/22037)
+- [DPDP Act commencement notification, 13 November 2025 - Ministry of Electronics and Information Technology](https://www.meity.gov.in/static/uploads/2025/11/c56ceae6c383460ca69577428d36828b.pdf)
