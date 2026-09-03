@@ -62,6 +62,9 @@ console` for the relevant VM. Log in as `ubuntu` with the temporary password
 stored in ignored local `terraform.tfvars`; never commit it. Exit a console
 session with `Ctrl+]`.
 
+Keep in mind that the serial console is a single-user session: only one person
+can be connected at a time, unlike SSH, which supports multiple sessions.
+
 ## Deferred SSH access
 
 SSH access is intentionally deferred because there is no site-to-site network
