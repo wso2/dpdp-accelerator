@@ -624,7 +624,7 @@
         <maven.clean.plugin.version>3.1.0</maven.clean.plugin.version>
         <maven.dependency.plugin.version>3.6.1</maven.dependency.plugin.version>
         <build.helper.maven.plugin.version>3.5.0</build.helper.maven.plugin.version>
-        <openapi.generator.plugin.version>6.6.0</openapi.generator.plugin.version>
+        <openapi.generator.plugin.version>7.25.0</openapi.generator.plugin.version>
 
         <!-- Set to false (e.g. -Ddpdp.dto.codegen.skip=false) to regenerate the consent-history
              DTOs from consent-history.yaml, then set back to true and commit the result. Off by
