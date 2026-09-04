@@ -1,0 +1,11 @@
+{
+  "database": {
+    "driverClass": "com.mysql.cj.jdbc.Driver",
+    "url": "jdbc:mysql://localhost:3306/WSO2DPDP_DB?useSSL=true",
+    "username": "${DPDP_DB_USERNAME}",
+    "password": "${DPDP_DB_PASSWORD}"
+  },
+  "eventPayloadRulesFile": "event-payload-rules.json",
+  "batchSize": 250,
+  "reportDirectory": "../reports"
+}

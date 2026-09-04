@@ -1,0 +1,14 @@
+[
+  {
+    "topic": "user.data.change",
+    "paths": [
+      "/userId"
+    ]
+  },
+  {
+    "topic": "user.account.delete",
+    "paths": [
+      "/userId"
+    ]
+  }
+]

@@ -1,0 +1,7 @@
+#!/bin/sh
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+TOOL_HOME=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+
+exec java -jar "$TOOL_HOME/lib/dpdp-anonymization-tool.jar" \
+  --config "$TOOL_HOME/conf/config.json" "$@"
