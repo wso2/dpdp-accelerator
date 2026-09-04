@@ -117,14 +117,21 @@ public class TopicDAOImpl implements TopicDAO {
                 ps.setString(2, orgId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return Optional.of(mapTopic(rs));
+                        Topic topic = mapTopic(rs);
+                        DatabaseUtils.commitTransaction(conn);
+                        return Optional.of(topic);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_TOPIC_BY_ID, topicId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -134,7 +141,12 @@ public class TopicDAOImpl implements TopicDAO {
     public Optional<Topic> getTopicByOrgAndName(String orgId, String name) {
         Connection conn = DatabaseUtils.getDBConnection();
         try {
-            return getTopicByOrgAndName(conn, orgId, name);
+            Optional<Topic> topic = getTopicByOrgAndName(conn, orgId, name);
+            DatabaseUtils.commitTransaction(conn);
+            return topic;
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -318,11 +330,17 @@ public class TopicDAOImpl implements TopicDAO {
                     }
                 }
             }
-            return new PaginatedDAOResult<>(topics, total[0]);
+            PaginatedDAOResult<Topic> result = new PaginatedDAOResult<>(topics, total[0]);
+            DatabaseUtils.commitTransaction(conn);
+            return result;
           } catch (SQLException e) {
+            DatabaseUtils.rollbackTransaction(conn);
             throw new EventNotificationDataAccessException(
                     String.format(EventNotificationCommonConstants.ERROR_LISTING_TOPICS, orgId), e);
           }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }

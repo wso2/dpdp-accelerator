@@ -102,7 +102,7 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                 ps.setString(2, orgId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return Optional.of(new WebhookDelivery(
+                        WebhookDelivery delivery = new WebhookDelivery(
                                 rs.getString(EventNotificationDBColumns.DELIVERY_ID),
                                 rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID),
                                 rs.getString(EventNotificationDBColumns.EVENT_ID),
@@ -111,14 +111,21 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                                 rs.getTimestamp(EventNotificationDBColumns.NEXT_RETRY_AT),
                                 rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
                                 rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
-                                rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT)));
+                                rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT));
+                        DatabaseUtils.commitTransaction(conn);
+                        return Optional.of(delivery);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_WEBHOOK_DELIVERY, deliveryId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -170,11 +177,16 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                                 rs.getString(EventNotificationDBColumns.TOPIC_NAME)));
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         EventNotificationCommonConstants.ERROR_GETTING_PENDING_WEBHOOK_DELIVERIES, e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -210,11 +222,16 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                                 rs.getString(EventNotificationDBColumns.TOPIC_NAME)));
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         EventNotificationCommonConstants.ERROR_GETTING_PENDING_WEBHOOK_DELIVERIES, e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -359,12 +376,17 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                                 rs.getTimestamp(EventNotificationDBColumns.ATTEMPT_AT)));
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_WEBHOOK_DELIVERY_AUDITS, deliveryId),
                         e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -414,7 +436,7 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                 ps.setString(2, orgId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return Optional.of(new PollDelivery(
+                        PollDelivery delivery = new PollDelivery(
                                 rs.getString(EventNotificationDBColumns.DELIVERY_ID),
                                 rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID),
                                 rs.getString(EventNotificationDBColumns.EVENT_ID),
@@ -422,14 +444,21 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                                 rs.getString(EventNotificationDBColumns.ERROR_CODE),
                                 rs.getString(EventNotificationDBColumns.ERROR_DETAIL),
                                 rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
-                                rs.getTimestamp(EventNotificationDBColumns.COMPLETED_AT)));
+                                rs.getTimestamp(EventNotificationDBColumns.COMPLETED_AT));
+                        DatabaseUtils.commitTransaction(conn);
+                        return Optional.of(delivery);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_POLL_DELIVERY, deliveryId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -465,12 +494,17 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                                 rs.getTimestamp(EventNotificationDBColumns.COMPLETED_AT)));
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return candidates;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_PENDING_POLL_DELIVERIES,
                                 subscriptionId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -766,13 +800,18 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                         }
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_LISTING_DELIVERIES_FOR_SUBSCRIPTION,
                                 subscriptionId),
                         e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -791,14 +830,21 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                 ps.setString(6, orgId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return Optional.of(mapSummary(rs));
+                        SubscriptionDeliverySummary summary = mapSummary(rs);
+                        DatabaseUtils.commitTransaction(conn);
+                        return Optional.of(summary);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_SUBSCRIPTION_DELIVERY, deliveryId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -906,11 +952,16 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                         }
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_LISTING_ORG_DELIVERIES, orgId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -926,14 +977,21 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                 ps.setString(3, deliveryId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return Optional.of(mapSummary(rs));
+                        SubscriptionDeliverySummary summary = mapSummary(rs);
+                        DatabaseUtils.commitTransaction(conn);
+                        return Optional.of(summary);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_ORG_DELIVERY, deliveryId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -993,11 +1051,16 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                         }
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_LISTING_ORG_DELIVERIES, orgId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }

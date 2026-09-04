@@ -81,20 +81,27 @@ public class DeliveryAckDAOImpl implements DeliveryAckDAO {
                 ps.setString(1, deliveryId);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return Optional.of(new WebhookDeliveryAck(
+                        WebhookDeliveryAck ack = new WebhookDeliveryAck(
                                 rs.getString(EventNotificationDBColumns.ACK_ID),
                                 rs.getString(EventNotificationDBColumns.DELIVERY_ID),
                                 rs.getTimestamp(EventNotificationDBColumns.COMPLETED_AT),
                                 rs.getString(EventNotificationDBColumns.COMPLETION_STATUS),
                                 rs.getString(EventNotificationDBColumns.COMPLETION_EVIDENCE)
-                        ));
+                        );
+                        DatabaseUtils.commitTransaction(conn);
+                        return Optional.of(ack);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_DELIVERY_ACK_BY_DELIVERY_ID, deliveryId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }

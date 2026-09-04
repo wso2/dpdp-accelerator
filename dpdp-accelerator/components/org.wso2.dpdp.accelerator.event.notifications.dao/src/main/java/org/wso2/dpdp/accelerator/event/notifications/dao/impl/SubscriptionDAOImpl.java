@@ -212,7 +212,12 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
     public Optional<Subscription> getSubscriptionById(String subscriptionId, String orgId) {
         Connection conn = DatabaseUtils.getDBConnection();
         try {
-            return getSubscriptionById(conn, subscriptionId, orgId);
+            Optional<Subscription> subscription = getSubscriptionById(conn, subscriptionId, orgId);
+            DatabaseUtils.commitTransaction(conn);
+            return subscription;
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -433,11 +438,17 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 }
             }
 
-            return new PaginatedDAOResult<>(subscriptions, total[0]);
+            PaginatedDAOResult<Subscription> result = new PaginatedDAOResult<>(subscriptions, total[0]);
+            DatabaseUtils.commitTransaction(conn);
+            return result;
           } catch (SQLException e) {
+            DatabaseUtils.rollbackTransaction(conn);
             throw new EventNotificationDataAccessException(
                     String.format(EventNotificationCommonConstants.ERROR_LISTING_SUBSCRIPTIONS, orgId), e);
           }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -501,13 +512,18 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                         purposes.add(rs.getString(EventNotificationDBColumns.PURPOSE_NAME));
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return purposes;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_PURPOSES_BY_SUBSCRIPTION_ID,
                                 subscriptionId),
                         e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -521,18 +537,24 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                     .prepareStatement(getQueries(conn).getCountActiveSubscriptionsForTopicQuery())) {
                 ps.setString(1, orgId);
                 ps.setString(2, topicId);
+                long count = 0L;
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return rs.getLong(1);
+                        count = rs.getLong(1);
                     }
                 }
-                return 0L;
+                DatabaseUtils.commitTransaction(conn);
+                return count;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_SUBSCRIPTIONS_BY_ORG_AND_TOPIC, orgId,
                                 topicId),
                         e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -542,7 +564,12 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
     public Map<String, List<String>> getPurposesBySubscriptionIds(List<String> subscriptionIds) {
         Connection conn = DatabaseUtils.getDBConnection();
         try {
-            return getPurposesBySubscriptionIds(conn, subscriptionIds);
+            Map<String, List<String>> map = getPurposesBySubscriptionIds(conn, subscriptionIds);
+            DatabaseUtils.commitTransaction(conn);
+            return map;
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -590,15 +617,22 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 ps.setString(5, subscriptionId);
                 ps.setString(6, orgId);
                 ps.setString(7, PollStatus.PENDING.getValue());
+                boolean hasPending;
                 try (ResultSet rs = ps.executeQuery()) {
-                    return rs.next();
+                    hasPending = rs.next();
                 }
+                DatabaseUtils.commitTransaction(conn);
+                return hasPending;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_CHECKING_PENDING_DELIVERIES_FOR_SUBSCRIPTION,
                                 subscriptionId),
                         e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -619,11 +653,16 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                         list.add(sub);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return list;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         EventNotificationCommonConstants.ERROR_GETTING_PENDING_SUBSCRIPTIONS_FOR_RECOVERY, e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }

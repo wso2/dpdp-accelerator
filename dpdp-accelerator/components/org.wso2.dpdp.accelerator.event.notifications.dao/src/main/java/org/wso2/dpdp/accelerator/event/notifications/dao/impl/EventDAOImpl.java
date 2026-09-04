@@ -91,14 +91,20 @@ public class EventDAOImpl implements EventDAO {
                     if (rs.next()) {
                         Event event = mapEvent(rs);
                         event.setPurposes(getEventPurposes(conn, eventId));
+                        DatabaseUtils.commitTransaction(conn);
                         return Optional.of(event);
                     }
                 }
+                DatabaseUtils.commitTransaction(conn);
                 return Optional.empty();
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_GETTING_EVENT_BY_ID, eventId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -135,7 +141,12 @@ public class EventDAOImpl implements EventDAO {
     public List<String> getEventPurposes(String eventId) {
         Connection conn = DatabaseUtils.getDBConnection();
         try {
-            return getEventPurposes(conn, eventId);
+            List<String> purposes = getEventPurposes(conn, eventId);
+            DatabaseUtils.commitTransaction(conn);
+            return purposes;
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -164,13 +175,20 @@ public class EventDAOImpl implements EventDAO {
         try {
             try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getHasActiveEventsForTopicQuery())) {
                 ps.setString(1, topicId);
+                boolean hasActive;
                 try (ResultSet rs = ps.executeQuery()) {
-                    return rs.next();
+                    hasActive = rs.next();
                 }
+                DatabaseUtils.commitTransaction(conn);
+                return hasActive;
             } catch (SQLException e) {
+                DatabaseUtils.rollbackTransaction(conn);
                 throw new EventNotificationDataAccessException(
                         String.format(EventNotificationCommonConstants.ERROR_HAS_ACTIVE_EVENTS_FOR_TOPIC, topicId), e);
             }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
@@ -232,11 +250,17 @@ public class EventDAOImpl implements EventDAO {
                 }
             }
 
-            return new PaginatedDAOResult<>(events, total[0]);
+            PaginatedDAOResult<Event> result = new PaginatedDAOResult<>(events, total[0]);
+            DatabaseUtils.commitTransaction(conn);
+            return result;
           } catch (SQLException e) {
+            DatabaseUtils.rollbackTransaction(conn);
             throw new EventNotificationDataAccessException(
                     String.format(EventNotificationCommonConstants.ERROR_LISTING_EVENTS, orgId), e);
           }
+        } catch (RuntimeException e) {
+            DatabaseUtils.rollbackTransaction(conn);
+            throw e;
         } finally {
             DatabaseUtils.closeConnection(conn);
         }
