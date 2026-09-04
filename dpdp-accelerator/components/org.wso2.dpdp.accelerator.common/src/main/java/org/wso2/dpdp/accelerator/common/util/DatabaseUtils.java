@@ -53,10 +53,28 @@ public final class DatabaseUtils {
         JDBCPersistenceManager.getInstance().rollbackTransaction(connection);
     }
 
+    /**
+     * Ends any still-open transaction before handing the connection back to the pool. Connections
+     * come out of {@link #getDBConnection()} with autocommit off and read paths never commit, so
+     * without this they return to the pool mid-transaction - which on MySQL (REPEATABLE READ) pins
+     * a snapshot that every later borrower of that connection keeps reading, serving stale rows
+     * indefinitely. The pool does not do this for us: Tomcat JDBC only terminates the transaction
+     * on return when the datasource sets {@code defaultAutoCommit=false}, which the product's own
+     * datasource config does not.
+     */
     public static void closeConnection(Connection connection) {
 
         if (connection == null) {
             return;
+        }
+        try {
+            // Roll back any uncommitted transaction before closing the connection.
+            // Write operations are expected to have committed before this method is called.
+            if (!connection.getAutoCommit()) {
+                connection.rollback();
+            }
+        } catch (SQLException e) {
+            LOG.error("Error while ending the transaction on a DPDP DB connection before close.", e);
         }
         try {
             connection.close();

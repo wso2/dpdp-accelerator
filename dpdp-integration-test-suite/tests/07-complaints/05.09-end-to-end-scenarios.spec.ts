@@ -22,6 +22,7 @@ import { ComplaintDetailPage } from '../../pages/ComplaintDetailPage'
 import { ComplaintListPage } from '../../pages/ComplaintListPage'
 import { ComplaintQueuePage } from '../../pages/ComplaintQueuePage'
 import { ComplaintSubmitDialog } from '../../pages/ComplaintSubmitDialog'
+import { seedComplaint } from '../../utils/complaintSetup'
 import { uniqueMarker } from '../../utils/testData'
 
 /**
@@ -97,6 +98,120 @@ test.describe('Real-world complaint scenarios (UI)', () => {
     await queuePage.goto()
     await queuePage.setRowsPerPage(25)
     await expect(queuePage.rowByReferenceId(referenceId)).not.toBeVisible()
+
+    await dataPrincipalPage.context().close()
+    await officerPage.context().close()
+  })
+
+  test('05.09.03 - A multi-round officer/citizen exchange leaves the whole thread visible to both sides', async ({
+    browser,
+    userComplaintApi,
+  }) => {
+    // Regression cover for the stale-timeline bug. Every DPDP DB connection is handed out with
+    // autocommit off (JDBCPersistenceManager.getDBConnection), and read paths never commit, so
+    // before DatabaseUtils.closeConnection started ending the transaction they returned their
+    // connection to the pool mid-transaction. On MySQL - REPEATABLE READ, unlike the H2/Postgres
+    // deployments - that pins a snapshot, and a GET timeline landing on such a connection served
+    // rows from before the comment that had just been posted. The message appeared to vanish
+    // until some later request happened to reuse a connection with a newer snapshot.
+    //
+    // What makes this catch it where 05.07.01's single reply does not: several rounds, each read
+    // back from BOTH surfaces, and every read asserting the entire thread so far rather than only
+    // the newest line. A single reply read back once can land on the very connection that just
+    // committed it and pass while the bug is present. It is still probabilistic - which pooled
+    // connection serves a given read is not controllable from here - but every extra round and
+    // every extra full-thread assertion multiplies the chance of hitting a pinned snapshot.
+    //
+    // Status is asserted alongside the messages because the same stale read corrupted the
+    // complaint row itself: a transition recorded FROM_STATUS=OPEN long after the complaint had
+    // moved on, because requireComplaint read it from a pinned snapshot.
+    //
+    // Many full-page navigations, each forcing a silent OIDC re-auth round trip (see 05.05.01) -
+    // the default 30s timeout is nowhere near enough once that compounds over five rounds.
+    test.setTimeout(180_000)
+
+    const seeded = await seedComplaint(userComplaintApi, 'OTHER', 'thread-roundtrip')
+    const dataPrincipalPage = await loginAsUser(browser)
+    const officerPage = await loginAsConsentAdmin(browser)
+    const detailPage = new ComplaintDetailPage(dataPrincipalPage)
+    const caseDetailPage = new ComplaintCaseDetailPage(officerPage)
+
+    // Everything said so far, oldest first. Each read-back asserts all of it, not just the tail.
+    const thread: string[] = []
+    const expectWholeThread = async (
+      surface: ComplaintDetailPage | ComplaintCaseDetailPage,
+    ): Promise<void> => {
+      for (const message of thread) {
+        await expect(surface.timelineEntry(message)).toBeVisible()
+      }
+    }
+
+    // Round 1 - the officer acknowledges. The assertion right after sendReply is the sender's own
+    // post-write refetch (useSendManagedComplaintMessageMutation invalidates the detail query),
+    // which is itself a read-after-write the bug broke.
+    await caseDetailPage.goto(seeded.id)
+    await expect(officerPage).toHaveURL(/\/complaint-management\/[^/]+$/, { timeout: 15_000 })
+    const officerAck = `Officer ack: ${uniqueMarker('rt-officer-ack')}`
+    await caseDetailPage.sendReply(officerAck)
+    thread.push(officerAck)
+    await expectWholeThread(caseDetailPage)
+
+    await detailPage.goto(seeded.id)
+    await expect(dataPrincipalPage).toHaveURL(/\/complaints\/[^/]+$/, { timeout: 15_000 })
+    await expectWholeThread(detailPage)
+
+    // Round 2 - the citizen answers.
+    const citizenDetail = `Citizen detail: ${uniqueMarker('rt-citizen-detail')}`
+    await detailPage.sendReply(citizenDetail)
+    thread.push(citizenDetail)
+    await expectWholeThread(detailPage)
+
+    await caseDetailPage.goto(seeded.id)
+    await expectWholeThread(caseDetailPage)
+
+    // Round 3 - the officer asks for more information, moving the case to Waiting on Client.
+    const officerQuestion = `Officer question: ${uniqueMarker('rt-officer-question')}`
+    await caseDetailPage.selectNextStatusBeforeSending('Waiting on Client')
+    await caseDetailPage.sendReply(officerQuestion)
+    thread.push(officerQuestion)
+    await expectWholeThread(caseDetailPage)
+    await expect(caseDetailPage.chipWithLabel('Waiting on Client')).toBeVisible()
+
+    await detailPage.goto(seeded.id)
+    await expectWholeThread(detailPage)
+    await expect(detailPage.chipWithLabel('Waiting on Client')).toBeVisible()
+    await expect(detailPage.awaitingInfoBanner).toBeVisible()
+
+    // Round 4 - the citizen answers the question. ComplaintDetailPage.tsx attaches
+    // toStatus=AWAITING_INTERNAL_REVIEW precisely because the case is WAITING_ON_CLIENT, so this
+    // round moves the status back off the citizen's own reply (see 05.04's file header).
+    const citizenAnswer = `Citizen answer: ${uniqueMarker('rt-citizen-answer')}`
+    await detailPage.sendReply(citizenAnswer)
+    thread.push(citizenAnswer)
+    await expectWholeThread(detailPage)
+    await expect(detailPage.chipWithLabel('Waiting on Internal Review')).toBeVisible()
+
+    await caseDetailPage.goto(seeded.id)
+    await expectWholeThread(caseDetailPage)
+    await expect(caseDetailPage.chipWithLabel('Waiting on Internal Review')).toBeVisible()
+
+    // Round 5 - the officer closes the loop. Read back one last time from both surfaces, so the
+    // final assertion covers the full five-message thread from each side independently.
+    const officerFollowUp = `Officer follow-up: ${uniqueMarker('rt-officer-followup')}`
+    await caseDetailPage.sendReply(officerFollowUp)
+    thread.push(officerFollowUp)
+    await expectWholeThread(caseDetailPage)
+
+    await detailPage.goto(seeded.id)
+    await expectWholeThread(detailPage)
+
+    // One last read straight off the API, bypassing the SPA's own query cache entirely - the UI
+    // assertions above can only prove what the client had already fetched.
+    const citizenTimeline = await (await userComplaintApi.getMyTimeline(seeded.id)).json()
+    const citizenMessages = citizenTimeline.data.map((entry: { message: string }) => entry.message)
+    for (const message of thread) {
+      expect(citizenMessages).toContain(message)
+    }
 
     await dataPrincipalPage.context().close()
     await officerPage.context().close()

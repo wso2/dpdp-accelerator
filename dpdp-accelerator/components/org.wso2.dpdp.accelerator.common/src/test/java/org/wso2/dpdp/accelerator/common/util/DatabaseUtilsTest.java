@@ -18,6 +18,7 @@
 
 package org.wso2.dpdp.accelerator.common.util;
 
+import org.mockito.InOrder;
 import org.mockito.Mockito;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -116,6 +117,43 @@ public class DatabaseUtilsTest {
 
         Connection connection = mock(Connection.class);
         DatabaseUtils.closeConnection(connection);
+        verify(connection).close();
+    }
+
+    @Test
+    public void closeConnectionRollsBackAnOpenTransactionBeforeClosing() throws SQLException {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(false);
+
+        DatabaseUtils.closeConnection(connection);
+
+        InOrder inOrder = Mockito.inOrder(connection);
+        inOrder.verify(connection).rollback();
+        inOrder.verify(connection).close();
+    }
+
+    @Test
+    public void closeConnectionDoesNotRollBackWhenAutoCommitIsOn() throws SQLException {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(true);
+
+        DatabaseUtils.closeConnection(connection);
+
+        verify(connection, Mockito.never()).rollback();
+        verify(connection).close();
+    }
+
+    @Test
+    public void closeConnectionStillClosesWhenTheRollbackFails() throws SQLException {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(false);
+        doThrow(new SQLException("boom")).when(connection).rollback();
+
+        DatabaseUtils.closeConnection(connection);
+
         verify(connection).close();
     }
 
