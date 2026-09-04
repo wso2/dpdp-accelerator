@@ -21,10 +21,20 @@ installation.
 
 ## Documentation
 
+- [`docs/introduction.md`](docs/introduction.md) — understanding the DPDP Act,
+  its participants, and how the accelerator supports operational workflows.
+- [`docs/quickstart.md`](docs/quickstart.md) — installing a local H2 deployment
+  and confirming automatic lifecycle event publication.
+- [`docs/tryout-flows.md`](docs/tryout-flows.md) — exercising the catalog,
+  consent lifecycle, complaints, Event Notifications, and account deletion.
+- [`docs/grievances-guide.md`](docs/grievances-guide.md) — understanding and
+  operating the tenant-scoped grievance/complaint service.
 - [`docs/setup-guide.md`](docs/setup-guide.md) — installing the accelerator
   and starting the Identity Server.
-- [`docs/configuration-guide.md`](docs/configuration-guide.md) — registering
-  the consent portal application on a running Identity Server.
+- [`docs/configuration-guide.md`](docs/configuration-guide.md) — configuring
+  the automatically provisioned applications and runtime features.
+- [`docs/role-guide.md`](docs/role-guide.md) — assigning portal and integration
+  roles and understanding their scopes.
 - [`docs/event-notification-guide.md`](docs/event-notification-guide.md) —
   creating topics and webhook subscriptions, publishing events, and inspecting
   delivery history.
@@ -35,13 +45,14 @@ installation.
 
 ## Roles
 
-Assign every portal user one of these two roles per tenant (Console →
+Basic self-service consent management requires no portal role. Assign these
+roles per tenant only when the user needs the additional capability (Console →
 **User Management → Users → *user* → Roles**):
 
 | Role | Assign to |
 |---|---|
-| `dpdp-consent-user` | Regular users, to manage their own consents. |
-| `dpdp-consent-admin` | Administrators, to manage other people's consents and the purpose/element catalog. |
+| `dpdp-consent-user` | Users who need personal consent history, complaint self-service, or self-service account deletion. |
+| `dpdp-consent-admin` | Administrators who manage other users' consents, the purpose/element catalog, Event Notifications, and all complaints. |
+| `dpdp-consent-dpo` | Data Protection Officers who manage all complaints without full portal administration. |
 
-See [`docs/configuration-guide.md`](docs/configuration-guide.md#4-assign-portal-roles)
-for details.
+See the [`Role Management Guide`](docs/role-guide.md) for details.

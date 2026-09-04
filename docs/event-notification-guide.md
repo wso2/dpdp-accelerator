@@ -19,20 +19,27 @@ You need:
 - An OAuth access token with the scopes required for any direct API calls.
 - A publicly reachable HTTPS endpoint if you use webhook delivery.
 
-The automatically provisioned `dpdp-consent-admin` role contains all Event
-Notification scopes. The `dpdp-consent-user` role does not contain these
-administrative scopes.
+The automatically provisioned `dpdp-consent-admin` role contains the six Event
+Notification management scopes for topics, subscriptions, and events. The
+automatically provisioned `dpdp-consent-user` and `dpdp-consent-dpo` roles do
+not contain Event Notification scopes. Identity Server registers the polling
+and delivery-completion scopes, but these receiver scopes are not assigned to
+any of the three portal roles.
 
-| Operation | Required scope |
-|---|---|
-| View topics | `notifications:topics:read` |
-| Create or deregister topics | `notifications:topics:write` |
-| View subscriptions | `notifications:subscriptions:read` |
-| Create, verify, or delete subscriptions | `notifications:subscriptions:write` |
-| View events and delivery history | `notifications:events:read` |
-| Publish events | `notifications:events:write` |
-| Poll event deliveries | `notifications:events:poll` |
-| Submit delivery completion | `notifications:event-deliveries:complete` |
+| Operation | Required scope | Automatically provisioned role |
+|---|---|---|
+| View topics | `notifications:topics:read` | `dpdp-consent-admin` |
+| Create or deregister topics | `notifications:topics:write` | `dpdp-consent-admin` |
+| View subscriptions | `notifications:subscriptions:read` | `dpdp-consent-admin` |
+| Create, verify, or delete subscriptions | `notifications:subscriptions:write` | `dpdp-consent-admin` |
+| View events and delivery history | `notifications:events:read` | `dpdp-consent-admin` |
+| Publish events | `notifications:events:write` | `dpdp-consent-admin` |
+| Poll event deliveries | `notifications:events:poll` | None |
+| Submit delivery completion | `notifications:event-deliveries:complete` | None |
+
+“None” means the scope exists in Identity Server but is not assigned to an
+automatically provisioned portal role. Assign receiver scopes explicitly to a
+dedicated application-to-application role when the integration requires them.
 
 ### Configure publisher and receiver roles
 
@@ -51,9 +58,14 @@ token for `POST /events` and the receiver token for `POST /events/poll` and
 token must receive HTTP `403` when publishing, while the publisher token must
 receive HTTP `403` when polling or submitting completion.
 
-The Identity Server provisioning flow also creates `dpdp-consent-admin` and
-`dpdp-consent-user`. The administrator role receives all Event Notification
-scopes; the user role does not receive them.
+The Identity Server provisioning flow also creates `dpdp-consent-admin`,
+`dpdp-consent-user`, and `dpdp-consent-dpo`. The administrator role receives the
+six topic, subscription, and event management scopes; the user and DPO roles do
+not receive Event Notification scopes. None of these roles receives
+`notifications:events:poll` or
+`notifications:event-deliveries:complete`. The `event-publisher` and
+`event-receiver` roles above are least-privilege recommendations that an
+operator must create and assign manually.
 
 ### Tenant-specific URLs
 
@@ -82,6 +94,7 @@ The examples below use these shell variables:
 IS_BASE_URL="https://is.example.com:9443"
 TENANT_DOMAIN="example.com"
 API_BASE="${IS_BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1"
+GROUP_ID="${TENANT_DOMAIN}"
 ACCESS_TOKEN="<access-token>"
 PUBLISHER_ACCESS_TOKEN="<event-publisher-access-token>"
 RECEIVER_ACCESS_TOKEN="<event-receiver-access-token>"
@@ -89,148 +102,24 @@ RECEIVER_ACCESS_TOKEN="<event-receiver-access-token>"
 
 For the super tenant, set `API_BASE` without the `/t/<tenant>` segment.
 
-## 2. Poll event deliveries
+## 2. Understand the notification flow
 
-Polling uses short, stateless request-response semantics and is scoped to one
-subscription. A poll request may acknowledge previously received deliveries,
-report structured errors, and request pending deliveries in the same call.
-DPDP does not perform long polling, so `returnImmediately=false` is rejected.
+Events reach the framework in two ways:
 
-The acknowledgement and `setErrs` maps are keyed by `deliveryId`, not `eventId`.
-Each delivery belongs to one subscription, so this prevents an acknowledgement
-for one subscription from updating another subscription's delivery of the same
-event. Only pending deliveries belonging to the request's tenant, group, and
-requested subscription are updated. A delivery ID must not appear in both
-`ack` and `setErrs`.
-
-The first poll may have an empty request body. When request HMAC validation is
-enabled, calculate the signature over the exact bytes sent: an empty request is
-the zero-length byte sequence, not `{}`. The service verifies those bytes first
-and only then applies the same defaults as an empty JSON object. Whitespace-only
-bodies follow the same rule and must be signed with their exact whitespace.
-
-Example:
-
-```sh
-POLL_SUBSCRIPTION_ID="<poll-subscription-id>"
-POLL_SHARED_SECRET="<poll-subscription-shared-secret>"
-POLL_BODY='{
-  "orgId": "example.com",
-  "maxEvents": 20,
-  "returnImmediately": true,
-  "ack": ["delivery-that-succeeded"],
-  "setErrs": {
-    "delivery-that-failed": {
-      "err": "authentication_failed",
-      "description": "Unable to authenticate the signed event"
-    }
-  }
-}'
-POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "${POLL_SHARED_SECRET}" -hex | awk '{print $2}')"
-
-curl -k -X POST "${API_BASE}/events/poll" \
-  -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -H "group-id: processor-1" \
-  -H "subscription-id: ${POLL_SUBSCRIPTION_ID}" \
-  -H "event-signature: ${POLL_SIGNATURE}" \
-  -d "${POLL_BODY}"
-```
-
-The response contains `sets`, keyed by `deliveryId`, and `moreAvailable`. Each
-SET value is a compact RS256 JWS built with the tenant signing key using the
-same event envelope as webhook delivery. Clients should retain the key and use
-it in a later poll request's `ack` or `setErrs` field. For example:
-
-```json
-{
-  "moreAvailable": false,
-  "sets": {
-    "f5f37c64-6130-4d44-9463-136c8bca4278": "<compact-RS256-JWS>"
-  }
-}
-```
-
-When there are no pending deliveries, the response is:
-
-```json
-{
-  "moreAvailable": false,
-  "sets": {}
-}
-```
-
-### Submit webhook delivery completion
-
-Webhook consumers can submit a signed completion report to
-`POST /deliveries/{deliveryId}/completion` with the
-`notifications:event-deliveries:complete` scope. The request body is signed
-using the subscription shared secret and the
-`event-signature: sha256=<hex>` header. The signature input binds the completion
-to its path delivery identifier:
-
-```text
-v1\ncompletion\n<deliveryId>\n<exact-request-body>
-```
-
-Clients must preserve the body bytes exactly after calculating the signature;
-changing whitespace or field order invalidates it. A signature generated for
-one delivery cannot be reused for another delivery. Body-only completion
-signatures are not accepted. The body contains `completionStatus`,
-`completionEvidence`, and an optional `completedAt` epoch-millisecond value.
-Completion is accepted only after the webhook delivery reaches `delivered`.
-`completionEvidence` must be an absolute HTTPS URL without credentials or a
-fragment and must not exceed 512 characters. A second completion for the same
-delivery returns `EN-4090` with HTTP `409 Conflict`.
-
-An accepted completion returns HTTP `204 No Content` with an empty response
-body. Unknown deliveries, group mismatches, and invalid signatures return the
-same `401 / EN-4010` response so an unauthenticated caller cannot discover a
-delivery or its state.
-
-For example, a client can calculate and submit the contextual signature with:
-
-```bash
-DELIVERY_ID="<delivery-id>"
-COMPLETION_SHARED_SECRET="<subscription-shared-secret>"
-COMPLETION_BODY='{"completionStatus":"completed","completionEvidence":"https://processor.example/evidence/receipt.pdf"}'
-COMPLETION_SIGNATURE=$(printf 'v1\ncompletion\n%s\n%s' "${DELIVERY_ID}" "${COMPLETION_BODY}" \
-  | openssl dgst -sha256 -hmac "${COMPLETION_SHARED_SECRET}" | awk '{print $2}')
-
-curl -k -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
-  -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
-  -H "group-id: ${GROUP_ID}" \
-  -H "event-signature: sha256=${COMPLETION_SIGNATURE}" \
-  -H "Content-Type: application/json" \
-  -d "${COMPLETION_BODY}"
-```
-
-Polling defaults and request HMAC enforcement are configured in
-`deployment.toml`:
-
-```toml
-[dpdp_accelerator.event_notifications.polling]
-default_return_immediately = true
-default_max_events = 20
-max_events_limit = 100
-request_hmac_validation_enabled = false
-```
-
-When HMAC validation is enabled, `event-signature` is mandatory and is verified
-over the exact request body using the selected poll subscription's shared
-secret. Poll subscriptions always require a shared secret because the same
-secret is used to hash the outgoing event envelope before tenant-key signing.
-An omitted `maxEvents` uses the configured default; `maxEvents=0` is an
-acknowledge-only request. Values above `max_events_limit` are rejected.
-
-## 3. Understand the notification flow
+- **Automatic lifecycle publication:** with lifecycle publication enabled (the
+  default), the accelerator publishes an event when the corresponding consent
+  or user lifecycle action occurs for one of the five predefined system topics.
+- **Explicit API publication:** an authorized publisher calls `POST /events`,
+  normally for a user-created topic or another intentional publication.
 
 The normal webhook flow is:
 
-1. An administrator creates a topic.
-2. A subscriber registers a webhook subscription for that topic.
+1. The Data Fiduciary creates a topic.
+2. The Data Fiduciary registers a webhook subscription on behalf of the Data Processors for that topic.
 3. Identity Server verifies the subscriber's callback URL.
-4. A publisher sends an event to the topic with a `group-id` header.
+4. A matching lifecycle action publishes the event automatically, or an Event
+   Publisher (the Data Fiduciary or an external publisher) sends it explicitly
+   with a `group-id` header.
 5. The accelerator matches the event to active subscriptions and sends a
    signed webhook request.
 6. An administrator can inspect the event and delivery history in the portal.
@@ -242,7 +131,7 @@ The normal webhook flow is:
 | Event | The payload published to a topic for a group. |
 | Delivery | One subscription-specific attempt to deliver an event. |
 
-## 4. Create and manage topics
+## 3. Create and manage topics
 
 In the Consent Portal, open **Event Notifications → Topics**. From this page you
 can search and filter topics, register a topic, or deregister a user-created
@@ -253,13 +142,20 @@ topic.
 When an ordinary WSO2 tenant is created, the accelerator creates these topics
 for that tenant:
 
-| Topic | Description | Has a purpose? |
-|---|---|---|
-| `consent.update` | Consent update and state transition notifications. | Yes |
-| `consent.revoke` | Consent revocation and withdrawal notifications. | Yes |
-| `consent.expire` | Consent expiration notifications. | Yes |
-| `user.data.change` | User data modification and profile change notifications. | No |
-| `user.account.delete` | User account deletion and right-to-be-forgotten notifications. | No |
+| Topic | Description | Automatic publication trigger | Has a purpose? |
+|---|---|---|---|
+| `consent.update` | Consent update and state transition notifications. | A consent is updated, or an authorization is approved or rejected. | Yes |
+| `consent.revoke` | Consent revocation and withdrawal notifications. | A consent or its authorization is revoked through a lifecycle path that invokes the DPDP consent listener. | Yes |
+| `consent.expire` | Consent expiration notifications. | The expiry reconciler records a due consent as expired. | Yes |
+| `user.data.change` | User data modification and profile change notifications. | Identity Server completes a user-claim update. | No |
+| `user.account.delete` | User account deletion and right-to-be-forgotten notifications. | Identity Server completes a user deletion. | No |
+
+Automatic publication is enabled by default with `publishing_enabled = true`
+under `[dpdp_accelerator.event_notifications.lifecycle_events]`.
+The lifecycle action creates the Event Notification event automatically; an
+administrator or external publisher does not need to call `POST /events` for
+that occurrence. A delivery is created only for an active subscription whose
+tenant, group, topic, and purpose filter match the event.
 
 These topics are marked as managed by the system. A portal administrator can
 use them for subscriptions and events but cannot deregister them. The portal
@@ -267,7 +163,7 @@ disables their deregistration action, and the API rejects direct deletion
 attempts.
 
 **About the "Has a purpose?" column:** a subscription's purpose filter (see
-[§5](#5-register-a-webhook-subscription)) only works if the event actually
+[§5](#register-a-webhook-subscription)) only works if the event actually
 carries a purpose. The 3 consent topics do. `user.data.change` and
 `user.account.delete` don't — a user isn't tied to one processing purpose the
 way a consent is. So use the `all` filter when subscribing to those 2 topics;
@@ -429,9 +325,11 @@ business operation.
 For production deployments, use HTTPS and a certificate trusted by Identity
 Server. HTTP callback URLs should be enabled only for controlled development
 environments through the Event Notification settings described in
-[`configuration-guide.md`](configuration-guide.md#configuring-event-notifications).
+[`configuration-guide.md`](configuration-guide.md#9-configure-event-notifications).
 
-## 5. Register a webhook subscription
+## 5. Register a subscription
+
+### Register a webhook subscription
 
 In the Consent Portal, open **Event Notifications → Subscriptions** and select
 **Register Subscription**. Choose an active topic, a purpose filter, `webhook`
@@ -484,7 +382,40 @@ curl --request POST "${API_BASE}/subscriptions/<subscription-id>/verify" \
 
 You can also open the subscription details in the portal and select **Verify**.
 
+### Register a poll subscription
+
+A poll subscription does not use a callback URL and becomes active immediately.
+It still requires a strong shared secret for request HMAC validation and
+outgoing event-envelope hashing. Store the secret securely before submitting
+the request because service responses do not return it.
+
+```sh
+curl --request POST "${API_BASE}/subscriptions" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}" \
+  --header "Content-Type: application/json" \
+  --data '{
+    "topic": "consent-status-changed",
+    "filter": {
+      "type": "all",
+      "purposes": []
+    },
+    "delivery": {
+      "mode": "poll",
+      "sharedSecret": "<strong-random-secret>"
+    }
+  }'
+```
+
+Retain the returned `subscriptionId` and the supplied shared secret. Both are
+required when polling for deliveries.
+
 ## 6. Publish an event
+
+For tenants where the five predefined lifecycle topics exist, events are
+published automatically when their corresponding lifecycle actions occur and
+automatic publication is enabled. Use the API below for user-created topics or
+when an application intentionally publishes an event itself; do not duplicate
+an automatically generated lifecycle event by publishing it again manually.
 
 Publish only to an active topic. The `group-id` header is required and controls
 which group-scoped subscriptions can receive the event. With subscriptions
@@ -509,7 +440,149 @@ The event and its matching delivery records are created atomically. Only active
 subscriptions on the same tenant, group, and topic whose purpose filter matches
 the event are selected.
 
-## 7. Inspect events and delivery history
+## 7. Process deliveries
+
+How a consumer processes a delivery depends on the subscription's delivery
+mode. Webhook consumers receive pushed deliveries and may submit completion
+evidence. Poll consumers request pending deliveries and acknowledge them or
+report processing errors in a later poll request.
+
+### Submit webhook delivery completion
+
+Webhook consumers can submit a signed completion report to
+`POST /deliveries/{deliveryId}/completion` with the
+`notifications:event-deliveries:complete` scope. The request body is signed
+using the subscription shared secret and the
+`event-signature: sha256=<hex>` header. The signature input binds the completion
+to its path delivery identifier:
+
+```text
+v1\ncompletion\n<deliveryId>\n<exact-request-body>
+```
+
+Clients must preserve the body bytes exactly after calculating the signature;
+changing whitespace or field order invalidates it. A signature generated for
+one delivery cannot be reused for another delivery. Body-only completion
+signatures are not accepted. The body contains `completionStatus`,
+`completionEvidence`, and an optional `completedAt` epoch-millisecond value.
+Completion is accepted only after the webhook delivery reaches `delivered`.
+`completionEvidence` must be an absolute HTTPS URL without credentials or a
+fragment and must not exceed 512 characters. A second completion for the same
+delivery returns `EN-4090` with HTTP `409 Conflict`.
+
+An accepted completion returns HTTP `204 No Content` with an empty response
+body. Unknown deliveries, group mismatches, and invalid signatures return the
+same `401 / EN-4010` response so an unauthenticated caller cannot discover a
+delivery or its state.
+
+For example, a client can calculate and submit the contextual signature with:
+
+```bash
+DELIVERY_ID="<delivery-id>"
+COMPLETION_SHARED_SECRET="<subscription-shared-secret>"
+COMPLETION_BODY='{"completionStatus":"completed","completionEvidence":"https://processor.example/evidence/receipt.pdf"}'
+COMPLETION_SIGNATURE=$(printf 'v1\ncompletion\n%s\n%s' "${DELIVERY_ID}" "${COMPLETION_BODY}" \
+  | openssl dgst -sha256 -hmac "${COMPLETION_SHARED_SECRET}" | awk '{print $2}')
+
+curl -k -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
+  -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
+  -H "group-id: ${GROUP_ID}" \
+  -H "event-signature: sha256=${COMPLETION_SIGNATURE}" \
+  -H "Content-Type: application/json" \
+  -d "${COMPLETION_BODY}"
+```
+
+### Poll event deliveries
+
+Polling uses short, stateless request-response semantics and is scoped to one
+subscription. A poll request may acknowledge previously received deliveries,
+report structured errors, and request pending deliveries in the same call.
+DPDP does not perform long polling, so `returnImmediately=false` is rejected.
+
+The `ack` array contains delivery IDs, while the `setErrs` object is keyed by
+delivery ID; neither uses an event ID. Each delivery belongs to one
+subscription, so this prevents an acknowledgement for one subscription from
+updating another subscription's delivery of the same event. Only pending
+deliveries belonging to the request's tenant, group, and requested
+subscription are updated. A delivery ID must not appear in both `ack` and
+`setErrs`.
+
+The first poll may have an empty request body. When request HMAC validation is
+enabled, calculate the signature over the exact bytes sent: an empty request is
+the zero-length byte sequence, not `{}`. The service verifies those bytes first
+and only then applies the same defaults as an empty JSON object. Whitespace-only
+bodies follow the same rule and must be signed with their exact whitespace.
+
+Example:
+
+```sh
+POLL_SUBSCRIPTION_ID="<poll-subscription-id>"
+POLL_SHARED_SECRET="<poll-subscription-shared-secret>"
+POLL_BODY='{
+  "orgId": "example.com",
+  "maxEvents": 20,
+  "returnImmediately": true,
+  "ack": ["delivery-that-succeeded"],
+  "setErrs": {
+    "delivery-that-failed": {
+      "err": "authentication_failed",
+      "description": "Unable to authenticate the signed event"
+    }
+  }
+}'
+POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "${POLL_SHARED_SECRET}" -hex | awk '{print $2}')"
+
+curl -k -X POST "${API_BASE}/events/poll" \
+  -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
+  -H "Content-Type: application/json" \
+  -H "group-id: ${GROUP_ID}" \
+  -H "subscription-id: ${POLL_SUBSCRIPTION_ID}" \
+  -H "event-signature: ${POLL_SIGNATURE}" \
+  -d "${POLL_BODY}"
+```
+
+The response contains `sets`, keyed by `deliveryId`, and `moreAvailable`. Each
+SET value is a compact RS256 JWS built with the tenant signing key using the
+same event envelope as webhook delivery. Clients should retain the key and use
+it in a later poll request's `ack` or `setErrs` field. For example:
+
+```json
+{
+  "moreAvailable": false,
+  "sets": {
+    "f5f37c64-6130-4d44-9463-136c8bca4278": "<compact-RS256-JWS>"
+  }
+}
+```
+
+When there are no pending deliveries, the response is:
+
+```json
+{
+  "moreAvailable": false,
+  "sets": {}
+}
+```
+
+Polling defaults and request HMAC enforcement are configured in
+`deployment.toml`:
+
+```toml
+[dpdp_accelerator.event_notifications.polling]
+default_return_immediately = true
+default_max_events = 20
+max_events_limit = 100
+request_hmac_validation_enabled = false
+```
+
+When HMAC validation is enabled, `event-signature` is mandatory and is verified
+over the exact request body using the selected poll subscription's shared
+secret. Poll subscriptions always require a shared secret because the same
+secret is used to hash the outgoing event envelope before tenant-key signing.
+An omitted `maxEvents` uses the configured default; `maxEvents=0` is an
+acknowledge-only request. Values above `max_events_limit` are rejected.
+
+## 8. Inspect events and delivery history
 
 Open **Event Notifications → Events** in the portal to view published events.
 Select an event to inspect its payload and subscription-specific deliveries.
@@ -534,7 +607,7 @@ curl "${API_BASE}/events/<event-id>/deliveries?limit=20&offset=0" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
 
-## 8. Delete a subscription
+## 9. Delete a subscription
 
 Delete a subscription from its row or details page in the Consent Portal, or
 use:
@@ -547,7 +620,7 @@ curl --request DELETE "${API_BASE}/subscriptions/<subscription-id>" \
 Deletion changes the subscription to `deleted`; it does not erase its existing
 event and delivery audit history.
 
-## 9. Troubleshooting
+## 10. Troubleshooting
 
 | Symptom | Check |
 |---|---|
@@ -556,5 +629,6 @@ event and delivery audit history.
 | No topics appear when registering a subscription | Create a topic and confirm it is `active`. |
 | Subscription remains `pending` or becomes `stale` | Confirm the callback is reachable from Identity Server and returns the exact verification challenge with HTTP `200`. Then retry verification. |
 | Subscription creation returns `409` | Check for an existing or overlapping subscription for the same topic and purposes, and delete the conflicting subscription if it is no longer needed. |
+| A system topic exists but no automatic lifecycle events appear | Confirm `lifecycle_events.publishing_enabled = true`. For user topics, also confirm `dpdpUserLifecycleEventHandler` subscribes to the required Identity Events; for consent topics, confirm consent history is enabled. |
 | Event is created but no delivery appears | Confirm the subscription is `active`, the topic and purpose filters match, and `group-id` equals the subscription's group ID. |
 | Webhook signature does not match | Compute the HMAC over the unmodified raw request body, not only the nested `payload`. |

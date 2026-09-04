@@ -14,7 +14,7 @@ One deployed application serves every tenant, at
 `https://<host>:9443/t/<tenant>/consent-portal/` for the rest, all sharing the
 client id `DPDP_CONSENT_PORTAL`.
 
-## 1. The application is provisioned automatically
+## 1. Applications and roles are provisioned automatically
 
 The moment a tenant exists — including the super tenant, on first server
 startup — the accelerator registers **DPDP Consent Portal** in it directly,
@@ -28,23 +28,44 @@ with no operator step and no REST call involved:
 | Validate token bindings | enabled | A token lifted out of the browser is rejected. |
 | Revoke tokens on logout | enabled | Signing out invalidates the tokens immediately. |
 
-It also authorizes the consent management, consent-history, event-notification
-and complaint-management APIs (RBAC), and creates two roles. `dpdp-consent-admin`
-holds every consent management scope, the consent-history "any" scopes, the
-event-notification scopes, and the complaint management API's two "any" scopes
-(`complaints:read:any`, `complaints:write:any`) — viewing and managing every
-complaint in the org, including internal notes and status transitions.
-`dpdp-consent-user` holds `account:self:delete` (see
-[Self-service account deletion](#7-self-service-account-deletion)) plus the
-complaint API's two "self" scopes (`complaints:read:self`,
-`complaints:write:self`) — the rest of what it needs, the `internal_consent_mgt_*`
-scopes for managing one's own consents, comes from Identity Server's own default
-role configuration rather than from this role at all.
+It also authorizes the consent-management, consent-history,
+event-notification, complaint-management, and account self-service APIs (RBAC)
+and creates three organization roles:
+
+- `dpdp-consent-admin` receives the Consent Management catalog and
+  administration scopes, all four consent-history scopes, the six portal Event
+  Notification management scopes for topics, subscriptions, and events, and
+  `complaints:read:any` / `complaints:write:any`.
+- `dpdp-consent-user` receives the two self-history scopes,
+  `complaints:read:self`, `complaints:write:self`, and `account:self:delete`
+  (see [Self-service account deletion](#8-self-service-account-deletion)).
+- `dpdp-consent-dpo` receives only `complaints:read:any` and
+  `complaints:write:any`, providing organization-wide complaint handling
+  without full portal administration.
+
+Basic self-service consent management does not depend on any of these roles;
+Identity Server scopes those operations to the authenticated user.
 
 Provisioning checks each of these — application, API authorization, and each
 role — individually, creating what's missing and adding any permission a role
 is still short of, so it's always safe to re-run (see
 [Recovering a broken tenant](#3-recovering-a-broken-tenant) below).
+
+## Verify the portal before configuring optional features
+
+Complete this smoke check immediately after starting Identity Server and
+creating a tenant, before configuring email, complaint, expiry, account
+deletion, or Event Notification settings.
+
+| Tenant | URL |
+|---|---|
+| Super tenant | `https://<host>:9443/consent-portal/` |
+| Any other tenant | `https://<host>:9443/t/<tenant>/consent-portal/` |
+
+Sign in with a user holding `dpdp-consent-admin` and confirm that the portal
+loads and the **Event Notifications** navigation, Topics, and Events pages are
+visible. If the portal does not load, resolve the installation, tenant, or
+role-assignment issue before continuing with feature configuration.
 
 ## 2. Change or turn off the auto-provisioning
 
@@ -61,6 +82,31 @@ client_id = "DPDP_CONSENT_PORTAL"
 | `auto_provisioning_enabled` | `true` | You want to manage the application and its roles by hand instead. Set to `false`. This only turns off the automatic *creation* of the application and roles — it does not disable the portal or sign-in. |
 | `client_id` | `DPDP_CONSENT_PORTAL` | You're changing it, you **must** also update `clientID` in the deployed portal's own `deployment.config.json` — the two have to match or sign-in breaks. |
 
+### Consent API Invoker provisioning
+
+A second, independently controlled application supports machine-to-machine
+calls to the Consent Management v2 consents resource:
+
+```toml
+[dpdp_accelerator.consent_api_invoker]
+auto_provisioning_enabled = true
+client_id = "DPDP_CONSENT_API_INVOKER"
+```
+
+**DPDP Consent API Invoker** is a confidential OAuth client using only the
+`client_credentials` grant. It has no browser callback, PKCE, or cookie token
+binding. The current implementation authorizes the consents API resource only;
+it does not authorize the purposes or elements resources.
+
+Identity Server generates its client secret during provisioning. Retrieve and
+rotate that secret through the tenant's application-management UI or API, and
+store it in the invoking system's secret manager. The accelerator does not
+write the generated secret to a documentation or configuration file.
+
+Set `auto_provisioning_enabled = false` in this separate section if the
+machine-to-machine application is not required. This setting does not affect
+the browser-facing Consent Portal application.
+
 Edit the value in the accelerator's
 `repository/resources/wso2is-7.3.0-deployment.toml` before running
 `configure.sh` (see [`setup-guide.md`](setup-guide.md)), or directly in
@@ -69,8 +115,8 @@ the server for the change to take effect.
 
 ## 3. Recovering a broken tenant
 
-If a tenant's portal application or roles get deleted or corrupted, restore
-them without a server restart:
+If a tenant's provisioned application or roles get deleted or corrupted,
+restore them without a server restart:
 
 1. In the Console, delete the **DPDP Consent Portal** application for that
    tenant (Roles are left alone even if the application is gone — deleting
@@ -82,7 +128,8 @@ them without a server restart:
 Saving the update re-runs provisioning for that tenant, recreating the
 application and any missing role.
 
-The same step is how a tenant provisioned by an older version of the
+The same tenant update also reconciles the Consent API Invoker when its
+provisioning setting is enabled. It is how a tenant provisioned by an older version of the
 accelerator picks up a newly introduced scope: re-running provisioning adds
 whatever permissions its existing roles are missing, without recreating the
 roles or touching any permission an operator granted by hand. A tenant created
@@ -97,22 +144,23 @@ Roles**. Roles belong to one tenant, so do this in each tenant.
 **Signing in and managing your own consents needs no role at all.** Every
 authenticated user gets `internal_login`, and the self-service consent API
 scopes every call to the caller, so a user with no portal role can sign in,
-see their dashboard and manage their own consents. The two roles below grant
+see their dashboard and manage their own consents. The three roles below grant
 what is *beyond* that.
 
 | Role | Assign to | Grants |
 |---|---|---|
-| `dpdp-consent-user` | Regular users | Deleting their own account, and reading/writing their own complaints (`complaints:read/write:self`). Neither is needed for self-service consent management, which works without any role. |
-| `dpdp-consent-admin` | Administrators | Administering *other people's* consents, editing the purpose and element catalog, and reading/writing *any* complaint in the org (`complaints:read/write:any`), including internal notes and status transitions. **Not** self-service account deletion, which is `dpdp-consent-user` only. |
+| `dpdp-consent-user` | Regular users needing additional self-service features | Viewing their own consent history, deleting their own account, and reading/writing their own complaints. None is required for basic self-service consent management. |
+| `dpdp-consent-admin` | Administrators | Administering other users' consents, editing the purpose and element catalog, managing Event Notifications, viewing consent history, and reading/writing any complaint. **Not** self-service account deletion, which is `dpdp-consent-user` only. |
+| `dpdp-consent-dpo` | Data Protection Officers | Reading and writing any complaint in the organization without Consent Management, catalog, consent-history, Event Notification, or account-deletion permissions. |
 
 > **Users who don't hold `dpdp-consent-user` will not see "Delete my
 > account".** The option is gated on the `account:self:delete` scope that
 > only this role grants, so assign it to every user who should be able to
-> delete their own account. Before self-service deletion existed this role
-> granted nothing, so accounts created earlier are unlikely to hold it —
-> check rather than assume.
+> delete their own account. Users provisioned before a permission was added to
+> the role may need tenant reconciliation and a fresh sign-in; check rather
+> than assume.
 
-> **Assigning both roles to one user re-enables self-deletion for them.** The
+> **Assigning both the admin and user roles re-enables self-deletion.** The
 > two roles' permissions add up, so an administrator who also holds
 > `dpdp-consent-user` receives `account:self:delete` and can delete their own
 > account. Keep administrators out of `dpdp-consent-user` if that matters —
@@ -152,22 +200,30 @@ In the Console:
 Make sure the primary email address is valid and accessible. Notifications
 sent to the user will be delivered to the configured primary email address.
 
-## 6. Open the portal
+## 6. Configure complaint management
 
-| Tenant | URL |
-|---|---|
-| Super tenant | `https://<host>:9443/consent-portal/` |
-| Any other tenant | `https://<host>:9443/t/<tenant>/consent-portal/` |
+Complaint deadlines and upload limits are configured in `deployment.toml`:
 
-No restart is needed.
+```toml
+[dpdp_accelerator.complaints]
+statutory_due_period_days = 90
+attachment_max_size_bytes = 10485760
+attachment_max_files_per_upload = 5
+```
 
-The accelerator's `deployment.toml` already carries the tenant rewrite
-configuration that makes the tenant-qualified URL resolve to the deployed
-webapp, so there is nothing to configure for multi-tenancy beyond registering
-each tenant above. Consents, catalog data, roles and sessions are all
-partitioned per tenant by the server.
+| Setting | Default | Meaning |
+|---|---:|---|
+| `statutory_due_period_days` | `90` | Number of days after submission when a complaint becomes statutorily due. |
+| `attachment_max_size_bytes` | `10485760` | Maximum size of one uploaded complaint attachment. |
+| `attachment_max_files_per_upload` | `5` | Maximum number of files accepted in one attachment request. |
 
-## 6. Configuring periodical consent expiration
+Restart Identity Server after changing these server-side limits. Assign
+`dpdp-consent-user` for personal complaint self-service,
+`dpdp-consent-dpo` for organization-wide complaint handling, or
+`dpdp-consent-admin` when complaint access is part of broader administration.
+See the [Role Management Guide](role-guide.md).
+
+## 7. Configure periodical consent expiration
 
 The Identity Server already treats a consent as expired the moment its
 `expiryTime` passes — any API call that reads the consent reflects this
@@ -223,7 +279,7 @@ exactly one node executes the job on each scheduled tick, no matter how many
 nodes are running. To confirm it's working, check the logs after a
 scheduled run — only one node should log the job firing, not all of them.
 
-## 7. Self-service account deletion
+## 8. Self-service account deletion
 
 A user holding `dpdp-consent-user` sees **Delete my account** in the portal's
 profile menu, beside Sign out. Confirming it calls `DELETE /scim2/Me`, clears
@@ -314,14 +370,14 @@ If your deployment ships its own `scope` array in the portal's
 `account:self:delete` to it. A scope the application never asks for is a scope
 the token never carries, and the menu item stays hidden.
 
-# Configuring Event Notifications
+## 9. Configure Event Notifications
 
 Event Notification Framework runtime settings are configured in the same
 `deployment.toml` file under `[dpdp_accelerator.event_notifications]` and its
-`[dpdp_accelerator.event_notifications.webhook]` sub-table. The accelerator
-provisions these values into `dpdp-accelerator.xml`; the ENF configuration
-component then maps them to the typed ENF configuration parser before the
-delivery services activate.
+payload-signing, lifecycle-event, polling, and webhook sub-tables. The
+accelerator provisions these values into `dpdp-accelerator.xml`; the ENF
+configuration component then maps them to the typed ENF configuration parser
+before the delivery services activate.
 
 For the user workflow—creating topics and subscriptions, preparing a webhook,
 publishing events, and viewing delivery history—see
@@ -330,6 +386,19 @@ publishing events, and viewing delivery history—see
 ```toml
 [dpdp_accelerator.event_notifications]
 system_topics_auto_create_enabled = true
+
+[dpdp_accelerator.event_notifications.payload_signing]
+enabled = true
+audience = "dpdp-event-notifications"
+
+[dpdp_accelerator.event_notifications.lifecycle_events]
+publishing_enabled = true
+
+[dpdp_accelerator.event_notifications.polling]
+default_return_immediately = true
+default_max_events = 20
+max_events_limit = 100
+request_hmac_validation_enabled = false
 
 [dpdp_accelerator.event_notifications.webhook]
 thread_pool_size = 4
@@ -343,7 +412,24 @@ delivery_worker_poll_seconds = 5
 stuck_inflight_threshold_seconds = 10
 max_verification_response_body_bytes = 4096
 pending_subscription_recovery_threshold_seconds = 60
+background_worker_initial_delay_seconds = 10
+pending_subscription_recovery_interval_seconds = 30
+pending_subscription_recovery_batch_size = 20
+worker_shutdown_timeout_seconds = 5
 ```
 
-These are server-wide runtime settings. Subscription `shared_secret` values
+`system_topics_auto_create_enabled` controls whether the five predefined topics
+are reconciled for each tenant. `lifecycle_events.publishing_enabled` controls
+whether matching consent and user lifecycle actions automatically publish
+events to those topics; it defaults to `true`. Topic creation and lifecycle
+publication are independent settings: a topic can exist while automatic
+publication is disabled. The `user.data.change` and `user.account.delete`
+publishers also require the `dpdpUserLifecycleEventHandler` subscription shown
+in the [Event Notification Guide](event-notification-guide.md#enabling-userdatachange--useraccountdelete).
+
+These are server-wide runtime settings. Subscription `sharedSecret` values
 remain per-subscription data and are not placed in `dpdp-accelerator.xml`.
+The shipped `wso2is-7.3.0-deployment.toml` is the source of truth for defaults;
+see the [Event Notification Guide](event-notification-guide.md) for the
+security and operational meaning of the polling, signing, verification, and
+delivery settings.
