@@ -54,6 +54,24 @@ updates:
       - dependency-name: "org.wso2*:*"
       - dependency-name: "org.apache.cxf:*"
       - dependency-name: "org.apache.ws.commons.axiom.wso2:*"
+      # None of these ship: the built zip carries ten jars - our eight bundles, quartz
+      # and swagger-annotations - with Jackson, gson and commons-logging coming from
+      # lib/runtimes/cxf3 and the javax/osgi APIs from the framework. Raising them only
+      # changes what we compile against, risking a call the installed server does not
+      # have. A Jackson CVE is fixed by updating the server, not this pom.
+      - dependency-name: "com.fasterxml.jackson.core:*"
+      - dependency-name: "com.fasterxml.jackson.jaxrs:*"
+      - dependency-name: "com.google.code.gson:*"
+      - dependency-name: "commons-logging:*"
+      - dependency-name: "javax.servlet:*"
+      - dependency-name: "javax.ws.rs:*"
+      - dependency-name: "javax.validation:*"
+      - dependency-name: "org.osgi:*"
+      # Majors only - this plugin writes the OSGi manifests. bnd 6 began emitting
+      # Import-Package entries for java.* packages outside java.base (java.net.http,
+      # java.sql), which Equinox does not export, so every bundle failed to resolve.
+      - dependency-name: "org.apache.felix:maven-bundle-plugin"
+        update-types: ["version-update:semver-major"]
     groups:
       maven-minor-patch:
         update-types: [minor, patch]
