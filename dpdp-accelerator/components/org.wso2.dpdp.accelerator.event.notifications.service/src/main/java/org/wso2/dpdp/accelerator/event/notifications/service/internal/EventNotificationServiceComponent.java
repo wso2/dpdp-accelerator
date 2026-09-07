@@ -85,6 +85,7 @@ public class EventNotificationServiceComponent {
         try {
             subscriptionService.start();
             deliveryRecoveryService.start();
+            subscriptionService.setManualRetryDispatcher(deliveryRecoveryService::submitManualRetry);
 
             topicServiceRegistration = context.getBundleContext().registerService(
                     TopicService.class, topicService, null);

@@ -126,4 +126,14 @@ public class SubscriptionEndpoint {
                 organizationIdSupplier.get(), subscriptionId, deliveryId);
         return Response.ok(dto).build();
     }
+
+    @POST
+    @Path("/{subscriptionId}/events/{deliveryId}/retry")
+    public Response retryDelivery(
+            @PathParam("subscriptionId") String subscriptionId,
+            @PathParam("deliveryId") String deliveryId) {
+        SubscriptionEventHistoryDTO dto = subscriptionHandler.retryDelivery(
+                organizationIdSupplier.get(), subscriptionId, deliveryId);
+        return Response.status(Response.Status.ACCEPTED).entity(dto).build();
+    }
 }

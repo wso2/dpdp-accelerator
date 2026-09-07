@@ -107,7 +107,8 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                             rs.getTimestamp(EventNotificationDBColumns.NEXT_RETRY_AT),
                             rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
                             rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT));
+                            rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT),
+                            rs.getBoolean(EventNotificationDBColumns.MANUAL_RETRY_USED));
                     return Optional.of(delivery);
                 }
             }
@@ -135,6 +136,50 @@ public class DeliveryDAOImpl implements DeliveryDAO {
         return loadDispatchContextsWithCutoff(conn, getQueries(conn).getGetStuckInFlightWebhookDispatchContextsQuery(), limit, updatedBefore);
     }
 
+    @Override
+    public Optional<WebhookDeliveryDispatchContext> getWebhookDeliveryDispatchContext(Connection conn, String orgId,
+            String subscriptionId, String deliveryId) {
+        if (conn == null) {
+            throw new IllegalArgumentException("Connection cannot be null.");
+        }
+        try (PreparedStatement ps = conn.prepareStatement(
+                getQueries(conn).getGetWebhookDeliveryDispatchContextQuery())) {
+            ps.setString(1, deliveryId);
+            ps.setString(2, subscriptionId);
+            ps.setString(3, orgId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapDispatchContext(rs));
+                }
+                return Optional.empty();
+            }
+        } catch (SQLException e) {
+            throw new EventNotificationDataAccessException(
+                    String.format(EventNotificationCommonConstants.ERROR_GETTING_WEBHOOK_DELIVERY, deliveryId), e);
+        }
+    }
+
+    @Override
+    public boolean prepareManualRetry(Connection conn, String orgId, String subscriptionId, String deliveryId,
+            int maxRetries) {
+        if (conn == null) {
+            throw new IllegalArgumentException("Connection cannot be null.");
+        }
+        try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getPrepareManualRetryQuery())) {
+            ps.setBoolean(1, true);
+            ps.setString(2, deliveryId);
+            ps.setString(3, subscriptionId);
+            ps.setBoolean(4, false);
+            ps.setInt(5, maxRetries);
+            ps.setString(6, orgId);
+            return ps.executeUpdate() == 1;
+        } catch (SQLException e) {
+            throw new EventNotificationDataAccessException(
+                    String.format(EventNotificationCommonConstants.ERROR_UPDATING_WEBHOOK_DELIVERY_STATUS,
+                            deliveryId), e);
+        }
+    }
+
     private List<WebhookDeliveryDispatchContext> loadDispatchContexts(Connection conn, String sql, int limit) {
         if (conn == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
@@ -144,25 +189,7 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    WebhookDelivery delivery = new WebhookDelivery(
-                            rs.getString(EventNotificationDBColumns.DELIVERY_ID),
-                            rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID),
-                            rs.getString(EventNotificationDBColumns.EVENT_ID),
-                            rs.getString(EventNotificationDBColumns.STATUS),
-                            rs.getInt(EventNotificationDBColumns.ATTEMPT_COUNT),
-                            rs.getTimestamp(EventNotificationDBColumns.NEXT_RETRY_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT));
-                    list.add(new WebhookDeliveryDispatchContext(
-                            delivery,
-                            rs.getString(EventNotificationDBColumns.ORG_ID),
-                            rs.getString(EventNotificationDBColumns.GROUP_ID),
-                            rs.getString(EventNotificationDBColumns.CALLBACK_URL),
-                            rs.getString(EventNotificationDBColumns.SHARED_SECRET),
-                            rs.getString(EventNotificationDBColumns.PAYLOAD),
-                            rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
-                            rs.getString(EventNotificationDBColumns.TOPIC_NAME)));
+                    list.add(mapDispatchContext(rs));
                 }
             }
             return list;
@@ -182,25 +209,7 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             ps.setInt(2, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    WebhookDelivery delivery = new WebhookDelivery(
-                            rs.getString(EventNotificationDBColumns.DELIVERY_ID),
-                            rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID),
-                            rs.getString(EventNotificationDBColumns.EVENT_ID),
-                            rs.getString(EventNotificationDBColumns.STATUS),
-                            rs.getInt(EventNotificationDBColumns.ATTEMPT_COUNT),
-                            rs.getTimestamp(EventNotificationDBColumns.NEXT_RETRY_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
-                            rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT));
-                    list.add(new WebhookDeliveryDispatchContext(
-                            delivery,
-                            rs.getString(EventNotificationDBColumns.ORG_ID),
-                            rs.getString(EventNotificationDBColumns.GROUP_ID),
-                            rs.getString(EventNotificationDBColumns.CALLBACK_URL),
-                            rs.getString(EventNotificationDBColumns.SHARED_SECRET),
-                            rs.getString(EventNotificationDBColumns.PAYLOAD),
-                            rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
-                            rs.getString(EventNotificationDBColumns.TOPIC_NAME)));
+                    list.add(mapDispatchContext(rs));
                 }
             }
             return list;
@@ -208,6 +217,29 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             throw new EventNotificationDataAccessException(
                     EventNotificationCommonConstants.ERROR_GETTING_PENDING_WEBHOOK_DELIVERIES, e);
         }
+    }
+
+    private WebhookDeliveryDispatchContext mapDispatchContext(ResultSet rs) throws SQLException {
+        WebhookDelivery delivery = new WebhookDelivery(
+                rs.getString(EventNotificationDBColumns.DELIVERY_ID),
+                rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID),
+                rs.getString(EventNotificationDBColumns.EVENT_ID),
+                rs.getString(EventNotificationDBColumns.STATUS),
+                rs.getInt(EventNotificationDBColumns.ATTEMPT_COUNT),
+                rs.getTimestamp(EventNotificationDBColumns.NEXT_RETRY_AT),
+                rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
+                rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
+                rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT),
+                rs.getBoolean(EventNotificationDBColumns.MANUAL_RETRY_USED));
+        return new WebhookDeliveryDispatchContext(
+                delivery,
+                rs.getString(EventNotificationDBColumns.ORG_ID),
+                rs.getString(EventNotificationDBColumns.GROUP_ID),
+                rs.getString(EventNotificationDBColumns.CALLBACK_URL),
+                rs.getString(EventNotificationDBColumns.SHARED_SECRET),
+                rs.getString(EventNotificationDBColumns.PAYLOAD),
+                rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
+                rs.getString(EventNotificationDBColumns.TOPIC_NAME));
     }
 
     @Override

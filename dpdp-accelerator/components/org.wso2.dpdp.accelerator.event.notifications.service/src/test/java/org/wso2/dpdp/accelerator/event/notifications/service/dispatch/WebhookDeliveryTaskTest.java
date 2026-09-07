@@ -311,6 +311,42 @@ public class WebhookDeliveryTaskTest {
     }
 
     @Test
+    public void testManualRetrySuccessPreservesAttemptHistory() throws Exception {
+        WebhookDelivery delivery = delivery(6);
+        delivery.setManualRetryUsed(true);
+        stubHttpResponse(200);
+        when(deliveryDAO.recordSuccessfulAttempt(any(java.sql.Connection.class), any(), any())).thenReturn(true);
+
+        task(delivery).run();
+
+        ArgumentCaptor<WebhookDelivery> updatedCaptor = ArgumentCaptor.forClass(WebhookDelivery.class);
+        verify(deliveryDAO).recordSuccessfulAttempt(any(java.sql.Connection.class), any(), updatedCaptor.capture());
+        assertEquals(updatedCaptor.getValue().getStatus(), "delivered");
+        assertEquals(updatedCaptor.getValue().getAttemptCount(), 7);
+        assertNotNull(updatedCaptor.getValue().getDeliveredAt());
+        verify(deliveryDAO, never()).recordRetryableFailure(any(java.sql.Connection.class), any(), anyString(),
+                org.mockito.ArgumentMatchers.anyInt(), any());
+    }
+
+    @Test
+    public void testManualRetryFailureRemainsTerminal() throws Exception {
+        WebhookDelivery delivery = delivery(6);
+        delivery.setManualRetryUsed(true);
+        stubHttpResponse(500);
+        when(deliveryDAO.recordPermanentFailure(any(java.sql.Connection.class), any(), any())).thenReturn(true);
+
+        task(delivery).run();
+
+        ArgumentCaptor<WebhookDelivery> updatedCaptor = ArgumentCaptor.forClass(WebhookDelivery.class);
+        verify(deliveryDAO).recordPermanentFailure(any(java.sql.Connection.class), any(), updatedCaptor.capture());
+        assertEquals(updatedCaptor.getValue().getStatus(), "failed");
+        assertEquals(updatedCaptor.getValue().getAttemptCount(), 7);
+        assertNull(updatedCaptor.getValue().getNextRetryAt());
+        verify(deliveryDAO, never()).recordRetryableFailure(any(java.sql.Connection.class), any(), anyString(),
+                org.mockito.ArgumentMatchers.anyInt(), any());
+    }
+
+    @Test
     public void testAuditIdIsUniquePerAttempt() throws Exception {
         // Two failed attempts of two different deliveries should produce two distinct audit IDs.
         WebhookDelivery d1 = delivery(0);

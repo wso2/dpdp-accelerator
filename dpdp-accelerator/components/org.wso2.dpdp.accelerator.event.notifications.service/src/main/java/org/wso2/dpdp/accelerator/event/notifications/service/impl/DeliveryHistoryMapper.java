@@ -50,7 +50,8 @@ final class DeliveryHistoryMapper {
      * Note: The caller owns the lifecycle of {@code conn}; this method does not commit or close it.
      */
     static SubscriptionEventHistoryDTO map(Connection conn, String orgId, String deliveryId,
-            SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO) {
+            SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO,
+            int maxRetries) {
         String mode = summary.getDeliveryMode() != null ? summary.getDeliveryMode()
                 : DeliveryMode.WEBHOOK.getValue();
 
@@ -65,7 +66,7 @@ final class DeliveryHistoryMapper {
                 : (summary.getCreatedAt() != null ? summary.getCreatedAt().getTime() : System.currentTimeMillis()));
 
         if (DeliveryMode.WEBHOOK.getValue().equals(mode)) {
-            mapWebhookHistory(conn, orgId, deliveryId, summary, deliveryDAO, deliveryAckDAO, dto);
+            mapWebhookHistory(conn, orgId, deliveryId, summary, deliveryDAO, deliveryAckDAO, dto, maxRetries);
         } else {
             mapPollHistory(conn, orgId, deliveryId, summary, deliveryDAO, dto);
         }
@@ -73,10 +74,17 @@ final class DeliveryHistoryMapper {
     }
 
     private static void mapWebhookHistory(Connection conn, String orgId, String deliveryId, SubscriptionDeliverySummary summary,
-            DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO, SubscriptionEventHistoryDTO dto) {
+            DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO, SubscriptionEventHistoryDTO dto,
+            int maxRetries) {
         Optional<WebhookDelivery> webhookDelivery = deliveryDAO.getWebhookDeliveryById(conn, deliveryId, orgId);
-        if (webhookDelivery.isPresent() && webhookDelivery.get().getNextRetryAt() != null) {
-            dto.setNextRetryAt(webhookDelivery.get().getNextRetryAt().getTime());
+        if (webhookDelivery.isPresent()) {
+            WebhookDelivery delivery = webhookDelivery.get();
+            if (delivery.getNextRetryAt() != null) {
+                dto.setNextRetryAt(delivery.getNextRetryAt().getTime());
+            }
+            dto.setManualRetryUsed(delivery.isManualRetryUsed());
+            dto.setManualRetryAvailable(DeliveryStatus.FAILED.getValue().equalsIgnoreCase(delivery.getStatus())
+                    && delivery.getAttemptCount() > maxRetries && !delivery.isManualRetryUsed());
         }
 
         Optional<WebhookDeliveryAck> deliveryAck = deliveryAckDAO.getDeliveryAckByDeliveryId(conn, deliveryId);

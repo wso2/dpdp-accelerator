@@ -43,6 +43,7 @@ import type { EventRecord } from '../../../types/event'
 import type { SubscriptionDeliveryAttemptRecord } from '../../../types/subscription'
 import { formatEpochTimestamp } from '../../../utils/dateTime'
 import { useEventDeliveryHistoryQuery } from '../hooks/useEventQueries'
+import { useRetrySubscriptionDeliveryMutation } from '../hooks/useSubscriptionQueries'
 import { getSubscriptionStatusChipColor } from '../utils/subscriptionStatusChip'
 
 interface EventDetailsModalProps {
@@ -58,6 +59,10 @@ export default function EventDetailsModal({
 }: EventDetailsModalProps): React.JSX.Element | null {
   const { t } = useTranslation('common')
   const deliveryId = event?.deliveryId || event?.eventId
+  const retryMutation = useRetrySubscriptionDeliveryMutation(
+    event?.subscriptionId,
+    event?.deliveryId,
+  )
 
   const {
     data: historyData,
@@ -179,6 +184,10 @@ export default function EventDetailsModal({
                 </Box>
               ) : null}
 
+              {retryMutation.isError ? (
+                <Alert severity="error">{t('subscriptions.deliveryHistory.loadFailed')}</Alert>
+              ) : null}
+
               <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TableContainer>
                   <Table size="small">
@@ -250,6 +259,16 @@ export default function EventDetailsModal({
           bgcolor: 'background.default',
         }}
       >
+        {historyData?.manualRetryAvailable && event.subscriptionId && event.deliveryId ? (
+          <Button
+            variant="contained"
+            disabled={retryMutation.isPending}
+            onClick={() => retryMutation.mutate()}
+            startIcon={retryMutation.isPending ? <CircularProgress size={16} /> : undefined}
+          >
+            {t('catalog.actions.retry')}
+          </Button>
+        ) : null}
         <Button variant="outlined" onClick={onClose}>
           {t('events.actions.close')}
         </Button>

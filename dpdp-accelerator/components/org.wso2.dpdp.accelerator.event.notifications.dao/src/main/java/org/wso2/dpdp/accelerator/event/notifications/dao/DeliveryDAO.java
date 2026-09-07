@@ -52,6 +52,12 @@ public interface DeliveryDAO {
 
     List<WebhookDeliveryDispatchContext> getStuckInFlightWebhookDispatchContexts(Connection conn, int limit, Timestamp updatedBefore);
 
+    Optional<WebhookDeliveryDispatchContext> getWebhookDeliveryDispatchContext(Connection conn, String orgId,
+            String subscriptionId, String deliveryId);
+
+    boolean prepareManualRetry(Connection conn, String orgId, String subscriptionId, String deliveryId,
+            int maxRetries);
+
     boolean updateWebhookDeliveryStatus(Connection conn, WebhookDelivery delivery);
 
     boolean recordSuccessfulAttempt(Connection conn, WebhookDeliveryAudit audit, WebhookDelivery delivery);
