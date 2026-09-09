@@ -57,6 +57,8 @@ The portal is a review and management surface. It does not decide CarePulse's
 lawful purpose or replace the application's notice and consent-collection
 experience.
 
+**Try it:** Follow [Flow 2 in the Tryout Flows guide](tryout-flows.md#flow-2-review-authorize-revoke-and-audit-a-consent).
+
 ## Story 3: Change or withdraw the decision
 
 Several weeks later, Priya no longer wants wellness messages. She opens her
@@ -68,8 +70,7 @@ Withdrawal changes the consent record; it does not automatically erase every
 copy held by a processor. That follow-up is coordinated through the lifecycle
 event in the next story and through CarePulse's contracts and retention rules.
 
-**Try it:** See the consent lifecycle and history flows in
-[Tryout Flows](tryout-flows.md#consent-management).
+**Try it:** Follow [Flow 2 in the Tryout Flows guide](tryout-flows.md#flow-2-review-authorize-revoke-and-audit-a-consent).
 
 ## Story 4: Keep processors in sync with an event
 
@@ -92,8 +93,9 @@ API. Creating a topic does not publish an event, and registering a subscription
 does not make a processor enforce the decision; those systems must implement
 their own action after receiving the notification.
 
-**Try it:** Follow the [Event Notification Guide](event-notification-guide.md)
-and the automatic lifecycle flow in [Tryout Flows](tryout-flows.md).
+**Try it:** Follow the [Event Notification Guide](event-notification-guide.md),
+the automatic lifecycle [Flow 5](tryout-flows.md#flow-5-publish-and-deliver-an-automatic-lifecycle-event),
+and the custom publication and polling [Flow 6](tryout-flows.md#flow-6-try-custom-publication-and-polling).
 
 ## Story 5: Investigate a failed delivery
 
@@ -107,6 +109,9 @@ This evidence helps CarePulse coordinate with CloudEngage, but it does not
 silently mark the processor as compliant. The receiver must recover and apply
 the change, and the organization's operational policy determines when a
 delivery is escalated.
+
+**Try it:** Use [Flow 5 in the Tryout Flows guide](tryout-flows.md#flow-5-publish-and-deliver-an-automatic-lifecycle-event)
+to inspect event and delivery history.
 
 ## Story 6: Raise and resolve a grievance
 
@@ -125,6 +130,8 @@ and communicates it to Priya.
 The grievance tools support intake and accountability; they do not determine
 the legal outcome of a complaint.
 
+**Try it:** Follow [Flow 4 in the Tryout Flows guide](tryout-flows.md#flow-4-submit-and-resolve-a-complaint).
+
 ## Story 7: Delete an account and coordinate the aftermath
 
 Priya later requests self-service account deletion. After the account is
@@ -135,6 +142,8 @@ retention, and audit policy.
 The accelerator provides the account action and notification building blocks.
 It does not promise that every downstream copy is automatically erased or that
 retention exceptions are resolved without a policy decision.
+
+**Try it:** Follow [Flow 7 in the Tryout Flows guide](tryout-flows.md#flow-7-delete-a-disposable-account).
 
 ## Story 8: Give each person only the work they need
 

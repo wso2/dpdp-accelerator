@@ -113,10 +113,9 @@ machine-to-machine application is not required. This setting does not affect
 the browser-facing Consent Portal application.
 
 Edit the value in the accelerator's
-`repository/resources/wso2is-7.3.0-deployment.toml` before running
-`configure.sh` (see [`setup-guide.md`](setup-guide.md)), or directly in
-`<IS_HOME>/repository/conf/deployment.toml` afterwards. Either way, restart
-the server for the change to take effect.
+`repository/resources/wso2is-7.3.0-deployment.toml` before deploying the
+accelerator, or directly in `<IS_HOME>/repository/conf/deployment.toml` after
+installation. Restart the server for the change to take effect.
 
 ## 3. Recovering a broken tenant
 
@@ -250,8 +249,7 @@ batch_size = 100
 | `cron_value` | `"0 0 0 * * ?"` | Quartz cron expression for how often the job checks for newly-expired consents. The default runs once daily at midnight. |
 | `batch_size` | `100` | Maximum number of expired consents recorded per run, so a large backlog drains gradually instead of in one long transaction. |
 
-Edit these before running `configure.sh`, or directly in
-`<IS_HOME>/repository/conf/deployment.toml` afterwards, and restart the
+Edit these in `<IS_HOME>/repository/conf/deployment.toml` and restart the
 server for the change to take effect.
 
 ### Clustering requirements
@@ -275,8 +273,8 @@ To run this job correctly across a cluster:
    Quartz project itself for version 2.3.x
    (`https://github.com/quartz-scheduler/quartz/tree/quartz-2.3.x/quartz-core/src/main/resources/org/quartz/impl/jdbcjobstore`)
    — pick the script matching your database (H2, MySQL, PostgreSQL, etc.).
-   These tables are not created by `configure.sh`; apply them the same way
-   you would apply any other third-party schema.
+   These tables are not created automatically; apply them the same way you
+   would apply any other third-party schema.
 3. Restart every node.
 
 With this in place, Quartz coordinates through the shared database so that

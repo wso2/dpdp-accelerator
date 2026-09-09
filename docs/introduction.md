@@ -84,13 +84,13 @@ statutory Consent Manager.
 
 - **Defines purposes & catalogs data:** Determines why data is required (e.g., vitals for consultation vs. address for courier delivery).
 - **Captures & audits consent:** Employs the WSO2 DPDP Accelerator to record Priya's affirmative choices and log cryptographic audit trails.
-- **Coordinates the ecosystem:** Translates Priya's consent revocation into a `consent.revoke` event topic for downstream consumers.
+- **Coordinates the ecosystem:** Communicates relevant consent changes to downstream consumers.
 - **Maintains accountability:** Ensures legal basis compliance and oversees internal grievance resolution.
 
 #### Data Processor - MedExpress *(Courier Partner)* & CloudEngage *(Marketing Vendor)*
 
 - **Executes under contract:** Processes Priya's delivery address (MedExpress) or email/phone (CloudEngage) strictly under CarePulse's instructions.
-- **Consumes lifecycle events:** CloudEngage listens to the `consent.revoke` webhook topic and instantly purges Priya's contact info from its active campaign pipeline.
+- **Consumes lifecycle events:** CloudEngage responds to consent changes and updates its active campaign pipeline.
 
 #### Grievance Officer / DPO - CarePulse Compliance Desk *(Internal Team)*
 
@@ -103,31 +103,14 @@ statutory Consent Manager.
 - **Serves as final arbiter:** Available as an escalation authority if Priya finds CarePulse's grievance response unsatisfactory or unfulfilled.
 - **Enforces accountability:** Evaluates systemic non-compliance or data breaches reported by either Principals or the Fiduciary.
 
-## WSO2 Identity Server vs. The WSO2 DPDP Accelerator
+## WSO2 Identity Server and the WSO2 DPDP Accelerator
 
-WSO2 Identity Server (IS) provides built-in consent management primitives primarily focused on IAM and authentication flows. The WSO2 DPDP Accelerator builds on this foundation to satisfy the legal, lifecycle, and operational mandates of India's Digital Personal Data Protection (DPDP) Act.
+WSO2 Identity Server provides the identity, authentication, authorization, and
+core consent foundation. The WSO2 DPDP Accelerator extends that foundation with
+DPDP-focused consent management, audit, grievance handling, and lifecycle event
+capabilities that help organizations operationalize DPDP compliance.
 
-### What WSO2 Identity Server provides
-
-Out of the box, WSO2 IS handles user consent as an integrated facet of Customer Identity and Access Management (CIAM):
-
-- **SSO & federated consent prompts** - Prompts users during single sign-on (SSO/OAuth2/OIDC/SAML) before releasing identity claims or user attributes to third-party client applications.
-- **Basic purpose association** - Allows administrators to map claims to specific purposes and collect consent during self-registration or login.
-- **Consent REST APIs & Kantara receipts** - Offers standard REST endpoints for managing consent records and basic support for Kantara-style consent receipts.
-- **User self-service (My Account)** - A portal where end users can review and revoke permissions granted to registered service providers.
-
-### Where the DPDP Accelerator bridges the gap
-
-The DPDP Act requires organizations to treat consent not merely as a token-issuance gate, but as an auditable, multi-stakeholder governance framework. The DPDP Accelerator extends WSO2 IS across several specialized dimensions:
-
-| Capability area | WSO2 Identity Server | With WSO2 DPDP Accelerator |
-|---|---|---|
-| **Scope of data & purposes** | Confined primarily to IAM user claims and token sharing across service providers. | Decoupled data catalog defines arbitrary enterprise processing purposes, data element categories, and custom notice templates beyond IAM profile fields. |
-| **Notice & language accessibility** | Default UI localization based on standard i18n bundles. | Statutory multilingual support delivers notice and catalog content localized in English and the languages listed in the Eighth Schedule to the Constitution. |
-| **Consent auditing & immutability** | Tracks active/revoked states; limited immutable versioning. | Full audit and snapshot history preserves historical snapshots of each consent iteration - what was consented to, when, and under which exact notice text. |
-| **Downstream propagation** | Downstream apps must query APIs; no native push framework for non-IAM apps. | Event Notification framework publishes lifecycle webhooks and polling topics (`consent.update`, `consent.revoke`, `consent.expire`, `user.account.delete`) to enforce revocation across external processors. |
-| **Grievance redressal mechanism** | Not available (limited to account-level profile updates). | Dedicated grievance portal offers end-to-end complaint ticketing for Data Principals, with triage workflows, assignment, messaging, attachments, and due-date tracking for DPOs. |
-| **Ecosystem governance roles** | Standard IAM roles (Admin, Internal/everyone, Application Owner). | DPDP-specific personas provide granular separation of duties for DPOs, Grievance Officers, external processors, and tenant-wide privacy administrators. |
+![WSO2 Identity Server and DPDP Accelerator stack](assets/dpdp-accelerator-stack.svg)
 
 ## How the WSO2 DPDP Accelerator helps
 
@@ -147,64 +130,12 @@ Consent Portal plus supporting services.
 | Support accessible notices | The portal interface supports English and the languages listed in the Eighth Schedule to the Constitution; catalog content can be localized separately. |
 | Support account lifecycle actions | An authorized user can request self-service account deletion, and a lifecycle event can notify configured receivers. |
 
-The accelerator can notify connected systems when one of five important
-consent or user lifecycle changes occurs:
-
-| What happened | Topic identifier | Why a connected system may care |
-|---|---|---|
-| A consent was updated, approved, or rejected | `consent.update` | Keep consent decisions and permitted processing activities in sync. |
-| A consent or authorization was withdrawn | `consent.revoke` | Stop or reassess processing that depended on the withdrawn consent. |
-| A consent reached its configured expiry | `consent.expire` | Stop or reassess processing after the consent is no longer active. |
-| Information in a user's profile changed | `user.data.change` | Review downstream copies or workflows that depend on the changed profile data. |
-| A user account was deleted | `user.account.delete` | Start the appropriate downstream deletion, retention, or audit process. |
-
-The topic identifier is the stable technical name used when creating a
-subscription. The plain-language description explains the real-world change
-represented by events published to that topic.
-
-Creating these topics does not create an event. When lifecycle publication is
-enabled, the corresponding consent or user action publishes the event. A
-subscription is needed only to deliver or poll that event, not to create the
-event record.
-
-## What the accelerator does not decide
-
-The accelerator supplies technical building blocks; it does not replace the
-organization's legal, governance, or data-management programme. In particular,
-it does not:
-
-- determine the lawful purpose or legal basis for a processing activity;
-- discover or classify personal data across enterprise systems;
-- register an organization as a Consent Manager or Significant Data
-  Fiduciary;
-- make downstream processors stop processing merely because they received an
-  event; each receiving system must enforce the change;
-- decide whether legal retention requirements override an erasure request; or
-- automatically purge every DPDP record when an Identity Server account is
-  deleted.
-
-Organizations should combine these capabilities with policies, processor
-contracts, security controls, retention and erasure procedures, breach
-response, and legal review.
+The accelerator also publishes lifecycle events for configured downstream
+systems, which can receive them through webhook or polling subscriptions.
 
 ## Start using the accelerator
 
-1. Read [Learn through real stories](learn.md) for a role-based introduction
-   to the major journeys.
-2. Follow the [Quickstart](quickstart.md) for a local quick setting up of the solution
-   tenant.
-3. Run the [Tryout Flows](tryout-flows.md) to exercise the shipped catalog,
-   consent, complaint, Event Notification, and account lifecycle capabilities.
-4. Use the [Setup Guide](setup-guide.md) to install the accelerator and prepare
-   its databases.
-5. Review the [Configuration Guide](configuration-guide.md) before a production
-   deployment.
-6. Assign portal and integration permissions with the
-   [Role Management Guide](role-guide.md).
-7. Configure lifecycle delivery with the
-   [Event Notification Guide](event-notification-guide.md).
-8. Adapt the user interface and catalog content with the
-   [Localization Guide](localization-guide.md).
+1. Follow the [Quickstart](quickstart.md) to set up a local solution tenant.
 
 ## Official references
 
