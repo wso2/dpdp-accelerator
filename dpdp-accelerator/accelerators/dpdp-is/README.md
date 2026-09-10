@@ -36,12 +36,18 @@ Building from source? See the [repository README](../../../README.md#build)
    sh bin/configure.sh <IS_HOME>
    ```
    Edit `repository/conf/configure.properties` first for hostname,
-   administrator-credential, and schema-migration substitutions. `IS_PORT` is
-   not currently substituted, and external database connection details must be
-   applied to the deployment template or installed `deployment.toml`. This
-   step installs `deployment.toml`, applies the Identity Server consent
-   migration, and creates the available DPDP schemas for Consent History,
-   Complaint Management, and Event Notifications.
+   administrator-credential, database type, and schema-migration settings.
+   `IS_PORT` is not currently substituted. The script installs
+   `deployment.toml`, applies the Identity Server consent migration and DPDP
+   feature schemas automatically for the embedded H2 database, and prints the
+   migration scripts to apply manually when using an external database.
+
+   For external databases, create the databases, install the JDBC driver, and
+   configure the datasources before starting Identity Server. Apply the
+   Identity Server and DPDP feature SQL scripts manually as described in the
+   [Setup Guide](../../../docs/content/setup-guide.md). External database
+   connection details must be applied to the deployment template or installed
+   `deployment.toml`.
 
    > **`deployment.toml` is replaced, not merged.** The accelerator ships a
    > complete file — `repository/resources/wso2is-7.3.0-deployment.toml`, the
@@ -64,7 +70,7 @@ Building from source? See the [repository README](../../../README.md#build)
 7. Open `https://<host>:9443/consent-portal/`.
 
 For a first local verification, follow the
-[`Quickstart`](../../../docs/quickstart.md).
+[`Quickstart`](../../../docs/content/quickstart.md).
 
 ## Granting administration access
 
@@ -73,4 +79,4 @@ portal role. Assign `dpdp-consent-user` for personal history, complaint
 self-service, and account deletion; `dpdp-consent-admin` for full portal
 administration; or `dpdp-consent-dpo` for organization-wide complaint handling
 without full administration. See the
-[`Role Management Guide`](../../../docs/role-guide.md).
+[`Role Management Guide`](../../../docs/content/role-guide.md).

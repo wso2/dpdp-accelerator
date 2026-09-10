@@ -52,7 +52,7 @@ timeline.
 
 ## Participants in the DPDP ecosystem
 
-![DPDP ecosystem showing the relationships among a Data Principal, Data Fiduciary, Data Processor, Consent Manager, and Data Protection Board of India](assets/dpdp-ecosystem.svg)
+![DPDP ecosystem showing the relationships among a Data Principal, Data Fiduciary, Data Processor, Consent Manager, and Data Protection Board of India](../assets/dpdp-ecosystem.svg)
 
 | Participant | Role under the Act |
 |---|---|
@@ -110,14 +110,14 @@ core consent foundation. The WSO2 DPDP Accelerator extends that foundation with
 DPDP-focused consent management, audit, grievance handling, and lifecycle event
 capabilities that help organizations operationalize DPDP compliance.
 
-![WSO2 Identity Server and DPDP Accelerator stack](assets/dpdp-accelerator-stack.svg)
+![WSO2 Identity Server and DPDP Accelerator stack](../assets/dpdp-accelerator-stack.svg)
 
 ## How the WSO2 DPDP Accelerator helps
 
 The accelerator runs with WSO2 Identity Server and provides a tenant-aware
 Consent Portal plus supporting services.
 
-![WSO2 DPDP Accelerator solution overview connecting portal users, Identity Server capabilities, DPDP services, data stores, and downstream systems](assets/dpdp-accelerator-overview.svg)
+![WSO2 DPDP Accelerator solution overview connecting portal users, Identity Server capabilities, DPDP services, data stores, and downstream systems](../assets/dpdp-accelerator-overview.svg)
 
 | Operational need | Accelerator capability |
 |---|---|

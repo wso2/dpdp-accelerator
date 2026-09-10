@@ -29,7 +29,7 @@ real OAuth2 logins and a real consent-management database. Nothing here is mocke
    rather use existing accounts, they must satisfy:
    - **User** — no role needed; every signed-in user manages their own consents. Must *not* be an
      administrator: `tests/04-authorization` asserts this account holds only `internal_login`.
-   - **Consent Admin** — assigned `dpdp-consent-admin` (see `docs/configuration-guide.md`,
+   - **Consent Admin** — assigned `dpdp-consent-admin` (see `../docs/content/configuration-guide.md`,
      "Grant administration access"). Drives the admin UI and seeds Purposes/Elements/Consents via
      the API for `tests/01-elements`, `tests/02-purposes` and `tests/03-consents`.
    - **Second User** — optional, a distinct plain account. Without it the ownership-isolation
@@ -151,5 +151,4 @@ persistent, shared environment rather than a disposable one:
   logins for the same persona means provisioning additional test accounts, not a config change.
 - **Consents created as test setup are never deleted** and accumulate in the shared environment
   over time (see [Operating principles](#operating-principles)).
-
 

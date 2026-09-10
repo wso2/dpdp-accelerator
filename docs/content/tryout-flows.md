@@ -32,7 +32,7 @@ The examples below use disposable names. If a previous run created the same
 catalog item or subscription, use a new name or remove the earlier test data
 where the portal permits it.
 
-![Consent lifecycle and custom event-publication paths converging on the Event Notification service](assets/dpdp-consent-event-flow.svg)
+![Consent lifecycle and custom event-publication paths converging on the Event Notification service](../assets/dpdp-consent-event-flow.svg)
 
 The guide is divided into the accelerator's three main feature areas. It keeps
 the walkthrough focused on the major user journeys and links to the detailed
@@ -342,7 +342,7 @@ actually a parent, lawful guardian, or other representative. A trusted Data
 Fiduciary system must verify that relationship before creating the delegated
 authorization.
 
-![Delegated consent flow from connected-application creation through guardian approval and data-subject verification](assets/dpdp-consent-delegation-flow.svg)
+![Delegated consent flow from connected-application creation through guardian approval and data-subject verification](../assets/dpdp-consent-delegation-flow.svg)
 
 **Portal:** The guardian or delegate uses **My Pending Consents** and can filter
 **My Consents** by **Managed by Me**. The data subject can filter the same page
@@ -470,7 +470,7 @@ officer. The same case is used to demonstrate submission, attachments, public
 and internal communication, status transitions, statutory due dates, and
 resolution without requiring a separate client application.
 
-![Grievance flow from Data Principal submission through complaint-officer review, communication, and resolution](assets/dpdp-grievance-flow.svg)
+![Grievance flow from Data Principal submission through complaint-officer review, communication, and resolution](../assets/dpdp-grievance-flow.svg)
 
 ### Flow 4: Submit and resolve a complaint
 

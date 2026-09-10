@@ -8,7 +8,7 @@ deployment in production.
 
 - WSO2 Identity Server 7.3.0 with the mandatory U2 updates applied
 - JDK 21 or later
-- A released `wso2-dpdp-is-accelerator-<version>.zip`, or a ZIP built from the
+- A released `wso2-dpdpiam-accelerator-<version>.zip`, or a ZIP built from the
   repository with `mvn clean install`
 
 The extracted Identity Server directory is referred to as `<IS_HOME>` below.
