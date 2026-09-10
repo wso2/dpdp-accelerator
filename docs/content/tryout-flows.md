@@ -62,6 +62,11 @@ Server generates the actual values. All requests are tenant-qualified through
 the access token and the `/t/${TENANT_DOMAIN}` URL; do not reuse a token issued
 for another tenant.
 
+The examples use certificates trusted by the client. For a local Identity
+Server using a self-signed certificate, add `-k` to a `curl` command only for
+that local test. Do not use `-k` in a deployed environment; configure a trusted
+CA or pass it explicitly with `--cacert` instead.
+
 ## Consent management
 
 The Consent Portal supports catalog administration, self-service consent
@@ -97,7 +102,7 @@ and which data element is involved.
 The equivalent request is:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/identity/consent-mgt/v2.0/elements" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -140,7 +145,7 @@ Representative response:
 Replace `<element-id>` with the `id` returned above. The equivalent request is:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/identity/consent-mgt/v2.0/purposes" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -222,7 +227,7 @@ portal operation.
 To inspect the same consent directly, use the Data Principal's access token:
 
 ```bash
-curl -k \
+curl \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/users/v1/me/consents/<consent-id>" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
@@ -268,7 +273,7 @@ Representative response:
 Approve the consent by sending the state in the request body:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/users/v1/me/consents/<consent-id>/authorize" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -280,7 +285,7 @@ has no required JSON response body; the portal fetches the consent again to
 display its new state. Revocation also has no request or response body:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/users/v1/me/consents/<consent-id>/revoke" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
@@ -306,7 +311,7 @@ scopes.
 To verify the lifecycle audit independently of the UI:
 
 ```bash
-curl -k \
+curl \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/consent-mgt/v1/consents/<consent-id>/status-history?limit=100&offset=0" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
@@ -367,7 +372,7 @@ this request. Replace the placeholder usernames with the tenant-qualified
 usernames expected by your Identity Server deployment:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/identity/consent-mgt/v2.0/consents" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -421,7 +426,7 @@ The guardian can inspect the pending consent directly before approving it.
 Set `ACCESS_TOKEN` to that user's portal access token:
 
 ```bash
-curl -k \
+curl \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/users/v1/me/consents?state=PENDING&relation=AUTHORIZER&attributes=purposes,authorizations" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
@@ -429,7 +434,7 @@ curl -k \
 Approve the consent with the guardian's token:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/users/v1/me/consents/<consent-id>/authorize" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -451,7 +456,7 @@ again to verify the authorization and aggregate consent states.
 The equivalent subject-scoped query is:
 
 ```bash
-curl -k \
+curl \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/users/v1/me/consents?relation=SUBJECT&attributes=purposes,authorizations" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
@@ -497,7 +502,7 @@ The portal derives the complainant from the access token. Do not send a
 `userId` in this self-service request:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/complaints/v1/me/complaints" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -547,7 +552,7 @@ Representative `201 Created` response:
 The officer can send a public response and change status in one request:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/complaints/v1/complaints/<complaint-id>/comments" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -678,7 +683,7 @@ for the complete signing and verification requirements.
 The equivalent registration request is:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1/subscriptions" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -746,7 +751,7 @@ claim values:
 Retrieve the stored event by using the identifier displayed in the portal:
 
 ```bash
-curl -k \
+curl \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1/events/<event-id>" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
@@ -826,7 +831,7 @@ are not buttons on the **Events** page.
 3. Use a client holding `notifications:events:write` to publish an event:
 
    ```bash
-   curl -k -X POST \
+   curl -X POST \
      "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1/events" \
      -H "Authorization: Bearer ${ACCESS_TOKEN}" \
      -H "group-id: ${TENANT_DOMAIN}" \
@@ -912,7 +917,7 @@ through the webhook prepared earlier.
 The portal sends the account deletion request without a body:
 
 ```bash
-curl -k -X DELETE \
+curl -X DELETE \
   "${BASE_URL}/t/${TENANT_DOMAIN}/scim2/Me" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```

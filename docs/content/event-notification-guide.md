@@ -107,6 +107,11 @@ RECEIVER_ACCESS_TOKEN="<event-receiver-access-token>"
 
 For the super tenant, set `API_BASE` without the `/t/<tenant>` segment.
 
+The examples use certificates trusted by the client. For a local Identity
+Server using a self-signed certificate only, add `-k` to a `curl` command
+temporarily. Do not use `-k` for deployed environments; configure a trusted CA
+or pass it explicitly with `--cacert` instead.
+
 ## 2. Understand the notification flow
 
 Events reach the framework in two ways:
@@ -489,7 +494,7 @@ COMPLETION_BODY='{"completionStatus":"completed","completionEvidence":"https://p
 COMPLETION_SIGNATURE=$(printf 'v1\ncompletion\n%s\n%s' "${DELIVERY_ID}" "${COMPLETION_BODY}" \
   | openssl dgst -sha256 -hmac "${COMPLETION_SHARED_SECRET}" | awk '{print $2}')
 
-curl -k -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
+curl -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
   -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
   -H "group-id: ${GROUP_ID}" \
   -H "event-signature: sha256=${COMPLETION_SIGNATURE}" \
@@ -537,7 +542,7 @@ POLL_BODY='{
 }'
 POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "${POLL_SHARED_SECRET}" -hex | awk '{print $2}')"
 
-curl -k -X POST "${API_BASE}/events/poll" \
+curl -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -H "group-id: ${GROUP_ID}" \

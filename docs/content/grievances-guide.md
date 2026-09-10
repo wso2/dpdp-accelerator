@@ -52,9 +52,15 @@ The automatically provisioned roles grant these complaint permissions:
 
 The `dpdp-consent-admin` role also grants catalog, consent, and Event
 Notification administration. The DPO role is limited to organization-wide
-complaint handling. For machine-to-machine use, assign the two `complaints:*`
-scopes to a dedicated integration role instead of using a portal administrator
-role.
+complaint handling. For machine-to-machine use, assign
+`complaints:read:self`, `complaints:write:self`, `complaints:read:any`, or
+`complaints:write:any` as appropriate to a dedicated integration role instead
+of using a portal administrator role.
+
+The examples use certificates trusted by the client. For a local Identity
+Server using a self-signed certificate, add `-k` to a `curl` command only for
+that local test. Do not use `-k` in a deployed environment; configure a trusted
+CA or pass it explicitly with `--cacert` instead.
 
 ## 3. Configure deadlines and attachments
 
@@ -89,7 +95,7 @@ and select **Submit New Complaint**.
 The self-service create request is:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/complaints/v1/me/complaints" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -105,7 +111,7 @@ timestamps, and statutory due date. Upload evidence afterward with multipart
 form data; self-service uploads are always public:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/complaints/v1/me/complaints/<complaint-id>/attachments" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -F "file=@incident-screenshot.png;type=image/png" \
@@ -133,7 +139,7 @@ The officer endpoint can add a public reply and transition the case in one
 request:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/complaints/v1/complaints/<complaint-id>/comments" \
   -H "Authorization: Bearer ${OFFICER_ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
@@ -168,7 +174,7 @@ explicitly when a reopening workflow is required.
 For example, a Data Principal can request the valid reopening transition with:
 
 ```bash
-curl -k -X POST \
+curl -X POST \
   "${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/complaints/v1/me/complaints/<complaint-id>/status" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \

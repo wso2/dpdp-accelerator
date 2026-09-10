@@ -65,7 +65,7 @@ The driver versions listed in the WSO2 reference are:
 
 | DBMS | JDBC driver JAR |
 |---|---|
-| MySQL 8.0 | `mysql-connector-java-5.1.44.jar` |
+| MySQL 8.0 | `mysql-connector-j-8.x.jar` (use the version supported by your WSO2 Identity Server release) |
 | Oracle 19c | `ojdbc11.jar` |
 | Microsoft SQL Server 2022 | `mssql-jdbc-12.10.0.jre11.jar` |
 | PostgreSQL 17.2 | `postgresql-42.2.17.jar` |
@@ -83,7 +83,8 @@ sections for the selected DBMS. The relevant sections are:
 Keep the existing section names and datasource IDs. In particular,
 `[dpdp_accelerator.jdbc_persistence_manager]` must continue to use
 `data_source_name = "jdbc/WSO2DPDP_DB"`, matching the `WSO2DPDP_DB` datasource
-ID.
+ID. The `jdbc/` prefix is the JNDI name prefix; `WSO2DPDP_DB` is the datasource
+ID declared in `deployment.toml`.
 
 The following examples show the DBMS-specific connection values to use. Apply
 the selected values to each relevant database section, using the database name
@@ -99,29 +100,33 @@ assigned to that section.
 <details>
 <summary>MySQL</summary>
 
+The following example enables TLS and certificate verification. Configure the
+Identity Server JVM truststore with the MySQL server certificate or its issuing
+CA before using it in a deployed environment.
+
 ```toml
     [database.identity_db]
     type = "mysql"
-    url = "jdbc:mysql://localhost:3306/WSO2IDENTITY_DB?useSSL=false&serverTimezone=UTC"
+    url = "jdbc:mysql://localhost:3306/WSO2IDENTITY_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
     username = "<database-user>"
     password = "<database-password>"
 
     [database.shared_db]
     type = "mysql"
-    url = "jdbc:mysql://localhost:3306/WSO2SHARED_DB?useSSL=false&serverTimezone=UTC"
+    url = "jdbc:mysql://localhost:3306/WSO2SHARED_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
     username = "<database-user>"
     password = "<database-password>"
 
     [datasource.AgentIdentity]
     id = "AgentIdentity"
-    url = "jdbc:mysql://localhost:3306/WSO2AGENTIDENTITY_DB?useSSL=false&serverTimezone=UTC"
+    url = "jdbc:mysql://localhost:3306/WSO2AGENTIDENTITY_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
     username = "<database-user>"
     password = "<database-password>"
     driver = "com.mysql.cj.jdbc.Driver"
 
     [datasource.WSO2DPDP_DB]
     id = "WSO2DPDP_DB"
-    url = "jdbc:mysql://localhost:3306/WSO2DPDP_DB?useSSL=false&serverTimezone=UTC"
+    url = "jdbc:mysql://localhost:3306/WSO2DPDP_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
     username = "<database-user>"
     password = "<database-password>"
     driver = "com.mysql.cj.jdbc.Driver"

@@ -87,6 +87,11 @@ client_id = "DPDP_CONSENT_PORTAL"
 | `auto_provisioning_enabled` | `true` | You want to manage the application and its roles by hand instead. Set to `false`. This only turns off the automatic *creation* of the application and roles — it does not disable the portal or sign-in. |
 | `client_id` | `DPDP_CONSENT_PORTAL` | You're changing it, you **must** also update `clientID` in the deployed portal's own `deployment.config.json` — the two have to match or sign-in breaks. |
 
+When `auto_provisioning_enabled` is `false`, the listener skips creation and
+reconciliation of the Consent Portal application, its API authorizations, and
+the `dpdp-consent-admin` and `dpdp-consent-user` roles. Configure those items
+manually in Identity Server before using the portal.
+
 ### Consent API Invoker provisioning
 
 A second, independently controlled application supports machine-to-machine
@@ -153,7 +158,7 @@ what is *beyond* that.
 
 | Role | Assign to | Grants |
 |---|---|---|
-| `dpdp-consent-user` | Regular users needing additional self-service features | Viewing their own consent history, deleting their own account, and reading/writing their own complaints. None is required for basic self-service consent management. |
+| `dpdp-consent-user` | Regular users needing additional self-service features | Viewing their own consent history, deleting their own account, and reading (`complaints:read:self`) and writing (`complaints:write:self`) their own complaints. None is required for basic self-service consent management. |
 | `dpdp-consent-admin` | Administrators | Administering other users' consents, editing the purpose and element catalog, managing Event Notifications, viewing consent history, and reading/writing any complaint. **Not** self-service account deletion, which is `dpdp-consent-user` only. |
 | `dpdp-consent-dpo` | Data Protection Officers | Reading and writing any complaint in the organization without Consent Management, catalog, consent-history, Event Notification, or account-deletion permissions. |
 
