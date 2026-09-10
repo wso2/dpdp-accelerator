@@ -5,10 +5,6 @@ Identity Server and the DPDP Accelerator. Complete the Identity Server and
 accelerator installation first, then follow these steps before starting the
 server.
 
-For the supported database versions, vendor-specific database creation
-guidance, and additional Identity Server database requirements, see the WSO2
-[database setup documentation](https://ob.docs.wso2.com/en/latest/install-and-setup/setting-up-databases/).
-
 ## Prerequisites
 
 - WSO2 Identity Server 7.3.0 with the mandatory U2 updates applied
@@ -27,7 +23,7 @@ separate databases for the Identity Server data and the DPDP data:
 - `WSO2DPDP_DB` for DPDP Accelerator data
 
 Use the database names, users, character sets, and permissions recommended by
-your DBMS documentation and the WSO2 database setup documentation.
+your DBMS documentation.
 
 For example, the following MySQL commands create the databases used by the
 Identity Server and accelerator. Replace the user, host, character set, and
