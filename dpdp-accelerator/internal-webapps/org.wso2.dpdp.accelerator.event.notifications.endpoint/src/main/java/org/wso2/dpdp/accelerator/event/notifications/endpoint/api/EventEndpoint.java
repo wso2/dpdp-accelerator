@@ -18,9 +18,11 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.EventCreateRequest;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.EventNotificationDtoMapper;
+
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.EventHandler;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventCreateDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventPollingResponseDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDeliveryDTO;
@@ -69,9 +71,9 @@ public class EventEndpoint {
     @POST
     public Response publishEvent(
             @HeaderParam(EventNotificationEndpointConstants.GROUP_ID_HEADER) String groupId,
-            EventCreateDTO request) {
-        EventDTO dto = eventHandler.publishEvent(organizationIdResolver.get(), groupId, request);
-        return Response.status(Response.Status.CREATED).entity(dto).build();
+            EventCreateRequest request) {
+        EventDTO dto = eventHandler.publishEvent(organizationIdResolver.get(), groupId, EventNotificationDtoMapper.toService(request));
+        return Response.status(Response.Status.CREATED).entity(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @POST
@@ -83,7 +85,7 @@ public class EventEndpoint {
             String requestBody) {
         EventPollingResponseDTO response = eventHandler.pollEvents(organizationIdResolver.get(), groupId,
                 subscriptionId, requestBody, signature);
-        return Response.ok(response).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(response)).build();
     }
 
     @GET
@@ -100,7 +102,7 @@ public class EventEndpoint {
                 ? eventHandler.searchEvents(orgId, topic, status, orgId, purposes, search, limit, offset)
                 : eventHandler.searchEvents(orgId, topic, status, orgId, subscriptionId,
                         purposes, search, limit, offset);
-        return Response.ok(result).build();
+        return Response.ok(EventNotificationDtoMapper.events(result)).build();
     }
 
     @GET
@@ -108,7 +110,7 @@ public class EventEndpoint {
     public Response getDeliveryHistory(
             @PathParam("deliveryId") String deliveryId) {
         SubscriptionEventHistoryDTO dto = eventHandler.getDeliveryHistory(organizationIdResolver.get(), deliveryId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @GET
@@ -116,7 +118,7 @@ public class EventEndpoint {
     public Response getEvent(
             @PathParam("eventId") String eventId) {
         EventDTO dto = eventHandler.getEventById(organizationIdResolver.get(), eventId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @GET
@@ -127,6 +129,6 @@ public class EventEndpoint {
             @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset) {
         PaginatedResult<SubscriptionDeliveryDTO> result = eventHandler.getEventDeliveries(
                 organizationIdResolver.get(), eventId, limit, offset);
-        return Response.ok(result).build();
+        return Response.ok(EventNotificationDtoMapper.deliveries(result)).build();
     }
 }

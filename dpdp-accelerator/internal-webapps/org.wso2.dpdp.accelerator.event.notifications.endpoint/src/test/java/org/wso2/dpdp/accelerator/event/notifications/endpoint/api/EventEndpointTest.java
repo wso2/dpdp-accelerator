@@ -24,7 +24,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.EventHandler;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventCreateDTO;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.EventCreateRequest;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventPollingResponseDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDeliveryDTO;
@@ -71,8 +71,7 @@ public class EventEndpointTest {
 
     @Test
     public void publishEvent_returns201WithDtoBody() {
-        EventCreateDTO request = new EventCreateDTO("topic-a", Arrays.asList("marketing"),
-                new HashMap<>());
+        EventCreateRequest request = new EventCreateRequest().topic("topic-a").purposes(Arrays.asList("marketing")).payload(new HashMap<>());
         EventDTO published = new EventDTO("evt-1", "org1", "g1", "topic-id-1", "{}",
                 Arrays.asList("marketing"), null, null);
         when(eventHandler.publishEvent(eq("org1"), eq("g1"), any())).thenReturn(published);
@@ -80,13 +79,15 @@ public class EventEndpointTest {
         Response response = eventEndpoint.publishEvent("g1", request);
 
         assertEquals(response.getStatus(), Response.Status.CREATED.getStatusCode());
-        assertEquals(response.getEntity(), published);
-        verify(eventHandler, times(1)).publishEvent("org1", "g1", request);
+        assertJsonEquals(response.getEntity(), published);
+        verify(eventHandler, times(1)).publishEvent(eq("org1"), eq("g1"), org.mockito.ArgumentMatchers.argThat(value ->
+                value.getTopic().equals(request.getTopic()) && value.getPurposes().equals(request.getPurposes())
+                        && value.getPayload().equals(request.getPayload())));
     }
 
     @Test
     public void publishEvent_propagatesHandlerException() {
-        EventCreateDTO request = new EventCreateDTO("topic-a", null, null);
+        EventCreateRequest request = new EventCreateRequest().topic("topic-a");
         when(eventHandler.publishEvent(any(), any(), any()))
                 .thenThrow(new RuntimeException("boom"));
 
@@ -100,7 +101,7 @@ public class EventEndpointTest {
 
     @Test
     public void pollEvents_returns200WithPollingResponse() {
-        String request = "{\"maxEvents\":10,\"returnImmediately\":true}";
+        String request = "{\n  \"returnImmediately\": true, \"maxEvents\": 10\n}";
         EventPollingResponseDTO pollingResponse = new EventPollingResponseDTO(false, Collections.emptyMap());
         when(eventHandler.pollEvents("org1", "g1", "subscription-1", request, "sha256=test"))
                 .thenReturn(pollingResponse);
@@ -108,7 +109,7 @@ public class EventEndpointTest {
         Response response = eventEndpoint.pollEvents("subscription-1", "g1", "sha256=test", request);
 
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        assertEquals(response.getEntity(), pollingResponse);
+        assertJsonEquals(response.getEntity(), pollingResponse);
         verify(eventHandler, times(1)).pollEvents("org1", "g1", "subscription-1", request, "sha256=test");
     }
 
@@ -136,7 +137,7 @@ public class EventEndpointTest {
         Response response = eventEndpoint.listEvents("topic-1", "DELIVERED", "sub-1", "marketing", "search", 10, 0);
 
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        assertEquals(response.getEntity(), page);
+        assertJsonEquals(response.getEntity(), page);
         verify(eventHandler, times(1)).searchEvents("org1", "topic-1", "DELIVERED", "org1", "sub-1", "marketing", "search", 10, 0);
     }
 
@@ -163,7 +164,7 @@ public class EventEndpointTest {
         Response response = eventEndpoint.getDeliveryHistory("dlv-1");
 
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        assertEquals(response.getEntity(), dto);
+        assertJsonEquals(response.getEntity(), dto);
         verify(eventHandler, times(1)).getDeliveryHistory("org1", "dlv-1");
     }
 
@@ -175,7 +176,7 @@ public class EventEndpointTest {
         Response response = eventEndpoint.getEvent("evt-1");
 
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        assertEquals(response.getEntity(), dto);
+        assertJsonEquals(response.getEntity(), dto);
         verify(eventHandler, times(1)).getEventById("org1", "evt-1");
     }
 
@@ -190,7 +191,12 @@ public class EventEndpointTest {
         Response response = eventEndpoint.getEventDeliveries("evt-1", 20, 0);
 
         assertEquals(response.getStatus(), Response.Status.OK.getStatusCode());
-        assertEquals(response.getEntity(), page);
+        assertJsonEquals(response.getEntity(), page);
         verify(eventHandler, times(1)).getEventDeliveries("org1", "evt-1", 20, 0);
+    }
+    private static void assertJsonEquals(Object actual, Object expected) {
+        com.fasterxml.jackson.databind.ObjectMapper json = new com.fasterxml.jackson.databind.ObjectMapper();
+        assertEquals((Object) json.valueToTree(actual), (Object) json.valueToTree(expected));
+        org.testng.Assert.assertTrue(actual.getClass().getPackage().getName().endsWith(".endpoint.dto"));
     }
 }
