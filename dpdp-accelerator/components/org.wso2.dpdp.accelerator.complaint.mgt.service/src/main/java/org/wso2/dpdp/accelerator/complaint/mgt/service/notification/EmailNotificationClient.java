@@ -89,6 +89,7 @@ public class EmailNotificationClient implements NotificationClient {
     private static final String PLACEHOLDER_HEADLINE_HTML = "headline-html";
     private static final String PLACEHOLDER_FOOTER_TEXT = "footer-text";
     private static final String PLACEHOLDER_ACTION_BADGE_HTML = "action-badge-html";
+    private static final String PLACEHOLDER_ACTION_BUTTON_HTML = "action-button-html";
     private static final String PLACEHOLDER_LOGO_URL = "logo-url";
 
     private static final String EMAIL_CLAIM = "http://wso2.org/claims/emailaddress";
@@ -273,6 +274,10 @@ public class EmailNotificationClient implements NotificationClient {
                     "You're receiving this because you filed this complaint. We'll email you when there's "
                             + "an update.");
             properties.put(PLACEHOLDER_ACTION_BADGE_HTML, ACKNOWLEDGEMENT_BADGE_HTML);
+            // Deliberately empty, and deliberately still set: IS leaves an unmatched placeholder
+            // in the template as literal text, so omitting the key ships "{{action-button-html}}"
+            // in the mail body. See buildActionButton for why this type has no button.
+            properties.put(PLACEHOLDER_ACTION_BUTTON_HTML, "");
 
             eventService.handleEvent(new Event(IdentityEventConstants.Event.TRIGGER_NOTIFICATION, properties));
         } catch (Throwable t) {
@@ -506,6 +511,7 @@ public class EmailNotificationClient implements NotificationClient {
         placeholders.put(PLACEHOLDER_HEADLINE_HTML, headlineHtml);
         placeholders.put(PLACEHOLDER_FOOTER_TEXT, footerText);
         placeholders.put(PLACEHOLDER_ACTION_BADGE_HTML, actionBadgeHtml);
+        placeholders.put(PLACEHOLDER_ACTION_BUTTON_HTML, buildActionButton(actionUrl));
         placeholders.put(PLACEHOLDER_LOGO_URL, IdentityUtil.getServerURL(LOGO_PATH, true, false));
         return placeholders;
     }
@@ -529,6 +535,29 @@ public class EmailNotificationClient implements NotificationClient {
         return "<span style=\"display:inline-block;background-color:" + background + ";color:" + color
                 + ";font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;"
                 + "padding:4px 10px;border-radius:999px;\">" + text + "</span>";
+    }
+
+    /**
+     * The call to action is per-notification-type rather than part of the shared shell, because it
+     * tells the recipient to act - true for the officer's "new complaint" mail and for either
+     * side's "new reply" mail, but not for the acknowledgement, which confirms receipt of the
+     * citizen's own complaint and quotes their own description back at them. A "Review & Reply"
+     * button there asks them to reply to themselves. The shell's footer link is on
+     * {@code action-url} regardless, so an acknowledgement with no button still offers a way in.
+     * <p>
+     * The URL is interpolated here rather than left as an {@code action-url} placeholder inside
+     * this markup: IS's notification handler substitutes the template in a single pass, so a
+     * placeholder occurring within another placeholder's *value* is never expanded and would ship
+     * as literal text in the href.
+     */
+    private static String buildActionButton(String actionUrl) {
+        return "<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\" "
+                + "style=\"margin:0 auto;\"><tr>"
+                + "<td style=\"border-radius:24px;background-color:#f97316;\">"
+                + "<a href=\"" + actionUrl + "\" style=\"display:inline-block;padding:12px 32px;"
+                + "font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;"
+                + "border-radius:24px;\">Review &amp; Reply</a>"
+                + "</td></tr></table>";
     }
 
     private static String htmlEscape(String value) {
