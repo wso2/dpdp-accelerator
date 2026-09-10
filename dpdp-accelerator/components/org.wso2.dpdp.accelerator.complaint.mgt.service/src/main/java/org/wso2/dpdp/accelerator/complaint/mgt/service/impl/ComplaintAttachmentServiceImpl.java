@@ -34,7 +34,6 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServic
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.AttachmentPolicy;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -57,56 +56,71 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
     public List<ComplaintAttachmentResponseDTO> uploadComplaintAttachments(String orgId, String complaintId,
             List<UploadedFile> files, boolean isPublic, String actorUserId, String actorUserName,
             String actorRole) {
-        complaintService.requireComplaint(orgId, complaintId);
         validateFiles(files);
         validateActor(actorUserId, actorRole);
-
         long now = System.currentTimeMillis();
 
-        // The upload event and every attachment it anchors must land together - see
-        // DatabaseUtils#commitTransaction/rollbackTransaction - otherwise a failure partway
-        // through a multi-file upload could leave some attachments stored against an event that
-        // was never actually committed, or vice versa.
-        List<ComplaintAttachment> stored = new ArrayList<>();
-        Connection conn = DatabaseUtils.getDBConnection();
-        try {
-            String complaintEventId = recordUploadEvent(conn, orgId, complaintId, isPublic, actorUserId,
-                    actorUserName, actorRole, now);
-            for (UploadedFile file : files) {
-                stored.add(store(conn, orgId, complaintId, complaintEventId, file, isPublic, now));
-            }
-            DatabaseUtils.commitTransaction(conn);
-        } catch (RuntimeException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            throw e;
-        } catch (SQLException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
-                    ComplaintServiceConstants.ATTACHMENT_STORE_FAILED_ERROR, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
-        }
+        // The existence check, the upload event, and every attachment it anchors must all share
+        // one transaction - otherwise the complaint could change (or, if a delete path is ever
+        // added, disappear) between the check and the write, or a failure partway through a
+        // multi-file upload could leave some attachments stored against an event that was never
+        // actually committed.
+        List<ComplaintAttachment> stored = DatabaseUtils.executeInTransaction(conn -> {
+            complaintService.requireComplaint(conn, orgId, complaintId);
+            return performUpload(conn, orgId, complaintId, files, isPublic, actorUserId, actorUserName, actorRole,
+                    now);
+        });
+        return toAttachmentDtos(stored);
+    }
 
+    @Override
+    public List<ComplaintAttachmentResponseDTO> uploadOwnComplaintAttachments(String orgId, String complaintId,
+            String ownerUserId, String ownerUserName, List<UploadedFile> files) {
+        validateFiles(files);
+        validateActor(ownerUserId, ComplaintActorRole.USER.name());
+        long now = System.currentTimeMillis();
+
+        // Same reasoning as uploadComplaintAttachments - the ownership check and the writes it
+        // gates must share one transaction, not two sequential connections with the ownership
+        // check's result no longer guaranteed true by the time the write runs.
+        List<ComplaintAttachment> stored = DatabaseUtils.executeInTransaction(conn -> {
+            complaintService.requireOwnedComplaint(conn, orgId, complaintId, ownerUserId);
+            return performUpload(conn, orgId, complaintId, files, true, ownerUserId, ownerUserName,
+                    ComplaintActorRole.USER.name(), now);
+        });
+        return toAttachmentDtos(stored);
+    }
+
+    private List<ComplaintAttachment> performUpload(Connection conn, String orgId, String complaintId,
+            List<UploadedFile> files, boolean isPublic, String actorUserId, String actorUserName, String actorRole,
+            long now) {
+        String complaintEventId = recordUploadEvent(conn, orgId, complaintId, isPublic, actorUserId, actorUserName,
+                actorRole, now);
+        List<ComplaintAttachment> attachments = new ArrayList<>();
+        for (UploadedFile file : files) {
+            attachments.add(store(conn, orgId, complaintId, complaintEventId, file, isPublic, now));
+        }
+        return attachments;
+    }
+
+    private List<ComplaintAttachmentResponseDTO> toAttachmentDtos(List<ComplaintAttachment> attachments) {
         List<ComplaintAttachmentResponseDTO> result = new ArrayList<>();
-        for (ComplaintAttachment attachment : stored) {
+        for (ComplaintAttachment attachment : attachments) {
             result.add(ComplaintAttachmentResponseDTO.from(attachment));
         }
         return result;
     }
 
     @Override
-    public List<ComplaintAttachmentResponseDTO> uploadOwnComplaintAttachments(String orgId, String complaintId,
-            String ownerUserId, String ownerUserName, List<UploadedFile> files) {
-        complaintService.requireOwnedComplaint(orgId, complaintId, ownerUserId);
-        return uploadComplaintAttachments(orgId, complaintId, files, true, ownerUserId, ownerUserName,
-                ComplaintActorRole.USER.name());
-    }
-
-    @Override
     public ComplaintAttachmentDownloadResponseDTO downloadOwnAttachment(String orgId, String complaintId,
             String ownerUserId, String attachmentId) {
-        complaintService.requireOwnedComplaint(orgId, complaintId, ownerUserId);
-        return downloadAttachment(orgId, complaintId, attachmentId, true);
+        // The ownership check and the attachment fetch share one transaction - same reasoning as
+        // uploadOwnComplaintAttachments.
+        Optional<ComplaintAttachment> attachmentOpt = DatabaseUtils.executeInTransaction(conn -> {
+            complaintService.requireOwnedComplaint(conn, orgId, complaintId, ownerUserId);
+            return attachmentDAO.getAttachmentWithDataById(conn, attachmentId, orgId, complaintId);
+        });
+        return toDownloadResponse(attachmentOpt, attachmentId, true);
     }
 
     private void validateActor(String actorUserId, String actorRole) {
@@ -124,7 +138,7 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
     }
 
     private String recordUploadEvent(Connection conn, String orgId, String complaintId, boolean isPublic,
-            String actorUserId, String actorUserName, String actorRole, long now) throws SQLException {
+            String actorUserId, String actorUserName, String actorRole, long now) {
         String complaintEventId = UUID.randomUUID().toString();
         // No comment text - this event exists purely to anchor the uploaded attachments on the
         // timeline; the attachments themselves (via ComplaintAttachment#complaintEventId) are what
@@ -142,8 +156,10 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
 
     @Override
     public List<ComplaintAttachmentResponseDTO> listAttachmentsForComplaint(String orgId, String complaintId) {
+        List<ComplaintAttachment> attachments = DatabaseUtils.executeInTransaction(
+                conn -> attachmentDAO.listAttachmentsForComplaint(conn, orgId, complaintId));
         List<ComplaintAttachmentResponseDTO> beans = new ArrayList<>();
-        for (ComplaintAttachment attachment : attachmentDAO.listAttachmentsForComplaint(orgId, complaintId)) {
+        for (ComplaintAttachment attachment : attachments) {
             beans.add(ComplaintAttachmentResponseDTO.from(attachment));
         }
         return beans;
@@ -152,8 +168,13 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
     @Override
     public ComplaintAttachmentDownloadResponseDTO downloadAttachment(String orgId, String complaintId,
             String attachmentId, boolean restrictToPublicOnly) {
-        Optional<ComplaintAttachment> attachmentOpt =
-                attachmentDAO.getAttachmentWithDataById(attachmentId, orgId, complaintId);
+        Optional<ComplaintAttachment> attachmentOpt = DatabaseUtils.executeInTransaction(
+                conn -> attachmentDAO.getAttachmentWithDataById(conn, attachmentId, orgId, complaintId));
+        return toDownloadResponse(attachmentOpt, attachmentId, restrictToPublicOnly);
+    }
+
+    private ComplaintAttachmentDownloadResponseDTO toDownloadResponse(Optional<ComplaintAttachment> attachmentOpt,
+            String attachmentId, boolean restrictToPublicOnly) {
         if (attachmentOpt.isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.ATTACHMENT_NOT_FOUND,
                     String.format(ComplaintServiceConstants.ATTACHMENT_NOT_FOUND_ERROR, attachmentId));
@@ -199,7 +220,7 @@ public class ComplaintAttachmentServiceImpl implements ComplaintAttachmentServic
     }
 
     private ComplaintAttachment store(Connection conn, String orgId, String complaintId, String complaintEventId,
-            UploadedFile file, boolean isPublic, long now) throws SQLException {
+            UploadedFile file, boolean isPublic, long now) {
         String attachmentId = UUID.randomUUID().toString();
         ComplaintAttachment attachment = new ComplaintAttachment(attachmentId, orgId, complaintId,
                 file.getFileName(), file.getContentType(), file.getData(), isPublic, now);

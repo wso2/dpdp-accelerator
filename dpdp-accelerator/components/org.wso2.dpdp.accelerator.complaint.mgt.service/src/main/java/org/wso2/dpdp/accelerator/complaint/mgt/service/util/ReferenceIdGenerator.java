@@ -20,8 +20,9 @@ package org.wso2.dpdp.accelerator.complaint.mgt.service.util;
 
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
 
-import java.time.ZoneOffset;
+import java.sql.Connection;
 import java.time.Instant;
+import java.time.ZoneOffset;
 
 /**
  * Generates the human-facing REFERENCE_ID (e.g. "CMP-2026-04821") described in the ER diagram.
@@ -33,10 +34,15 @@ public class ReferenceIdGenerator {
     private ReferenceIdGenerator() {
     }
 
-    public static String generate(ComplaintDAO complaintDAO, String orgId, long createdTimeMillis) {
-        int year = Instant.ofEpochMilli(createdTimeMillis).atZone(ZoneOffset.UTC).get(java.time.temporal.ChronoField.YEAR);
+    /**
+     * Takes the caller's own {@link Connection} rather than opening one - the count and the
+     * complaint insert it feeds into must land in the same transaction, or a concurrent insert
+     * between the two could be counted twice (or not at all).
+     */
+    public static String generate(Connection conn, ComplaintDAO complaintDAO, String orgId, long createdTimeMillis) {
+        int year = Instant.ofEpochMilli(createdTimeMillis).atZone(ZoneOffset.UTC).getYear();
         String likePattern = PREFIX + "-" + year + "-%";
-        int existingCount = complaintDAO.countByReferenceIdPrefix(orgId, likePattern);
+        int existingCount = complaintDAO.countByReferenceIdPrefix(conn, orgId, likePattern);
         int nextSeq = existingCount + 1;
         return String.format("%s-%d-%05d", PREFIX, year, nextSeq);
     }

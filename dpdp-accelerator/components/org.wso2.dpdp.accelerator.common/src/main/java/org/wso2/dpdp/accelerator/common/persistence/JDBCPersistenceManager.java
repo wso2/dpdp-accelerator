@@ -89,11 +89,19 @@ public final class JDBCPersistenceManager {
      */
     public Connection getDBConnection() {
 
+        Connection connection = null;
         try {
-            Connection connection = dataSource.getConnection();
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             return connection;
         } catch (SQLException e) {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException closeException) {
+                    e.addSuppressed(closeException);
+                }
+            }
             throw new DPDPCommonRuntimeException("Error while obtaining a DPDP DB connection.", e);
         }
     }

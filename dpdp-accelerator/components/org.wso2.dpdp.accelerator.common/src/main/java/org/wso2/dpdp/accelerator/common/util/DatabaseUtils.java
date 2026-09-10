@@ -20,10 +20,14 @@ package org.wso2.dpdp.accelerator.common.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.wso2.dpdp.accelerator.common.exception.DPDPCommonRuntimeException;
 import org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Objects;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * Thin static facade over {@link JDBCPersistenceManager}, mirroring the Financial Services
@@ -81,5 +85,63 @@ public final class DatabaseUtils {
         } catch (SQLException e) {
             LOG.error("Error while closing a DPDP DB connection.", e);
         }
+    }
+
+    /**
+     * Executes {@code work} inside a single JDBC transaction and returns its result.
+     *
+     * <p>The connection is acquired with autocommit disabled, passed to {@code work}, and then:
+     * <ul>
+     *   <li>committed if {@code work} returns normally - commit failures are rethrown as a
+     *       {@link DPDPCommonRuntimeException} so callers cannot silently receive a false
+     *       "success" when the data was never actually persisted;</li>
+     *   <li>rolled back (best-effort) if the work or commit does not complete successfully.</li>
+     * </ul>
+     * The connection is always closed in a {@code finally} block regardless of outcome.
+     *
+     * @param <T>  return type of the transactional unit of work
+     * @param work lambda that receives the open, non-autocommit {@link Connection}
+     * @return the value returned by {@code work}
+     * @throws DPDPCommonRuntimeException if the JDBC commit fails
+     * @throws RuntimeException           re-thrown unchanged from {@code work}
+     */
+    public static <T> T executeInTransaction(Function<Connection, T> work) {
+
+        Objects.requireNonNull(work, "Transactional work cannot be null.");
+        Connection conn = getDBConnection();
+        boolean committed = false;
+        try {
+            T result = work.apply(conn);
+            try {
+                conn.commit();
+            } catch (SQLException commitEx) {
+                throw new DPDPCommonRuntimeException(
+                        "Transaction commit failed - data may not have been persisted.", commitEx);
+            }
+            committed = true;
+            return result;
+        } finally {
+            if (!committed) {
+                try {
+                    conn.rollback();
+                } catch (SQLException rollbackEx) {
+                    LOG.error("Rollback failed after transaction error.", rollbackEx);
+                }
+            }
+            closeConnection(conn);
+        }
+    }
+
+    /**
+     * Same as {@link #executeInTransaction(Function)}, for work with no result to return - a
+     * plain {@link Consumer} instead of a {@link Function} forced to return {@code null}.
+     */
+    public static void runInTransaction(Consumer<Connection> work) {
+
+        Objects.requireNonNull(work, "Transactional work cannot be null.");
+        executeInTransaction(conn -> {
+            work.accept(conn);
+            return null;
+        });
     }
 }

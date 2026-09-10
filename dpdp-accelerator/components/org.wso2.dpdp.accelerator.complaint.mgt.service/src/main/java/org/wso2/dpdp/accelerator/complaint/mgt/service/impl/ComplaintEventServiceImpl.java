@@ -32,12 +32,9 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintStatusUpdate
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintErrorCode;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServiceConstants;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.notification.EmailNotificationClient;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.notification.NotificationClient;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.util.StatusTransitionValidator;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -62,16 +59,18 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
     @Override
     public List<ComplaintEvent> getTimeline(String orgId, String complaintId, Long since, Long until,
             Boolean isPublic, String order, int limit, int offset, int[] totalOut) {
-        complaintService.requireComplaint(orgId, complaintId);
-        return complaintEventDAO.listEvents(orgId, complaintId, since, until, isPublic, order, limit, offset,
-                totalOut);
+        // The existence check and the read share one transaction - see ComplaintService -
+        // otherwise they could disagree about whether the complaint exists.
+        return DatabaseUtils.executeInTransaction(conn -> {
+            complaintService.requireComplaint(conn, orgId, complaintId);
+            return complaintEventDAO.listEvents(conn, orgId, complaintId, since, until, isPublic, order, limit,
+                    offset, totalOut);
+        });
     }
 
     @Override
     public ComplaintCommentCreateResponseDTO addComment(String orgId, String complaintId, String actorUserId,
             String actorUserName, String actorRole, String message, boolean isPublic, String toStatus) {
-        Complaint complaint = complaintService.requireComplaint(orgId, complaintId);
-
         if (message == null || message.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
                     ComplaintServiceConstants.MESSAGE_REQUIRED_ERROR);
@@ -94,78 +93,78 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
             throw new ComplaintException(ComplaintErrorCode.FORBIDDEN,
                     String.format(ComplaintServiceConstants.INTERNAL_NOTE_FORBIDDEN_ERROR, actorRole));
         }
-
         boolean hasToStatus = toStatus != null && !toStatus.trim().isEmpty();
-        String fromStatus = null;
-        if (hasToStatus) {
-            if (!ComplaintStatus.isValid(toStatus)) {
-                throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
-                        String.format(ComplaintServiceConstants.INVALID_STATUS_VALUE_ERROR, toStatus));
-            }
-            fromStatus = complaint.getStatus();
-            if (!StatusTransitionValidator.isValidTransition(fromStatus, toStatus)) {
-                throw new ComplaintException(ComplaintErrorCode.INVALID_STATE_TRANSITION,
-                        String.format(ComplaintServiceConstants.INVALID_STATUS_TRANSITION_ERROR, fromStatus,
-                                toStatus));
-            }
+        if (hasToStatus && !ComplaintStatus.isValid(toStatus)) {
+            throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
+                    String.format(ComplaintServiceConstants.INVALID_STATUS_VALUE_ERROR, toStatus));
         }
 
         String complaintEventId = UUID.randomUUID().toString();
         long now = System.currentTimeMillis();
-        ComplaintEvent event = new ComplaintEvent(complaintEventId, orgId, complaintId, actorUserId.trim(),
-                actorUserName, actorRole, isPublic, message.trim(), fromStatus, hasToStatus ? toStatus : null, now);
 
-        if (hasToStatus) {
-            // The comment and the status change it carries must land together - otherwise a
-            // failure between the two writes could leave a status-changing comment recorded
-            // against a complaint whose status never actually moved, or vice versa.
-            Connection conn = DatabaseUtils.getDBConnection();
-            try {
-                if (!complaintEventDAO.addEvent(conn, event)) {
-                    throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
-                            ComplaintServiceConstants.ADD_COMMENT_FAILED_ERROR);
+        // The existence check, the comment write, and its optional status change all share one
+        // transaction - so a status-changing comment can never land against a complaint whose
+        // status never actually moved (or the reverse), and the existence check can never
+        // disagree with the write that follows it.
+        AddCommentResult result = DatabaseUtils.executeInTransaction(conn -> {
+            Complaint c = complaintService.requireComplaint(conn, orgId, complaintId);
+
+            String fromStatus = null;
+            if (hasToStatus) {
+                fromStatus = c.getStatus();
+                if (!StatusTransitionValidator.isValidTransition(fromStatus, toStatus)) {
+                    throw new ComplaintException(ComplaintErrorCode.INVALID_STATE_TRANSITION,
+                            String.format(ComplaintServiceConstants.INVALID_STATUS_TRANSITION_ERROR, fromStatus,
+                                    toStatus));
                 }
-                if (!complaintDAO.updateStatus(conn, complaintId, orgId, toStatus, now)) {
-                    throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
-                            ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR);
-                }
-                DatabaseUtils.commitTransaction(conn);
-            } catch (RuntimeException e) {
-                DatabaseUtils.rollbackTransaction(conn);
-                throw e;
-            } catch (SQLException e) {
-                DatabaseUtils.rollbackTransaction(conn);
-                throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
-                        ComplaintServiceConstants.ADD_COMMENT_FAILED_ERROR, e);
-            } finally {
-                DatabaseUtils.closeConnection(conn);
             }
-        } else {
-            boolean added = complaintEventDAO.addEvent(event);
-            if (!added) {
+
+            ComplaintEvent event = new ComplaintEvent(complaintEventId, orgId, complaintId, actorUserId.trim(),
+                    actorUserName, actorRole, isPublic, message.trim(), fromStatus, hasToStatus ? toStatus : null,
+                    now);
+            if (!complaintEventDAO.addEvent(conn, event)) {
                 throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
                         ComplaintServiceConstants.ADD_COMMENT_FAILED_ERROR);
             }
-        }
+            if (hasToStatus && !complaintDAO.updateStatus(conn, complaintId, orgId, toStatus, now)) {
+                throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
+                        ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR);
+            }
+            if (hasToStatus) {
+                // complaint was fetched before the DB status update above; without this, the
+                // notification would carry the complaint's pre-transition status.
+                c.setStatus(toStatus);
+                c.setUpdatedTime(now);
+            }
+            return new AddCommentResult(c, event);
+        });
 
-        if (hasToStatus) {
-            // complaint was fetched before the DB status update above; without this, the
-            // notification would carry the complaint's pre-transition status.
-            complaint.setStatus(toStatus);
-            complaint.setUpdatedTime(now);
-        }
         if (isPublic) {
             // An internal note (isPublic=false, officer-only per the check above) is never shown
             // to the citizen in the timeline - notifying them about it would leak its existence.
-            notificationClient.notifyCommentAdded(complaint, event);
+            notificationClient.notifyCommentAdded(result.complaint, result.event);
         }
-        return ComplaintCommentCreateResponseDTO.from(event);
+        return ComplaintCommentCreateResponseDTO.from(result.event);
+    }
+
+    /** Carries both values a transactional {@code addComment} needs to return out of one lambda. */
+    private static final class AddCommentResult {
+
+        private final Complaint complaint;
+        private final ComplaintEvent event;
+
+        private AddCommentResult(Complaint complaint, ComplaintEvent event) {
+            this.complaint = complaint;
+            this.event = event;
+        }
     }
 
     @Override
     public ComplaintEvent getTimelineEntry(String orgId, String complaintId, String complaintEventId) {
-        complaintService.requireComplaint(orgId, complaintId);
-        Optional<ComplaintEvent> eventOpt = complaintEventDAO.getEventById(complaintEventId, orgId, complaintId);
+        Optional<ComplaintEvent> eventOpt = DatabaseUtils.executeInTransaction(conn -> {
+            complaintService.requireComplaint(conn, orgId, complaintId);
+            return complaintEventDAO.getEventById(conn, complaintEventId, orgId, complaintId);
+        });
         if (eventOpt.isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.COMMENT_NOT_FOUND,
                     String.format(ComplaintServiceConstants.TIMELINE_ENTRY_NOT_FOUND_ERROR, complaintEventId));
@@ -176,8 +175,6 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
     @Override
     public ComplaintStatusUpdateResponseDTO updateStatus(String orgId, String complaintId, String actorUserId,
             String actorUserName, String actorRole, String toStatus, String note) {
-        Complaint complaint = complaintService.requireComplaint(orgId, complaintId);
-
         if (actorUserId == null || actorUserId.trim().isEmpty()) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
                     ComplaintServiceConstants.ACTOR_USER_ID_REQUIRED_ERROR);
@@ -201,22 +198,24 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
                     ComplaintServiceConstants.NOTE_REQUIRED_FOR_RESOLVED_ERROR);
         }
 
-        String fromStatus = complaint.getStatus();
-        if (!StatusTransitionValidator.isValidTransition(fromStatus, toStatus)) {
-            throw new ComplaintException(ComplaintErrorCode.INVALID_STATE_TRANSITION,
-                    String.format(ComplaintServiceConstants.INVALID_STATUS_TRANSITION_ERROR, fromStatus, toStatus));
-        }
-
         long now = System.currentTimeMillis();
         String complaintEventId = UUID.randomUUID().toString();
-        ComplaintEvent event = new ComplaintEvent(complaintEventId, orgId, complaintId, actorUserId, actorUserName,
-                actorRole, true, note, fromStatus, toStatus, now);
 
-        // Status update and its audit event must land together. Both writes are checked and made
-        // to fail the whole transaction (not just skip a write) so a partial failure can never
-        // leave the status changed with no record of why, or vice versa.
-        Connection conn = DatabaseUtils.getDBConnection();
-        try {
+        // The existence check, the status update, and its audit event all share one transaction -
+        // both writes are checked and made to fail the whole transaction (not just skip a write)
+        // so a partial failure can never leave the status changed with no record of why, or vice
+        // versa.
+        Complaint complaint = DatabaseUtils.executeInTransaction(conn -> {
+            Complaint c = complaintService.requireComplaint(conn, orgId, complaintId);
+            String fromStatus = c.getStatus();
+            if (!StatusTransitionValidator.isValidTransition(fromStatus, toStatus)) {
+                throw new ComplaintException(ComplaintErrorCode.INVALID_STATE_TRANSITION,
+                        String.format(ComplaintServiceConstants.INVALID_STATUS_TRANSITION_ERROR, fromStatus,
+                                toStatus));
+            }
+
+            ComplaintEvent event = new ComplaintEvent(complaintEventId, orgId, complaintId, actorUserId,
+                    actorUserName, actorRole, true, note, fromStatus, toStatus, now);
             if (!complaintDAO.updateStatus(conn, complaintId, orgId, toStatus, now)) {
                 throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
                         ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR);
@@ -225,20 +224,11 @@ public class ComplaintEventServiceImpl implements ComplaintEventService {
                 throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
                         ComplaintServiceConstants.ADD_COMMENT_FAILED_ERROR);
             }
-            DatabaseUtils.commitTransaction(conn);
-        } catch (RuntimeException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            throw e;
-        } catch (SQLException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            throw new ComplaintException(ComplaintErrorCode.INTERNAL_ERROR,
-                    ComplaintServiceConstants.STATUS_UPDATE_FAILED_ERROR, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
-        }
+            c.setStatus(toStatus);
+            c.setUpdatedTime(now);
+            return c;
+        });
 
-        complaint.setStatus(toStatus);
-        complaint.setUpdatedTime(now);
         return ComplaintStatusUpdateResponseDTO.from(complaint);
     }
 }

@@ -33,6 +33,7 @@ import java.sql.SQLException;
 
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.testng.Assert.assertSame;
 import static org.testng.Assert.expectThrows;
@@ -169,6 +170,85 @@ public class DatabaseUtilsTest {
         Connection connection = mock(Connection.class);
         doThrow(new SQLException("boom")).when(connection).close();
         DatabaseUtils.closeConnection(connection);
+    }
+
+    // executeInTransaction/runInTransaction tests below stub getAutoCommit() to true, so
+    // closeConnection's own rollback-before-close guard (tested separately above) is a no-op here
+    // and these assertions reflect only executeInTransaction's own commit/rollback contract - a
+    // real connection would still stay autocommit=false and take one extra, harmless rollback from
+    // that guard on every path, exactly as its own tests already cover.
+
+    @Test
+    public void executeInTransactionCommitsAndClosesAfterSuccess() throws Exception {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(true);
+        Mockito.when(dataSource.getConnection()).thenReturn(connection);
+        Object expected = new Object();
+
+        Object result = DatabaseUtils.executeInTransaction(ignored -> expected);
+
+        assertSame(result, expected);
+        verify(connection).commit();
+        verify(connection, never()).rollback();
+        verify(connection).close();
+    }
+
+    @Test
+    public void executeInTransactionRollsBackWhenWorkThrowsAndPreservesTheException() throws Exception {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(true);
+        Mockito.when(dataSource.getConnection()).thenReturn(connection);
+        RuntimeException failure = new RuntimeException("boom");
+
+        RuntimeException thrown = expectThrows(RuntimeException.class,
+                () -> DatabaseUtils.executeInTransaction(ignored -> {
+                    throw failure;
+                }));
+
+        assertSame(thrown, failure);
+        verify(connection, never()).commit();
+        verify(connection).rollback();
+        verify(connection).close();
+    }
+
+    @Test
+    public void executeInTransactionRollsBackAndClosesAfterCommitFailure() throws Exception {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(true);
+        Mockito.when(dataSource.getConnection()).thenReturn(connection);
+        doThrow(new SQLException("boom")).when(connection).commit();
+
+        expectThrows(DPDPCommonRuntimeException.class,
+                () -> DatabaseUtils.executeInTransaction(ignored -> "result"));
+
+        verify(connection).rollback();
+        verify(connection).close();
+    }
+
+    @Test
+    public void executeInTransactionRejectsNullWorkBeforeAcquiringAConnection() throws Exception {
+
+        expectThrows(NullPointerException.class, () -> DatabaseUtils.executeInTransaction(null));
+
+        verify(dataSource, never()).getConnection();
+    }
+
+    @Test
+    public void runInTransactionRunsWorkThenCommitsAndCloses() throws Exception {
+
+        Connection connection = mock(Connection.class);
+        Mockito.when(connection.getAutoCommit()).thenReturn(true);
+        Mockito.when(dataSource.getConnection()).thenReturn(connection);
+        java.util.concurrent.atomic.AtomicBoolean ran = new java.util.concurrent.atomic.AtomicBoolean(false);
+
+        DatabaseUtils.runInTransaction(conn -> ran.set(true));
+
+        org.testng.Assert.assertTrue(ran.get());
+        verify(connection).commit();
+        verify(connection).close();
     }
 
     private static void setStaticDataSource(DataSource dataSource) throws Exception {

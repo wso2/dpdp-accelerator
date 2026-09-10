@@ -22,42 +22,34 @@ import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintQueueStats;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Every method takes the {@link Connection} as its first parameter and throws only the unchecked
+ * {@link org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException} (never a
+ * checked {@link java.sql.SQLException}) - reads and writes are handled identically, so a caller
+ * composing several calls into one transaction (e.g. via
+ * {@link org.wso2.dpdp.accelerator.common.util.DatabaseUtils#executeInTransaction}) never has to
+ * special-case which of them declare a checked exception.
+ */
 public interface ComplaintDAO {
 
     /** Persists a new complaint row. Returns true if a row was inserted. */
-    boolean addComplaint(Complaint complaint);
-
-    /**
-     * Same as {@link #addComplaint(Complaint)}, run against a caller-owned connection so it can be
-     * composed with other writes into one
-     * {@link org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager#executeInTransaction} call.
-     */
-    boolean addComplaint(Connection conn, Complaint complaint) throws SQLException;
+    boolean addComplaint(Connection conn, Complaint complaint);
 
     /** Fetches a single complaint scoped to its org. */
-    Optional<Complaint> getComplaintById(String complaintId, String orgId);
+    Optional<Complaint> getComplaintById(Connection conn, String complaintId, String orgId);
 
     /**
      * Count of complaints for this org whose REFERENCE_ID already uses the given year prefix
      * (e.g. "CMP-2026-%"). Used by ReferenceIdGenerator to pick the next sequence number when
      * minting a new complaint's REFERENCE_ID.
      */
-    int countByReferenceIdPrefix(String orgId, String referenceIdLikePattern);
+    int countByReferenceIdPrefix(Connection conn, String orgId, String referenceIdLikePattern);
 
     /** Updates STATUS and UPDATED_TIME for a complaint. Returns true if a row was updated. */
-    boolean updateStatus(String complaintId, String orgId, String newStatus, long updatedTime);
-
-    /**
-     * Same as {@link #updateStatus(String, String, String, long)}, run against a caller-owned
-     * connection so it can be composed with other writes into one
-     * {@link org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager#executeInTransaction} call.
-     */
-    boolean updateStatus(Connection conn, String complaintId, String orgId, String newStatus, long updatedTime)
-            throws SQLException;
+    boolean updateStatus(Connection conn, String complaintId, String orgId, String newStatus, long updatedTime);
 
     /**
      * Lists complaints for an org with optional status/priority/userId filters, sorting, and
@@ -69,8 +61,8 @@ public interface ComplaintDAO {
      * metadata (e.g. total pages) alongside the page of results actually returned. Pass
      * {@code null} or a zero-length array to skip the count query.
      */
-    List<Complaint> listComplaints(String orgId, String status, String priority, String userId, int limit,
-            int offset, String sort, int[] totalOut);
+    List<Complaint> listComplaints(Connection conn, String orgId, String status, String priority, String userId,
+            int limit, int offset, String sort, int[] totalOut);
 
     /**
      * Org-wide counts for the officer/admin queue's summary tiles - open (OPEN/IN_PROGRESS
@@ -82,5 +74,5 @@ public interface ComplaintDAO {
      * whole queue regardless of whatever filter is currently applied to the paginated list beside
      * them.
      */
-    ComplaintQueueStats getQueueStats(String orgId, long now);
+    ComplaintQueueStats getQueueStats(Connection conn, String orgId, long now);
 }

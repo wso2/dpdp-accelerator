@@ -20,7 +20,6 @@ package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintDAO;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintDBColumns;
@@ -52,26 +51,7 @@ public class ComplaintDAOImpl implements ComplaintDAO {
     }
 
     @Override
-    public boolean addComplaint(Complaint complaint) {
-        Connection conn = DatabaseUtils.getDBConnection();
-        try {
-            boolean result = addComplaint(conn, complaint);
-            DatabaseUtils.commitTransaction(conn);
-            return result;
-        } catch (RuntimeException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            throw e;
-        } catch (SQLException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            LOG.error("Error adding complaint for org: " + complaint.getOrgId(), e);
-            throw new ComplaintDAOException("Error adding complaint for org: " + complaint.getOrgId(), e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
-        }
-    }
-
-    @Override
-    public boolean addComplaint(Connection conn, Complaint complaint) throws SQLException {
+    public boolean addComplaint(Connection conn, Complaint complaint) {
         try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getAddComplaintQuery())) {
             ps.setString(1, complaint.getComplaintId());
             ps.setString(2, complaint.getOrgId());
@@ -86,10 +66,13 @@ public class ComplaintDAOImpl implements ComplaintDAO {
             ps.setLong(11, complaint.getUpdatedTime());
             ps.setLong(12, complaint.getStatutoryDueTime());
             return ps.executeUpdate() > 0;
+        /*
+         * Distinguishes an expected reference-ID collision (retry) from a genuine COMPLAINT_ID
+         * collision (real bug) by checking the driver's error message text - the only portable
+         * way, since neither driver exposes the violated constraint as a structured field.
+         */
         } catch (SQLIntegrityConstraintViolationException e) {
 
-//            Distinguishes an expected reference-ID collision (retry) from a genuine COMPLAINT_ID collision (real bug) by checking the driver's error message text — the only portable way,
-//            since neither driver exposes the violated constraint as a structured field.
             if (e.getMessage() != null && e.getMessage().toUpperCase(java.util.Locale.ROOT)
                     .contains("UQ_COMPLAINT_REFERENCE")) {
                 LOG.warn("Duplicate reference ID for org: " + complaint.getOrgId(), e);
@@ -104,8 +87,7 @@ public class ComplaintDAOImpl implements ComplaintDAO {
     }
 
     @Override
-    public Optional<Complaint> getComplaintById(String complaintId, String orgId) {
-        Connection conn = DatabaseUtils.getDBConnection();
+    public Optional<Complaint> getComplaintById(Connection conn, String complaintId, String orgId) {
         try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getGetComplaintByIdQuery())) {
             ps.setString(1, complaintId);
             ps.setString(2, orgId);
@@ -117,15 +99,12 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         } catch (SQLException e) {
             LOG.error("Error getting complaint by ID: " + LogSanitizer.sanitize(complaintId), e);
             throw new ComplaintDAOException("Error getting complaint by ID: " + complaintId, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
         }
         return Optional.empty();
     }
 
     @Override
-    public int countByReferenceIdPrefix(String orgId, String referenceIdLikePattern) {
-        Connection conn = DatabaseUtils.getDBConnection();
+    public int countByReferenceIdPrefix(Connection conn, String orgId, String referenceIdLikePattern) {
         try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getCountComplaintsForYearPrefixQuery())) {
             ps.setString(1, orgId);
             ps.setString(2, referenceIdLikePattern);
@@ -137,31 +116,13 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         } catch (SQLException e) {
             LOG.error("Error counting complaints by reference prefix for org: " + orgId, e);
             throw new ComplaintDAOException("Error counting complaints by reference prefix for org: " + orgId, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
         }
         return 0;
     }
 
     @Override
-    public boolean updateStatus(String complaintId, String orgId, String newStatus, long updatedTime) {
-        Connection conn = DatabaseUtils.getDBConnection();
-        try {
-            boolean result = updateStatus(conn, complaintId, orgId, newStatus, updatedTime);
-            DatabaseUtils.commitTransaction(conn);
-            return result;
-        } catch (SQLException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            LOG.error("Error updating status for complaint: " + LogSanitizer.sanitize(complaintId), e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
-        }
-        return false;
-    }
-
-    @Override
     public boolean updateStatus(Connection conn, String complaintId, String orgId, String newStatus,
-            long updatedTime) throws SQLException {
+            long updatedTime) {
         try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getUpdateComplaintStatusQuery())) {
             ps.setString(1, newStatus);
             ps.setLong(2, updatedTime);
@@ -175,11 +136,10 @@ public class ComplaintDAOImpl implements ComplaintDAO {
     }
 
     @Override
-    public List<Complaint> listComplaints(String orgId, String status, String priority, String userId, int limit,
-            int offset, String sort, int[] totalOut) {
+    public List<Complaint> listComplaints(Connection conn, String orgId, String status, String priority,
+            String userId, int limit, int offset, String sort, int[] totalOut) {
         List<Complaint> complaints = new ArrayList<>();
 
-        Connection conn = DatabaseUtils.getDBConnection();
         try {
             ComplaintQueryBuilder builder = new ComplaintQueryBuilder(orgId, getQueries(conn))
                     .setStatus(status)
@@ -219,19 +179,16 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         } catch (SQLException e) {
             LOG.error("Error listing complaints for org: " + orgId, e);
             throw new ComplaintDAOException("Error listing complaints for org: " + orgId, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
         }
         return complaints;
     }
 
     @Override
-    public ComplaintQueueStats getQueueStats(String orgId, long now) {
+    public ComplaintQueueStats getQueueStats(Connection conn, String orgId, long now) {
         int openCount = 0;
         int awaitingInternalReviewCount = 0;
         int resolvedCount = 0;
 
-        Connection conn = DatabaseUtils.getDBConnection();
         try {
 
             try (PreparedStatement statusPs = conn.prepareStatement(getQueries(conn).getCountComplaintsByStatusQuery())) {
@@ -265,8 +222,6 @@ public class ComplaintDAOImpl implements ComplaintDAO {
         } catch (SQLException e) {
             LOG.error("Error computing queue stats for org: " + orgId, e);
             throw new ComplaintDAOException("Error computing queue stats for org: " + orgId, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
         }
     }
 

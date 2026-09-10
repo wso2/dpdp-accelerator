@@ -20,7 +20,6 @@ package org.wso2.dpdp.accelerator.complaint.mgt.dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.ComplaintEventDAO;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.constants.ComplaintDBColumns;
@@ -48,26 +47,7 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
     }
 
     @Override
-    public boolean addEvent(ComplaintEvent event) {
-        Connection conn = DatabaseUtils.getDBConnection();
-        try {
-            boolean result = addEvent(conn, event);
-            DatabaseUtils.commitTransaction(conn);
-            return result;
-        } catch (RuntimeException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            throw e;
-        } catch (SQLException e) {
-            DatabaseUtils.rollbackTransaction(conn);
-            LOG.error("Error adding event for complaint: " + LogSanitizer.sanitize(event.getComplaintId()), e);
-            throw new ComplaintDAOException("Error adding event for complaint: " + event.getComplaintId(), e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
-        }
-    }
-
-    @Override
-    public boolean addEvent(Connection conn, ComplaintEvent event) throws SQLException {
+    public boolean addEvent(Connection conn, ComplaintEvent event) {
         try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getAddComplaintEventQuery())) {
             ps.setString(1, event.getComplaintEventId());
             ps.setString(2, event.getOrgId());
@@ -88,8 +68,8 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
     }
 
     @Override
-    public Optional<ComplaintEvent> getEventById(String complaintEventId, String orgId, String complaintId) {
-        Connection conn = DatabaseUtils.getDBConnection();
+    public Optional<ComplaintEvent> getEventById(Connection conn, String complaintEventId, String orgId,
+            String complaintId) {
         try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getGetComplaintEventByIdQuery())) {
             ps.setString(1, complaintEventId);
             ps.setString(2, orgId);
@@ -102,18 +82,15 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
         } catch (SQLException e) {
             LOG.error("Error getting event by ID: " + LogSanitizer.sanitize(complaintEventId), e);
             throw new ComplaintDAOException("Error getting event by ID: " + complaintEventId, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
         }
         return Optional.empty();
     }
 
     @Override
-    public List<ComplaintEvent> listEvents(String orgId, String complaintId, Long since, Long until,
-            Boolean isPublic, String order, int limit, int offset, int[] totalOut) {
+    public List<ComplaintEvent> listEvents(Connection conn, String orgId, String complaintId, Long since,
+            Long until, Boolean isPublic, String order, int limit, int offset, int[] totalOut) {
         List<ComplaintEvent> events = new ArrayList<>();
 
-        Connection conn = DatabaseUtils.getDBConnection();
         try {
             ComplaintEventQueryBuilder builder = new ComplaintEventQueryBuilder(orgId, complaintId, getQueries(conn))
                     .setSince(since)
@@ -151,8 +128,6 @@ public class ComplaintEventDAOImpl implements ComplaintEventDAO {
         } catch (SQLException e) {
             LOG.error("Error listing events for complaint: " + LogSanitizer.sanitize(complaintId), e);
             throw new ComplaintDAOException("Error listing events for complaint: " + complaintId, e);
-        } finally {
-            DatabaseUtils.closeConnection(conn);
         }
         return events;
     }

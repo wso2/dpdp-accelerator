@@ -53,6 +53,7 @@ import static org.testng.Assert.assertNull;
 import static org.testng.Assert.expectThrows;
 import static org.testng.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -125,7 +126,7 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void uploadComplaintAttachmentsRequiresComplaintToExist() throws Exception {
-        when(complaintService.requireComplaint("org1", "c1")).thenThrow(
+        when(complaintService.requireComplaint(any(Connection.class), eq("org1"), eq("c1"))).thenThrow(
                 new ComplaintException("CO-4040", "Complaint not found", "desc", 404));
 
         expectThrows(ComplaintException.class, () -> attachmentService.uploadComplaintAttachments("org1", "c1",
@@ -283,7 +284,7 @@ class ComplaintAttachmentServiceImplTest {
         attachment.setFileName("a.pdf");
         attachment.setContentType("application/pdf");
         attachment.setSizeBytesOverride(123L);
-        when(attachmentDAO.listAttachmentsForComplaint("org1", "c1")).thenReturn(List.of(attachment));
+        when(attachmentDAO.listAttachmentsForComplaint(any(Connection.class), eq("org1"), eq("c1"))).thenReturn(List.of(attachment));
 
         List<ComplaintAttachmentResponseDTO> result = attachmentService.listAttachmentsForComplaint("org1", "c1");
 
@@ -294,7 +295,7 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void listAttachmentsForComplaintReturnsEmptyWhenNoneExist() {
-        when(attachmentDAO.listAttachmentsForComplaint("org1", "c1")).thenReturn(List.of());
+        when(attachmentDAO.listAttachmentsForComplaint(any(Connection.class), eq("org1"), eq("c1"))).thenReturn(List.of());
 
         List<ComplaintAttachmentResponseDTO> result = attachmentService.listAttachmentsForComplaint("org1", "c1");
 
@@ -305,7 +306,7 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void downloadAttachmentThrows404WhenNotFound() {
-        when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.empty());
+        when(attachmentDAO.getAttachmentWithDataById(any(Connection.class), eq("a1"), eq("org1"), eq("c1"))).thenReturn(Optional.empty());
 
         ComplaintException ex = expectThrows(ComplaintException.class,
                 () -> attachmentService.downloadAttachment("org1", "c1", "a1", true));
@@ -317,7 +318,7 @@ class ComplaintAttachmentServiceImplTest {
     void downloadAttachmentAllowsUnrestrictedAccessRegardlessOfIsPublic() {
         ComplaintAttachment attachment = new ComplaintAttachment("a1", "org1", "c1", "a.pdf",
                 "application/pdf", new byte[]{1, 2, 3}, false, 100L);
-        when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
+        when(attachmentDAO.getAttachmentWithDataById(any(Connection.class), eq("a1"), eq("org1"), eq("c1"))).thenReturn(Optional.of(attachment));
 
         ComplaintAttachmentDownloadResponseDTO result = attachmentService.downloadAttachment("org1", "c1", "a1",
                 false);
@@ -330,7 +331,7 @@ class ComplaintAttachmentServiceImplTest {
     void downloadAttachmentDeniesRestrictedAccessToNonPublicAttachment() {
         ComplaintAttachment attachment = new ComplaintAttachment("a1", "org1", "c1", "a.pdf",
                 "application/pdf", new byte[]{1}, false, 100L);
-        when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
+        when(attachmentDAO.getAttachmentWithDataById(any(Connection.class), eq("a1"), eq("org1"), eq("c1"))).thenReturn(Optional.of(attachment));
 
         ComplaintException ex = expectThrows(ComplaintException.class,
                 () -> attachmentService.downloadAttachment("org1", "c1", "a1", true));
@@ -342,7 +343,7 @@ class ComplaintAttachmentServiceImplTest {
     void downloadAttachmentAllowsRestrictedAccessToPublicAttachment() {
         ComplaintAttachment attachment = new ComplaintAttachment("a1", "org1", "c1", "a.pdf",
                 "application/pdf", new byte[]{1}, true, 100L);
-        when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
+        when(attachmentDAO.getAttachmentWithDataById(any(Connection.class), eq("a1"), eq("org1"), eq("c1"))).thenReturn(Optional.of(attachment));
 
         ComplaintAttachmentDownloadResponseDTO result = attachmentService.downloadAttachment("org1", "c1", "a1",
                 true);
@@ -354,7 +355,7 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void uploadOwnComplaintAttachmentsThrowsWhenComplaintIsNotOwnedByCallerAndNeverPersists() throws Exception {
-        when(complaintService.requireOwnedComplaint("org1", "c1", "user1"))
+        when(complaintService.requireOwnedComplaint(any(Connection.class), eq("org1"), eq("c1"), eq("user1")))
                 .thenThrow(new ComplaintException("CO-4040", "not found", "desc", 404));
 
         expectThrows(ComplaintException.class, () -> attachmentService.uploadOwnComplaintAttachments("org1", "c1",
@@ -373,7 +374,7 @@ class ComplaintAttachmentServiceImplTest {
 
         assertEquals(1, result.size());
         assertTrue(result.get(0).isPublic());
-        verify(complaintService).requireOwnedComplaint("org1", "c1", "user1");
+        verify(complaintService).requireOwnedComplaint(any(Connection.class), eq("org1"), eq("c1"), eq("user1"));
         ArgumentCaptor<ComplaintEvent> captor = ArgumentCaptor.forClass(ComplaintEvent.class);
         verify(complaintEventDAO).addEvent(any(Connection.class), captor.capture());
         assertEquals("USER", captor.getValue().getActorRole());
@@ -381,25 +382,25 @@ class ComplaintAttachmentServiceImplTest {
 
     @Test
     void downloadOwnAttachmentThrowsWhenComplaintIsNotOwnedByCallerAndNeverFetches() {
-        when(complaintService.requireOwnedComplaint("org1", "c1", "user1"))
+        when(complaintService.requireOwnedComplaint(any(Connection.class), eq("org1"), eq("c1"), eq("user1")))
                 .thenThrow(new ComplaintException("CO-4040", "not found", "desc", 404));
 
         expectThrows(ComplaintException.class,
                 () -> attachmentService.downloadOwnAttachment("org1", "c1", "user1", "a1"));
 
-        verify(attachmentDAO, never()).getAttachmentWithDataById(any(), any(), any());
+        verify(attachmentDAO, never()).getAttachmentWithDataById(any(), any(), any(), any());
     }
 
     @Test
     void downloadOwnAttachmentVerifiesOwnershipThenRestrictsToPublicAttachments() {
         ComplaintAttachment attachment = new ComplaintAttachment("a1", "org1", "c1", "a.pdf",
                 "application/pdf", new byte[]{1}, false, 100L);
-        when(attachmentDAO.getAttachmentWithDataById("a1", "org1", "c1")).thenReturn(Optional.of(attachment));
+        when(attachmentDAO.getAttachmentWithDataById(any(Connection.class), eq("a1"), eq("org1"), eq("c1"))).thenReturn(Optional.of(attachment));
 
         ComplaintException ex = expectThrows(ComplaintException.class,
                 () -> attachmentService.downloadOwnAttachment("org1", "c1", "user1", "a1"));
 
         assertEquals("CO-4030", ex.getCode());
-        verify(complaintService).requireOwnedComplaint("org1", "c1", "user1");
+        verify(complaintService).requireOwnedComplaint(any(Connection.class), eq("org1"), eq("c1"), eq("user1"));
     }
 }

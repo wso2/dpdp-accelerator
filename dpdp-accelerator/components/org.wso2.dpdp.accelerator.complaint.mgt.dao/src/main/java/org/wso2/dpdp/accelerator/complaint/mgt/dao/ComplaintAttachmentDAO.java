@@ -21,21 +21,18 @@ package org.wso2.dpdp.accelerator.complaint.mgt.dao;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Every method takes the {@link Connection} as its first parameter - see {@link ComplaintDAO} for
+ * why this DAO never opens or manages its own connection, and why nothing here declares a checked
+ * {@link java.sql.SQLException}.
+ */
 public interface ComplaintAttachmentDAO {
 
     /** Persists a new attachment row. Returns true if a row was inserted. */
-    boolean addAttachment(ComplaintAttachment attachment);
-
-    /**
-     * Same as {@link #addAttachment(ComplaintAttachment)}, run against a caller-owned connection so
-     * it can be composed with other writes into one
-     * {@link org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager#executeInTransaction} call.
-     */
-    boolean addAttachment(Connection conn, ComplaintAttachment attachment) throws SQLException;
+    boolean addAttachment(Connection conn, ComplaintAttachment attachment);
 
     /**
      * Metadata only (no FILE_DATA) - used for list responses.
@@ -46,11 +43,13 @@ public interface ComplaintAttachmentDAO {
      * consistent - an attachment fetched for the "wrong" complaintId returns empty rather than
      * silently ignoring the mismatch.
      */
-    Optional<ComplaintAttachment> getAttachmentMetadataById(String attachmentId, String orgId, String complaintId);
+    Optional<ComplaintAttachment> getAttachmentMetadataById(Connection conn, String attachmentId, String orgId,
+            String complaintId);
 
     /** Full row including FILE_DATA - used for the download endpoint. Same complaintId scoping as above. */
-    Optional<ComplaintAttachment> getAttachmentWithDataById(String attachmentId, String orgId, String complaintId);
+    Optional<ComplaintAttachment> getAttachmentWithDataById(Connection conn, String attachmentId, String orgId,
+            String complaintId);
 
     /** Attachments bound to the complaint - attachments are complaint-level resources only. */
-    List<ComplaintAttachment> listAttachmentsForComplaint(String orgId, String complaintId);
+    List<ComplaintAttachment> listAttachmentsForComplaint(Connection conn, String orgId, String complaintId);
 }

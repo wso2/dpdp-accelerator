@@ -22,6 +22,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.Complaint;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintCreateResponseDTO;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintQueueStatsResponseDTO;
 
+import java.sql.Connection;
 import java.util.List;
 
 
@@ -58,12 +59,26 @@ public interface ComplaintService {
     Complaint requireComplaint(String orgId, String complaintId);
 
     /**
-     * Same as {@link #requireComplaint}, but additionally raises a 404 ComplaintException (not a
+     * Same as {@link #requireComplaint(String, String)}, run against a caller-owned connection so
+     * the existence check and whatever the caller does next (a read or a write) land in one
+     * transaction, rather than being able to disagree if the complaint is deleted in between.
+     */
+    Complaint requireComplaint(Connection conn, String orgId, String complaintId);
+
+    /**
+     * Same as {@link #requireComplaint(String, String)}, but additionally raises a 404 ComplaintException (not a
      * 403 - see complaint-server-API.yaml, which is explicit that /me/* must not confirm a
      * complaint's existence to a caller who doesn't own it) if the complaint's userId does not
      * match ownerUserId. Used by every /me/* handler method that acts on a single complaintId.
      */
     Complaint requireOwnedComplaint(String orgId, String complaintId, String ownerUserId);
+
+    /**
+     * Same as {@link #requireOwnedComplaint(String, String, String)}, run against a caller-owned
+     * connection so the ownership check and whatever the caller does next share one transaction -
+     * same reasoning as {@link #requireComplaint(Connection, String, String)}.
+     */
+    Complaint requireOwnedComplaint(Connection conn, String orgId, String complaintId, String ownerUserId);
 
     /**
      * Lists complaints for an org with optional status/priority/userId filters, sorting, and

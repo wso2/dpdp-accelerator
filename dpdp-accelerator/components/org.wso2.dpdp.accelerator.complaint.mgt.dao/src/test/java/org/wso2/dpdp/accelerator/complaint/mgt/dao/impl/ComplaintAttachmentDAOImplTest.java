@@ -26,6 +26,7 @@ import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintAttachment;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.H2TestDbSupport;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.TestTransaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -84,10 +85,10 @@ class ComplaintAttachmentDAOImplTest {
 
     @Test
     void addAttachmentPersistsRowWithNullEventIdAndIsPublicFlag() {
-        boolean added = dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1, 2, 3}, false, 100L));
+        boolean added = addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1, 2, 3}, false, 100L));
 
         assertTrue(added);
-        Optional<ComplaintAttachment> fetched = dao.getAttachmentWithDataById("a1", "org1", "c1");
+        Optional<ComplaintAttachment> fetched = getAttachmentWithDataById("a1", "org1", "c1");
         assertTrue(fetched.isPresent());
         assertNull(fetched.get().getComplaintEventId());
         assertFalse(fetched.get().isPublic());
@@ -99,18 +100,18 @@ class ComplaintAttachmentDAOImplTest {
         ComplaintAttachment attachment = sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 100L);
         attachment.setComplaintEventId("e1");
 
-        dao.addAttachment(attachment);
+        addAttachment(attachment);
 
-        Optional<ComplaintAttachment> fetched = dao.getAttachmentWithDataById("a1", "org1", "c1");
+        Optional<ComplaintAttachment> fetched = getAttachmentWithDataById("a1", "org1", "c1");
         assertTrue(fetched.isPresent());
         assertEquals("e1", fetched.get().getComplaintEventId());
     }
 
     @Test
     void addAttachmentDefaultsIsPublicTrue() {
-        dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1, 2}, true, 100L));
+        addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1, 2}, true, 100L));
 
-        Optional<ComplaintAttachment> fetched = dao.getAttachmentWithDataById("a1", "org1", "c1");
+        Optional<ComplaintAttachment> fetched = getAttachmentWithDataById("a1", "org1", "c1");
 
         assertTrue(fetched.isPresent());
         assertTrue(fetched.get().isPublic());
@@ -118,17 +119,17 @@ class ComplaintAttachmentDAOImplTest {
 
     @Test
     void addAttachmentThrowsOnDuplicateAttachmentIdInsteadOfReturningFalse() {
-        dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 100L));
+        addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 100L));
 
         expectThrows(ComplaintDAOException.class,
-                () -> dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{2}, true, 200L)));
+                () -> addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{2}, true, 200L)));
     }
 
     @Test
     void getAttachmentMetadataByIdDoesNotLoadFileDataButReportsSize() {
-        dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1, 2, 3, 4}, true, 100L));
+        addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1, 2, 3, 4}, true, 100L));
 
-        Optional<ComplaintAttachment> fetched = dao.getAttachmentMetadataById("a1", "org1", "c1");
+        Optional<ComplaintAttachment> fetched = getAttachmentMetadataById("a1", "org1", "c1");
 
         assertTrue(fetched.isPresent());
         assertNull(fetched.get().getFileData());
@@ -137,28 +138,49 @@ class ComplaintAttachmentDAOImplTest {
 
     @Test
     void getAttachmentWithDataByIdReturnsEmptyWhenNotFound() {
-        Optional<ComplaintAttachment> fetched = dao.getAttachmentWithDataById("missing", "org1", "c1");
+        Optional<ComplaintAttachment> fetched = getAttachmentWithDataById("missing", "org1", "c1");
 
         assertFalse(fetched.isPresent());
     }
 
     @Test
     void getAttachmentMetadataByIdIsScopedByComplaintAndOrg() {
-        dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 100L));
+        addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 100L));
 
-        assertFalse(dao.getAttachmentMetadataById("a1", "org1", "c-other").isPresent());
-        assertFalse(dao.getAttachmentMetadataById("a1", "org-other", "c1").isPresent());
+        assertFalse(getAttachmentMetadataById("a1", "org1", "c-other").isPresent());
+        assertFalse(getAttachmentMetadataById("a1", "org-other", "c1").isPresent());
     }
 
     @Test
     void listAttachmentsForComplaintReturnsAllAttachmentsOrderedByCreatedTime() {
-        dao.addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 200L));
-        dao.addAttachment(sampleAttachment("a2", "org1", "c1", new byte[]{1}, false, 100L));
+        addAttachment(sampleAttachment("a1", "org1", "c1", new byte[]{1}, true, 200L));
+        addAttachment(sampleAttachment("a2", "org1", "c1", new byte[]{1}, false, 100L));
 
-        List<ComplaintAttachment> results = dao.listAttachmentsForComplaint("org1", "c1");
+        List<ComplaintAttachment> results = listAttachmentsForComplaint("org1", "c1");
 
         assertEquals(2, results.size());
         assertEquals("a2", results.get(0).getAttachmentId());
         assertEquals("a1", results.get(1).getAttachmentId());
+    }
+
+    // The DAO takes a Connection and never opens one itself, so these stand in for the service
+    // layer that owns the transaction in production - see ComplaintAttachmentDAO.
+
+    private boolean addAttachment(ComplaintAttachment attachment) {
+        return TestTransaction.run(conn -> dao.addAttachment(conn, attachment));
+    }
+
+    private Optional<ComplaintAttachment> getAttachmentMetadataById(String attachmentId, String orgId,
+            String complaintId) {
+        return TestTransaction.run(conn -> dao.getAttachmentMetadataById(conn, attachmentId, orgId, complaintId));
+    }
+
+    private Optional<ComplaintAttachment> getAttachmentWithDataById(String attachmentId, String orgId,
+            String complaintId) {
+        return TestTransaction.run(conn -> dao.getAttachmentWithDataById(conn, attachmentId, orgId, complaintId));
+    }
+
+    private List<ComplaintAttachment> listAttachmentsForComplaint(String orgId, String complaintId) {
+        return TestTransaction.run(conn -> dao.listAttachmentsForComplaint(conn, orgId, complaintId));
     }
 }

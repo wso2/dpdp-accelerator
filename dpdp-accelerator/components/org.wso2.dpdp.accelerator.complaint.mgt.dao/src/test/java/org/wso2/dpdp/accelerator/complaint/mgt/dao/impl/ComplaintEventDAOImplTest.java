@@ -26,6 +26,7 @@ import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.exception.ComplaintDAOException;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.H2TestDbSupport;
+import org.wso2.dpdp.accelerator.complaint.mgt.dao.util.TestTransaction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -85,10 +86,10 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void addEventPersistsRowAndReturnsTrue() {
-        boolean added = dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        boolean added = addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
 
         assertTrue(added);
-        Optional<ComplaintEvent> fetched = dao.getEventById("e1", "org1", "c1");
+        Optional<ComplaintEvent> fetched = getEventById("e1", "org1", "c1");
         assertTrue(fetched.isPresent());
         assertEquals("comment e1", fetched.get().getComment());
         assertTrue(fetched.get().isPublic());
@@ -96,29 +97,29 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void addEventThrowsOnDuplicateEventIdInsteadOfReturningFalse() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
 
         expectThrows(ComplaintDAOException.class,
-                () -> dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 200L)));
+                () -> addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 200L)));
     }
 
     @Test
     void getEventByIdReturnsEmptyWhenScopedToWrongComplaint() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
 
-        Optional<ComplaintEvent> fetched = dao.getEventById("e1", "org1", "c-other");
+        Optional<ComplaintEvent> fetched = getEventById("e1", "org1", "c-other");
 
         assertFalse(fetched.isPresent());
     }
 
     @Test
     void listEventsFiltersBySinceTimestamp() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
-        dao.addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 200L));
-        dao.addEvent(sampleEvent("e3", "org1", "c1", true, null, null, 300L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 200L));
+        addEvent(sampleEvent("e3", "org1", "c1", true, null, null, 300L));
 
         int[] totalOut = new int[1];
-        List<ComplaintEvent> results = dao.listEvents("org1", "c1", 150L, null, null, "asc", 10, 0, totalOut);
+        List<ComplaintEvent> results = listEvents("org1", "c1", 150L, null, null, "asc", 10, 0, totalOut);
 
         assertEquals(2, totalOut[0]);
         assertEquals("e2", results.get(0).getComplaintEventId());
@@ -127,12 +128,12 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void listEventsFiltersByUntilTimestampInclusive() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
-        dao.addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 200L));
-        dao.addEvent(sampleEvent("e3", "org1", "c1", true, null, null, 300L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 200L));
+        addEvent(sampleEvent("e3", "org1", "c1", true, null, null, 300L));
 
         int[] totalOut = new int[1];
-        List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, 200L, null, "asc", 10, 0, totalOut);
+        List<ComplaintEvent> results = listEvents("org1", "c1", null, 200L, null, "asc", 10, 0, totalOut);
 
         assertEquals(2, totalOut[0]);
         assertEquals("e1", results.get(0).getComplaintEventId());
@@ -141,12 +142,12 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void listEventsFiltersByIsPublic() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
-        dao.addEvent(sampleEvent("e2", "org1", "c1", false, null, null, 200L));
-        dao.addEvent(sampleEvent("e3", "org1", "c1", true, null, null, 300L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e2", "org1", "c1", false, null, null, 200L));
+        addEvent(sampleEvent("e3", "org1", "c1", true, null, null, 300L));
 
         int[] totalOut = new int[1];
-        List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, false, "asc", 10, 0, totalOut);
+        List<ComplaintEvent> results = listEvents("org1", "c1", null, null, false, "asc", 10, 0, totalOut);
 
         assertEquals(1, totalOut[0]);
         assertEquals(1, results.size());
@@ -155,11 +156,11 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void listEventsOrdersAscendingByDefault() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 300L));
-        dao.addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 300L));
+        addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 100L));
 
         int[] totalOut = new int[1];
-        List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, null, null, 10, 0, totalOut);
+        List<ComplaintEvent> results = listEvents("org1", "c1", null, null, null, null, 10, 0, totalOut);
 
         assertEquals("e2", results.get(0).getComplaintEventId());
         assertEquals("e1", results.get(1).getComplaintEventId());
@@ -167,11 +168,11 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void listEventsOrdersDescendingWhenOrderIsDesc() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
-        dao.addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 300L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e2", "org1", "c1", true, null, null, 300L));
 
         int[] totalOut = new int[1];
-        List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, null, "desc", 10, 0, totalOut);
+        List<ComplaintEvent> results = listEvents("org1", "c1", null, null, null, "desc", 10, 0, totalOut);
 
         assertEquals("e2", results.get(0).getComplaintEventId());
         assertEquals("e1", results.get(1).getComplaintEventId());
@@ -179,12 +180,12 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void listEventsIsScopedToComplaintAndOrg() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
-        dao.addEvent(sampleEvent("e2", "org1", "c-other", true, null, null, 200L));
-        dao.addEvent(sampleEvent("e3", "org-other", "c1", true, null, null, 300L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, null, null, 100L));
+        addEvent(sampleEvent("e2", "org1", "c-other", true, null, null, 200L));
+        addEvent(sampleEvent("e3", "org-other", "c1", true, null, null, 300L));
 
         int[] totalOut = new int[1];
-        List<ComplaintEvent> results = dao.listEvents("org1", "c1", null, null, null, "asc", 10, 0, totalOut);
+        List<ComplaintEvent> results = listEvents("org1", "c1", null, null, null, "asc", 10, 0, totalOut);
 
         assertEquals(1, results.size());
         assertEquals("e1", results.get(0).getComplaintEventId());
@@ -192,13 +193,30 @@ class ComplaintEventDAOImplTest {
 
     @Test
     void statusChangeEventRoundTripsFromAndToStatus() {
-        dao.addEvent(sampleEvent("e1", "org1", "c1", true, "OPEN", "IN_PROGRESS", 100L));
+        addEvent(sampleEvent("e1", "org1", "c1", true, "OPEN", "IN_PROGRESS", 100L));
 
-        Optional<ComplaintEvent> fetched = dao.getEventById("e1", "org1", "c1");
+        Optional<ComplaintEvent> fetched = getEventById("e1", "org1", "c1");
 
         assertTrue(fetched.isPresent());
         assertEquals("OPEN", fetched.get().getFromStatus());
         assertEquals("IN_PROGRESS", fetched.get().getToStatus());
         assertEquals("STATUS_CHANGE", fetched.get().deriveEntryType());
+    }
+
+    // The DAO takes a Connection and never opens one itself, so these stand in for the service
+    // layer that owns the transaction in production - see ComplaintDAO.
+
+    private boolean addEvent(ComplaintEvent event) {
+        return TestTransaction.run(conn -> dao.addEvent(conn, event));
+    }
+
+    private Optional<ComplaintEvent> getEventById(String complaintEventId, String orgId, String complaintId) {
+        return TestTransaction.run(conn -> dao.getEventById(conn, complaintEventId, orgId, complaintId));
+    }
+
+    private List<ComplaintEvent> listEvents(String orgId, String complaintId, Long since, Long until,
+            Boolean isPublic, String order, int limit, int offset, int[] totalOut) {
+        return TestTransaction.run(conn -> dao.listEvents(conn, orgId, complaintId, since, until, isPublic, order,
+                limit, offset, totalOut));
     }
 }
