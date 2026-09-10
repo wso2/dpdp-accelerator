@@ -31,14 +31,8 @@
     "elements": "तत्व",
     "administration": "प्रशासन",
     "adminConsents": "सभनें दी मंजूरी",
-    "nominations": "नामांकन",
-    "nomineeActivation": "नामज़द एक्टिवेशन",
     "myComplaints": "मेरी शिकायतां",
     "complaintManagement": "शिकायतां",
-    "dataProcessors": "डेटा प्रोसेसर",
-    "dataProcessorTopics": "विषय",
-    "dataProcessorSubscriptions": "सब्सक्रिप्शन",
-    "dataProcessorEvents": "इवेंट",
     "events": "घटनां",
     "topics": "विशे।",
     "subscriptions": "सदस्यताएं"
@@ -62,18 +56,13 @@
     "consentCount": "{{count}} सहमतियां",
     "consentCount_one": "{{count}} सहमति",
     "consentCount_other": "{{count}} सहमतियां",
-    "expiringSoon": "जल्दी खत्म होने आह्ली",
     "loadFailed": "इसलै तुंदा डैशबोर्ड लोड नेईं होई सका करदा।",
-    "noExpiring": "अगले {{days}} दिनां च कोई सक्रिय सहमति खत्म नेईं होआ करदी।",
     "noPending": "जांच करने लेई कोई बकाया सहमति नेईं ऐ।",
     "noPurposes": "अजै तकर कोई सांझा कीता गेदा उद्देश्य उपलब्ध नेईं ऐ।",
     "pending": "बकाया सहमतियां",
     "pendingConsents": "बकाया सहमतियां",
     "subtitle": "तुंदी सहमति गतिविधि ते औने आह्ली कारवाइयां दा संक्षेप।",
     "title": "डैशबोर्ड",
-    "typeBreakdown": "सहमति प्रकार दा ब्यौरा",
-    "typeBreakdownSubtitle": "तुंदी सभ्भै सहमतियां प्रकार दे मताबक वंडे दी न",
-    "noTypes": "अजै तकर कोई सहमति प्रकार उपलब्ध नेईं ऐ।",
     "viewPending": "सभ्भै बकाया सहमतियां दिक्खो",
     "serviceBreakdown": "सेवा दे मताबक सैह्‌मती दा त्रुट्ट",
     "serviceBreakdownSubtitle": "तुंʼदी सारी मंजूरियें गी मंगत सेवा दे मताबक समूहबद्ध कीता गेआ ऐ।",
@@ -85,10 +74,6 @@
       "sectionAriaLabel": "प्रशासनिक सहमति फिल्टर",
       "consentIdSearchPlaceholder": "सहमति ID कन्ने खोजो",
       "removeConsentIdForAdvanced": "एडवांस्ड फिल्टर बरतने लेई सहमति ID फिल्टर हटाओ।",
-      "removeConsentIdForStatus": "स्टेटस फिल्टर बरतने लेई सहमति ID फिल्टर हटाओ।",
-      "userIds": "यूजर IDs",
-      "groupIds": "ग्रुप IDs",
-      "commaSeparatedUsers": "मते यूजर IDs गी कामे कन्ने बक्ख करो",
       "active": "सक्रिय फिल्टर",
       "serviceId": "सेवा",
       "removeConsentIdForState": "स्टेट फिल्टर दा इस्तेमाल करने आस्तै सहमति आईडी फिल्टर हटाइयै रक्खो।",
@@ -104,35 +89,13 @@
     }
   },
   "consentRegistry": {
-    "title": "सभ्भै सहमतियां",
     "details": {
       "title": "सहमति विवरण",
       "consentId": "सहमति ID",
-      "status": "स्टेटस",
-      "type": "सहमति प्रकार",
-      "frequency": "एक्सेस सीमा",
-      "frequencyHelp": "एह् दस्सदा ऐ जे इस सहमति दा इक दिन च किन्नी बारी इस्तेमाल कीता जाई सकदा ऐ।",
-      "frequencyUnitSingular": "बारी रोज़",
-      "frequencyUnitPlural": "बारी रोज़",
-      "purposes": "उद्देश्य",
-      "duration": "लुकबैक अवधि",
-      "durationHelp": "एह् तैय करदा ऐ जे किन्ना पुराना डेटा दिक्खेआ जाई सकदा ऐ। जियां, अगर 6 महीने सेट ऐ, तां 6 महीने तकर दा डेटा दिक्खेआ जाई सकदा ऐ।",
-      "durationUnitHourSingular": "घंटा",
-      "durationUnitHourPlural": "घंटे",
-      "durationUnitDaySingular": "दिन",
-      "durationUnitDayPlural": "दिन",
-      "durationUnitYearSingular": "साल",
-      "durationUnitYearPlural": "साल",
       "created": "बनाया गेआ",
-      "updated": "अपडेट कीता गेआ",
       "validUntil": "इस तकर मान्य",
-      "groupId": "ग्रुप ID",
-      "recurring": "बार-बार होने आह्ली",
       "back": "रजिस्ट्री च वापस",
       "notFound": "सहमति रिकार्ड नेईं लब्भेआ",
-      "approved": "मंज़ूर",
-      "notApproved": "नामंज़ूर",
-      "approvedCount": "{{approved}}/{{total}} मंज़ूर",
       "section": {
         "purposes": "सहमति उद्देश्य",
         "authorizations": "अधिकार",
@@ -140,36 +103,17 @@
       },
       "table": {
         "element": "तत्व",
-        "approved": "मंज़ूर",
-        "required": "जरूरी",
         "description": "विवरण",
         "user": "यूजर",
         "status": "स्टेटस",
         "updated": "अपडेट कीता",
-        "resources": "संसाधन",
         "date": "तरीक",
         "time": "समैं",
         "state": "राज्य"
       },
       "lifecycle": {
         "tableAriaLabel": "सहमति जीवनचक्र",
-        "empty": "कोई जीवनचक्र इवेंट उपलब्ध नेईं ऐ।",
-        "noDescription": "कोई विवरण उपलब्ध नेईं।"
-      },
-      "actions": {
-        "viewResources": "संसाधन दिक्खो",
-        "noResourcesTooltip": "कोई संसाधन उपलब्ध नेईं"
-      },
-      "resourcesModal": {
-        "title": "अधिकार संसाधन",
-        "authRef": "ऑथ",
-        "close": "बंद करो"
-      },
-      "values": {
-        "yes": "हां",
-        "no": "ना",
-        "required": "जरूरी",
-        "optional": "मर्जी दे मताबक"
+        "empty": "कोई जीवनचक्र इवेंट उपलब्ध नेईं ऐ।"
       },
       "service": "सेवा",
       "elementCount": "{{count}} तत्व",
@@ -196,14 +140,6 @@
       },
       "approval": {
         "title": "जांच करो ते सहमति मंज़ूर करो",
-        "subtitle": "मंज़ूरी देने शा पैह्ले सहमति तत्वा गी जांच लैओ।",
-        "mandatory": "अनिवार्य तत्व (जरूरी)",
-        "optional": "मर्जी आह्ले तत्व",
-        "required": "जरूरी",
-        "toggle": "इजाज़त बदलो",
-        "toggleWithDetails": "{{purposeLabel}} च {{elementLabel}} लेई इजाज़त बदलो",
-        "loading": "सहमति विवरण लोड होआ करदे न...",
-        "noMandatory": "इस सहमति लेई कोई जरूरी शर्तां नेईं न।",
         "confirm": "मंजूरी मंजूर करो",
         "message": "क्या तुस निश्चत तौरा पर इस सैह्‌मती गी मंजूर करना चांह्‌‌‌दे ओ?",
         "note": "इस सैह्‌मती द्वारा अनुरोध कीते गेदे हर मकसद ते तत्व गी मंजूरी देना।"
@@ -212,15 +148,13 @@
         "title": "नामंज़ूरी दी पुष्टि करो",
         "message": "के तुस सचमुच इस सहमति गी नामंज़ूर करना चांह्दे ओ?",
         "note": "इस सहमति गी नामंज़ूर करने दा मतलब ऐ जे मंगे दी सहमतियां नेईं दित्तियां जांगियां।",
-        "confirm": "सहमति नामंज़ूर करो",
-        "cancel": "रद्द करो"
+        "confirm": "सहमति नामंज़ूर करो"
       },
       "revocation": {
         "title": "सहमति वापस लैने दी पुष्टि करो",
         "message": "के तुस सचमुच सहमति वापस लैना चांह्दे ओ?",
         "note": "इस कारवांई कन्नै सारे जुड़े दे उद्देशें आस्तै दित्तियां अनिवार्य ते वैकल्पिक दोनें सहमतियां रद्द होई जांगियां।",
-        "confirm": "सहमतियां वापस लैओ",
-        "cancel": "रद्द करो"
+        "confirm": "सहमतियां वापस लैओ"
       }
     },
     "status": {
@@ -237,11 +171,6 @@
     },
     "filters": {
       "sectionAriaLabel": "सहमति फिल्टर",
-      "purposeSearchPlaceholder": "उद्देश्य दे नां कन्नै खोजो",
-      "status": "स्टेटस",
-      "groupIds": "ग्रुप ID",
-      "elementName": "तत्व दा नां",
-      "elementVersion": "तत्व दा वर्ज़न",
       "advanced": "एडवांस्ड फिल्टर",
       "apply": "लागू करो",
       "cancel": "रद्द करो",
@@ -261,7 +190,6 @@
       }
     },
     "messages": {
-      "loading": "सहमतियां लोड होआ करदियां न...",
       "loadFailed": "इसलै सहमतियां लोड नेईं होई सकदियां।",
       "emptyTitle": "कोई सहमति नेईं लब्भी",
       "empty": "चुने दे फिल्टरें लेई कोई सहमतियां नेईं लब्भियां।"
@@ -269,20 +197,14 @@
     "table": {
       "tableAriaLabel": "सहमति रजिस्ट्री टेबल",
       "consentIdAriaLabel": "सहमति ID: {{id}}",
-      "groupLabel": "ग्रुप ID: {{groupId}}",
       "notApplicable": "लागू नेईं",
       "purposes": {
         "more": "+{{count}} होर",
-        "title": "सहमति उद्देश्य",
-        "hint": "सहमति दे सारे उद्देश्य दस्सने"
+        "title": "सहमति उद्देश्य"
       },
       "headers": {
         "consentId": "सहमति ID",
-        "type": "प्रकार",
-        "status": "स्टेटस",
         "purposes": "उद्देश्य",
-        "updated": "अपडेट कीता",
-        "expiration": "समाप्ति",
         "actions": "कारवाइयां",
         "service": "सेवा",
         "state": "राज्य"
@@ -322,22 +244,13 @@
     "actions": {
       "addElement": "तत्व जोड़ो",
       "addProperty": "प्रॉपर्टी जोड़ो",
-      "apply": "लागू करो",
       "cancel": "रद्द करो",
-      "clear": "साफ करो",
-      "clearAll": "सब साफ करो",
       "create": "बनाओ",
       "delete": "मिटाओ",
       "deleting": "मिटाआ करदा ऐ...",
       "deleteVersion": "वर्ज़न मिटाओ",
-      "filters": "फिल्टर",
-      "removeElement": "तत्व हटाओ",
       "removeProperty": "प्रॉपर्टी हटाओ",
       "retry": "परतियै कोशश करो",
-      "saving": "सेव होआ करदा ऐ...",
-      "view": "दिक्खो",
-      "viewElement": "{{name}} दिक्खो",
-      "viewPurpose": "{{name}} दिक्खो",
       "addVersion": "संस्करण जोड़ो",
       "reset": "पुनर्निर्धारत करो",
       "search": "खोज करो",
@@ -345,71 +258,33 @@
     },
     "fields": {
       "actions": "कारवाइयां",
-      "created": "बनाया गेआ",
       "description": "विवरण",
       "displayName": "दस्सने आह्ला नां",
       "element": "तत्व",
       "elementId": "तत्व ID",
-      "elementName": "तत्व दा नां",
-      "elementNamespace": "तत्व नेमस्पेस",
-      "elements": "तत्व",
-      "elementVersion": "तत्व दा वर्ज़न",
-      "groupId": "ग्रुप ID",
-      "groupIds": "ग्रुप IDs",
-      "mandatory": "अनिवार्य",
       "name": "नां",
-      "namespace": "नेमस्पेस",
       "properties": "प्रॉपर्टीज",
       "propertyKey": "की",
       "propertyValue": "मुल्ल",
       "purpose": "उद्देश्य",
       "purposeId": "उद्देश्य ID",
-      "purposeName": "उद्देश्य दा नां",
-      "scope": "दायरा",
-      "purposeScope": "उद्देश्य दा दायरा",
-      "purposeVersion": "उद्देश्य दा वर्ज़न",
       "requirement": "ज़रूरत",
-      "schema": "स्कीमा",
       "type": "प्रकार",
       "version": "वर्ज़न",
       "latestVersion": "नवीनतम संस्करण"
     },
-    "help": {
-      "commaSeparatedGroups": "मते ग्रुप IDs गी कामे कन्ने बक्ख करो",
-      "defaultNamespace": "खाली होने पर डिफाल्ट नेमस्पेस बरतदा ऐ",
-      "elementVersionRequiresIdentity": "पैह्ले कोई तत्व दा नां जां नेमस्पेस भरो",
-      "organizationPurpose": "संस्था दे स्तर दा उद्देश्य बनाने लेई खाली छोड़ी देओ",
-      "purposeVersionRequiresName": "पैह्ले कोई उद्देश्य दा नां भरो",
-      "schemaElementTypes": "स्कीमा सिर्फ JSON ते XML तत्वा लेई समर्थित ऐ।",
-      "selectElementFirst": "पैह्ले कोई तत्व चुनो"
-    },
     "values": {
-      "all": "सारे",
-      "any": "कोई बी",
-      "customNamespace": "कस्टम नेमस्पेस",
-      "defaultNamespace": "डिफाल्ट नेमस्पेस",
       "mandatory": "अनिवार्य",
-      "matches": "मिलदा ऐ",
       "noDescription": "कोई विवरण नेईं",
       "optional": "मर्जी दे मताबक",
-      "specificGroup": "विशेश ग्रुप",
-      "itemCount": "{{count}} चुने गेदे",
-      "latest": "ताज़ा",
-      "viewing": "दिक्खा करदा ऐ"
+      "latest": "ताज़ा"
     },
     "elements": {
       "add": "तत्व जोड़ो",
-      "activeFilters": "सक्रिय फिल्टर",
       "back": "तत्वा च वापस",
-      "createTitle": "तत्व बनाओ",
-      "detailsSection": "तत्व दा विवरण",
       "empty": "चुने दे फिल्टरें कन्ने कोई तत्व नेईं मिलदे।",
       "emptyTitle": "कोई तत्व नेईं लब्भे",
-      "filterTitle": "तत्व फिल्टर करो",
       "loadFailed": "इसलै तत्व लोड करने च असमर्थ।",
-      "newVersion": "नमां वर्ज़न बनाओ",
-      "refreshing": "रिफ्रेश होआ करदा ऐ...",
-      "results": "{{count}} तत्व",
       "searchPlaceholder": "तत्व दे नां कन्नै खोजो",
       "subtitle": "बर्तने आह्ले सहमति तत्वा ते उंदे वर्ज़न दी परिभाषां दा प्रबंधन करो।",
       "tableLabel": "सहमति तत्व",
@@ -437,22 +312,11 @@
     },
     "purposes": {
       "add": "उद्देश्य जोड़ो",
-      "activeFilters": "सक्रिय फिल्टर",
-      "allPurposes": "सारे उद्देश्य",
       "back": "उद्देश्यें च वापस",
-      "createTitle": "उद्देश्य बनाओ",
-      "detailsSection": "उद्देश्य दा विवरण",
       "empty": "चुने दे फिल्टरें कन्ने कोई उद्देश्य नेईं मिलदे।",
       "emptyTitle": "कोई उद्देश्य नेईं लब्भे",
-      "filterTitle": "उद्देश्य फिल्टर करो",
       "loadFailed": "इसलै उद्देश्य लोड करने च असमर्थ।",
-      "newVersion": "नमां वर्ज़न बनाओ",
-      "orgWide": "पूरी संस्था लेई",
-      "refreshing": "रिफ्रेश होआ करदा ऐ...",
-      "results": "{{count}} उद्देश्य",
-      "searchLabel": "उद्देश्य खोजो",
       "searchPlaceholder": "उद्देश्य दे नां कन्नै खोजो",
-      "scopeFilter": "उद्देश्य दा दायरा",
       "subtitle": "बर्तने आह्ले सहमति उद्देश्यें ते उंदी तत्व परिभाषां दा प्रबंधन करो।",
       "tableLabel": "सहमति उद्देश्य",
       "title": "उद्देश्य",
@@ -497,228 +361,15 @@
       "emptySearch": "इस खोज कन्नै कोई बी मकसद मेल नेईं खंदा।"
     },
     "details": {
-      "definition": "परिभाषा",
-      "elementIdentity": "तत्व दी पन्छान",
       "elements": "तत्व",
-      "identity": "उद्देश्य दी पन्छान",
-      "overview": "संक्षेप",
-      "versionDetails": "वर्ज़न विवरण",
       "versions": "वर्ज़न दा इतिहास"
     },
     "messages": {
-      "createElementFirst": "उद्देश्य परिभाषित करने शा पैह्ले इक तत्व बनाओ।",
-      "immutableElement": "{{namespace}}:{{name}} इक {{type}} तत्व रौह्ग। पन्छान आह्ले फील्ड वर्ज़ने दे बश्कार बदले नेईं जाई सकदे।",
-      "immutablePurpose": "{{name}} दा मालक {{groupId}} गै रौह्ग। पन्छान आह्ले फील्ड वर्ज़ने दे बश्कार बदले नेईं जाई सकदे।",
-      "immutableOrganizationPurpose": "{{name}} पूरी संस्था लेई ऐ। इंदी पन्छान ते दायरा वर्ज़ने दे बश्कार बदले नेईं जाई सकदे।",
-      "immutableGroupPurpose": "{{name}} दा दायरा ग्रुप {{groupId}} तकर ऐ। इंदी पन्छान ते दायरा वर्ज़ने दे बश्कार बदले नेईं जाई सकदे।",
-      "loadingElements": "उपलब्ध तत्व लोड होआ करदे न...",
-      "loadingVersions": "तत्व दे वर्ज़न लोड होआ करदे न...",
-      "noElementsFound": "कोई मिलदे-जुलदे तत्व नेईं न",
       "noElements": "इस वर्ज़न लेई कोई तत्व सैट नेईं कीता गेआ ऐ।",
       "noProperties": "कोई कस्टम प्रॉपर्टी नेईं ऐ।",
-      "noSchema": "इस वर्ज़न लेई कोई स्कीमा सैट नेईं कीता गेआ ऐ।",
-      "noPurposeElements": "अजै तकर कोई तत्व नेईं जोड़े गेदे। उद्देश्य बनाने लेई घट्टो-घट्ट इक तत्व जोड़ो।",
       "noVersions": "कोई वर्ज़न उपलब्ध नेईं न।",
       "versionsLoadFailed": "इसलै वर्ज़न इतिहास लोड करने च असमर्थ।",
       "setLatestFailed": "इस सरूप गी नवीनतम दे रूप च सैट्ट करने च असमर्थ। कृपा करियै परतियै कोशश करो।"
-    },
-    "validation": {
-      "duplicateElements": "हर इक तत्व गी सिर्फ इक बारी शामल कीता जाई सकदा ऐ।",
-      "duplicatePropertyKeys": "प्रॉपर्टी की बक्ख-बक्ख होने चाहीदे।",
-      "elementRequired": "घट्टो-घट्ट इक तत्व चुनो।",
-      "groupIdRequired": "ग्रुप-विशेश उद्देश्य लेई ग्रुप ID जरूरी ऐ।",
-      "nameRequired": "नां जरूरी ऐ।",
-      "namespaceRequired": "जदूं कस्टम चुने दा होऐ तां नेमस्पेस जरूरी ऐ।",
-      "schemaRequired": "JSON ते XML तत्वा लेई स्कीमा जरूरी ऐ।"
-    },
-    "delete": {
-      "title": "वर्ज़न मिटाओ",
-      "message": "वर्ज़न {{version}} गी मिटाना ऐ?",
-      "warning": "इसगी वापस नेईं कीता जाई सकदा। हवाले आह्ले वर्ज़ने गी मिटाया नेईं जाई सकदा, ते अखीरला वर्ज़न मिटाने कन्नै पूरी एंट्री मिट जाह्ग।"
-    }
-  },
-  "nominee": {
-    "title": "नामांकन",
-    "messages": {
-      "loadFailed": "इसलै नामांकन लोड करने च असमर्थ।"
-    },
-    "nominatedFor": {
-      "openAccount": "खाता खोलो →",
-      "accept": "मंज़ूर",
-      "reject": "मना करो",
-      "actionNeeded": "कारवाई दी लोड़ ऐ",
-      "ariaLabel": "नामज़द कीते दे खाते",
-      "empty": "अजै तकर कुसै बी तुसे गी नामज़द नेईं कीता ऐ।",
-      "title": "नामज़द कीते दे खाते",
-      "table": {
-        "account": "खाता",
-        "status": "स्टेटस",
-        "actions": "कारवाइयां"
-      }
-    },
-    "acting": {
-      "starting": "खाता खोला करदा ऐ…",
-      "startFailed": "तुस इस खाते लेई नामज़द व्यक्ति नेईं ओ।",
-      "startFailedHint": "नामांकन च वापस जाओ ते परतियै कोशश करो।",
-      "blockedTitle": "नामज़द व्यक्ति दी एक्सेस च उपलब्ध नेईं",
-      "blockedFenced": "खाते दी सेटिंग, क्रेडेंशियल ते नामांकन कदे बी कुसै दुए इंसान दी तरफां इस्तेमाल नेईं कीते जाई सकदे।",
-      "blockedScope": "मालक ने तुसे गी इस हिस्से लेई इजाज़त नेईं दित्ती ऐ।",
-      "backToAllowed": "जित्थें मेगी एक्सेस ऐ उथें जाओ",
-      "exit": "बाहर निकलो"
-    },
-    "permissions": {
-      "consentView": "सहमतियां दिक्खो",
-      "consentRevoke": "सहमतियां वापस लैओ",
-      "consentApprove": "बकाया सहमतियां मंज़ूर करो",
-      "accountView": "निजी खाता दिक्खो",
-      "accountUpdate": "निजी खाता अपडेट करो",
-      "accountDelete": "निजी खाता मिटाओ"
-    },
-    "mine": {
-      "add": "नामज़द व्यक्ति जोड़ो",
-      "remove": "हटाओ",
-      "empty": "तुस अजै तकर कुसै गी नामज़द नेईं कीता ऐ।",
-      "status": {
-        "active": "सक्रिय",
-        "pending": "मंज़ूरी दी उडीक च",
-        "rejected": "मना कीता गेआ",
-        "accepted": "स्वीकार करने दी उडीक च",
-        "deactivated": "सस्पेंड कीता गेआ"
-      },
-      "ariaLabel": "नामज़द व्यक्ति",
-      "title": "नामज़द व्यक्ति",
-      "table": {
-        "person": "इंसान",
-        "permissions": "इजाज़तां",
-        "status": "स्टेटस",
-        "actions": "कारवाइयां",
-        "morePermissions": "+{{count}} होर"
-      }
-    },
-    "setup": {
-      "dialog": {
-        "title": "नामज़द व्यक्ति जोड़ो",
-        "editTitle": "नामज़द व्यक्ति च बदलाव करो",
-        "saveChanges": "बदलाव सेव करो",
-        "emailLabel": "नामज़द दा रजिस्टर ईमेल",
-        "permissionsTitle": "एह् नामज़द व्यक्ति के करी सकदा ऐ?",
-        "permissionsSubtitle": "सिर्फ उस्सी टिक करो जेह्ड़ी तुस इजाज़त देना चांह्दे ओ। एह् उं'दी एक्सेस बनि जाह्ग जेह्ड़ी इस नामज़द व्यक्ति गी मिली ऐ।",
-        "sensitive": "संवेदनशील",
-        "cancel": "रद्द करो",
-        "processing": "सेव होआ करदा ऐ...",
-        "confirm": "नामांकन भेजो",
-        "processingEdit": "सेव होआ करदा ऐ…"
-      },
-      "removeDialog": {
-        "title": "नामज़द व्यक्ति हटाओ",
-        "message": "{{nomineeEmail}} हून तुंदी सहमतियां दा प्रबंधन नेईं करी सकग।",
-        "confirm": "नामज़द व्यक्ति हटाओ",
-        "cancel": "रद्द करो",
-        "processing": "हटाआ करदा ऐ..."
-      }
-    },
-    "manage": {
-      "title": "मालक दी सहमतियां दा प्रबंधन",
-      "back": "नामज़द व्यू शा बाहर निकलो",
-      "consents": {
-        "title": "सहमतियां",
-        "subtitle": "इस खाते रहां दित्तियां गियां सहमतियां दिक्खो, ते जित्थें इजाज़त ऐ, उथें वापस लैओ।"
-      },
-      "selectedCount": "{{count}} चुने गेदे",
-      "revokeSelected": "चुने गेदे वापस लैओ",
-      "messages": {
-        "loadFailed": "इसलै सहमतियां लोड करने च असमर्थ।",
-        "empty": "इस खाते लेई कोई सहमतियां नेईं लब्भियां।"
-      },
-      "table": {
-        "ariaLabel": "नामज़द रहां प्रबंधित सहमति टेबल",
-        "purposes": "उद्देश्य",
-        "type": "प्रकार",
-        "status": "स्टेटस",
-        "updated": "अपडेट कीता",
-        "actions": "कारवाइयां",
-        "revoke": "वापस लैओ",
-        "notRevokable": "सिर्फ सक्रिय सहमतियां गी वापस लित्ता जाई सकदा ऐ",
-        "clientLabel": "संस्था: {{client}}"
-      },
-      "bulkRevoke": {
-        "title": "इकट्ठे वापस लैने दी पुष्टि करो",
-        "message": "एह् {{count}} सहमति(यां) वापस लई लैह्ग। इसगी वापस नेईं कीता जाई सकदा।",
-        "note": "हर वापसी दा रिकार्ड वक्खरा दर्ज कीता जंदा ऐ जेह्ड़ा तुस मालक दी तरफां कीता ऐ।",
-        "progress": "{{count}} चूं {{processed}} वापस लेआ करदा ऐ...",
-        "confirm": "चुने गेदे वापस लैओ",
-        "cancel": "रद्द करो",
-        "processing": "प्रोसेस होआ करदा ऐ..."
-      },
-      "subtitle": "तुस इस खाते दी तरफां कम्म करा करदे ओ। तुस सिर्फ ओ गै करी सकदे ओ जिसदी मालक ने तुसे गी इजाज़त दित्ती ऐ।",
-      "account": {
-        "title": "खाते दी एक्सेस",
-        "subtitle": "ओह् कारवाइयां जेह्ड़ियां मालक ने तुसे गी उंदे खाते पर करने दी इजाज़त दित्ती ऐ।",
-        "notGranted": "मालक ने इजाज़त नेईं दित्ती ऐ"
-      }
-    },
-    "detail": {
-      "title": "सहमति विवरण",
-      "back": "वापस"
-    }
-  },
-  "admin": {
-    "title": "नामज़द एक्टिवेशन",
-    "status": {
-      "active": "सक्रिय",
-      "accepted": "मंज़ूरी दी उडीक च",
-      "pending": "नामज़द व्यक्ति दी उडीक च",
-      "rejected": "मना कीता गेआ",
-      "deactivated": "निष्क्रिय कीता गेआ"
-    },
-    "pending": {
-      "title": "तुंदी मंज़ूरी दी उडीक च",
-      "empty": "इसलै तुंदे लेई कोई बी उडीक च नेईं ऐ।",
-      "count": "{{count}} मंज़ूरी दी उडीक च",
-      "appointed": "नियुक्त कीते गेदे {{email}}",
-      "accepted": "मंज़ूर कीता {{date}}"
-    },
-    "search": {
-      "label": "नां जां ईमेल कन्नै खोजो",
-      "empty": "कोई बी मिलदा-जुलदा खाता नेईं लब्भेआ।",
-      "results": "खाते"
-    },
-    "table": {
-      "ariaLabel": "नामांकन",
-      "owner": "खाता",
-      "nominee": "नामज़द व्यक्ति",
-      "permissions": "इजाज़त दित्ती ऐ",
-      "status": "स्टेटस",
-      "nominated": "नामज़द कीता",
-      "actions": "कारवाइयां"
-    },
-    "controls": {
-      "title": "नामज़द व्यक्ति",
-      "titleNamed": "{{name}} दे नामज़द व्यक्ति",
-      "nominated": "नामज़द कीता {{date}}",
-      "ticket": "टिकट {{ticket}}",
-      "waitingNominee": "अजै करने लेई कुसै बी चीज़ दी लोड़ नेईं ऐ - नामज़द व्यक्ति ने स्वीकार नेईं कीता ऐ।",
-      "activate": "एक्सेस चालू करो",
-      "noAction": "-",
-      "owner": "खाता",
-      "deactivate": "एक्सेस वापस लैओ",
-      "none": "इस खाते ने कुसै गी नियुक्त नेईं कीता ऐ।"
-    },
-    "activateDialog": {
-      "title": "नामज़द व्यक्ति दी एक्सेस चालू करो",
-      "ticketLabel": "कानूनी/सपोर्ट टिकट दा हवाला",
-      "confirm": "एक्सेस चालू करो",
-      "cancel": "रद्द करो",
-      "processing": "चालू होआ करदा ऐ...",
-      "subtitle": "एह् {{nomineeName}} गी {{ownerName}} दी सहमतियां दा प्रबंधन करने दी एक्सेस दिंदा ऐ।"
-    },
-    "deactivateDialog": {
-      "title": "नामज़द व्यक्ति दी एक्सेस बंद करो",
-      "reasonLabel": "कारण",
-      "confirm": "एक्सेस बंद करो",
-      "cancel": "रद्द करो",
-      "processing": "बंद होआ करदा ऐ...",
-      "subtitle": "एह् फौरी तौर पर {{ownerName}} दी सहमतियां तकर नामज़द व्यक्ति दी एक्सेस रद्द करी दिंदा ऐ।"
     }
   },
   "complaints": {
@@ -852,7 +503,6 @@
       "tabLabel": "अटैचमेंट",
       "tabLabelWithCount": "अटैचमेंट ({{count}})",
       "empty": "इस शिकायत कन्नै कोई अटैचमेंट नेईं जोड़े गेदे न।",
-      "initialSubmission": "पैह्ली जमात",
       "internalNote": "अंदरूनी",
       "overflowMore": "+{{count}} होर",
       "uploadedCount": "{{count}} नवीं फाइलें जोड़ीयां गेइयां",
@@ -866,7 +516,6 @@
         "empty": "चुने दे फिल्टरें कन्नै कोई शिकायतां नेईं मिलदियां।",
         "stats": {
           "open": "खुल्ला",
-          "awaitingInfo": "जवाब दी उडीक च",
           "resolved": "हल होई गेआ",
           "slaBreached": "SLA टुट्टिआ"
         },
@@ -905,98 +554,6 @@
           "processing": "समाधान की जा रही है...",
           "resolveFailed": "कुझु गलत होई गेआ ऐ ते शिकायत दा समाधान नेईं होई सक्या। कृपया फ्ही कोशश करो।"
         }
-      }
-    }
-  },
-  "dataProcessors": {
-    "subscriptions": {
-      "title": "सब्सक्रिप्शन",
-      "subtitle": "इवेंट नोटिफिकेशन फ्रेमवर्क पर सारे रजिस्टर सब्सक्रिप्शन।",
-      "addAction": "सब्सक्रिप्शन जोड़ो",
-      "filters": {
-        "sectionAriaLabel": "सब्सक्रिप्शन फिल्टर",
-        "status": "स्टेटस",
-        "topic": "विषय",
-        "clear": "फिल्टर साफ करो",
-        "statusOptions": {
-          "all": "सारे स्टेटस",
-          "active": "सक्रिय",
-          "pendingVerification": "बकाया",
-          "stale": "पुराना"
-        },
-        "topicOptions": {
-          "all": "सारे विषय"
-        }
-      },
-      "messages": {
-        "reverifySuccess": "सब्सक्रिप्शन दी परतियै तस्दीक कामयाब होई गेई। स्टेटस हून ACTIVE (सक्रिय) ऐ।",
-        "reverifyStillStale": "तस्दीक परतियै फेल होई गेई। सब्सक्रिप्शन STALE (पुराना) गै ऐ।",
-        "reverifyFailed": "परतियै तस्दीक फेल होई गेई।"
-      }
-    },
-    "events": {
-      "title": "इवेंट",
-      "subtitle": "इवेंट नोटिफिकेशन फ्रेमवर्क पर सारी इवेंट डिलीवरी।",
-      "filters": {
-        "sectionAriaLabel": "इवेंट फिल्टर",
-        "status": "स्टेटस",
-        "topic": "विषय",
-        "search": "इवेंट खोजो",
-        "searchPlaceholder": "उद्देश्य जां सब्सक्राइबर ID कन्नै खोजो...",
-        "clear": "फिल्टर साफ करो",
-        "statusOptions": {
-          "all": "सारे स्टेटस"
-        },
-        "topicOptions": {
-          "all": "सारे विषय"
-        }
-      },
-      "emptyTitle": "कोई इवेंट नेईं लब्भे",
-      "emptyMessage": "चुने दे मापदंडें कन्नै कोई प्रकाशित इवेंट नेईं मिलदे।",
-      "table": {
-        "eventId": "इवेंट ID",
-        "topic": "विषय",
-        "purposes": "उद्देश्य",
-        "deliveries": "डिलीवरी",
-        "occurredAt": "होआ सा",
-        "action": "कारवाई",
-        "all": "सारे",
-        "noSubscribers": "कोई सब्सक्राइबर नेईं",
-        "viewEvent": "इवेंट दिक्खो",
-        "subscriberCount_one": "{{count}} सब्सक्राइबर",
-        "subscriberCount_other": "{{count}} सब्सक्राइबर"
-      },
-      "detail": {
-        "notFoundTitle": "इवेंट नेईं लब्भेआ",
-        "notFoundMessage": "ID \"{{eventId}}\" आह्ला कोई बी इवेंट नेईं लब्भेआ।",
-        "backToEvents": "इवेंट च वापस",
-        "topic": "विषय",
-        "purposes": "उद्देश्य",
-        "occurredAt": "होआ सा",
-        "deliveries": "डिलीवरी",
-        "all": "सारे",
-        "noSubscribers": "कोई सब्सक्राइबर नेईं",
-        "subscriberCount_one": "{{count}} सब्सक्राइबर",
-        "subscriberCount_other": "{{count}} सब्सक्राइबर"
-      },
-      "dialog": {
-        "title": "परतियै कोशश दा इतिहास",
-        "deliveryId": "डिलीवरी ID",
-        "loading": "इवेंट डिलीवरी इतिहास लोड होआ करदा ऐ…",
-        "noRetries": "पैह्ली कोशश पूरी होई गेई। कोई बी रिट्राई (परतियै कोशश) रिकार्ड नेईं ऐ।",
-        "attempt": "कोशश {{attempt}}",
-        "retrySuffix": " (परतियै कोशश)",
-        "webhookDescription": "HTTP डिलीवरी कोशशें ते परतियै कोशशें दा क्रमबद्ध इतिहास।",
-        "pollTitle": "पोल पूरा होने दा स्टेटस ते पावती",
-        "completionStatus": "पूरा होने दा स्टेटस",
-        "completionTimestamp": "पूरा होने दा टैमस्टैंप",
-        "erasureMethod": "मिटाने दा तरीका",
-        "recordsAffected": "असरदार रिकार्ड",
-        "referenceId": "हवाला ID",
-        "submittedBy": "जिने जमा कीता",
-        "notes": "नोट",
-        "noAcknowledgment": "अजै तकर कोई बी पोल पूरा होने दी पावती जमा नेईं कीती गेई ऐ।",
-        "close": "बंद करो"
       }
     }
   },
@@ -1152,7 +709,6 @@
       "viewHistory": "View Delivery Attempts"
     },
     "deliveryHistory": {
-      "title": "घटना डिलीवरी निष्पादन आडिट",
       "loadFailed": "डिलीवरी दा इतिहास लोड करने च असमर्थ।",
       "completion": "पूरा होने दा सबूत",
       "attemptsTitle": "डिलीवरी कोशशां कालक्रम",
@@ -1174,8 +730,6 @@
       "allStatuses": "सभनें स्थितियां",
       "topic": "विशे।",
       "allTopics": "सभनें विशे",
-      "groupId": "समूह आईडी",
-      "groupIdPlaceholder": "समूह आईडी राहें फिल्टर करो...",
       "search": "खोजो",
       "clear": "साफ करो",
       "subscriptionId": "Subscription ID",
@@ -1212,33 +766,11 @@
       "empty": "कोई इवेंट नेईं लब्भेआ गेआ।"
     },
     "actions": {
-      "publish": "इवेंट प्रकाशत करो",
       "view": "View Details",
       "copyPayload": "पेलोड कापी करो",
       "close": "बंद करो"
     },
-    "dialog": {
-      "publishTitle": "इवेंट प्रकाशत करो",
-      "publishSubtitle": "सदस्य फैन-आउट गी ट्रिगर करने आस्तै इक इवेंट सूचना प्रकाशत करो",
-      "topicLabel": "विशे।",
-      "topicRequired": "विशे जरूरी ऐ।",
-      "groupIdLabel": "समूह आईडी (वैकल्पिक)",
-      "groupIdPlaceholder": "e.g. consumer-group-01",
-      "groupIdHelper": "लक्शित डिलीवरी आस्तै वैकल्पिक समूह शनाखतकर्ता",
-      "purposesLabel": "मक्सद (वैकल्पिक, कोमा कन्नै बक्ख कीते गेदे)",
-      "purposesPlaceholder": "e.g. MARKETING, ANALYTICS",
-      "purposesHelper": "इस घटना कन्नै जुड़े दे सहमति दे मकसदें दी अल्पविराम कन्नै बक्ख कीती गेदी सूची",
-      "payloadLabel": "पेलोड (JSON)",
-      "payloadHelper": "Valid JSON object representing the event data",
-      "payloadRequired": "पेलोड जरूरी ऐ।",
-      "payloadMustBeObject": "पेलोड इक मान्य JSON आब्जैक्ट होना लोड़चदा ऐ।",
-      "invalidJson": "कृपा करियै मान्य JSON फार्मेट देओ।",
-      "publishing": "प्रकाशत कीता जा करदा ऐ...",
-      "publishSubmit": "इवेंट प्रकाशत करो",
-      "publishSuccess": "घटना सफलतापूर्वक प्रकाशत होई गेई।"
-    },
     "details": {
-      "title": "घटना ब्योरा",
       "backToEvents": "घटनां पर वापस जाओ",
       "loadFailed": "इवेंटें दे ब्यौरे लोड करने च असमर्थ।",
       "metadataTitle": "घटना मेटाडेटा",
@@ -1249,7 +781,6 @@
       "noHistory": "कुसै बी डिलीवरी दी कोशश दर्ज नेईं कीती गेई।",
       "completionTitle": "पूरा होने दा सबूत",
       "allPurposes": "सभनें मकसद",
-      "createdAt": "बनाया गेदा:",
       "deliveriesTitle": "डाउनस्ट्रीम ग्राहक डिलीवरी",
       "deliveriesSubtitle": "इस घटना आस्तै पैदा कीतियां गेदियां सभनें डिलीवरी ते पूरा होने दियां स्थितियां",
       "noDeliveries": "कोई डिलीवरी पैदा नेईं होई",

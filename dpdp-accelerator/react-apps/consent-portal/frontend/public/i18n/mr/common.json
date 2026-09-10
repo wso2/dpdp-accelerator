@@ -31,14 +31,8 @@
     "elements": "घटक",
     "administration": "प्रशासन",
     "adminConsents": "सर्व संमती",
-    "nominations": "नामांकने",
-    "nomineeActivation": "नॉमिनी सक्रियकरण",
     "myComplaints": "माझ्या तक्रारी",
     "complaintManagement": "तक्रारी",
-    "dataProcessors": "डेटा प्रोसेसर",
-    "dataProcessorTopics": "विषय",
-    "dataProcessorSubscriptions": "सदस्यता",
-    "dataProcessorEvents": "इव्हेंट्स",
     "events": "कार्यक्रम",
     "topics": "विषय",
     "subscriptions": "सबस्क्रिप्शन"
@@ -62,18 +56,13 @@
     "consentCount": "{{count}} संमती",
     "consentCount_one": "{{count}} संमती",
     "consentCount_other": "{{count}} संमती",
-    "expiringSoon": "लवकरच मुदत संपत आहे",
     "loadFailed": "सध्या तुमचा डॅशबोर्ड लोड करण्यात अक्षम.",
-    "noExpiring": "पुढील {{days}} दिवसांत कोणत्याही सक्रिय संमतीची मुदत संपणार नाही.",
     "noPending": "पुनरावलोकन करण्यासाठी कोणतीही प्रलंबित संमती नाही.",
     "noPurposes": "अद्याप कोणतेही सामायिक उद्देश उपलब्ध नाहीत.",
     "pending": "प्रलंबित संमती",
     "pendingConsents": "प्रलंबित संमती",
     "subtitle": "तुमच्या संमती क्रियाकलाप आणि आगामी कृतींचा आढावा.",
     "title": "डॅशबोर्ड",
-    "typeBreakdown": "संमती प्रकाराचे वर्गीकरण",
-    "typeBreakdownSubtitle": "तुमच्या सर्व संमती प्रकारानुसार गटबद्ध केल्या आहेत",
-    "noTypes": "अद्याप कोणतेही संमती प्रकार उपलब्ध नाहीत.",
     "viewPending": "सर्व प्रलंबित संमती पहा",
     "serviceBreakdown": "सेवेनुसार संमती भंग",
     "serviceBreakdownSubtitle": "तुमच्या सर्व संमती, मागणी केलेल्या सेवेनुसार गटबद्ध केल्या आहेत.",
@@ -85,10 +74,6 @@
       "sectionAriaLabel": "प्रशासकीय संमती फिल्टर",
       "consentIdSearchPlaceholder": "संमती आयडी द्वारे शोधा",
       "removeConsentIdForAdvanced": "प्रगत फिल्टर वापरण्यासाठी संमती आयडी फिल्टर काढून टाका.",
-      "removeConsentIdForStatus": "स्थिती फिल्टर वापरण्यासाठी संमती आयडी फिल्टर काढून टाका.",
-      "userIds": "वापरकर्ता आयडी",
-      "groupIds": "गट आयडी",
-      "commaSeparatedUsers": "अनेक वापरकर्ता आयडी स्वल्पविरामाने वेगळे करा",
       "active": "सक्रिय फिल्टर्स",
       "serviceId": "सेवा",
       "removeConsentIdForState": "राज्य फिल्टर वापरण्यासाठी संमती आयडी फिल्टर काढा.",
@@ -104,35 +89,13 @@
     }
   },
   "consentRegistry": {
-    "title": "सर्व संमती",
     "details": {
       "title": "संमती तपशील",
       "consentId": "संमती आयडी",
-      "status": "स्थिती",
-      "type": "संमती प्रकार",
-      "frequency": "प्रवेश मर्यादा",
-      "frequencyHelp": "ही संमती दररोज किती वेळा ॲक्सेस केली जाऊ शकते हे दर्शवते.",
-      "frequencyUnitSingular": "वेळ प्रति दिवस",
-      "frequencyUnitPlural": "वेळा प्रति दिवस",
-      "purposes": "उद्देश",
-      "duration": "मागील डेटा कालावधी",
-      "durationHelp": "यावरून डेटा किती मागे जाऊन ॲक्सेस केला जाऊ शकतो हे ठरते. उदाहरणार्थ, ६ महिने सेट केल्यास, ६ महिन्यांपूर्वीचा डेटा ॲक्सेस करता येईल.",
-      "durationUnitHourSingular": "तास",
-      "durationUnitHourPlural": "तास",
-      "durationUnitDaySingular": "दिवस",
-      "durationUnitDayPlural": "दिवस",
-      "durationUnitYearSingular": "वर्ष",
-      "durationUnitYearPlural": "वर्षे",
       "created": "तयार केले",
-      "updated": "अपडेट केले",
       "validUntil": "इथपर्यंत वैध",
-      "groupId": "गट आयडी",
-      "recurring": "आवर्ती",
       "back": "नोंदणीकडे परत जा",
       "notFound": "संमती रेकॉर्ड सापडला नाही",
-      "approved": "मंजूर",
-      "notApproved": "मंजूर नाही",
-      "approvedCount": "{{approved}}/{{total}} मंजूर",
       "section": {
         "purposes": "संमतीचे उद्देश",
         "authorizations": "अधिकार",
@@ -140,36 +103,17 @@
       },
       "table": {
         "element": "घटक",
-        "approved": "मंजूर",
-        "required": "आवश्यक",
         "description": "वर्णन",
         "user": "वापरकर्ता",
         "status": "स्थिती",
         "updated": "अपडेट केले",
-        "resources": "संसाधने",
         "date": "तारीख",
         "time": "वेळ",
         "state": "राज्य"
       },
       "lifecycle": {
         "tableAriaLabel": "संमती जीवनचक्र",
-        "empty": "कोणतेही जीवनचक्र इव्हेंट उपलब्ध नाहीत.",
-        "noDescription": "कोणतेही वर्णन उपलब्ध नाही."
-      },
-      "actions": {
-        "viewResources": "संसाधने पहा",
-        "noResourcesTooltip": "कोणतीही संसाधने उपलब्ध नाहीत"
-      },
-      "resourcesModal": {
-        "title": "अधिकार संसाधने",
-        "authRef": "अधिकार",
-        "close": "बंद करा"
-      },
-      "values": {
-        "yes": "होय",
-        "no": "नाही",
-        "required": "आवश्यक",
-        "optional": "पर्यायी"
+        "empty": "कोणतेही जीवनचक्र इव्हेंट उपलब्ध नाहीत."
       },
       "service": "सेवा",
       "elementCount": "{{count}} घटक",
@@ -196,14 +140,6 @@
       },
       "approval": {
         "title": "संमतीचे पुनरावलोकन आणि मंजुरी",
-        "subtitle": "मंजुरी देण्यापूर्वी कृपया संमती घटकांचे पुनरावलोकन करा.",
-        "mandatory": "अनिवार्य घटक (आवश्यक)",
-        "optional": "पर्यायी घटक",
-        "required": "आवश्यक",
-        "toggle": "परवानगी टॉगल करा",
-        "toggleWithDetails": "{{purposeLabel}} मधील {{elementLabel}} साठी परवानगी टॉगल करा",
-        "loading": "संमती तपशील लोड होत आहेत...",
-        "noMandatory": "या संमतीसाठी कोणत्याही अनिवार्य आवश्यकता नाहीत.",
         "confirm": "संमती मंजूर करा",
         "message": "तुम्ही ही संमती मंजूर करू इच्छिता याची तुम्हाला खात्री आहे का?",
         "note": "या संमतीद्वारे विनंती केलेल्या प्रत्येक उद्देश आणि घटकांसाठी अनुदान मंजूर करणे."
@@ -212,15 +148,13 @@
         "title": "नकार निश्चित करा",
         "message": "तुम्हाला खात्री आहे की तुम्ही ही संमती नाकारू इच्छिता?",
         "note": "ही संमती नाकारल्यास विनंती केलेल्या संमती दिल्या जाणार नाहीत.",
-        "confirm": "संमती नाकारा",
-        "cancel": "रद्द करा"
+        "confirm": "संमती नाकारा"
       },
       "revocation": {
         "title": "संमती मागे घेणे निश्चित करा",
         "message": "तुम्हाला खात्री आहे की तुम्ही संमती मागे घेऊ इच्छिता?",
         "note": "या कृतीमुळे सर्व संबंधित उद्देशांसाठी दिलेल्या अनिवार्य आणि पर्यायी दोन्ही संमती मागे घेतल्या जातील.",
-        "confirm": "संमती मागे घ्या",
-        "cancel": "रद्द करा"
+        "confirm": "संमती मागे घ्या"
       }
     },
     "status": {
@@ -237,11 +171,6 @@
     },
     "filters": {
       "sectionAriaLabel": "संमती फिल्टर",
-      "purposeSearchPlaceholder": "उद्देशाच्या नावाने शोधा",
-      "status": "स्थिती",
-      "groupIds": "गट आयडी",
-      "elementName": "घटकाचे नाव",
-      "elementVersion": "घटकाची आवृत्ती",
       "advanced": "प्रगत फिल्टर",
       "apply": "लागू करा",
       "cancel": "रद्द करा",
@@ -261,7 +190,6 @@
       }
     },
     "messages": {
-      "loading": "संमती लोड होत आहेत...",
       "loadFailed": "सध्या संमती लोड करण्यात अक्षम.",
       "emptyTitle": "कोणतीही संमती आढळली नाही",
       "empty": "निवडलेल्या फिल्टरसाठी कोणतीही संमती आढळली नाही."
@@ -269,20 +197,14 @@
     "table": {
       "tableAriaLabel": "संमती नोंदणी तक्ता",
       "consentIdAriaLabel": "संमती आयडी: {{id}}",
-      "groupLabel": "गट आयडी: {{groupId}}",
       "notApplicable": "लागू नाही",
       "purposes": {
         "more": "+{{count}} अधिक",
-        "title": "संमतीचे उद्देश",
-        "hint": "संमतीचे सर्व उद्देश दर्शवत आहे"
+        "title": "संमतीचे उद्देश"
       },
       "headers": {
         "consentId": "संमती आयडी",
-        "type": "प्रकार",
-        "status": "स्थिती",
         "purposes": "उद्देश",
-        "updated": "अपडेट केले",
-        "expiration": "कालबाह्य",
         "actions": "कृती",
         "service": "सेवा",
         "state": "राज्य"
@@ -322,22 +244,13 @@
     "actions": {
       "addElement": "घटक जोडा",
       "addProperty": "गुणधर्म जोडा",
-      "apply": "लागू करा",
       "cancel": "रद्द करा",
-      "clear": "साफ करा",
-      "clearAll": "सर्व साफ करा",
       "create": "तयार करा",
       "delete": "हटवा",
       "deleting": "हटवत आहे...",
       "deleteVersion": "आवृत्ती हटवा",
-      "filters": "फिल्टर्स",
-      "removeElement": "घटक काढून टाका",
       "removeProperty": "गुणधर्म काढून टाका",
       "retry": "पुन्हा प्रयत्न करा",
-      "saving": "सेव्ह करत आहे...",
-      "view": "पहा",
-      "viewElement": "{{name}} पहा",
-      "viewPurpose": "{{name}} पहा",
       "addVersion": "आवृत्ती जोडा",
       "reset": "पुनर्सेट करा",
       "search": "शोध",
@@ -345,71 +258,33 @@
     },
     "fields": {
       "actions": "कृती",
-      "created": "तयार केले",
       "description": "वर्णन",
       "displayName": "प्रदर्शित नाव",
       "element": "घटक",
       "elementId": "घटक आयडी",
-      "elementName": "घटकाचे नाव",
-      "elementNamespace": "घटक नेमस्पेस",
-      "elements": "घटक",
-      "elementVersion": "घटकाची आवृत्ती",
-      "groupId": "गट आयडी",
-      "groupIds": "गट आयडी",
-      "mandatory": "अनिवार्य",
       "name": "नाव",
-      "namespace": "नेमस्पेस",
       "properties": "गुणधर्म",
       "propertyKey": "की",
       "propertyValue": "मूल्य",
       "purpose": "उद्देश",
       "purposeId": "उद्देश आयडी",
-      "purposeName": "उद्देशाचे नाव",
-      "scope": "व्याप्ती",
-      "purposeScope": "उद्देशाची व्याप्ती",
-      "purposeVersion": "उद्देशाची आवृत्ती",
       "requirement": "आवश्यकता",
-      "schema": "स्कीमा",
       "type": "प्रकार",
       "version": "आवृत्ती",
       "latestVersion": "नवीनतम आवृत्ती"
     },
-    "help": {
-      "commaSeparatedGroups": "अनेक गट आयडी स्वल्पविरामाने वेगळे करा",
-      "defaultNamespace": "रिक्त असताना डीफॉल्ट नेमस्पेस वापरते",
-      "elementVersionRequiresIdentity": "प्रथम घटकाचे नाव किंवा नेमस्पेस प्रविष्ट करा",
-      "organizationPurpose": "संस्था-स्तरावरील उद्देश तयार करण्यासाठी रिक्त ठेवा",
-      "purposeVersionRequiresName": "प्रथम उद्देशाचे नाव प्रविष्ट करा",
-      "schemaElementTypes": "स्कीमा केवळ JSON आणि XML घटकांसाठी समर्थित आहेत.",
-      "selectElementFirst": "प्रथम घटक निवडा"
-    },
     "values": {
-      "all": "सर्व",
-      "any": "कोणतेही",
-      "customNamespace": "कस्टम नेमस्पेस",
-      "defaultNamespace": "डीफॉल्ट नेमस्पेस",
       "mandatory": "अनिवार्य",
-      "matches": "जुळते",
       "noDescription": "कोणतेही वर्णन नाही",
       "optional": "पर्यायी",
-      "specificGroup": "विशिष्ट गट",
-      "itemCount": "{{count}} निवडले",
-      "latest": "नवीनतम",
-      "viewing": "पाहत आहे"
+      "latest": "नवीनतम"
     },
     "elements": {
       "add": "घटक जोडा",
-      "activeFilters": "सक्रिय फिल्टर्स",
       "back": "घटकांकडे परत जा",
-      "createTitle": "घटक तयार करा",
-      "detailsSection": "घटकाचे तपशील",
       "empty": "कोणतेही घटक निवडलेल्या फिल्टर्सशी जुळत नाहीत.",
       "emptyTitle": "कोणतेही घटक आढळले नाहीत",
-      "filterTitle": "फिल्टर घटक",
       "loadFailed": "सध्या घटक लोड करण्यात अक्षम.",
-      "newVersion": "नवीन आवृत्ती तयार करा",
-      "refreshing": "रिफ्रेश करत आहे...",
-      "results": "{{count}} घटक",
       "searchPlaceholder": "घटकाच्या नावाने शोधा",
       "subtitle": "पुन्हा वापरण्यायोग्य संमती घटक आणि त्यांच्या आवृत्ती-आधारित व्याख्या व्यवस्थापित करा.",
       "tableLabel": "संमती घटक",
@@ -437,22 +312,11 @@
     },
     "purposes": {
       "add": "उद्देश जोडा",
-      "activeFilters": "सक्रिय फिल्टर्स",
-      "allPurposes": "सर्व उद्देश",
       "back": "उद्देशांकडे परत जा",
-      "createTitle": "उद्देश तयार करा",
-      "detailsSection": "उद्देश तपशील",
       "empty": "कोणतेही उद्देश निवडलेल्या फिल्टर्सशी जुळत नाहीत.",
       "emptyTitle": "कोणतेही उद्देश आढळले नाहीत",
-      "filterTitle": "फिल्टर उद्देश",
       "loadFailed": "सध्या उद्देश लोड करण्यात अक्षम.",
-      "newVersion": "नवीन आवृत्ती तयार करा",
-      "orgWide": "संस्था-व्यापी",
-      "refreshing": "रिफ्रेश करत आहे...",
-      "results": "{{count}} उद्देश",
-      "searchLabel": "उद्देश शोधा",
       "searchPlaceholder": "उद्देशाच्या नावाने शोधा",
-      "scopeFilter": "उद्देश व्याप्ती",
       "subtitle": "पुन्हा वापरण्यायोग्य संमतीचे उद्देश आणि त्यांच्या घटकांच्या व्याख्या व्यवस्थापित करा.",
       "tableLabel": "संमतीचे उद्देश",
       "title": "उद्देश",
@@ -497,228 +361,15 @@
       "emptySearch": "या शोधाशी जुळणारे कोणतेही उद्देश नाहीत."
     },
     "details": {
-      "definition": "व्याख्या",
-      "elementIdentity": "घटकाची ओळख",
       "elements": "घटक",
-      "identity": "उद्देश ओळख",
-      "overview": "आढावा",
-      "versionDetails": "आवृत्ती तपशील",
       "versions": "आवृत्ती इतिहास"
     },
     "messages": {
-      "createElementFirst": "उद्देश परिभाषित करण्यापूर्वी एक घटक तयार करा.",
-      "immutableElement": "{{namespace}}:{{name}} हा {{type}} घटक राहील. आवृत्त्यांमध्ये ओळख फील्ड बदलू शकत नाहीत.",
-      "immutablePurpose": "{{name}} ची मालकी {{groupId}} कडेच राहील. आवृत्त्यांमध्ये ओळख फील्ड बदलू शकत नाहीत.",
-      "immutableOrganizationPurpose": "{{name}} संस्था-व्यापी आहे. त्याची ओळख आणि व्याप्ती आवृत्त्यांमध्ये बदलू शकत नाही.",
-      "immutableGroupPurpose": "{{name}} ची व्याप्ती {{groupId}} गटापुरती मर्यादित आहे. त्याची ओळख आणि व्याप्ती आवृत्त्यांमध्ये बदलू शकत नाही.",
-      "loadingElements": "उपलब्ध घटक लोड होत आहेत...",
-      "loadingVersions": "घटकांच्या आवृत्त्या लोड होत आहेत...",
-      "noElementsFound": "कोणतेही जुळणारे घटक नाहीत",
       "noElements": "या आवृत्तीसाठी कोणतेही घटक कॉन्फिगर केलेले नाहीत.",
       "noProperties": "कोणतेही कस्टम गुणधर्म नाहीत.",
-      "noSchema": "या आवृत्तीसाठी कोणतीही स्कीमा कॉन्फिगर केलेली नाही.",
-      "noPurposeElements": "अद्याप कोणतेही घटक जोडलेले नाहीत. उद्देश तयार करण्यासाठी किमान एक घटक जोडा.",
       "noVersions": "कोणत्याही आवृत्त्या उपलब्ध नाहीत.",
       "versionsLoadFailed": "सध्या आवृत्ती इतिहास लोड करण्यात अक्षम.",
       "setLatestFailed": "ही आवृत्ती नवीनतम म्हणून सेट करणे शक्य नाही. कृपया पुन्हा प्रयत्न करा."
-    },
-    "validation": {
-      "duplicateElements": "प्रत्येक घटक केवळ एकदाच समाविष्ट केला जाऊ शकतो.",
-      "duplicatePropertyKeys": "गुणधर्माच्या की युनिक असणे आवश्यक आहे.",
-      "elementRequired": "किमान एक घटक निवडा.",
-      "groupIdRequired": "गट-विशिष्ट उद्देशासाठी गट आयडी आवश्यक आहे.",
-      "nameRequired": "नाव आवश्यक आहे.",
-      "namespaceRequired": "कस्टम निवडल्यावर नेमस्पेस आवश्यक आहे.",
-      "schemaRequired": "JSON आणि XML घटकांसाठी स्कीमा आवश्यक आहे."
-    },
-    "delete": {
-      "title": "आवृत्ती हटवा",
-      "message": "आवृत्ती {{version}} हटवायची?",
-      "warning": "हे पूर्ववत करता येणार नाही. संदर्भित आवृत्त्या हटवता येत नाहीत, आणि अंतिम आवृत्ती हटवल्याने संपूर्ण नोंद हटवली जाते."
-    }
-  },
-  "nominee": {
-    "title": "नामांकने",
-    "messages": {
-      "loadFailed": "सध्या नामांकने लोड करण्यात अक्षम."
-    },
-    "nominatedFor": {
-      "openAccount": "खाते उघडा →",
-      "accept": "स्वीकारा",
-      "reject": "नकार द्या",
-      "actionNeeded": "कृती आवश्यक",
-      "ariaLabel": "नामांकित खाती",
-      "empty": "अद्याप कोणीही तुम्हाला नॉमिनी बनवलेले नाही.",
-      "title": "नामांकित खाती",
-      "table": {
-        "account": "खाते",
-        "status": "स्थिती",
-        "actions": "कृती"
-      }
-    },
-    "acting": {
-      "starting": "खाते उघडत आहे…",
-      "startFailed": "तुम्ही या खात्यासाठी नॉमिनी नाही आहात.",
-      "startFailedHint": "नामांकनांवर परत जा आणि पुन्हा प्रयत्न करा.",
-      "blockedTitle": "नॉमिनी ॲक्सेसमध्ये उपलब्ध नाही",
-      "blockedFenced": "खाते सेटिंग्ज, क्रेडेन्शियल आणि नामांकने दुसर्‍या व्यक्तीच्या वतीने कधीही वापरली जाऊ शकत नाहीत.",
-      "blockedScope": "मालकाने तुम्हाला या क्षेत्रासाठी परवानगी दिली नाही.",
-      "backToAllowed": "मी जिथे ॲक्सेस करू शकतो तिथे जा",
-      "exit": "बाहेर पडा"
-    },
-    "permissions": {
-      "consentView": "संमती पहा",
-      "consentRevoke": "संमती मागे घ्या",
-      "consentApprove": "प्रलंबित संमती मंजूर करा",
-      "accountView": "वैयक्तिक खाते पहा",
-      "accountUpdate": "वैयक्तिक खाते अपडेट करा",
-      "accountDelete": "वैयक्तिक खाते हटवा"
-    },
-    "mine": {
-      "add": "नॉमिनी जोडा",
-      "remove": "काढून टाका",
-      "empty": "तुम्ही अद्याप कोणालाही नॉमिनी बनवलेले नाही.",
-      "status": {
-        "active": "सक्रिय",
-        "pending": "स्वीकृतीची प्रतीक्षा",
-        "rejected": "नकार दिला",
-        "accepted": "मंजुरीची प्रतीक्षा",
-        "deactivated": "निलंबित"
-      },
-      "ariaLabel": "नॉमिनी",
-      "title": "नॉमिनी",
-      "table": {
-        "person": "व्यक्ती",
-        "permissions": "परवानग्या",
-        "status": "स्थिती",
-        "actions": "कृती",
-        "morePermissions": "+{{count}} अधिक"
-      }
-    },
-    "setup": {
-      "dialog": {
-        "title": "नॉमिनी जोडा",
-        "editTitle": "नॉमिनी संपादित करा",
-        "saveChanges": "बदल सेव्ह करा",
-        "emailLabel": "नॉमिनीचा नोंदणीकृत ईमेल",
-        "permissionsTitle": "हा नॉमिनी काय करू शकतो?",
-        "permissionsSubtitle": "तुम्ही जे प्रदान करू इच्छिता तेवढेच टिक करा. हे ॲक्सेस या नॉमिनीला वापरण्याची परवानगी असेल.",
-        "sensitive": "संवेदनशील",
-        "cancel": "रद्द करा",
-        "processing": "सेव्ह करत आहे...",
-        "confirm": "नामांकन पाठवा",
-        "processingEdit": "सेव्ह करत आहे…"
-      },
-      "removeDialog": {
-        "title": "नॉमिनी काढून टाका",
-        "message": "{{nomineeEmail}} यापुढे तुमच्या संमती व्यवस्थापित करू शकणार नाही.",
-        "confirm": "नॉमिनी काढून टाका",
-        "cancel": "रद्द करा",
-        "processing": "काढून टाकत आहे..."
-      }
-    },
-    "manage": {
-      "title": "मालकाच्या संमती व्यवस्थापित करत आहे",
-      "back": "नॉमिनी दृश्यमधून बाहेर पडा",
-      "consents": {
-        "title": "संमती",
-        "subtitle": "या खात्याद्वारे दिलेल्या संमती पहा आणि जेथे परवानगी असेल तेथे मागे घ्या."
-      },
-      "selectedCount": "{{count}} निवडले",
-      "revokeSelected": "निवडलेले मागे घ्या",
-      "messages": {
-        "loadFailed": "सध्या संमती लोड करण्यात अक्षम.",
-        "empty": "या खात्यासाठी कोणतीही संमती आढळली नाही."
-      },
-      "table": {
-        "ariaLabel": "नॉमिनीद्वारे-व्यवस्थापित संमती तक्ता",
-        "purposes": "उद्देश",
-        "type": "प्रकार",
-        "status": "स्थिती",
-        "updated": "अपडेट केले",
-        "actions": "कृती",
-        "revoke": "मागे घ्या",
-        "notRevokable": "केवळ सक्रिय संमती मागे घेतल्या जाऊ शकतात",
-        "clientLabel": "संस्था: {{client}}"
-      },
-      "bulkRevoke": {
-        "title": "सामूहिक माघार निश्चित करा",
-        "message": "यामुळे {{count}} संमती मागे घेतल्या जातील. हे पूर्ववत करता येणार नाही.",
-        "note": "प्रत्येक माघार ही मालकाच्या वतीने तुम्ही केलेली कृती म्हणून स्वतंत्रपणे नोंदवली जाते.",
-        "progress": "{{count}} पैकी {{processed}} मागे घेत आहे...",
-        "confirm": "निवडलेले मागे घ्या",
-        "cancel": "रद्द करा",
-        "processing": "प्रक्रिया करत आहे..."
-      },
-      "subtitle": "तुम्ही या खात्याच्या वतीने काम करत आहात. मालकाने तुम्हाला अधिकृत केले आहे तेच तुम्ही करू शकता.",
-      "account": {
-        "title": "खाते प्रवेश",
-        "subtitle": "मालकाने तुम्हाला त्यांच्या खात्यावर करण्यासाठी अधिकृत केलेल्या कृती.",
-        "notGranted": "मालकाकडून परवानगी दिली नाही"
-      }
-    },
-    "detail": {
-      "title": "संमती तपशील",
-      "back": "मागे"
-    }
-  },
-  "admin": {
-    "title": "नॉमिनी सक्रियकरण",
-    "status": {
-      "active": "सक्रिय",
-      "accepted": "मंजुरीची प्रतीक्षा",
-      "pending": "प्रतीक्षाधीन",
-      "rejected": "नकार दिला",
-      "deactivated": "निष्क्रिय केले"
-    },
-    "pending": {
-      "title": "तुमच्या मंजुरीच्या प्रतीक्षेत",
-      "empty": "सध्या कोणतीही गोष्ट तुमच्या प्रतीक्षेत नाही.",
-      "count": "{{count}} मंजुरीच्या प्रतीक्षेत",
-      "appointed": "{{email}} ची नियुक्ती केली",
-      "accepted": "{{date}} रोजी स्वीकारले"
-    },
-    "search": {
-      "label": "नाव किंवा ईमेलद्वारे शोधा",
-      "empty": "कोणतीही जुळणारी खाती आढळली नाहीत.",
-      "results": "खाती"
-    },
-    "table": {
-      "ariaLabel": "नामांकने",
-      "owner": "खाते",
-      "nominee": "नॉमिनी",
-      "permissions": "प्रदान केले",
-      "status": "स्थिती",
-      "nominated": "नामांकित",
-      "actions": "कृती"
-    },
-    "controls": {
-      "title": "नॉमिनी",
-      "titleNamed": "{{name}} चे नॉमिनी",
-      "nominated": "{{date}} रोजी नामांकित",
-      "ticket": "तिकीट {{ticket}}",
-      "waitingNominee": "अद्याप काहीही करायचे नाही - नॉमिनीने स्वीकारलेले नाही.",
-      "activate": "ॲक्सेस सक्रिय करा",
-      "noAction": "-",
-      "owner": "खाते",
-      "deactivate": "ॲक्सेस काढून घ्या",
-      "none": "या खात्याने कोणाचीही नियुक्ती केलेली नाही."
-    },
-    "activateDialog": {
-      "title": "नॉमिनीचा ॲक्सेस सक्रिय करा",
-      "ticketLabel": "कायदेशीर/सपोर्ट तिकीट संदर्भ",
-      "confirm": "ॲक्सेस सक्रिय करा",
-      "cancel": "रद्द करा",
-      "processing": "सक्रिय करत आहे...",
-      "subtitle": "यामुळे {{nomineeName}} ला {{ownerName}} साठी संमती व्यवस्थापित करण्याचा ॲक्सेस मिळेल."
-    },
-    "deactivateDialog": {
-      "title": "नॉमिनीचा ॲक्सेस निष्क्रिय करा",
-      "reasonLabel": "कारण",
-      "confirm": "ॲक्सेस निष्क्रिय करा",
-      "cancel": "रद्द करा",
-      "processing": "निष्क्रिय करत आहे...",
-      "subtitle": "यामुळे {{ownerName}} च्या संमतीसाठी नॉमिनीचा ॲक्सेस त्वरित काढून घेतला जातो."
     }
   },
   "complaints": {
@@ -852,7 +503,6 @@
       "tabLabel": "संलग्नके",
       "tabLabelWithCount": "संलग्नके ({{count}})",
       "empty": "या तक्रारीसाठी कोणतेही संलग्नक जोडलेले नाहीत.",
-      "initialSubmission": "सुरुवातीचे सादरीकरण",
       "internalNote": "अंतर्गत",
       "overflowMore": "+{{count}} अधिक",
       "uploadedCount": "{{count}} नवीन फाइली जोडल्या",
@@ -866,7 +516,6 @@
         "empty": "कोणतीही तक्रार निवडलेल्या फिल्टरशी जुळत नाही.",
         "stats": {
           "open": "खुले",
-          "awaitingInfo": "प्रतिसादाच्या प्रतीक्षेत",
           "resolved": "निराकरण झाले",
           "slaBreached": "SLA भंग झाला"
         },
@@ -905,98 +554,6 @@
           "processing": "सोडवत आहे...",
           "resolveFailed": "काहीतरी चुकले आहे आणि तक्रार सोडवता आली नाही. कृपया पुन्हा प्रयत्न करा."
         }
-      }
-    }
-  },
-  "dataProcessors": {
-    "subscriptions": {
-      "title": "सदस्यता",
-      "subtitle": "इव्हेंट नोटिफिकेशन फ्रेमवर्कमधील सर्व नोंदणीकृत सदस्यत्वे.",
-      "addAction": "सदस्यत्व जोडा",
-      "filters": {
-        "sectionAriaLabel": "सदस्यत्व फिल्टर",
-        "status": "स्थिती",
-        "topic": "विषय",
-        "clear": "फिल्टर साफ करा",
-        "statusOptions": {
-          "all": "सर्व स्थिती",
-          "active": "सक्रिय",
-          "pendingVerification": "प्रलंबित",
-          "stale": "स्टेल"
-        },
-        "topicOptions": {
-          "all": "सर्व विषय"
-        }
-      },
-      "messages": {
-        "reverifySuccess": "सदस्यत्वाची यशस्वीरित्या पुन्हा पडताळणी झाली. स्थिती आता ACTIVE आहे.",
-        "reverifyStillStale": "पडताळणी पुन्हा अयशस्वी झाली. सदस्यत्व STALE राहिले आहे.",
-        "reverifyFailed": "पुन्हा पडताळणी अयशस्वी झाली."
-      }
-    },
-    "events": {
-      "title": "इव्हेंट्स",
-      "subtitle": "इव्हेंट नोटिफिकेशन फ्रेमवर्कमधील सर्व इव्हेंट वितरणाचे अहवाल.",
-      "filters": {
-        "sectionAriaLabel": "इव्हेंट फिल्टर",
-        "status": "स्थिती",
-        "topic": "विषय",
-        "search": "इव्हेंट शोधा",
-        "searchPlaceholder": "उद्देश किंवा ग्राहक आयडी द्वारे शोधा...",
-        "clear": "फिल्टर साफ करा",
-        "statusOptions": {
-          "all": "सर्व स्थिती"
-        },
-        "topicOptions": {
-          "all": "सर्व विषय"
-        }
-      },
-      "emptyTitle": "कोणतेही इव्हेंट आढळले नाहीत",
-      "emptyMessage": "निवडलेल्या निकषांशी जुळणारे कोणतेही प्रकाशित इव्हेंट नाहीत.",
-      "table": {
-        "eventId": "इव्हेंट आयडी",
-        "topic": "विषय",
-        "purposes": "उद्देश",
-        "deliveries": "वितरण",
-        "occurredAt": "या वेळी घडले",
-        "action": "कृती",
-        "all": "सर्व",
-        "noSubscribers": "कोणतेही सदस्य नाहीत",
-        "viewEvent": "इव्हेंट पहा",
-        "subscriberCount_one": "{{count}} सदस्य",
-        "subscriberCount_other": "{{count}} सदस्य"
-      },
-      "detail": {
-        "notFoundTitle": "इव्हेंट आढळला नाही",
-        "notFoundMessage": "\"{{eventId}}\" आयडी असलेला कोणताही इव्हेंट आढळला नाही.",
-        "backToEvents": "इव्हेंट्सकडे परत जा",
-        "topic": "विषय",
-        "purposes": "उद्देश",
-        "occurredAt": "या वेळी घडले",
-        "deliveries": "वितरण",
-        "all": "सर्व",
-        "noSubscribers": "कोणतेही सदस्य नाहीत",
-        "subscriberCount_one": "{{count}} सदस्य",
-        "subscriberCount_other": "{{count}} सदस्य"
-      },
-      "dialog": {
-        "title": "पुन्हा प्रयत्नांचा इतिहास",
-        "deliveryId": "वितरण आयडी",
-        "loading": "इव्हेंट वितरण इतिहास लोड होत आहे…",
-        "noRetries": "सुरुवातीचा प्रयत्न पूर्ण झाला. कोणतेही पुन्हा प्रयत्न नोंदवले नाहीत.",
-        "attempt": "प्रयत्न {{attempt}}",
-        "retrySuffix": " (पुन्हा प्रयत्न)",
-        "webhookDescription": "HTTP वितरण प्रयत्नांचा कालक्रमानुसार इतिहास.",
-        "pollTitle": "पूर्णता स्थिती आणि पोचपावती",
-        "completionStatus": "पूर्णता स्थिती",
-        "completionTimestamp": "पूर्णत्वाची वेळ",
-        "erasureMethod": "हटवण्याची पद्धत",
-        "recordsAffected": "प्रभावित रेकॉर्ड",
-        "referenceId": "संदर्भ आयडी",
-        "submittedBy": "यांनी सादर केले",
-        "notes": "नोंदी",
-        "noAcknowledgment": "अद्याप कोणतीही पूर्णता पोचपावती सादर केलेली नाही.",
-        "close": "बंद करा"
       }
     }
   },
@@ -1152,7 +709,6 @@
       "viewHistory": "वितरण प्रयत्न पहा"
     },
     "deliveryHistory": {
-      "title": "कार्यक्रम वितरण अंमलबजावणी ऑडिट",
       "loadFailed": "वितरण इतिहास लोड करणे शक्य नाही.",
       "completion": "पूर्णत्वाचा पुरावा",
       "attemptsTitle": "वितरण प्रयत्न कालक्रम",
@@ -1174,8 +730,6 @@
       "allStatuses": "सर्व स्थिती",
       "topic": "विषय",
       "allTopics": "सर्व विषय",
-      "groupId": "गट आयडी",
-      "groupIdPlaceholder": "गट आयडीनुसार फिल्टर करा...",
       "search": "शोधा",
       "clear": "साफ करा",
       "subscriptionId": "Subscription ID",
@@ -1212,33 +766,11 @@
       "empty": "कोणतेही इव्हेंट आढळले नाहीत"
     },
     "actions": {
-      "publish": "इव्हेंट प्रकाशित करा",
       "view": "तपशील पहा",
       "copyPayload": "पेलोड कॉपी करा",
       "close": "बंद करा"
     },
-    "dialog": {
-      "publishTitle": "इव्हेंट प्रकाशित करा",
-      "publishSubtitle": "सब्सक्रायबर फॅन-आउट सुरू करण्यासाठी इव्हेंट नोटिफिकेशन प्रकाशित करा",
-      "topicLabel": "विषय",
-      "topicRequired": "विषय आवश्यक आहे.",
-      "groupIdLabel": "गट आयडी (वैकल्पिक)",
-      "groupIdPlaceholder": "उदा. ग्राहक-गट-01",
-      "groupIdHelper": "लक्ष्यित वितरणासाठी वैकल्पिक गट आयडेंटिफायर",
-      "purposesLabel": "उद्देश (वैकल्पिक, स्वल्पविराम-विभक्त)",
-      "purposesPlaceholder": "उदा. मार्केटिंग, ॲनालिटिक्स",
-      "purposesHelper": "या कार्यक्रमाशी संबंधित संमतीच्या उद्देशांची स्वल्पविराम-विभक्त सूची",
-      "payloadLabel": "पेलोड (JSON)",
-      "payloadHelper": "घटनेच्या डेटाचे प्रतिनिधित्व करणारी वैध JSON ऑब्जेक्ट",
-      "payloadRequired": "पेलोड आवश्यक आहे.",
-      "payloadMustBeObject": "पेलोड एक वैध JSON ऑब्जेक्ट असणे आवश्यक आहे.",
-      "invalidJson": "कृपया वैध JSON स्वरूप प्रदान करा.",
-      "publishing": "प्रकाशित करत आहे...",
-      "publishSubmit": "इव्हेंट प्रकाशित करा",
-      "publishSuccess": "कार्यक्रम यशस्वीरित्या प्रकाशित झाला."
-    },
     "details": {
-      "title": "कार्यक्रम तपशील",
       "backToEvents": "कार्यक्रमांकडे परत जा",
       "loadFailed": "घटनेचा तपशील लोड करणे शक्य नाही.",
       "metadataTitle": "कार्यक्रम मेटाडेटा",
@@ -1249,7 +781,6 @@
       "noHistory": "डिलिव्हरीचे कोणतेही प्रयत्न रेकॉर्ड केलेले नाहीत",
       "completionTitle": "पूर्णत्वाचा पुरावा",
       "allPurposes": "सर्व हेतू",
-      "createdAt": "कधी तयार केले",
       "deliveriesTitle": "डाउनस्ट्रीम सदस्य वितरणे",
       "deliveriesSubtitle": "या कार्यक्रमासाठी तयार केलेले सर्व वितरण आणि पूर्णत्वाचे स्टेटस",
       "noDeliveries": "कोणतीही डिलिव्हरी तयार झाली नाही",

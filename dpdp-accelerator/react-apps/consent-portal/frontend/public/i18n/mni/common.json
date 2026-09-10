@@ -31,14 +31,8 @@
     "elements": "মচাকশিং (Elements)",
     "administration": "শাসন/পরিচালনা",
     "adminConsents": "ꯄꯨꯝꯅꯃꯛꯀꯤ ꯌꯥꯅꯕ",
-    "nominations": "মনোনয়ন (Nominations)",
-    "nomineeActivation": "মনোনীত মীওই থবক খৌবা",
     "myComplaints": "ইগী ৱাকৎশিং",
     "complaintManagement": "ৱাকৎ পরিচালনা",
-    "dataProcessors": "ডাটা প্রসেসরশিং",
-    "dataProcessorTopics": "হিরমশিং",
-    "dataProcessorSubscriptions": "সাবস্ক্রিপসনশিং",
-    "dataProcessorEvents": "থৌদোকশিং",
     "events": "ꯏꯚꯦꯟꯠꯁꯤꯡ",
     "topics": "ꯇꯣꯄꯤꯛꯁꯤꯡ",
     "subscriptions": "ꯁꯕꯁ꯭ꯀ꯭ꯔꯤꯞꯁꯟꯁꯤꯡ"
@@ -62,18 +56,13 @@
     "consentCount": "{{count}} য়ানবা",
     "consentCount_one": "{{count}} য়ানবা",
     "consentCount_other": "{{count}} য়ানবা",
-    "expiringSoon": "লোইশিনগদবা নকশিনরক্লে",
     "loadFailed": "হৌজিক ড্যাসবোর্ড লোড তৌবা ঙমদ্রে।",
-    "noExpiring": "তুংগী {{days}} নিগী মনুংদা অ্যাক্টিভ ওইরিবা য়ানবা লোইশিনগদবা লৈত্রে।",
     "noPending": "নহাৎকী য়েংশিনগদবা ঙাইরিবা য়ানবা লৈত্রে।",
     "noPurposes": "পান্দম অমত্তা লৈত্রে।",
     "pending": "ঙাইরিবা য়ানবা",
     "pendingConsents": "ঙাইরিবা য়ানবা",
     "subtitle": "নহাৎকী য়ানবা থৌওং অমসুং তুংগী থবকশিংগী আপডেৎ।",
     "title": "ড্যাসবোর্ড",
-    "typeBreakdown": "য়ানবা মখাল খাইদোকপা",
-    "typeBreakdownSubtitle": "নহাৎকী য়ানবা পুম্নমক মখালগী মাতুংইন্না খায়দোকপা",
-    "noTypes": "য়ানবা মখাল লৈত্রে।",
     "viewPending": "ঙাইরিবা য়ানবা পুম্নমক য়েংবিয়ু",
     "serviceBreakdown": "ꯁꯔꯚꯤꯁ ꯃꯈꯥꯗ ꯀꯟꯁꯦꯟꯠ ꯕ꯭ꯔꯦꯛꯗꯥꯎꯟ",
     "serviceBreakdownSubtitle": "ꯅꯍꯥꯛꯀꯤ ꯀꯟꯁꯦꯟꯠ ꯄꯨꯝꯅꯃꯛ ꯔꯤꯀ꯭ꯕꯦꯁꯠ ꯇꯧꯔꯤꯕ ꯁꯔꯚꯤꯁꯀꯤ ꯃꯈꯥꯗ ꯒ꯭ꯔꯨꯞ ꯇꯧꯔꯤ",
@@ -85,10 +74,6 @@
       "sectionAriaLabel": "অডমিন য়ানবা ফিল্টরশিং",
       "consentIdSearchPlaceholder": "য়ানবা আইডিগা লোয়ননা থিবিয়ু",
       "removeConsentIdForAdvanced": "এডভান্সড ফিল্টর শীজিন্ননবগীদমক য়ানবা আইডি ফিল্টর লৌথোকবিয়ু।",
-      "removeConsentIdForStatus": "ফিভম ফিল্টর শীজিন্ননবগীদমক য়ানবা আইডি ফিল্টর লৌথোকবিয়ু।",
-      "userIds": "শীজিন্নবমী আইডিসিং",
-      "groupIds": "গ্রুপ আইডিসিং",
-      "commaSeparatedUsers": "কমা শীজিন্নদুনা কয়াংশিং খাইদোকবিয়ু",
       "active": "অ্যাক্টিভ ফিল্টরশিং",
       "serviceId": "ꯁꯔꯚꯤꯁ",
       "removeConsentIdForState": "ꯁ꯭ꯇꯦꯠ ꯐꯤꯜꯇꯔ ꯁꯤꯖꯤꯟꯅꯅꯕ ꯀꯟꯁꯦꯟꯠ ꯑꯥꯏ.ꯗꯤ. ꯐꯤꯜꯇꯔ ꯑꯗꯨ ꯂꯧꯊꯣꯛꯎ꯫",
@@ -104,35 +89,13 @@
     }
   },
   "consentRegistry": {
-    "title": "পুম্নমক য়ানবা",
     "details": {
       "title": "য়ানবা অকুপ্পা মরোল",
       "consentId": "য়ানবা আইডি (Consent ID)",
-      "status": "ফিভম (Status)",
-      "type": "য়ানবা মখাল",
-      "frequency": "চংবগী চেকশিন-ঙাক্লোন (Access Limit)",
-      "frequencyHelp": "অসিনা নুমিত অমদা য়ানবা অসি কয়ারাক চংবা য়াবগেউৎলি।",
-      "frequencyUnitSingular": "নুমিত অমদা একবার",
-      "frequencyUnitPlural": "নুমিত অমদা কয়াবাক",
-      "purposes": "পান্দমশিং",
-      "duration": "তুংগী-মমাংগী সময় (Lookback Period)",
-      "durationHelp": "অসিনা ডাটা কয়া য়াম্না মমাংদগী চংবা য়াবগেউৎলি (উদাহরন্নবা: থা ৬ থম্বদা, মমাংগী থা ৬ ফাওবগী ডাটা চংবা য়াই)।",
-      "durationUnitHourSingular": "পুং",
-      "durationUnitHourPlural": "পুং",
-      "durationUnitDaySingular": "নুমিত",
-      "durationUnitDayPlural": "নুমিত",
-      "durationUnitYearSingular": "চহি",
-      "durationUnitYearPlural": "চহি",
       "created": "শেম্বা তারিখ",
-      "updated": "নৌহোংবা তারিখ",
       "validUntil": "চৎনগদবা নুমিৎ",
-      "groupId": "গ্রুপ আইডি",
-      "recurring": "হন্না-হন্না থোকপা",
       "back": "রেজিস্ত্রিদা হনবা",
       "notFound": "য়ানবা রেকোর্দ থেংনদ্রে",
-      "approved": "অয়াবা পীরবনি",
-      "notApproved": "অয়াবা পীদ্রিবনি",
-      "approvedCount": "{{total}} গীর মনুংদা {{approved}} অয়াবা পীরবনি",
       "section": {
         "purposes": "য়ানবা পান্দমশিং",
         "authorizations": "অয়াবাসিং",
@@ -140,36 +103,17 @@
       },
       "table": {
         "element": "মচাক",
-        "approved": "অয়াবা পীরবনি",
-        "required": "মথৌ তাবা",
         "description": "অকুপ্পা সন্দোকনা তাকপা",
         "user": "শীজিন্নবমী",
         "status": "ফিভম",
         "updated": "নৌহোংবা",
-        "resources": "রিসোর্সশিং",
         "date": "তারিখ",
         "time": "তম্পাক/সময়",
         "state": "State"
       },
       "lifecycle": {
         "tableAriaLabel": "য়ানবা পুন্সি চৎনবী",
-        "empty": "লাইফসাইকলগী থৌদোক লৈত্রে।",
-        "noDescription": "অকুপ্পা মরোল লৈত্রে।"
-      },
-      "actions": {
-        "viewResources": "রিসোর্সশিং য়েংবিয়ু",
-        "noResourcesTooltip": "রিসোর্স লৈত্রে"
-      },
-      "resourcesModal": {
-        "title": "অয়াবগী রিসোর্সশিং",
-        "authRef": "অয়াবা রেফারেন্স",
-        "close": "থিংজিনবিয়ু"
-      },
-      "values": {
-        "yes": "হৌই",
-        "no": "নত্তে",
-        "required": "মথৌ তাবা",
-        "optional": "অপাম্বা অমা (Optional)"
+        "empty": "লাইফসাইকলগী থৌদোক লৈত্রে।"
       },
       "service": "ꯁꯔꯚꯤꯁ",
       "elementCount": "{{count}} elements",
@@ -196,14 +140,6 @@
       },
       "approval": {
         "title": "য়ানবা য়েংশিনবা অমসুং অয়াবা পীবা",
-        "subtitle": "অয়াবা পীদ্রিংইঙৈদা য়ানবা মচাকশিং য়েংশিনবিয়ু।",
-        "mandatory": "মথৌ তাবা মচাকশিং (Required)",
-        "optional": "অপাম্বা মচাকশিং",
-        "required": "মথৌ তাবা",
-        "toggle": "অয়াবা ওন্থোক-ওনশিন তৌবিয়ু",
-        "toggleWithDetails": "{{purposeLabel}} গী মনুংদা {{elementLabel}} গী অয়াবা ওন্থোক-ওনশিন তৌবিয়ু",
-        "loading": "য়ানবা অকুপ্পা মরোল লোড তৌরি...",
-        "noMandatory": "য়ানবা অসিগী মথৌ তাবা তঙাইফদবা লৈত্রে।",
         "confirm": "ꯀꯟꯁꯦꯟꯠ ꯑꯦꯞꯔꯨꯚ ꯇꯧ꯫ ꯑꯦꯞꯔꯨꯚ ꯇꯧꯔꯦ",
         "message": "ꯅꯍꯥꯛꯅ ꯀꯟꯁꯦꯟꯠ ꯑꯁꯤ ꯑꯦꯞꯔꯨꯚ ꯇꯧꯕ ꯄꯥꯝꯃꯤ ꯍꯥꯏꯕ ꯁꯣꯔ ꯇꯧꯔꯕ꯭ꯔꯥ?",
         "note": "ꯑꯦꯞꯔꯨꯚ ꯇꯧꯔꯤꯕ ꯑꯁꯤꯅ ꯀꯟꯁꯦꯟꯠ ꯑꯁꯤꯅ ꯔꯤꯀ꯭ꯕꯦꯁꯠ ꯇꯧꯔꯤꯕ ꯄꯔꯄꯁ ꯑꯃꯁꯨꯡ ꯑꯦꯂꯤꯃꯦꯟꯠ ꯈꯨꯗꯤꯡꯃꯛꯀꯤꯗꯃꯛꯅꯤ꯫"
@@ -212,15 +148,13 @@
         "title": "য়াদবা চেকনবা",
         "message": "নহাক্না য়ানবা অসি য়াদবা পাম্বব্রা?",
         "note": "য়ানবা অসি য়াদবনা হায়রিবা ডাটা চংবগী অয়াবা পীথোক্লোই।",
-        "confirm": "য়ানবা য়াদবা",
-        "cancel": "তৌদবা"
+        "confirm": "য়ানবা য়াদবা"
       },
       "revocation": {
         "title": "লৌথোকপা চেকনবা",
         "message": "নহাক্না য়ানবা অসি লৌথোকপা পাম্বব্রা?",
         "note": "অসিনা মথৌ তাবা অমসুং অপাম্বা য়ানবা পুম্নমক লৌথোকখিগনি।",
-        "confirm": "য়ানবা লৌথোকপা",
-        "cancel": "তৌদবা"
+        "confirm": "য়ানবা লৌথোকপা"
       }
     },
     "status": {
@@ -237,11 +171,6 @@
     },
     "filters": {
       "sectionAriaLabel": "য়ানবা ফিল্টরশিং",
-      "purposeSearchPlaceholder": "পান্দমগী মমিংগা লোয়ননা থিবিয়ু",
-      "status": "ফিভম",
-      "groupIds": "গ্রুপ আইডি",
-      "elementName": "মচাক মমিং",
-      "elementVersion": "মচাক ভার্সন",
       "advanced": "এডভান্সড ফিল্টরশিং",
       "apply": "চৎনহনবা",
       "cancel": "তৌদবা",
@@ -261,7 +190,6 @@
       }
     },
     "messages": {
-      "loading": "য়ানবা লোড তৌরি...",
       "loadFailed": "হージュিক য়ানবা লোড তৌবা ঙমদ্রে।",
       "emptyTitle": "য়ানবা থেংনদ্রে",
       "empty": "খনব ফিল্টরশিংগীদমক য়ানবা থেংনদ্রে।"
@@ -269,20 +197,14 @@
     "table": {
       "tableAriaLabel": "য়ানবা রেজিস্ত্রি টেবিল",
       "consentIdAriaLabel": "য়ানবা আইডি: {{id}}",
-      "groupLabel": "গ্রুপ আইডি: {{groupId}}",
       "notApplicable": "চৎনবদে",
       "purposes": {
         "more": "+{{count}} হেনগৎলি",
-        "title": "য়ানবা পান্দমশিং",
-        "hint": "য়ানবা অসিগী পান্দম পুম্নমকউৎলি"
+        "title": "য়ানবা পান্দমশিং"
       },
       "headers": {
         "consentId": "য়ানবা আইডি",
-        "type": "মখাল",
-        "status": "ফিভম",
         "purposes": "পান্দমশিং",
-        "updated": "নৌহোংবা",
-        "expiration": "লোইবা নুমিত",
         "actions": "থবকশিং",
         "service": "ꯁꯔꯚꯤꯁ",
         "state": "State"
@@ -322,22 +244,13 @@
     "actions": {
       "addElement": "মচাক হাপচিনবা",
       "addProperty": "প্রোপার্টি হাপচিনবা",
-      "apply": "চৎনহনবা",
       "cancel": "তৌদবা",
-      "clear": "সেংদোকপা",
-      "clearAll": "পুম্নমক সেংদোকপা",
       "create": "শেম্বা",
       "delete": "মুত্থোকপা",
       "deleting": "মুত্থোকরি...",
       "deleteVersion": "ভার্সন মুত্থোকপা",
-      "filters": "ফিল্টরশিং",
-      "removeElement": "মচাক লৌথোকপা",
       "removeProperty": "প্রোপার্টি লৌথোকপা",
       "retry": "অমুক হোৎনবিয়ু",
-      "saving": "সেভ তৌরি...",
-      "view": "য়েংবিয়ু",
-      "viewElement": "{{name}} য়েংবিয়ু",
-      "viewPurpose": "{{name}} য়েংবিয়ু",
       "addVersion": "ꯚꯔꯁꯟ ꯍꯥꯞꯄ",
       "reset": "ꯔꯤꯁꯦꯠ ꯇꯧ꯫",
       "search": "ꯁꯔꯆ",
@@ -345,71 +258,33 @@
     },
     "fields": {
       "actions": "থবকশিং",
-      "created": "শেম্বা",
       "description": "অকুপ্পা সন্দোকনা তাকপা",
       "displayName": "উৎকদবা মমিং",
       "element": "মচাক",
       "elementId": "মচাক আইডি",
-      "elementName": "মচাক মমিং",
-      "elementNamespace": "মচাক নেমস্পেস",
-      "elements": "মচাকশিং",
-      "elementVersion": "মচাক ভার্সন",
-      "groupId": "গ্রুপ আইডি",
-      "groupIds": "গ্রুপ আইডিসিং",
-      "mandatory": "মথৌ তাবা",
       "name": "মমিং",
-      "namespace": "নেমস্পেস",
       "properties": "প্রোপার্টিশিং",
       "propertyKey": "কী (Key)",
       "propertyValue": "ভেল্যু (Value)",
       "purpose": "পান্দম",
       "purposeId": "পান্দম আইডি",
-      "purposeName": "পান্দম মমিং",
-      "scope": "স্কোপ (Scope)",
-      "purposeScope": "পান্দম স্কোপ",
-      "purposeVersion": "পান্দম ভার্সন",
       "requirement": "মথৌ তাবা",
-      "schema": "স্কিমা (Schema)",
       "type": "মখাল",
       "version": "ভার্সন",
       "latestVersion": "ꯑꯅꯧꯕ ꯚꯔꯁꯟ"
     },
-    "help": {
-      "commaSeparatedGroups": "কমা শীজিন্নদুনা কয়াংশিং খাইদোকবিয়ু",
-      "defaultNamespace": "অহাংবা ওইরবদি ডিফোল্ট নেমস্পেস শীজিন্নই",
-      "elementVersionRequiresIdentity": "অহানবা মচাকগী মমিং নত্রগা নেমস্পেস ইবিয়ু",
-      "organizationPurpose": "ওর্গানাইজেসনগী পান্দম শেন্নবগীদমক অহাংবা থম্বিয়ু",
-      "purposeVersionRequiresName": "অহানবা পান্দমগী মমিং ইবিয়ু",
-      "schemaElementTypes": "স্কিমা অসি JSON অমসুং XML মচাকশিংগী খক্তা শৌগৎলি।",
-      "selectElementFirst": "অহানবা মচাক খনবিয়ু"
-    },
     "values": {
-      "all": "পুম্নমক",
-      "any": "অমা হেক্তবা",
-      "customNamespace": "কষ্টম নেমস্পেস",
-      "defaultNamespace": "ডিফোল্ট নেমস্পেস",
       "mandatory": "মথৌ তাবা",
-      "matches": "চান্নবা",
       "noDescription": "অকুপ্পা লৈত্রে",
       "optional": "অপাম্বা অমা",
-      "specificGroup": "অকাক্নবা গ্রুপ",
-      "itemCount": "{{count}} খনবিয়ু",
-      "latest": "অরোইবা",
-      "viewing": "য়েংশিনরিবা"
+      "latest": "অরোইবা"
     },
     "elements": {
       "add": "মচাক হাপচিনবা",
-      "activeFilters": "অ্যাক্টিভ ফিল্টরশিং",
       "back": "মচাকশিংদা হনবা",
-      "createTitle": "মচাক শেম্বা",
-      "detailsSection": "মচাক অকুপ্পা মরোল",
       "empty": "ফিল্টরশিংগা চান্নবা মচাক লৈত্রে।",
       "emptyTitle": "মচাক থেংনদ্রে",
-      "filterTitle": "মচাক ফিল্টর তৌবা",
       "loadFailed": "হージュিক মচাকশিং লোড তৌবা ঙমদ্রে।",
-      "newVersion": "নৌবা ভার্সন শেম্বা",
-      "refreshing": "নৌহোংরি...",
-      "results": "{{count}} মচাকশিং",
       "searchPlaceholder": "মচাক মমিংগা লোয়ননা থিবিয়ু",
       "subtitle": "শীজিন্নবা য়াবা য়ানবা মচাকশিং অমসুং ভার্সনশিং পরিচালনা তৌবিয়ু।",
       "tableLabel": "য়ানবা মচাকশিং",
@@ -437,22 +312,11 @@
     },
     "purposes": {
       "add": "পান্দম হাপচিনবা",
-      "activeFilters": "অ্যাক্টিভ ফিল্টরশিং",
-      "allPurposes": "পান্দম পুম্নমক",
       "back": "পান্দমশিংদা হনবা",
-      "createTitle": "পান্দম শেম্বা",
-      "detailsSection": "পান্দম অকুপ্পা মরোল",
       "empty": "ফিল্টরশিংগা চান্নবা পান্দম লৈত্রে।",
       "emptyTitle": "পান্দম থেংনদ্রে",
-      "filterTitle": "পান্দম ফিল্টর তৌবা",
       "loadFailed": "হージュিক পান্দমশিং লোড তৌবা ঙমদ্রে।",
-      "newVersion": "নৌবা ভার্সন শেম্বা",
-      "orgWide": "ওর্গানাইজেসন পুম্নমকগী",
-      "refreshing": "নৌহোংরি...",
-      "results": "{{count}} পান্দমশিং",
-      "searchLabel": "পান্দমশিং থিবিয়ু",
       "searchPlaceholder": "পান্দম মমিংগা লোয়ননা থিবিয়ু",
-      "scopeFilter": "পান্দম স্কোপ",
       "subtitle": "শীজিন্নবা য়াবা য়ানবা পান্দমশিং পরিচালনা তৌবিয়ু।",
       "tableLabel": "য়ানবা পান্দমশিং",
       "title": "পান্দমশিং",
@@ -497,228 +361,15 @@
       "emptySearch": "ꯄꯔꯄꯖ ꯑꯃꯠꯇ ꯁꯔꯆ ꯑꯁꯤꯒ ꯃꯥꯟꯅꯗꯦ꯫"
     },
     "details": {
-      "definition": "সংজ্ঞা",
-      "elementIdentity": "মচাককী আইডেন্টিটি",
       "elements": "মচাকশিং",
-      "identity": "পান্দমগী আইডেন্টিটি",
-      "overview": "অপুনবা য়েংশিনবা",
-      "versionDetails": "ভার্সন অকুপ্পা মরোল",
       "versions": "ভার্সন ইতিহাস"
     },
     "messages": {
-      "createElementFirst": "পান্দম শেন্দ্রিঙৈদা অহানবা মচাক শেম্বিয়ু।",
-      "immutableElement": "{{namespace}}:{{name}} অসিনা {{type}} মচাক ওইদুনা লৈগনি। ভার্সনশিংগী মনুংদা আইডেন্টিটি শেমদোকপা য়াদে।",
-      "immutablePurpose": "{{name}} অসি {{groupId}} গী মখাদা লৈগনি। ভার্সনশিংগী মনুংদা শেমদোকপা য়াদে।",
-      "immutableOrganizationPurpose": "{{name}} অসি ওর্গানাইজেসন অপুনবা গীনি। ভার্সনশিংগী মনুংদা শেমদোকপা য়াদে।",
-      "immutableGroupPurpose": "{{name}} অসি {{groupId}} গ্রুপ গীনি। ভার্সনশিংগী মনুংদা শেমদোকপা য়াদে।",
-      "loadingElements": "লৈরিবা মচাকশিং লোড তৌরি...",
-      "loadingVersions": "মচাক ভার্সনশিং লোড তৌরি...",
-      "noElementsFound": "চান্নবা মচাক থেংনদ্রে",
       "noElements": "ভার্সন অসিদা মচাক হাপত্রিবনি।",
       "noProperties": "কষ্টম প্রোপার্টি লৈত্রে।",
-      "noSchema": "ভার্সন অসিদা স্কিমা শেমত্রিবনি।",
-      "noPurposeElements": "পান্দম শেম্নবগীদমক খ্বাইদগী য়ামদ্রবদা মচাক অমা হাপচিনবিয়ু।",
       "noVersions": "ভার্সন লৈত্রে।",
       "versionsLoadFailed": "হージュিক ভার্সন ইতিহাস লোড তৌবা ঙমদ্রে।",
       "setLatestFailed": "ꯃꯁꯤꯒꯤ ꯚꯔꯁꯟ ꯑꯁꯤ ꯂꯦꯇꯦꯁꯠ ꯑꯣꯏꯅ ꯁꯦꯠ ꯇꯧꯕ ꯌꯥꯔꯛꯇꯦ꯫ ꯑꯗꯣꯝꯅ ꯑꯃꯨꯛ ꯍꯟꯅ ꯍꯣꯠꯅꯕꯤꯌꯨ꯫"
-    },
-    "validation": {
-      "duplicateElements": "মচাক অমমম অহাংবা একবার খক্তা হাপচিনবা য়াই।",
-      "duplicatePropertyKeys": "প্রোপার্টি কী অসি তোপ-তোপ্পা ওইগদবনি।",
-      "elementRequired": "খ্বাইদগী য়াম্লবা মচাক অমা খনবিয়ু।",
-      "groupIdRequired": "গ্রুপকী অকাক্নবা পান্দমগীদমক গ্রুপ আইডি মথৌ তাই।",
-      "nameRequired": "মমিং ইবা তঙাইফাই।",
-      "namespaceRequired": "কষ্টম খনবদা নেমস্পেস ইবা তঙাইফাই।",
-      "schemaRequired": "JSON অমসুং XML মচাকশিংগীদমক স্কিমা মথৌ তাই।"
-    },
-    "delete": {
-      "title": "ভার্সন মুত্থোকপা",
-      "message": "ভার্সন {{version}} মুত্থোকপাম্বো?",
-      "warning": "অসি অমুক হনজিনবা য়াদ্রে। রেফর তৌরবা ভার্সনশিং মুত্থোকপা য়াদে, অমসুং অরোইবা ভার্সন মুত্থোকপনা এন্ট্রি অপুনবা মুত্থোকখিগনি।"
-    }
-  },
-  "nominee": {
-    "title": "মনোনয়নশিং (Nominations)",
-    "messages": {
-      "loadFailed": "হージュিক মনোনয়নশিং লোড তৌবা ঙমদ্রে।"
-    },
-    "nominatedFor": {
-      "openAccount": "একাউন্ট হাংদোকপা →",
-      "accept": "য়াবা",
-      "reject": "য়াদবা",
-      "actionNeeded": "থবক মথৌ তাই",
-      "ariaLabel": "মনোনীত একাউন্টশিং",
-      "empty": "কনাসু কন্নবু মনোনীত তৌদ্রি।",
-      "title": "মনোনীত একাউন্টশিং",
-      "table": {
-        "account": "একাউন্ট",
-        "status": "ফিভম",
-        "actions": "থবকশিং"
-      }
-    },
-    "acting": {
-      "starting": "একাউন্ট হাংদোকরি...",
-      "startFailed": "নহাক একাউন্ট অসিগী মনোনীত মীওই নত্তে।",
-      "startFailedHint": "মনোনয়নদা হনবিয়ু অমসুং অমুক হোৎনবিয়ু।",
-      "blockedTitle": "মনোনীত চংবদা ফংদ্রে",
-      "blockedFenced": "একাউন্ট সেটিংস অমসুং এক্সেস ক্রেন্দেন্সিয়েলস অতৈ মীওইগী মহুৎ সিন্না শীজিন্নবা য়াদে।",
-      "blockedScope": "মপু অসিনা মফম অসিগী অয়াবা পীদে।",
-      "backToAllowed": "ইগী চংবা য়াবদা হনবা",
-      "exit": "থোকপা"
-    },
-    "permissions": {
-      "consentView": "য়ানবা য়েংবা",
-      "consentRevoke": "য়ানবা লৌথোকপা",
-      "consentApprove": "ঙাইরিবা য়ানবা অয়াবা পীবা",
-      "accountView": "ইশা ফিবম য়েংবা",
-      "accountUpdate": "ইশা ফিবম নৌহোংবা",
-      "accountDelete": "ইশা ফিবম মুত্থোকপা"
-    },
-    "mine": {
-      "add": "মনোনীত মীওই হাপচিনবা",
-      "remove": "লৌথোকপা",
-      "empty": "নহাক্না কনাসু মনোনীত তৌদ্রি।",
-      "status": {
-        "active": "অ্যাক্টিভ",
-        "pending": "য়াবগী ঙাইরিবা",
-        "rejected": "য়াদবা",
-        "accepted": "অয়াবগী ঙাইরিবা",
-        "deactivated": "লেপহনখ্রবা"
-      },
-      "ariaLabel": "মনোনীত মীওইশিং",
-      "title": "মনোনীত মীওইশিং",
-      "table": {
-        "person": "মীওই",
-        "permissions": "অয়াবাসিং",
-        "status": "ফিভম",
-        "actions": "থবকশিং",
-        "morePermissions": "+{{count}} হেনগৎলি"
-      }
-    },
-    "setup": {
-      "dialog": {
-        "title": "মনোনীত মীওই হাপচিনবা",
-        "editTitle": "মনোনীত মীওই শেমদোকপা",
-        "saveChanges": "সেভ তৌবা",
-        "emailLabel": "মনোনীত মীওইগী ইমেল",
-        "permissionsTitle": "মনোনীত অসিনা করি তৌবা য়াবগে?",
-        "permissionsSubtitle": "নহাক্না পীবা পাম্বা অয়াবশিং খক্তা টিক তৌবিয়ু। অসি মনোনীত অদুনা শীজিন্নবা য়াবগী এক্সেস ওইগনি।",
-        "sensitive": "সংবেদনশীল (Sensitive)",
-        "cancel": "তৌদবা",
-        "processing": "সেভ তৌরি...",
-        "confirm": "মনোনয়ন থাবিয়ু",
-        "processingEdit": "সেভ তৌরি..."
-      },
-      "removeDialog": {
-        "title": "মনোনীত মীওই লৌথোকপা",
-        "message": "{{nomineeEmail}} অসিনা নহাৎকী য়ানবা পরিচালনা তৌবা ঙমহোইদ্রে।",
-        "confirm": "মনোনীত লৌথোকপা",
-        "cancel": "তৌদবা",
-        "processing": "লৌথোকরি..."
-      }
-    },
-    "manage": {
-      "title": "মপুগী য়ানবা পরিচালনা তৌবা",
-      "back": "মনোনীত য়েংবা থোকপা",
-      "consents": {
-        "title": "য়ানবা",
-        "subtitle": "একাউন্ট অসিনা পীরবা য়ানবা য়েংবিয়ু অমসুং লৌথোকবিয়ু।"
-      },
-      "selectedCount": "{{count}} খনবিয়ু",
-      "revokeSelected": "খম্লবা লৌথোকপা",
-      "messages": {
-        "loadFailed": "হージュিক য়ানবা লোড তৌবা ঙমদ্রে।",
-        "empty": "একাউন্ট অসিগী য়ানবা থেংনদ্রে।"
-      },
-      "table": {
-        "ariaLabel": "মনোনীতনা-পরিচালনা তৌবা য়ানবা টেবিল",
-        "purposes": "পান্দমশিং",
-        "type": "মখাল",
-        "status": "ফিভম",
-        "updated": "নৌহোংবা",
-        "actions": "থবকশিং",
-        "revoke": "লৌথোকপা",
-        "notRevokable": "অ্যাক্টিভ য়ানবা খক্তা লৌথোকপা য়াই",
-        "clientLabel": "ওর্গানাইজেসন: {{client}}"
-      },
-      "bulkRevoke": {
-        "title": "অপুনবা লৌথোকপা চেকনবা",
-        "message": "অসিনা {{count}} য়ানবা লৌথোকখিগনি। অসি অমুক হনজিনবা য়াদ্রে।",
-        "note": "লৌথোকপা অমমম অসি মপুগী মহুৎ সিন্না নহাক্না তৌবা থবক ওইনা রেজিস্তর তৌগনি।",
-        "progress": "{{count}} গী মনুংদা {{processed}} লৌথোকরি...",
-        "confirm": "খম্লবা লৌথোকপা",
-        "cancel": "তৌদবা",
-        "processing": "থবক তৌরি..."
-      },
-      "subtitle": "নহাক্না একাউন্ট অসিগী মহুৎ সিন্না থবক তৌরি। মপুনা অয়াবা পীরবা খক্তা তৌবা য়াই।",
-      "account": {
-        "title": "একাউন্ট চংবা",
-        "subtitle": "মপুনা নহাকপু একাউন্টদা তৌনবগী অয়াবা পীরবা থবকশিং।",
-        "notGranted": "মপুনা অয়াবা পীদে"
-      }
-    },
-    "detail": {
-      "title": "য়ানবা অকুপ্পা মরোল",
-      "back": "হনবা"
-    }
-  },
-  "admin": {
-    "title": "মনোনীত মীওই থবক খৌবা",
-    "status": {
-      "active": "অ্যাক্টিভ",
-      "accepted": "অয়াবগী ঙাইরিবা",
-      "pending": "মনোনীতগী ঙাইরিবা",
-      "rejected": "য়াদবা",
-      "deactivated": "লেপহনখ্রবা"
-    },
-    "pending": {
-      "title": "নহাৎকী অয়াবগী ঙাইরিবা",
-      "empty": "হージュিক নহাৎকী ঙাইরিবা লৈত্রে।",
-      "count": "{{count}} অয়াবগী ঙাইরিবা",
-      "appointed": "{{email}} খনখ্রে",
-      "accepted": "{{date}} দা য়ারে"
-    },
-    "search": {
-      "label": "মমিং নত্রগা ইমেলগা লোয়ননা থিবিয়ু",
-      "empty": "চান্নবা একাউন্ট থেংনদ্রে।",
-      "results": "একাউন্টশিং"
-    },
-    "table": {
-      "ariaLabel": "মনোনয়নশিং",
-      "owner": "একাউন্ট",
-      "nominee": "মনোনীত মীওই",
-      "permissions": "পীরবা অয়াবা",
-      "status": "ফিভম",
-      "nominated": "মনোনীত তৌরবা",
-      "actions": "থবকশিং"
-    },
-    "controls": {
-      "title": "মনোনীত মীওইশিং",
-      "titleNamed": "{{name}} গী মনোনীত মীওইশিং",
-      "nominated": "মনোনীত তৌরবা {{date}}",
-      "ticket": "টিকিট {{ticket}}",
-      "waitingNominee": "তৌগদবা লৈত্ৰি - মনোনীত অসিনা য়াদ্রি।",
-      "activate": "এক্সেস থবক খৌবা",
-      "noAction": "-",
-      "owner": "একাউন্ট",
-      "deactivate": "এক্সেস লৌথোকপা",
-      "none": "একাউন্ট অসিনা কনাসু খনদ্রি।"
-    },
-    "activateDialog": {
-      "title": "মনোনীত এক্সেস থবক খৌবা",
-      "ticketLabel": "আইন/সাপোর্ট টিকিট রেফারেন্স",
-      "confirm": "এক্সেস থবক খৌবা",
-      "cancel": "তৌদবা",
-      "processing": "থবক খৌরি...",
-      "subtitle": "অসিনা {{nomineeName}} বু {{ownerName}} গী য়ানবা পরিচালনা তৌনবগী এক্সেস পীগনি।"
-    },
-    "deactivateDialog": {
-      "title": "মনোনীত এক্সেস লেপহনবা",
-      "reasonLabel": "মরম",
-      "confirm": "এক্সেস লেপহনবা",
-      "cancel": "তৌদবা",
-      "processing": "লেপহনরি...",
-      "subtitle": "অসিনা {{ownerName}} গী য়ানবাদা লৈবা মনোনীত মীওইগী এক্সেস লৌথোকখিগনি।"
     }
   },
   "complaints": {
@@ -852,7 +503,6 @@
       "tabLabel": "ফাইলশিং",
       "tabLabelWithCount": "ফাইলশিং ({{count}})",
       "empty": "ৱাকৎ অসিদা ফাইল হাপত্রিবনি।",
-      "initialSubmission": "অহানবা পিশিনবা",
       "internalNote": "মনুংগী",
       "overflowMore": "+{{count}} হেনগৎলি",
       "uploadedCount": "{{count}} অনা ফাইল পুথোকপা",
@@ -866,7 +516,6 @@
         "empty": "খনব ফিল্টরগা চান্নবা ৱাকৎ লৈত্রে।",
         "stats": {
           "open": "হাংনা লৈবা",
-          "awaitingInfo": "পাউখুম ঙাইরিবা",
           "resolved": "লোইশিনখ্রবা",
           "slaBreached": "SLA থুগাইবনি"
         },
@@ -905,98 +554,6 @@
           "processing": "ꯔꯤꯖꯣꯂꯨꯏꯡ...",
           "resolveFailed": "ꯀꯔꯤꯒꯨꯝꯕ ꯑꯁꯣꯏꯕ ꯑꯃ ꯊꯣꯛꯈ꯭ꯔꯦ ꯑꯃꯁꯨꯡ ꯋꯥꯀꯠ ꯑꯗꯨ ꯂꯣꯏꯁꯤꯟꯕ ꯌꯥꯗ꯭ꯔꯦ꯫ ꯆꯥꯟꯕꯤꯗꯨꯅ ꯑꯃꯨꯛ ꯍꯟꯅ ꯍꯣꯠꯅꯕꯤꯌꯨ꯫"
         }
-      }
-    }
-  },
-  "dataProcessors": {
-    "subscriptions": {
-      "title": "সাবস্ক্রিপসনশিং",
-      "subtitle": "ইভেন্ট নোটিফিকেসন ফ্রেমৱার্ককী মনুংদা লৈরিবা সাবস্ক্রিপসন পুম্নমক।",
-      "addAction": "সাবস্ক্রিপসন হাপচিনবা",
-      "filters": {
-        "sectionAriaLabel": "সাবস্ক্রিপসন ফিল্টরশিং",
-        "status": "ফিভম",
-        "topic": "হিরম",
-        "clear": "ফিল্টর সেংদোকপা",
-        "statusOptions": {
-          "all": "ফিভম পুম্নমক",
-          "active": "অ্যাক্টিভ",
-          "pendingVerification": "ঙাইরিবা",
-          "stale": "অরিমবা"
-        },
-        "topicOptions": {
-          "all": "হিরম পুম্নমক"
-        }
-      },
-      "messages": {
-        "reverifySuccess": "সাবস্ক্রিপসন অমুক হন্না ভেরিফাই তৌখ্রে। ফিভম হージュিক অ্যাক্টিভ (ACTIVE) ওইরে।",
-        "reverifyStillStale": "ভেরিফিকেসন মায় পাকদ্রে। সাবস্ক্রিপসন অসি স্টেল (STALE) ওইদুনা লৈরি।",
-        "reverifyFailed": "অমুক হন্না ভেরিফাই তৌবা মায় পাকদ্রে।"
-      }
-    },
-    "events": {
-      "title": "থৌদোকশিং",
-      "subtitle": "ইভেন্ট নোটিফিকেসন ফ্রেমৱার্ককী মনুংদা থোকখিবা ইভেন্ট ডেলিভরী পুম্নমক।",
-      "filters": {
-        "sectionAriaLabel": "ইভেন্ট ফিল্টরশিং",
-        "status": "ফিভম",
-        "topic": "হিরম",
-        "search": "ইভেন্ট থিবিয়ু",
-        "searchPlaceholder": "পান্দম নত্রগা সাবস্ক্রাইবার আইডিগা লোয়ননা থিবিয়ু...",
-        "clear": "ফিল্টর সেংদোকপা",
-        "statusOptions": {
-          "all": "ফিভম পুম্নমক"
-        },
-        "topicOptions": {
-          "all": "হিরম পুম্নমক"
-        }
-      },
-      "emptyTitle": "থৌদোক থেংনদ্রে",
-      "emptyMessage": "খনব ফিল্টরগা চান্নবা ইভেন্ট লৈত্রে।",
-      "table": {
-        "eventId": "ইভেন্ট আইডি",
-        "topic": "হিরম",
-        "purposes": "পান্দমশিং",
-        "deliveries": "ডেলিভরীশিং",
-        "occurredAt": "থোকখিবা সময়",
-        "action": "থবক",
-        "all": "পুম্নমক",
-        "noSubscribers": "সাবস্ক্রাইবার লৈত্রে",
-        "viewEvent": "ইভেন্ট য়েংবিয়ু",
-        "subscriberCount_one": "{{count}} সাবস্ক্রাইবার",
-        "subscriberCount_other": "{{count}} সাবস্ক্রাইবারশিং"
-      },
-      "detail": {
-        "notFoundTitle": "ইভেন্ট থেংনদ্রে",
-        "notFoundMessage": "\"{{eventId}}\" আইডিগা লোয়নবা ইভেন্ট অমত্তা থেংনদ্রে।",
-        "backToEvents": "থৌদোকশিংদা হনবা",
-        "topic": "হিরম",
-        "purposes": "পান্দমশিং",
-        "occurredAt": "থোকখিবা সময়",
-        "deliveries": "ডেলিভরীশিং",
-        "all": "পুম্নমক",
-        "noSubscribers": "সাবস্ক্রাইবার লৈত্রে",
-        "subscriberCount_one": "{{count}} সাবস্ক্রাইবার",
-        "subscriberCount_other": "{{count}} সাবস্ক্রাইবারশিং"
-      },
-      "dialog": {
-        "title": "অমুক হন্না হোৎনবগী ইতিহাস",
-        "deliveryId": "ডেলিভরী আইডি",
-        "loading": "ইভেন্ট ডেলিভরী ইতিহাস লোড তৌরি...",
-        "noRetries": "অহানবা হোৎনবা লোইশিনখ্রে। অমুক হন্না হোৎনবা রেকোর্দ তৌদ্রে।",
-        "attempt": "হোৎনবা {{attempt}}",
-        "retrySuffix": " (অমুক হন্না হোৎনবা)",
-        "webhookDescription": "HTTP ডেলিভরী হোৎনবা অমসুং অমুক হন্না হোৎনবগী ইতিহাস।",
-        "pollTitle": "পোল লোইশিনবগী ফিভম অমসুং শিকার তৌবা",
-        "completionStatus": "লোইশিনবগী ফিভম",
-        "completionTimestamp": "লোইশিনবা তম্পাক/সময়",
-        "erasureMethod": "মুত্থোকপগী পরিং",
-        "recordsAffected": "সোকহল্লবা রেকোর্দশিং",
-        "referenceId": "রেফারেন্স আইডি",
-        "submittedBy": "পিশিনখিবা মীওই",
-        "notes": "নোটশিং",
-        "noAcknowledgment": "পোল লোইশিনবগী শিকার পিশিন্দ্রি।",
-        "close": "থিংজিনবিয়ু"
       }
     }
   },
@@ -1152,7 +709,6 @@
       "viewHistory": "ꯗꯦꯂꯤꯕꯔꯤ ꯑꯦꯇꯦꯝꯠꯁꯤꯡ ꯌꯦꯡꯎ"
     },
     "deliveryHistory": {
-      "title": "ꯏꯚꯦꯟꯠ ꯗꯦꯂꯤꯕꯔꯤ ꯑꯦꯛꯖꯤꯀ꯭ꯌꯨꯁꯟ ꯑꯣꯗꯤꯠ",
       "loadFailed": "ꯗꯦꯂꯤꯚꯔꯤ ꯍꯤꯁ꯭ꯇꯣꯔꯤ ꯂꯣꯗ ꯇꯧꯕ ꯌꯥꯔꯛꯇꯦ꯫",
       "completion": "ꯂꯣꯏꯔꯕꯒꯤ ꯈꯨꯗꯝ",
       "attemptsTitle": "ꯗꯦꯂꯤꯚꯔꯤ ꯑꯦꯇꯦꯝꯞꯁꯤꯡ ꯀ꯭ꯔꯣꯅꯣꯂꯣꯖꯤ",
@@ -1174,8 +730,6 @@
       "allStatuses": "ꯄꯨꯝꯅꯃꯛꯀꯤ ꯁ꯭ꯇꯦꯇꯁꯁꯤꯡ",
       "topic": "ꯇꯣꯄꯤꯛ",
       "allTopics": "ꯇꯣꯄꯤꯛ ꯄꯨꯝꯅꯃꯛ",
-      "groupId": "ꯒ꯭ꯔꯨꯞ ꯑꯥꯏ.ꯗꯤ.",
-      "groupIdPlaceholder": "ꯒ꯭ꯔꯨꯞ ꯑꯥꯏ.ꯗꯤ.ꯒꯤ ꯃꯈꯥꯗ ꯐꯤꯜꯇꯔ ꯇꯧ꯫",
       "search": "ꯁꯔꯆ",
       "clear": "ꯁꯦꯡꯗꯣꯛꯄ",
       "subscriptionId": "Subscription ID",
@@ -1212,33 +766,11 @@
       "empty": "ꯊꯧꯔꯝ ꯑꯃꯠꯇ ꯐꯪꯗꯦ꯫"
     },
     "actions": {
-      "publish": "ꯏꯚꯦꯟꯠ ꯄꯕ꯭ꯂꯤꯁ ꯇꯧ",
       "view": "ꯗꯤꯇꯦꯜꯁꯤꯡ ꯌꯦꯡꯎ",
       "copyPayload": "ꯄꯦꯂꯣꯗ ꯀꯣꯄꯤ꯫",
       "close": "ꯊꯤꯡꯖꯤꯟꯗꯣꯛꯄ"
     },
-    "dialog": {
-      "publishTitle": "ꯏꯚꯦꯟꯠ ꯄꯕ꯭ꯂꯤꯁ ꯇꯧ",
-      "publishSubtitle": "ꯁꯕꯁ꯭ꯀ꯭ꯔꯥꯏꯕꯔ ꯐꯦꯟ-ꯑꯥꯎꯠ ꯇ꯭ꯔꯤꯒꯔ ꯇꯧꯅꯕ ꯏꯚꯦꯟꯠ ꯅꯣꯇꯤꯐꯤꯀꯦꯁꯟ ꯑꯃ ꯄꯕ꯭ꯂꯤꯁ ꯇꯧ",
-      "topicLabel": "ꯇꯣꯄꯤꯛ",
-      "topicRequired": "ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯃꯊꯧ ꯇꯥꯏ꯫",
-      "groupIdLabel": "ꯒ꯭ꯔꯨꯞ ꯑꯥꯏ.ꯗꯤ. (ꯑꯣꯞꯁꯅꯦꯜ)",
-      "groupIdPlaceholder": "e.g. consumer-group-01",
-      "groupIdHelper": "ꯍꯥꯏꯖꯔꯤꯕ ꯗꯦꯂꯤꯕꯔꯤꯒꯤꯗꯃꯛ ꯑꯄꯥꯝꯕ ꯒ꯭ꯔꯨꯞ ꯑꯗꯨ ꯈꯪꯅꯕ ꯄꯤꯕ ꯌꯥꯏ",
-      "purposesLabel": "ꯄꯔꯄꯖꯁꯤꯡ (ꯑꯣꯞꯁꯅꯦꯜ, ꯀꯣꯃꯥꯅ ꯈꯦꯠꯅꯍꯟꯕ)",
-      "purposesPlaceholder": "e.g. MARKETING, ANALYTICS",
-      "purposesHelper": "ꯊꯧꯔꯝ ꯑꯁꯤꯒ ꯃꯔꯤ ꯂꯩꯅꯕ ꯀꯟꯁꯦꯟꯠ ꯄꯔꯄꯁꯁꯤꯡꯒꯤ ꯀꯣꯃꯥꯅ ꯁꯦꯄꯔꯦꯠ ꯇꯧꯔꯕ ꯂꯤꯁꯠ",
-      "payloadLabel": "ꯄꯦꯂꯥꯎꯗ (JSON)",
-      "payloadHelper": "ꯏꯚꯦꯟꯠ ꯗꯦꯇꯥ ꯎꯠꯂꯤꯕ ꯚꯦꯂꯤꯗ ꯖꯦ.ꯑꯦꯁ.ꯑꯣꯟ ꯑꯣꯕꯖꯦꯛꯠ",
-      "payloadRequired": "ꯄꯦꯂꯥꯎꯗ ꯑꯗꯨ ꯃꯊꯧ ꯇꯥꯏ",
-      "payloadMustBeObject": "ꯄꯦꯂꯥꯎꯗ ꯑꯗꯨ ꯚꯦꯂꯤꯗ ꯑꯣꯏꯕ JSON ꯑꯣꯕꯖꯦꯛꯠ ꯑꯃ ꯑꯣꯏꯒꯗꯕꯅꯤ",
-      "invalidJson": "ꯚꯦꯂꯤꯗ ꯑꯣꯏꯕ JSON ꯐꯣꯔꯃꯦꯠ ꯑꯃ ꯄꯤꯌꯨ",
-      "publishing": "ꯄꯕ꯭ꯂꯤꯁ ꯇꯧꯔꯤ...",
-      "publishSubmit": "ꯏꯚꯦꯟꯠ ꯄꯕ꯭ꯂꯤꯁ ꯇꯧ",
-      "publishSuccess": "ꯏꯚꯦꯟꯠ ꯃꯥꯏꯊꯤꯕ ꯊꯣꯛꯈꯤ꯫"
-    },
     "details": {
-      "title": "ꯏꯚꯦꯟꯠ ꯗꯤꯇꯦꯜꯁꯤꯡ",
       "backToEvents": "ꯏꯚꯦꯟꯠꯁꯤꯡꯗ ꯍꯟꯅ ꯆꯠꯅꯕ",
       "loadFailed": "ꯏꯚꯦꯟꯠ ꯗꯤꯇꯦꯜꯁꯤꯡ ꯂꯣꯗ ꯇꯧꯕ ꯌꯥꯔꯛꯇꯦ꯫",
       "metadataTitle": "ꯏꯚꯦꯟꯠ ꯃꯦꯇꯥꯗꯦꯇꯥ",
@@ -1249,7 +781,6 @@
       "noHistory": "ꯊꯤꯟꯕꯒꯤ ꯍꯣꯠꯅꯕ ꯑꯃꯠꯇ ꯔꯦꯀꯣꯔꯗ ꯇꯧꯈꯤꯗꯦ",
       "completionTitle": "ꯂꯣꯏꯔꯕꯒꯤ ꯈꯨꯗꯝ",
       "allPurposes": "ꯄꯨꯝꯅꯃꯛꯀꯤ ꯄꯔꯄꯁꯁꯤꯡ",
-      "createdAt": "ꯁꯦꯝꯈꯤꯕ ꯃꯇꯝ",
       "deliveriesTitle": "ꯗꯥꯎꯟꯁ꯭ꯇ꯭ꯔꯤꯝ ꯁꯕꯁ꯭ꯀ꯭ꯔꯥꯏꯕꯔ ꯗꯦꯂꯤꯕꯔꯤꯁꯤꯡ",
       "deliveriesSubtitle": "ꯊꯧꯔꯝ ꯑꯁꯤꯒꯤꯗꯃꯛ ꯁꯦꯝꯂꯤꯕ ꯗꯦꯂꯤꯕꯔꯤ ꯑꯃꯁꯨꯡ ꯀꯝꯄ꯭ꯂꯤꯁꯟ ꯁ꯭ꯇꯦꯇꯁ ꯄꯨꯝꯅꯃꯛ",
       "noDeliveries": "ꯀꯔꯤ ꯗꯦꯂꯤꯕꯔꯤꯁꯤꯡ ꯖꯦꯅꯔꯦꯠ ꯇꯧꯗꯦ",
