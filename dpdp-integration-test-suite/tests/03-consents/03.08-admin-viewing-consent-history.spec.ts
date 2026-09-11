@@ -16,9 +16,18 @@
  * under the License.
  */
 
-import { test, expect, loginAsUser, loginAsConsentAdmin } from '../../fixtures/auth.fixtures'
+import {
+  test,
+  expect,
+  getPersonaState,
+  hasSecondUser,
+  loginAsUser,
+  loginAsConsentAdmin,
+} from '../../fixtures/auth.fixtures'
+import { ConsentApiClient } from '../../clients/ConsentApiClient'
 import { ConsentDetailPage } from '../../pages/ConsentDetailPage'
 import { ConsentFullHistoryDialogPage } from '../../pages/ConsentFullHistoryDialogPage'
+import { authHeadersFromPersonaState } from '../../utils/authStorage'
 import { env } from '../../utils/env'
 import { seedConsent } from '../../utils/consentSetup'
 
@@ -196,6 +205,73 @@ test.describe('Admin viewing Consent History (UI)', () => {
 
     await dialog.close()
     await userPage.context().close()
+    await consentAdminPage.context().close()
+  })
+
+  test('02.08.04 - A parent approving on behalf of a different subject is attributed to the parent in the admin history UI', async ({
+    browser,
+    request,
+    consentAdminConsentApi,
+    consentCleanupTracker,
+  }) => {
+    // No dedicated "parent"/"child" persona exists - the second, generic user account stands in
+    // for the parent and env.user for the child, same as 02.07.04 in
+    // 03.07-user-viewing-consent-history.spec.ts. That test covers the *self* surface; this one
+    // is the ANY-scoped admin surface reading another user's delegated history.
+    test.skip(!hasSecondUser(), 'TEST_USER_2_USERNAME/PASSWORD is not configured')
+    const parent = env.secondUser()
+    if (!parent) {
+      throw new Error('Unreachable: hasSecondUser() already checked this above.')
+    }
+
+    const consentAdminPage = await loginAsConsentAdmin(browser)
+    // Delegation is expressed purely by subjectId (the child) and authorizations[].userId (the
+    // parent) not matching - the authorizations list names only the parent, never the child.
+    const { consentId } = await seedConsent(
+      consentAdminPage,
+      consentAdminConsentApi,
+      consentCleanupTracker,
+      env.user.username,
+      'PENDING',
+      undefined,
+      undefined,
+      [{ userId: parent.username, type: 'PARENT' }],
+    )
+
+    // Driven via the API because the parent has no UI route to a consent that isn't theirs -
+    // "My Consents" lists by subject, not by authorizer.
+    const parentPersonaState = await getPersonaState(browser, 'user-2', parent)
+    const parentConsentApi = new ConsentApiClient(request, authHeadersFromPersonaState(parentPersonaState))
+    const authorizeResponse = await parentConsentApi.authorizeMyConsent(consentId, 'APPROVED')
+    expect(authorizeResponse.ok()).toBe(true)
+
+    const adminDetailPage = new ConsentDetailPage(consentAdminPage, 'admin')
+    await adminDetailPage.goto(consentId)
+
+    // actionBy records who performed the action, which is a different thing from whose consent
+    // it is: the approval is the parent's, the consent remains the child's.
+    await expect(adminDetailPage.lifecycleRow('Approved', parent.username)).toBeVisible()
+    await expect(adminDetailPage.lifecycleRow('Approved', env.user.username)).toHaveCount(0)
+
+    const rowTexts = await adminDetailPage.lifecycleRows.allTextContents()
+    const createdIndex = rowTexts.findIndex(
+      (text) => text.includes('Consent created') && text.includes(env.consentAdmin.username),
+    )
+    const approvedIndex = rowTexts.findIndex(
+      (text) => text.includes('Approved by') && text.includes(parent.username),
+    )
+    expect(createdIndex).toBeGreaterThanOrEqual(0)
+    // The detail page's lifecycle list runs oldest-first, so the approval follows the creation
+    // (the full-history dialog below is the opposite order) - same as 02.08.03 asserts.
+    expect(approvedIndex).toBeGreaterThan(createdIndex)
+
+    await adminDetailPage.openFullHistoryDialog()
+    const dialog = new ConsentFullHistoryDialogPage(consentAdminPage)
+    await expect(dialog.dialog).toBeVisible()
+    await dialog.expand('Approved', parent.username)
+    await expect(dialog.changedTag('Approved', parent.username)).toBeVisible()
+
+    await dialog.close()
     await consentAdminPage.context().close()
   })
 })

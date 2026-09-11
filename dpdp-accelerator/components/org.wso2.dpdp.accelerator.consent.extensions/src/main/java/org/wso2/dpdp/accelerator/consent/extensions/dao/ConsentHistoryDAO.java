@@ -18,8 +18,6 @@
 
 package org.wso2.dpdp.accelerator.consent.extensions.dao;
 
-import org.wso2.dpdp.accelerator.consent.extensions.dao.exceptions.ConsentHistoryDataInsertionException;
-import org.wso2.dpdp.accelerator.consent.extensions.dao.exceptions.ConsentHistoryDataRetrievalException;
 import org.wso2.dpdp.accelerator.consent.extensions.dao.models.ConsentHistoryRecord;
 import org.wso2.dpdp.accelerator.consent.extensions.dao.models.ConsentStatusAuditRecord;
 
@@ -28,25 +26,23 @@ import java.util.List;
 
 /**
  * Every method takes the {@link Connection} as its first parameter - this DAO never opens or
- * manages its own connection, the service layer owns the transaction.
+ * manages its own connection, the service layer owns the transaction. Methods throw unchecked
+ * {@code ConsentHistoryData*Exception}s (see that package) rather than declaring them, matching
+ * the Event Notification/Complaint DAO interfaces.
  */
 public interface ConsentHistoryDAO {
 
-    void insertStatusAudit(Connection connection, ConsentStatusAuditRecord record)
-            throws ConsentHistoryDataInsertionException;
+    void insertStatusAudit(Connection connection, ConsentStatusAuditRecord record);
 
-    void insertHistorySnapshot(Connection connection, ConsentHistoryRecord record)
-            throws ConsentHistoryDataInsertionException;
+    void insertHistorySnapshot(Connection connection, ConsentHistoryRecord record);
 
     List<ConsentStatusAuditRecord> getStatusAuditHistory(Connection connection, String orgId, String consentId,
-            int limit, int offset) throws ConsentHistoryDataRetrievalException;
+            int limit, int offset);
 
-    int getStatusAuditHistoryCount(Connection connection, String orgId, String consentId)
-            throws ConsentHistoryDataRetrievalException;
+    int getStatusAuditHistoryCount(Connection connection, String orgId, String consentId);
 
     List<ConsentHistoryRecord> getConsentHistory(Connection connection, String orgId, String consentId, int limit,
-            int offset) throws ConsentHistoryDataRetrievalException;
+            int offset);
 
-    int getConsentHistoryCount(Connection connection, String orgId, String consentId)
-            throws ConsentHistoryDataRetrievalException;
+    int getConsentHistoryCount(Connection connection, String orgId, String consentId);
 }
