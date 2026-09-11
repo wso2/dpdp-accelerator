@@ -324,6 +324,7 @@ public class WebhookDeliveryTaskTest {
         assertEquals(updatedCaptor.getValue().getStatus(), "delivered");
         assertEquals(updatedCaptor.getValue().getAttemptCount(), 7);
         assertNotNull(updatedCaptor.getValue().getDeliveredAt());
+        assertTrue(updatedCaptor.getValue().isManualRetryUsed());
         verify(deliveryDAO, never()).recordRetryableFailure(any(java.sql.Connection.class), any(), anyString(),
                 org.mockito.ArgumentMatchers.anyInt(), any());
     }
@@ -342,6 +343,7 @@ public class WebhookDeliveryTaskTest {
         assertEquals(updatedCaptor.getValue().getStatus(), "failed");
         assertEquals(updatedCaptor.getValue().getAttemptCount(), 7);
         assertNull(updatedCaptor.getValue().getNextRetryAt());
+        assertTrue(updatedCaptor.getValue().isManualRetryUsed());
         verify(deliveryDAO, never()).recordRetryableFailure(any(java.sql.Connection.class), any(), anyString(),
                 org.mockito.ArgumentMatchers.anyInt(), any());
     }
