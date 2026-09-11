@@ -21,6 +21,7 @@ package org.wso2.dpdp.accelerator.event.notifications.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
+import org.wso2.dpdp.accelerator.common.constant.DPDPCommonConstants;
 import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
@@ -664,8 +665,14 @@ public class EventPublishServiceImpl implements EventPublishService {
             }
 
             return DeliveryHistoryMapper.map(conn, orgId.trim(), deliveryId.trim(),
-                    summaryOpt.get(), deliveryDAO, deliveryAckDAO);
+                    summaryOpt.get(), deliveryDAO, deliveryAckDAO,
+                    getEventNotificationMaxRetries());
         });
+    }
+
+    private int getEventNotificationMaxRetries() {
+        return configurationService == null ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_MAX_RETRIES
+                : configurationService.getEventNotificationMaxRetries();
     }
 
     @Override

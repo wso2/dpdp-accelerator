@@ -24,6 +24,7 @@ import {
   fetchSubscriptionEventHistory,
   fetchSubscriptionEvents,
   fetchSubscriptions,
+  retrySubscriptionDelivery,
   verifySubscription,
 } from '../features/events/api/subscriptionsApi'
 
@@ -152,5 +153,18 @@ describe('subscriptionsApi', () => {
     const url = new URL(req.url)
     expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions/sub-1/events/dlv-1')
     expect(req.method).toBe('GET')
+  })
+
+  it('submits a one-time manual delivery retry', async () => {
+    respondWith({ deliveryId: 'dlv/1', manualRetryUsed: true, manualRetryAvailable: false })
+
+    await retrySubscriptionDelivery('sub/1', 'dlv/1')
+
+    const req = sentRequest()
+    const url = new URL(req.url)
+    expect(url.pathname).toBe(
+      '/api/dpdp/event-notifications/v1/subscriptions/sub%2F1/events/dlv%2F1/retry',
+    )
+    expect(req.method).toBe('POST')
   })
 })

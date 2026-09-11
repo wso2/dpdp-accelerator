@@ -572,6 +572,39 @@ paths:
           $ref: "#/components/responses/NotFound"
         "500":
           $ref: "#/components/responses/InternalError"
+  /subscriptions/{subscriptionId}/events/{deliveryId}/retry:
+    post:
+      tags: [Subscriptions]
+      summary: Retry an exhausted webhook delivery once
+      operationId: retrySubscriptionDelivery
+      security:
+        - OAuth2: ["notifications:subscriptions:write"]
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+        - $ref: "#/components/parameters/DeliveryId"
+      responses:
+        "202":
+          description: Manual retry accepted and queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryHistory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Delivery is not eligible or its manual retry was already used
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
   /events:
     post:
       tags: [Events]
@@ -1414,7 +1447,8 @@ components:
           nullable: true
     DeliveryHistory:
       type: object
-      required: [deliveryId, eventId, deliveryMode, currentStatus, occurredAt, history]
+      required: [deliveryId, eventId, deliveryMode, currentStatus, occurredAt, manualRetryUsed,
+        manualRetryAvailable, history]
       properties:
         deliveryId:
           type: string
@@ -1440,6 +1474,10 @@ components:
         completionEvidence:
           type: string
           nullable: true
+        manualRetryUsed:
+          type: boolean
+        manualRetryAvailable:
+          type: boolean
         history:
           type: array
           items:

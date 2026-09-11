@@ -119,5 +119,7 @@ export interface SubscriptionEventHistoryRecord {
   nextRetryAt?: number
   completionStatus?: string
   completionEvidence?: string
+  manualRetryUsed: boolean
+  manualRetryAvailable: boolean
   history?: SubscriptionDeliveryAttemptRecord[]
 }

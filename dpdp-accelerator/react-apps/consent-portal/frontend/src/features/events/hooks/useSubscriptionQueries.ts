@@ -39,6 +39,7 @@ import {
   fetchSubscriptionEventHistory,
   fetchSubscriptionEvents,
   fetchSubscriptions,
+  retrySubscriptionDelivery,
   verifySubscription,
 } from '../api/subscriptionsApi'
 
@@ -204,5 +205,31 @@ export function useSubscriptionEventHistoryQuery(
       return fetchSubscriptionEventHistory(subscriptionId, deliveryId)
     },
     enabled: Boolean(subscriptionId && deliveryId),
+  })
+}
+
+export function useRetrySubscriptionDeliveryMutation(
+  subscriptionId?: string,
+  deliveryId?: string,
+): UseMutationResult<SubscriptionEventHistoryRecord, Error, void> {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: () => {
+      if (!subscriptionId || !deliveryId) {
+        throw new Error('Subscription ID and Delivery ID are required')
+      }
+      return retrySubscriptionDelivery(subscriptionId, deliveryId)
+    },
+    onSuccess: async (): Promise<void> => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ['subscription-event-history', subscriptionId, deliveryId],
+        }),
+        queryClient.invalidateQueries({ queryKey: ['subscription-events', subscriptionId] }),
+        queryClient.invalidateQueries({ queryKey: ['events', 'history'] }),
+        queryClient.invalidateQueries({ queryKey: ['events', 'deliveries'] }),
+      ])
+    },
   })
 }
