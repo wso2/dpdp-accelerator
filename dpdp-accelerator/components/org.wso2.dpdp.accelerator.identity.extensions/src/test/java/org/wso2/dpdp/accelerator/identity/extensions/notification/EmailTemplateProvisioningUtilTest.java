@@ -34,6 +34,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -85,9 +86,9 @@ public class EmailTemplateProvisioningUtilTest {
 
         // addNotificationTemplateType throws once a tenant already has the type registered -
         // unlike addNotificationTemplate, it is not itself upsert-safe. That failure must be
-        // swallowed without skipping the content (re)write below it, since re-running this on
-        // every tenant startup is exactly how an updated template body reaches an already-
-        // provisioned tenant.
+        // swallowed without skipping the content-existence check below it (here, the template's
+        // content itself is not yet present - getNotificationTemplate is unstubbed and returns
+        // null - so the type being already registered must not by itself skip the write).
         org.mockito.Mockito.doThrow(new NotificationTemplateManagerException("already exists"))
                 .when(notificationTemplateManager).addNotificationTemplateType(anyString(), anyString(), anyString());
 
@@ -106,5 +107,34 @@ public class EmailTemplateProvisioningUtilTest {
 
         // Must not throw - a provisioning failure for one tenant shouldn't break the caller.
         EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+    }
+
+    @Test
+    public void provisionTemplatesLeavesAnAlreadyExistingTemplateUntouched() throws Exception {
+
+        // A tenant re-update (any metadata change, not just an accelerator upgrade) must never
+        // reset an administrator's Console edit back to the bundled default.
+        when(notificationTemplateManager.getNotificationTemplate(eq(EMAIL_CHANNEL), anyString(), eq(DEFAULT_LOCALE),
+                eq(TENANT_DOMAIN))).thenReturn(new NotificationTemplate());
+
+        EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+
+        verify(notificationTemplateManager, org.mockito.Mockito.never()).addNotificationTemplate(
+                org.mockito.ArgumentMatchers.any(NotificationTemplate.class), anyString());
+    }
+
+    @Test
+    public void provisionTemplatesWritesContentWhenTheExistenceCheckItselfFails() throws Exception {
+
+        // getNotificationTemplate failing (e.g. a transient registry error) must not permanently
+        // block provisioning for a tenant that genuinely has no template yet - it is treated the
+        // same as "not present".
+        when(notificationTemplateManager.getNotificationTemplate(eq(EMAIL_CHANNEL), anyString(), eq(DEFAULT_LOCALE),
+                eq(TENANT_DOMAIN))).thenThrow(new NotificationTemplateManagerException("lookup failed"));
+
+        EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+
+        verify(notificationTemplateManager, times(3)).addNotificationTemplate(
+                org.mockito.ArgumentMatchers.any(NotificationTemplate.class), eq(TENANT_DOMAIN));
     }
 }

@@ -54,6 +54,10 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.ws.commons.axiom.wso2</groupId>
+            <artifactId>axiom</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.user.core</artifactId>
         </dependency>
@@ -242,8 +246,11 @@
                             org.apache.commons.logging;version="${commons.logging.imp.pkg.version.range}",
                             com.google.gson;version="${gson.imp.pkg.version.range}",
 
+                            org.apache.axiom.*;version="0",
+
                             org.wso2.carbon.context.*;version="${carbon.kernel.version}",
                             org.wso2.carbon.core;version="${carbon.kernel.version}",
+                            org.wso2.carbon.utils;version="${carbon.kernel.version}",
                             org.wso2.carbon.utils.multitenancy;version="${carbon.kernel.version}",
                             org.wso2.carbon.user.core;version="${carbon.user.core.version}",
                             org.wso2.carbon.user.core.common;version="${carbon.user.core.version}",

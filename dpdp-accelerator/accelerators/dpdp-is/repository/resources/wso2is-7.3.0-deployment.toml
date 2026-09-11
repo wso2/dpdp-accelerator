@@ -399,6 +399,16 @@ attachment_max_size_bytes = 10485760
 # Maximum number of files a single complaint attachment upload request may carry (see AttachmentPolicy).
 attachment_max_files_per_upload = 5
 
+# The three complaint notification email templates (ComplaintCreated, ComplaintCommentAdded,
+# ComplaintAcknowledged) are provisioned once per tenant into Console -> Email Templates and left
+# alone after that, so an administrator's edit there survives future tenant-update events. Set
+# reset_to_default_enabled = true to instead force every tenant's templates back to the bundled
+# subject/body on the next tenant-update event (e.g. right after upgrading the accelerator) -
+# remember to set it back to false afterwards, or every future update keeps re-clobbering them.
+# See docs/configuration-guide.md's "Customizing complaint email templates" section.
+[dpdp_accelerator.complaints.email_templates]
+reset_to_default_enabled = false
+
 # Event Notification Framework runtime settings.
 [dpdp_accelerator.event_notifications]
 # Automatically reconciles the DPDP system topics (consent.update, consent.revoke, etc.) for

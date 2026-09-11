@@ -352,3 +352,36 @@ pending_subscription_recovery_threshold_seconds = 60
 
 These are server-wide runtime settings. Subscription `shared_secret` values
 remain per-subscription data and are not placed in `dpdp-accelerator.xml`.
+
+# Customizing complaint email templates
+
+The three complaint notification emails (`ComplaintCreated`,
+`ComplaintCommentAdded`, `ComplaintAcknowledged`) are standard IS notification
+templates - edit their subject/body in Console under **Email Templates**, per
+tenant, the same as any other IS template. No rebuild needed; delivery goes
+through the usual `[output_adapter.email]` SMTP config.
+
+Available placeholders: `{{reference-id}}`, `{{message-excerpt}}`,
+`{{data-principal-name}}`, `{{actor-name}}`, `{{category-label}}`,
+`{{priority-label}}`, `{{status-label}}`, `{{sla-label}}`, `{{action-url}}`,
+`{{recipient-role-label}}`, `{{headline-html}}`, `{{footer-text}}`,
+`{{action-badge-html}}`, `{{logo-url}}` (see `EmailNotificationClient` for
+exactly what each resolves to).
+
+Provisioning is check-then-add per tenant: a template is written once, the
+first time a tenant is provisioned, and never touched again after that - a
+Console edit is permanent and survives every later tenant-update event.
+There is no flag or action that resets an already-provisioned tenant's
+template back to the bundled default; the only way to change what a tenant
+already has is to edit it again in Console. A change to the bundled default
+(see below) only affects tenants provisioned after that change.
+
+The bundled default subject/body itself comes from
+`<IS_HOME>/repository/conf/email/email-dpdp-config.xml` when present, the
+same shape as this product's own `email-admin-config.xml`. Edit that file to
+change the default new tenants get, with no Java rebuild - falls back to the
+accelerator's own bundled resource if the file is missing or doesn't define a
+given type.
+
+All three types currently share one bundled HTML body; splitting them per-type
+is a possible future improvement, not yet decided.
