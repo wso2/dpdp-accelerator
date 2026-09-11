@@ -23,6 +23,7 @@
             <package name="org.wso2.dpdp.accelerator.complaint.mgt.service.dto"/>
             <package name="org.wso2.dpdp.accelerator.complaint.mgt.service.exception"/>
             <package name="org.wso2.dpdp.accelerator.complaint.mgt.service.impl"/>
+            <package name="org.wso2.dpdp.accelerator.complaint.mgt.service.internal"/>
             <package name="org.wso2.dpdp.accelerator.complaint.mgt.service.util"/>
             <package name="org.wso2.dpdp.accelerator.complaint.mgt.service.notification"/>
 

@@ -140,6 +140,33 @@ public class DPDPConfigParserTest {
     }
 
     @Test
+    public void parsesComplaintsEmailNotificationsEnabledValues() throws Exception {
+
+        DPDPConfigParser parser = DPDPConfigParser.getInstance();
+        Field configurationField = DPDPConfigParser.class.getDeclaredField("configuration");
+        configurationField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> values = (Map<String, Object>) configurationField.get(parser);
+        Map<String, Object> backup = new HashMap<>(values);
+        try {
+            values.remove("Complaints.EmailNotificationsEnabled");
+            assertTrue(parser.isComplaintsEmailNotificationsEnabled());
+
+            values.put("Complaints.EmailNotificationsEnabled", "false");
+            assertTrue(!parser.isComplaintsEmailNotificationsEnabled());
+
+            values.put("Complaints.EmailNotificationsEnabled", "TRUE");
+            assertTrue(parser.isComplaintsEmailNotificationsEnabled());
+
+            values.put("Complaints.EmailNotificationsEnabled", "flase");
+            expectThrows(IllegalStateException.class, parser::isComplaintsEmailNotificationsEnabled);
+        } finally {
+            values.clear();
+            values.putAll(backup);
+        }
+    }
+
+    @Test
     public void fallsBackToConsentHistoryDefaultsWhenKeysAreAbsent() {
 
         DPDPConfigParser parser = DPDPConfigParser.getInstance();
@@ -200,6 +227,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getComplaintsStatutoryDuePeriodDays(), CUSTOM_STATUTORY_DUE_PERIOD_DAYS);
         assertEquals(service.getComplaintsAttachmentMaxSizeBytes(), CUSTOM_ATTACHMENT_MAX_SIZE_BYTES);
         assertEquals(service.getComplaintsAttachmentMaxFilesPerUpload(), CUSTOM_ATTACHMENT_MAX_FILES_PER_UPLOAD);
+        assertTrue(service.isComplaintsEmailNotificationsEnabled());
         assertEquals(service.getJdbcConnectionVerificationTimeoutSeconds(), 3);
         assertTrue(service.isConsentPortalProvisioningEnabled());
         assertEquals(service.getEventNotificationThreadPoolSize(), 8);
@@ -235,6 +263,8 @@ public class DPDPConfigParserTest {
                 DPDPCommonConstants.DEFAULT_COMPLAINTS_ATTACHMENT_MAX_SIZE_BYTES);
         assertEquals(service.getComplaintsAttachmentMaxFilesPerUpload(),
                 DPDPCommonConstants.DEFAULT_COMPLAINTS_ATTACHMENT_MAX_FILES_PER_UPLOAD);
+        assertEquals(service.isComplaintsEmailNotificationsEnabled(),
+                DPDPCommonConstants.DEFAULT_COMPLAINTS_EMAIL_NOTIFICATIONS_ENABLED);
         assertEquals(service.getJdbcConnectionVerificationTimeoutSeconds(), 1);
         assertEquals(service.getEventNotificationThreadPoolSize(), 4);
         assertEquals(service.getEventNotificationBaseBackoffSeconds(), 5L);

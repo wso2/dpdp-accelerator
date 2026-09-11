@@ -73,6 +73,11 @@
         {% else %}
         <AttachmentMaxFilesPerUpload>5</AttachmentMaxFilesPerUpload>
         {% endif %}
+        {% if dpdp_accelerator.complaints.email_notifications_enabled is defined %}
+        <EmailNotificationsEnabled>{{dpdp_accelerator.complaints.email_notifications_enabled}}</EmailNotificationsEnabled>
+        {% else %}
+        <EmailNotificationsEnabled>true</EmailNotificationsEnabled>
+        {% endif %}
     </Complaints>
     <EventNotifications>
         {% if dpdp_accelerator.event_notifications.webhook.thread_pool_size is defined %}

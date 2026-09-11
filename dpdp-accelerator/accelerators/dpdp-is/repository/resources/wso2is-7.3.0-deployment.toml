@@ -398,6 +398,8 @@ statutory_due_period_days = 90
 attachment_max_size_bytes = 10485760
 # Maximum number of files a single complaint attachment upload request may carry (see AttachmentPolicy).
 attachment_max_files_per_upload = 5
+# Set false to disable complaint-related emails (creation, comments, acknowledgements) entirely
+email_notifications_enabled = true
 
 # Event Notification Framework runtime settings.
 [dpdp_accelerator.event_notifications]

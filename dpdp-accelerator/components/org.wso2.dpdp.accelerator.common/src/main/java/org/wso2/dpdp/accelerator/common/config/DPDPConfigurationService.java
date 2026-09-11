@@ -45,6 +45,8 @@ public interface DPDPConfigurationService {
 
     int getComplaintsAttachmentMaxFilesPerUpload();
 
+    boolean isComplaintsEmailNotificationsEnabled();
+
     int getEventNotificationThreadPoolSize();
 
     long getEventNotificationBaseBackoffSeconds();

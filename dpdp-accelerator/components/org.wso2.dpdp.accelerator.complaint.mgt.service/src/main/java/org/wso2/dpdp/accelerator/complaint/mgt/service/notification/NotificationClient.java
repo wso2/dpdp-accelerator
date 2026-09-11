@@ -23,8 +23,9 @@ import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
 
 /**
  * Notifies interested parties about complaint lifecycle events. {@link EmailNotificationClient} is
- * the only implementation today; this interface exists so a future channel (SMS, push, ...) could
- * be added without either caller changing.
+ * the real implementation; {@link NoOpNotificationClient} is wired in instead when
+ * {@code Complaints.EmailNotificationsEnabled} is {@code false}. This interface exists so a future
+ * channel (SMS, push, ...) could be added without either caller changing.
  *
  * <p>Implementations must never let a notification failure propagate to the caller - every method
  * here is fire-and-forget by design.
