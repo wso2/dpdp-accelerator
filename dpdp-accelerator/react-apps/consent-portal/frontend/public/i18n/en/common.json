@@ -31,14 +31,8 @@
     "elements": "Elements",
     "administration": "Administration",
     "adminConsents": "All Consents",
-    "nominations": "Nominations",
-    "nomineeActivation": "Nominee Activation",
     "myComplaints": "My Complaints",
     "complaintManagement": "Complaints",
-    "dataProcessors": "Data Processors",
-    "dataProcessorTopics": "Topics",
-    "dataProcessorSubscriptions": "Subscriptions",
-    "dataProcessorEvents": "Events",
     "events": "Events",
     "topics": "Topics",
     "subscriptions": "Subscriptions"
@@ -62,18 +56,13 @@
     "consentCount": "{{count}} consents",
     "consentCount_one": "{{count}} consent",
     "consentCount_other": "{{count}} consents",
-    "expiringSoon": "Expiring soon",
     "loadFailed": "Unable to load your dashboard right now.",
-    "noExpiring": "No active consents expire within the next {{days}} days.",
     "noPending": "You have no pending consents to review.",
     "noPurposes": "No shared purposes are available yet.",
     "pending": "Pending consents",
     "pendingConsents": "Pending consents",
     "subtitle": "An overview of your consent activity and upcoming actions.",
     "title": "Dashboard",
-    "typeBreakdown": "Consent type breakdown",
-    "typeBreakdownSubtitle": "All of your consents grouped by type",
-    "noTypes": "No consent types are available yet.",
     "viewPending": "View all pending consents",
     "serviceBreakdown": "Consent breakdown by service",
     "serviceBreakdownSubtitle": "All of your consents grouped by requesting service",
@@ -85,10 +74,6 @@
       "sectionAriaLabel": "Administrative consent filters",
       "consentIdSearchPlaceholder": "Search by consent ID",
       "removeConsentIdForAdvanced": "Remove the Consent ID filter to use advanced filters.",
-      "removeConsentIdForStatus": "Remove the Consent ID filter to use the status filter.",
-      "userIds": "User IDs",
-      "groupIds": "Group IDs",
-      "commaSeparatedUsers": "Separate multiple user IDs with commas",
       "active": "Active filters",
       "serviceId": "Service",
       "removeConsentIdForState": "Remove the Consent ID filter to use the state filter.",
@@ -104,35 +89,13 @@
     }
   },
   "consentRegistry": {
-    "title": "All Consents",
     "details": {
       "title": "Consent Details",
       "consentId": "Consent ID",
-      "status": "Status",
-      "type": "Consent Type",
-      "frequency": "Access Limit",
-      "frequencyHelp": "This indicates how many times this consent can be accessed per day.",
-      "frequencyUnitSingular": "time per day",
-      "frequencyUnitPlural": "times per day",
-      "purposes": "Purposes",
-      "duration": "Lookback Period",
-      "durationHelp": "This defines how far back data can be accessed. For example, if set to 6 months, data from up to 6 months ago is accessible.",
-      "durationUnitHourSingular": "hour",
-      "durationUnitHourPlural": "hours",
-      "durationUnitDaySingular": "day",
-      "durationUnitDayPlural": "days",
-      "durationUnitYearSingular": "year",
-      "durationUnitYearPlural": "years",
       "created": "Created",
-      "updated": "Updated",
       "validUntil": "Valid Until",
-      "groupId": "Group ID",
-      "recurring": "Recurring",
       "back": "Back to Registry",
       "notFound": "Consent record not found",
-      "approved": "Approved",
-      "notApproved": "Not approved",
-      "approvedCount": "{{approved}}/{{total}} approved",
       "section": {
         "purposes": "Consent Purposes",
         "authorizations": "Authorizations",
@@ -140,36 +103,17 @@
       },
       "table": {
         "element": "Element",
-        "approved": "Approved",
-        "required": "Required",
         "description": "Description",
         "user": "User",
         "status": "Status",
         "updated": "Updated",
-        "resources": "Resources",
         "date": "Date",
         "time": "Time",
         "state": "State"
       },
       "lifecycle": {
         "tableAriaLabel": "Consent lifecycle",
-        "empty": "No lifecycle events are available.",
-        "noDescription": "No description available."
-      },
-      "actions": {
-        "viewResources": "View Resources",
-        "noResourcesTooltip": "No resources available"
-      },
-      "resourcesModal": {
-        "title": "Authorization Resources",
-        "authRef": "Auth",
-        "close": "Close"
-      },
-      "values": {
-        "yes": "Yes",
-        "no": "No",
-        "required": "Required",
-        "optional": "Optional"
+        "empty": "No lifecycle events are available."
       },
       "service": "Service",
       "elementCount": "{{count}} elements",
@@ -196,14 +140,6 @@
       },
       "approval": {
         "title": "Review & Approve Consent",
-        "subtitle": "Please review the consent elements before approval.",
-        "mandatory": "Mandatory Elements (Required)",
-        "optional": "Optional Elements",
-        "required": "Required",
-        "toggle": "Toggle permission",
-        "toggleWithDetails": "Toggle permission for {{elementLabel}} in {{purposeLabel}}",
-        "loading": "Loading consent details...",
-        "noMandatory": "No mandatory requirements for this consent.",
         "confirm": "Approve Consent",
         "message": "Are you sure you want to approve this consent?",
         "note": "Approving grants every purpose and element requested by this consent."
@@ -212,15 +148,13 @@
         "title": "Confirm Rejection",
         "message": "Are you sure you want to reject this consent?",
         "note": "Rejecting this consent means the requested consents will not be granted.",
-        "confirm": "Reject Consent",
-        "cancel": "Cancel"
+        "confirm": "Reject Consent"
       },
       "revocation": {
         "title": "Confirm Revocation",
         "message": "Are you sure you want to revoke consent?",
         "note": "This action revokes both mandatory and optional consents granted for all associated purposes.",
-        "confirm": "Revoke Consents",
-        "cancel": "Cancel"
+        "confirm": "Revoke Consents"
       }
     },
     "status": {
@@ -237,11 +171,6 @@
     },
     "filters": {
       "sectionAriaLabel": "Consent filters",
-      "purposeSearchPlaceholder": "Search by purpose name",
-      "status": "Status",
-      "groupIds": "Group ID",
-      "elementName": "Element name",
-      "elementVersion": "Element version",
       "advanced": "Advanced filters",
       "apply": "Apply",
       "cancel": "Cancel",
@@ -261,7 +190,6 @@
       }
     },
     "messages": {
-      "loading": "Loading consents...",
       "loadFailed": "Unable to load consents right now.",
       "emptyTitle": "No consents found",
       "empty": "No consents found for the selected filters."
@@ -269,20 +197,14 @@
     "table": {
       "tableAriaLabel": "Consent registry table",
       "consentIdAriaLabel": "Consent ID: {{id}}",
-      "groupLabel": "Group ID: {{groupId}}",
       "notApplicable": "Not applicable",
       "purposes": {
         "more": "+{{count}} more",
-        "title": "Consent purposes",
-        "hint": "Showing all purposes of the consent"
+        "title": "Consent purposes"
       },
       "headers": {
         "consentId": "Consent ID",
-        "type": "Type",
-        "status": "Status",
         "purposes": "Purposes",
-        "updated": "Updated",
-        "expiration": "Expiration",
         "actions": "Actions",
         "service": "Service",
         "state": "State"
@@ -322,22 +244,13 @@
     "actions": {
       "addElement": "Add element",
       "addProperty": "Add property",
-      "apply": "Apply",
       "cancel": "Cancel",
-      "clear": "Clear",
-      "clearAll": "Clear all",
       "create": "Create",
       "delete": "Delete",
       "deleting": "Deleting...",
       "deleteVersion": "Delete version",
-      "filters": "Filters",
-      "removeElement": "Remove element",
       "removeProperty": "Remove property",
       "retry": "Retry",
-      "saving": "Saving...",
-      "view": "View",
-      "viewElement": "View {{name}}",
-      "viewPurpose": "View {{name}}",
       "addVersion": "Add Version",
       "reset": "Reset",
       "search": "Search",
@@ -345,71 +258,33 @@
     },
     "fields": {
       "actions": "Actions",
-      "created": "Created",
       "description": "Description",
       "displayName": "Display name",
       "element": "Element",
       "elementId": "Element ID",
-      "elementName": "Element name",
-      "elementNamespace": "Element namespace",
-      "elements": "Elements",
-      "elementVersion": "Element version",
-      "groupId": "Group ID",
-      "groupIds": "Group IDs",
-      "mandatory": "Mandatory",
       "name": "Name",
-      "namespace": "Namespace",
       "properties": "Properties",
       "propertyKey": "Key",
       "propertyValue": "Value",
       "purpose": "Purpose",
       "purposeId": "Purpose ID",
-      "purposeName": "Purpose name",
-      "scope": "Scope",
-      "purposeScope": "Purpose scope",
-      "purposeVersion": "Purpose version",
       "requirement": "Requirement",
-      "schema": "Schema",
       "type": "Type",
       "version": "Version",
       "latestVersion": "Latest version"
     },
-    "help": {
-      "commaSeparatedGroups": "Separate multiple group IDs with commas",
-      "defaultNamespace": "Uses the default namespace when empty",
-      "elementVersionRequiresIdentity": "Enter an element name or namespace first",
-      "organizationPurpose": "Leave empty to create an organization-level purpose",
-      "purposeVersionRequiresName": "Enter a purpose name first",
-      "schemaElementTypes": "Schemas are supported only for JSON and XML elements.",
-      "selectElementFirst": "Select an element first"
-    },
     "values": {
-      "all": "All",
-      "any": "Any",
-      "customNamespace": "Custom Namespace",
-      "defaultNamespace": "Default Namespace",
       "mandatory": "Mandatory",
-      "matches": "Matches",
       "noDescription": "No description",
       "optional": "Optional",
-      "specificGroup": "Specific group",
-      "itemCount": "{{count}} selected",
-      "latest": "Latest",
-      "viewing": "Viewing"
+      "latest": "Latest"
     },
     "elements": {
       "add": "Add element",
-      "activeFilters": "Active filters",
       "back": "Back to elements",
-      "createTitle": "Create element",
-      "detailsSection": "Element details",
       "empty": "No elements match the selected filters.",
       "emptyTitle": "No elements found",
-      "filterTitle": "Filter elements",
       "loadFailed": "Unable to load elements right now.",
-      "newVersion": "Create new version",
-      "refreshing": "Refreshing...",
-      "results": "{{count}} elements",
       "searchPlaceholder": "Search by element name",
       "subtitle": "Manage reusable consent elements and their versioned definitions.",
       "tableLabel": "Consent elements",
@@ -437,22 +312,11 @@
     },
     "purposes": {
       "add": "Add purpose",
-      "activeFilters": "Active filters",
-      "allPurposes": "All purposes",
       "back": "Back to purposes",
-      "createTitle": "Create purpose",
-      "detailsSection": "Purpose details",
       "empty": "No purposes match the selected filters.",
       "emptyTitle": "No purposes found",
-      "filterTitle": "Filter purposes",
       "loadFailed": "Unable to load purposes right now.",
-      "newVersion": "Create new version",
-      "orgWide": "Organization-wide",
-      "refreshing": "Refreshing...",
-      "results": "{{count}} purposes",
-      "searchLabel": "Search purposes",
       "searchPlaceholder": "Search by purpose name",
-      "scopeFilter": "Purpose scope",
       "subtitle": "Manage reusable consent purposes and their element definitions.",
       "tableLabel": "Consent purposes",
       "title": "Purposes",
@@ -497,228 +361,15 @@
       "emptySearch": "No purposes match this search."
     },
     "details": {
-      "definition": "Definition",
-      "elementIdentity": "Element identity",
       "elements": "Elements",
-      "identity": "Purpose identity",
-      "overview": "Overview",
-      "versionDetails": "Version details",
       "versions": "Version history"
     },
     "messages": {
-      "createElementFirst": "Create an element before defining a purpose.",
-      "immutableElement": "{{namespace}}:{{name}} remains a {{type}} element. Identity fields cannot change between versions.",
-      "immutablePurpose": "{{name}} remains owned by {{groupId}}. Identity fields cannot change between versions.",
-      "immutableOrganizationPurpose": "{{name}} is organization-wide. Its identity and scope cannot change between versions.",
-      "immutableGroupPurpose": "{{name}} is scoped to group {{groupId}}. Its identity and scope cannot change between versions.",
-      "loadingElements": "Loading available elements...",
-      "loadingVersions": "Loading element versions...",
-      "noElementsFound": "No matching elements",
       "noElements": "No elements are configured for this version.",
       "noProperties": "No custom properties.",
-      "noSchema": "No schema is configured for this version.",
-      "noPurposeElements": "No elements added yet. Add at least one element to create the purpose.",
       "noVersions": "No versions are available.",
       "versionsLoadFailed": "Unable to load version history right now.",
       "setLatestFailed": "Unable to set this version as the latest. Please try again."
-    },
-    "validation": {
-      "duplicateElements": "Each element can only be included once.",
-      "duplicatePropertyKeys": "Property keys must be unique.",
-      "elementRequired": "Select at least one element.",
-      "groupIdRequired": "Group ID is required for a group-specific purpose.",
-      "nameRequired": "Name is required.",
-      "namespaceRequired": "Namespace is required when Custom is selected.",
-      "schemaRequired": "Schema is required for JSON and XML elements."
-    },
-    "delete": {
-      "title": "Delete version",
-      "message": "Delete version {{version}}?",
-      "warning": "This cannot be undone. Referenced versions cannot be deleted, and deleting the final version deletes the entire entry."
-    }
-  },
-  "nominee": {
-    "title": "Nominations",
-    "messages": {
-      "loadFailed": "Unable to load nominations right now."
-    },
-    "nominatedFor": {
-      "openAccount": "Open account →",
-      "accept": "Accept",
-      "reject": "Decline",
-      "actionNeeded": "Action needed",
-      "ariaLabel": "Nominated accounts",
-      "empty": "No one has nominated you yet.",
-      "title": "Nominated Accounts",
-      "table": {
-        "account": "Account",
-        "status": "Status",
-        "actions": "Actions"
-      }
-    },
-    "acting": {
-      "starting": "Opening the account…",
-      "startFailed": "You are not a nominee for this account.",
-      "startFailedHint": "Return to Nominations and try again.",
-      "blockedTitle": "Not available in nominee access",
-      "blockedFenced": "Account settings, credentials and nominations can never be used on behalf of another person.",
-      "blockedScope": "The owner did not grant you permission for this area.",
-      "backToAllowed": "Go to what I can access",
-      "exit": "Exit"
-    },
-    "permissions": {
-      "consentView": "View consents",
-      "consentRevoke": "Revoke consents",
-      "consentApprove": "Approve pending consents",
-      "accountView": "View personal account",
-      "accountUpdate": "Update personal account",
-      "accountDelete": "Delete personal account"
-    },
-    "mine": {
-      "add": "Add Nominee",
-      "remove": "Remove",
-      "empty": "You haven't nominated anyone yet.",
-      "status": {
-        "active": "Active",
-        "pending": "Awaiting acceptance",
-        "rejected": "Declined",
-        "accepted": "Awaiting approval",
-        "deactivated": "Suspended"
-      },
-      "ariaLabel": "Nominees",
-      "title": "Nominees",
-      "table": {
-        "person": "Person",
-        "permissions": "Permissions",
-        "status": "Status",
-        "actions": "Actions",
-        "morePermissions": "+{{count}} more"
-      }
-    },
-    "setup": {
-      "dialog": {
-        "title": "Add Nominee",
-        "editTitle": "Edit Nominee",
-        "saveChanges": "Save Changes",
-        "emailLabel": "Nominee's registered email",
-        "permissionsTitle": "What can this nominee do?",
-        "permissionsSubtitle": "Tick only what you want to grant. These become the access this nominee is allowed to use.",
-        "sensitive": "Sensitive",
-        "cancel": "Cancel",
-        "processing": "Saving...",
-        "confirm": "Send nomination",
-        "processingEdit": "Saving…"
-      },
-      "removeDialog": {
-        "title": "Remove Nominee",
-        "message": "{{nomineeEmail}} will no longer be able to manage your consents.",
-        "confirm": "Remove Nominee",
-        "cancel": "Cancel",
-        "processing": "Removing..."
-      }
-    },
-    "manage": {
-      "title": "Managing Owner's Consents",
-      "back": "Exit Nominee View",
-      "consents": {
-        "title": "Consents",
-        "subtitle": "View and, where permitted, revoke consents granted by this account."
-      },
-      "selectedCount": "{{count}} selected",
-      "revokeSelected": "Revoke Selected",
-      "messages": {
-        "loadFailed": "Unable to load consents right now.",
-        "empty": "No consents found for this account."
-      },
-      "table": {
-        "ariaLabel": "Nominee-managed consent table",
-        "purposes": "Purposes",
-        "type": "Type",
-        "status": "Status",
-        "updated": "Updated",
-        "actions": "Actions",
-        "revoke": "Revoke",
-        "notRevokable": "Only active consents can be revoked",
-        "clientLabel": "Organization: {{client}}"
-      },
-      "bulkRevoke": {
-        "title": "Confirm Bulk Revocation",
-        "message": "This will revoke {{count}} consent(s). This cannot be undone.",
-        "note": "Each revocation is recorded separately as an action you performed on behalf of the owner.",
-        "progress": "Revoking {{processed}} of {{count}}...",
-        "confirm": "Revoke Selected",
-        "cancel": "Cancel",
-        "processing": "Processing..."
-      },
-      "subtitle": "You are acting on behalf of this account. You can only do what the owner authorised you to do.",
-      "account": {
-        "title": "Account access",
-        "subtitle": "Actions the owner authorised you to perform on their account.",
-        "notGranted": "Not granted by the owner"
-      }
-    },
-    "detail": {
-      "title": "Consent Details",
-      "back": "Back"
-    }
-  },
-  "admin": {
-    "title": "Nominee Activation",
-    "status": {
-      "active": "Active",
-      "accepted": "Awaiting approval",
-      "pending": "Waiting on nominee",
-      "rejected": "Declined",
-      "deactivated": "Deactivated"
-    },
-    "pending": {
-      "title": "Awaiting your approval",
-      "empty": "Nothing is waiting on you right now.",
-      "count": "{{count}} awaiting approval",
-      "appointed": "Appointed {{email}}",
-      "accepted": "accepted {{date}}"
-    },
-    "search": {
-      "label": "Search by name or email",
-      "empty": "No matching accounts found.",
-      "results": "Accounts"
-    },
-    "table": {
-      "ariaLabel": "Nominations",
-      "owner": "Account",
-      "nominee": "Nominee",
-      "permissions": "Granted",
-      "status": "Status",
-      "nominated": "Nominated",
-      "actions": "Actions"
-    },
-    "controls": {
-      "title": "Nominees",
-      "titleNamed": "{{name}}'s nominees",
-      "nominated": "Nominated {{date}}",
-      "ticket": "ticket {{ticket}}",
-      "waitingNominee": "Nothing to do yet - the nominee has not accepted.",
-      "activate": "Activate access",
-      "noAction": "-",
-      "owner": "Account",
-      "deactivate": "Withdraw access",
-      "none": "This account has not appointed anyone."
-    },
-    "activateDialog": {
-      "title": "Activate Nominee Access",
-      "ticketLabel": "Legal/support ticket reference",
-      "confirm": "Activate Access",
-      "cancel": "Cancel",
-      "processing": "Activating...",
-      "subtitle": "This grants {{nomineeName}} access to manage consents for {{ownerName}}."
-    },
-    "deactivateDialog": {
-      "title": "Deactivate Nominee Access",
-      "reasonLabel": "Reason",
-      "confirm": "Deactivate Access",
-      "cancel": "Cancel",
-      "processing": "Deactivating...",
-      "subtitle": "This immediately revokes the nominee's access to {{ownerName}}'s consents."
     }
   },
   "complaints": {
@@ -852,7 +503,6 @@
       "tabLabel": "Attachments",
       "tabLabelWithCount": "Attachments ({{count}})",
       "empty": "No attachments have been added to this complaint.",
-      "initialSubmission": "Initial submission",
       "internalNote": "Internal",
       "overflowMore": "+{{count}} more",
       "uploadedCount": "Attached {{count}} new files",
@@ -866,7 +516,6 @@
         "empty": "No complaints match the selected filters.",
         "stats": {
           "open": "Open",
-          "awaitingInfo": "Awaiting response",
           "resolved": "Resolved",
           "slaBreached": "SLA breached"
         },
@@ -905,98 +554,6 @@
           "processing": "Resolving...",
           "resolveFailed": "Something went wrong and the complaint could not be resolved. Please try again."
         }
-      }
-    }
-  },
-  "dataProcessors": {
-    "subscriptions": {
-      "title": "Subscriptions",
-      "subtitle": "All registered subscriptions across the Event Notification Framework.",
-      "addAction": "Add subscription",
-      "filters": {
-        "sectionAriaLabel": "Subscription filters",
-        "status": "Status",
-        "topic": "Topic",
-        "clear": "Clear filters",
-        "statusOptions": {
-          "all": "All statuses",
-          "active": "Active",
-          "pendingVerification": "Pending",
-          "stale": "Stale"
-        },
-        "topicOptions": {
-          "all": "All topics"
-        }
-      },
-      "messages": {
-        "reverifySuccess": "Subscription re-verified successfully. Status is now ACTIVE.",
-        "reverifyStillStale": "Verification failed again. The subscription remains STALE.",
-        "reverifyFailed": "Re-verification failed."
-      }
-    },
-    "events": {
-      "title": "Events",
-      "subtitle": "All event deliveries across the Event Notification Framework.",
-      "filters": {
-        "sectionAriaLabel": "Event filters",
-        "status": "Status",
-        "topic": "Topic",
-        "search": "Search events",
-        "searchPlaceholder": "Search by purpose or subscriber ID...",
-        "clear": "Clear filters",
-        "statusOptions": {
-          "all": "All statuses"
-        },
-        "topicOptions": {
-          "all": "All topics"
-        }
-      },
-      "emptyTitle": "No events found",
-      "emptyMessage": "No published events match the selected criteria.",
-      "table": {
-        "eventId": "Event ID",
-        "topic": "Topic",
-        "purposes": "Purposes",
-        "deliveries": "Deliveries",
-        "occurredAt": "Occurred at",
-        "action": "Action",
-        "all": "ALL",
-        "noSubscribers": "No Subscribers",
-        "viewEvent": "View Event",
-        "subscriberCount_one": "{{count}} Subscriber",
-        "subscriberCount_other": "{{count}} Subscribers"
-      },
-      "detail": {
-        "notFoundTitle": "Event Not Found",
-        "notFoundMessage": "No event was found with ID \"{{eventId}}\".",
-        "backToEvents": "Back to Events",
-        "topic": "Topic",
-        "purposes": "Purposes",
-        "occurredAt": "Occurred At",
-        "deliveries": "Deliveries",
-        "all": "ALL",
-        "noSubscribers": "No Subscribers",
-        "subscriberCount_one": "{{count}} Subscriber",
-        "subscriberCount_other": "{{count}} Subscribers"
-      },
-      "dialog": {
-        "title": "Retry history",
-        "deliveryId": "Delivery ID",
-        "loading": "Loading event delivery history…",
-        "noRetries": "Initial attempt completed. No retries recorded.",
-        "attempt": "Attempt {{attempt}}",
-        "retrySuffix": " (retry)",
-        "webhookDescription": "Chronological history of HTTP delivery attempts and retries.",
-        "pollTitle": "Poll Completion Status & Acknowledgment",
-        "completionStatus": "Completion Status",
-        "completionTimestamp": "Completion Timestamp",
-        "erasureMethod": "Erasure Method",
-        "recordsAffected": "Records Affected",
-        "referenceId": "Reference ID",
-        "submittedBy": "Submitted By",
-        "notes": "Notes",
-        "noAcknowledgment": "No poll completion acknowledgment submitted yet.",
-        "close": "Close"
       }
     }
   },
@@ -1152,7 +709,6 @@
       "viewHistory": "View Delivery Attempts"
     },
     "deliveryHistory": {
-      "title": "Event Delivery Execution Audit",
       "loadFailed": "Unable to load delivery history.",
       "completion": "Completion Evidence",
       "attemptsTitle": "Delivery Attempts Chronology",
@@ -1174,8 +730,6 @@
       "allStatuses": "All Statuses",
       "topic": "Topic",
       "allTopics": "All Topics",
-      "groupId": "Group ID",
-      "groupIdPlaceholder": "Filter by Group ID...",
       "search": "Search",
       "clear": "Clear",
       "subscriptionId": "Subscription ID",
@@ -1212,33 +766,11 @@
       "empty": "No events found."
     },
     "actions": {
-      "publish": "Publish Event",
       "view": "View Details",
       "copyPayload": "Copy Payload",
       "close": "Close"
     },
-    "dialog": {
-      "publishTitle": "Publish Event",
-      "publishSubtitle": "Publish an event notification to trigger subscriber fan-out",
-      "topicLabel": "Topic",
-      "topicRequired": "Topic is required.",
-      "groupIdLabel": "Group ID (Optional)",
-      "groupIdPlaceholder": "e.g. consumer-group-01",
-      "groupIdHelper": "Optional group identifier for targeted delivery",
-      "purposesLabel": "Purposes (Optional, comma-separated)",
-      "purposesPlaceholder": "e.g. MARKETING, ANALYTICS",
-      "purposesHelper": "Comma-separated list of consent purposes associated with this event",
-      "payloadLabel": "Payload (JSON)",
-      "payloadHelper": "Valid JSON object representing the event data",
-      "payloadRequired": "Payload is required.",
-      "payloadMustBeObject": "Payload must be a valid JSON object.",
-      "invalidJson": "Please provide valid JSON format.",
-      "publishing": "Publishing...",
-      "publishSubmit": "Publish Event",
-      "publishSuccess": "Event published successfully."
-    },
     "details": {
-      "title": "Event Details",
       "backToEvents": "Back to Events",
       "loadFailed": "Unable to load event details.",
       "metadataTitle": "Event Metadata",
@@ -1249,7 +781,6 @@
       "noHistory": "No delivery attempts recorded.",
       "completionTitle": "Completion Evidence",
       "allPurposes": "All Purposes",
-      "createdAt": "Created At",
       "deliveriesTitle": "Downstream Subscriber Deliveries",
       "deliveriesSubtitle": "All deliveries and completion statuses generated for this event",
       "noDeliveries": "No Deliveries Generated",
