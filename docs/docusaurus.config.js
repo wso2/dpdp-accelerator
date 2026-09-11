@@ -13,7 +13,11 @@ const config = {
   organizationName: 'wso2',
   projectName: 'dpdp-accelerator',
   onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'throw',
+  markdown: {
+    hooks: {
+      onBrokenMarkdownLinks: 'throw',
+    },
+  },
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
@@ -26,6 +30,7 @@ const config = {
         language: ['en'],
         highlightSearchTermsOnTargetPage: true,
         explicitSearchResultPath: true,
+        docsDir: 'content',
         docsRouteBasePath: 'docs',
         indexBlog: false,
         indexPages: true,
@@ -42,7 +47,7 @@ const config = {
           path: 'content',
           routeBasePath: 'docs',
           sidebarPath: './sidebars.js',
-          editUrl: 'https://github.com/wso2/dpdp-accelerator/edit/main/docs/content/',
+          editUrl: 'https://github.com/wso2/dpdp-accelerator/edit/main/docs/',
           showLastUpdateTime: true,
         },
         blog: false,
@@ -56,8 +61,14 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       image: 'img/logo.svg',
+      colorMode: {
+        defaultMode: 'light',
+        disableSwitch: false,
+        respectPrefersColorScheme: true,
+      },
       docs: {
         sidebar: {
+          hideable: true,
           autoCollapseCategories: true,
         },
       },
@@ -69,7 +80,9 @@ const config = {
           srcDark: 'img/logo-dark.svg',
         },
         items: [
-          { to: '/docs/setup-guide', label: 'Guides', position: 'left' },
+          { to: '/docs/quickstart', label: 'Quickstart', position: 'left' },
+          { to: '/docs/setup-guide', label: 'Setup', position: 'left' },
+          { to: '/docs/learn', label: 'Learn', position: 'left' },
           {
             href: 'https://github.com/wso2/dpdp-accelerator',
             label: 'GitHub',

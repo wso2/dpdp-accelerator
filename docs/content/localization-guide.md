@@ -94,7 +94,7 @@ translated:
 ```
 
 **Purposes can only have their `description` translated; Elements can have
-both `displayName` and `description`.
+both `displayName` and `description`.**
 
 To add a translation for an Element or Purpose:
 
