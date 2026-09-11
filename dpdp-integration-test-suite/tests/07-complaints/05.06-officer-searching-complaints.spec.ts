@@ -69,25 +69,30 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
     await officerPage.context().close()
   })
 
-  test('05.06.03 - Explicitly filtering by "Resolved" status reveals an otherwise-hidden resolved complaint', async ({
+  test('05.06.03 - Filtering by "Resolved" status narrows the queue to resolved complaints', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
   }) => {
-    const seeded = await seedComplaint(userComplaintApi, 'OTHER', 'queue-filter-resolved')
-    await moveComplaintToStatus(officerComplaintApi, seeded.id, 'IN_PROGRESS')
-    await moveComplaintToStatus(officerComplaintApi, seeded.id, 'RESOLVED', 'Resolved for this test.')
+    // Two complaints so the filter has something to exclude: 05.05.03 covers both being visible
+    // under "All", and this asserts the OPEN one drops out once "Resolved" is selected. The
+    // status filter is applied server-side, so this exercises the query, not a client-side memo.
+    const resolved = await seedComplaint(userComplaintApi, 'OTHER', 'queue-filter-resolved')
+    await moveComplaintToStatus(officerComplaintApi, resolved.id, 'IN_PROGRESS')
+    await moveComplaintToStatus(officerComplaintApi, resolved.id, 'RESOLVED', 'Resolved for this test.')
+    const stillOpen = await seedComplaint(userComplaintApi, 'OTHER', 'queue-filter-open')
 
     const officerPage = await loginAsConsentAdmin(browser)
     const queuePage = new ComplaintQueuePage(officerPage)
     await queuePage.goto()
     await queuePage.setRowsPerPage(25)
 
-    // Complements 05.05.03 (resolved complaints hidden by default) - the same status filter that
-    // hides them by default is what surfaces them again once selected explicitly.
-    await expect(queuePage.rowByReferenceId(seeded.referenceId)).not.toBeVisible()
+    await expect(queuePage.rowByReferenceId(resolved.referenceId)).toBeVisible()
+    await expect(queuePage.rowByReferenceId(stillOpen.referenceId)).toBeVisible()
+
     await queuePage.filterByStatus('Resolved')
-    await expect(queuePage.rowByReferenceId(seeded.referenceId)).toBeVisible()
+    await expect(queuePage.rowByReferenceId(resolved.referenceId)).toBeVisible()
+    await expect(queuePage.rowByReferenceId(stillOpen.referenceId)).not.toBeVisible()
     await officerPage.context().close()
   })
 

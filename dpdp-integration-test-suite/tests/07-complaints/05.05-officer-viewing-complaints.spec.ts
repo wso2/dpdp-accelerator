@@ -45,12 +45,12 @@ test.describe('Complaint Officer viewing the queue and a case (UI)', () => {
     await officerPage.context().close()
   })
 
-  test('05.05.03 - A resolved complaint is hidden from the default (status=All) queue view', async ({
+  test('05.05.03 - A resolved complaint appears in the default (status=All) queue view', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
   }) => {
-    const seeded = await seedComplaint(userComplaintApi, 'OTHER', 'resolved-hidden')
+    const seeded = await seedComplaint(userComplaintApi, 'OTHER', 'resolved-visible')
     await moveComplaintToStatus(officerComplaintApi, seeded.id, 'IN_PROGRESS')
     await moveComplaintToStatus(officerComplaintApi, seeded.id, 'RESOLVED', 'Resolved for this test.')
 
@@ -58,13 +58,7 @@ test.describe('Complaint Officer viewing the queue and a case (UI)', () => {
     const queuePage = new ComplaintQueuePage(officerPage)
     await queuePage.goto()
     await queuePage.setRowsPerPage(25)
-
-    // ComplaintQueuePage.tsx's own `rows` memo filters out CLOSED_OUT_STATUSES (RESOLVED)
-    // whenever filters.status === 'All' - visible again only once that filter is explicitly set
-    // to "Resolved" (covered by 05.06.03). Asserting on this specific row, not on the word
-    // "Resolved" being absent anywhere on the page - the "Resolved" stat tile's own label makes
-    // that word always present regardless of this filtering behavior.
-    await expect(queuePage.rowByReferenceId(seeded.referenceId)).not.toBeVisible()
+    await expect(queuePage.rowByReferenceId(seeded.referenceId)).toBeVisible()
     await officerPage.context().close()
   })
 
