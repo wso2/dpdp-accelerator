@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import { Box, Button, SearchBar, Stack, TextField } from '@wso2/oxygen-ui'
+import { Box, Button, InputAdornment, Stack, TextField } from '@wso2/oxygen-ui'
 import { Search, X } from '@wso2/oxygen-ui-icons-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -48,11 +48,22 @@ function PurposeSearchFilter({ value, onSearch }: PurposeSearchFilterProps): Rea
   return (
     <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1}>
       <Box sx={{ flex: 1, maxWidth: { sm: 280 } }}>
-        <SearchBar
+        <TextField
           size="small"
+          variant="outlined"
           fullWidth
           value={draft.name}
           placeholder={t('catalog.purposes.searchPlaceholder')}
+          slotProps={{
+            input: {
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={16} />
+                </InputAdornment>
+              ),
+            },
+            htmlInput: { 'aria-label': t('catalog.purposes.searchPlaceholder') },
+          }}
           onChange={(event) => setDraft({ ...draft, name: event.target.value })}
           onKeyDown={(event) => {
             if (event.key === 'Enter') {
@@ -63,6 +74,7 @@ function PurposeSearchFilter({ value, onSearch }: PurposeSearchFilterProps): Rea
       </Box>
       <TextField
         size="small"
+        variant="outlined"
         sx={{ width: { xs: '100%', sm: 200 }, flexShrink: 0 }}
         label={t('catalog.fields.type')}
         value={draft.type}
