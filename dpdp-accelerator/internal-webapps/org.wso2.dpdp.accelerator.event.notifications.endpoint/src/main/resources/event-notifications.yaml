@@ -1201,6 +1201,7 @@ components:
   schemas:
     Error:
       type: object
+      x-class-extra-annotation: '@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)'
       required: [code, message]
       properties:
         code:
@@ -1217,6 +1218,18 @@ components:
       type: object
       required: [name]
       properties:
+        topicId:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
+        status:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
+        initiatedBy:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
         name:
           type: string
           maxLength: 225
@@ -1224,20 +1237,23 @@ components:
           type: string
           maxLength: 255
     Topic:
-      allOf:
-        - $ref: "#/components/schemas/TopicCreateRequest"
-        - type: object
-          required: [topicId, status, initiatedBy]
-          properties:
-            topicId:
-              type: string
-            status:
-              $ref: "#/components/schemas/TopicStatus"
-            initiatedBy:
-              type: string
-              enum: [system, user]
+      type: object
+      required: [name, topicId, status, initiatedBy]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        topicId:
+          type: string
+        status:
+          $ref: "#/components/schemas/TopicStatus"
+        initiatedBy:
+          type: string
+          enum: [system, user]
     PurposeFilterMode:
       type: string
+      x-class-extra-annotation: '@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = org.wso2.dpdp.accelerator.event.notifications.endpoint.util.RequestEnumDeserializers.FilterMode.class)'
       enum: [all, all_except, specific]
     Filter:
       type: object
@@ -1251,6 +1267,7 @@ components:
             type: string
     DeliveryMode:
       type: string
+      x-class-extra-annotation: '@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = org.wso2.dpdp.accelerator.event.notifications.endpoint.util.RequestEnumDeserializers.Delivery.class)'
       enum: [webhook, poll]
     DeliveryConfigRequest:
       type: object
@@ -1281,11 +1298,44 @@ components:
           description: Always null in service responses.
     SubscriptionStatus:
       type: string
+      x-class-extra-annotation: '@com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = org.wso2.dpdp.accelerator.event.notifications.endpoint.util.RequestEnumDeserializers.Status.class)'
       enum: [active, pending, stale, deleted]
     SubscriptionCreateRequest:
       type: object
       required: [topic, delivery]
       properties:
+        subscriptionId:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
+        orgId:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; tenant context determines the organization.
+        groupId:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; the handler derives the group from tenant context.
+        status:
+          $ref: "#/components/schemas/SubscriptionStatus"
+        createdAt:
+          type: integer
+          format: int64
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
+        updatedAt:
+          type: integer
+          format: int64
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
+        alreadyExists:
+          type: boolean
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
+        message:
+          type: string
+          deprecated: true
+          description: Accepted for compatibility; ignored on creation.
         topic:
           type: string
         filter:

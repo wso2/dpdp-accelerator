@@ -31,9 +31,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
-import java.util.Map;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error;
 import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -125,12 +124,7 @@ public class EventNotificationExceptionMapper implements ExceptionMapper<Throwab
     }
 
     private Response buildResponse(int status, String code, String message, String description) {
-        Map<String, Object> body = new HashMap<>();
-        body.put("code", code);
-        body.put("message", message);
-        if (description != null) {
-            body.put("description", description);
-        }
+        Error body = new Error().code(code).message(message).description(description);
 
         return Response.status(status > 0 ? status : 500)
                 .type(MediaType.APPLICATION_JSON)

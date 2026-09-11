@@ -18,6 +18,9 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.SubscriptionCreateRequest;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.EventNotificationDtoMapper;
+
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.SubscriptionHandler;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDTO;
@@ -63,10 +66,10 @@ public class SubscriptionEndpoint {
     }
 
     @POST
-    public Response createSubscription(SubscriptionDTO request) {
+    public Response createSubscription(SubscriptionCreateRequest request) {
         String orgId = organizationIdSupplier.get();
-        SubscriptionDTO dto = subscriptionHandler.createSubscription(orgId, request);
-        return Response.status(Response.Status.CREATED).entity(dto).build();
+        SubscriptionDTO dto = subscriptionHandler.createSubscription(orgId, EventNotificationDtoMapper.toService(request));
+        return Response.status(Response.Status.CREATED).entity(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @GET
@@ -79,7 +82,7 @@ public class SubscriptionEndpoint {
             @QueryParam("sort") String sort) {
         PaginatedResult<SubscriptionDTO> result = subscriptionHandler.listSubscriptions(
                 organizationIdSupplier.get(), status, purposes, search, limit, offset, sort);
-        return Response.ok(result).build();
+        return Response.ok(EventNotificationDtoMapper.subscriptions(result)).build();
     }
 
     @GET
@@ -87,7 +90,7 @@ public class SubscriptionEndpoint {
     public Response getSubscription(
             @PathParam("subscriptionId") String subscriptionId) {
         SubscriptionDTO dto = subscriptionHandler.getSubscription(organizationIdSupplier.get(), subscriptionId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @DELETE
@@ -95,7 +98,7 @@ public class SubscriptionEndpoint {
     public Response deleteSubscription(
             @PathParam("subscriptionId") String subscriptionId) {
         SubscriptionDTO dto = subscriptionHandler.deleteSubscription(organizationIdSupplier.get(), subscriptionId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @POST
@@ -103,7 +106,7 @@ public class SubscriptionEndpoint {
     public Response retryVerification(
             @PathParam("subscriptionId") String subscriptionId) {
         SubscriptionDTO dto = subscriptionHandler.retryVerification(organizationIdSupplier.get(), subscriptionId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @GET
@@ -114,7 +117,7 @@ public class SubscriptionEndpoint {
             @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset) {
         PaginatedResult<SubscriptionDeliveryDTO> result = subscriptionHandler.listSubscriptionEvents(
                 organizationIdSupplier.get(), subscriptionId, limit, offset);
-        return Response.ok(result).build();
+        return Response.ok(EventNotificationDtoMapper.deliveries(result)).build();
     }
 
     @GET
@@ -124,6 +127,6 @@ public class SubscriptionEndpoint {
             @PathParam("deliveryId") String deliveryId) {
         SubscriptionEventHistoryDTO dto = subscriptionHandler.getSubscriptionEventHistory(
                 organizationIdSupplier.get(), subscriptionId, deliveryId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 }

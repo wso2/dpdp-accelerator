@@ -18,6 +18,9 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.TopicCreateRequest;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.EventNotificationDtoMapper;
+
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.TopicHandler;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.TopicDTO;
@@ -61,9 +64,9 @@ public class TopicEndpoint {
     }
 
     @POST
-    public Response createTopic(TopicDTO request) {
-        TopicDTO dto = topicHandler.createTopic(organizationIdSupplier.get(), request);
-        return Response.status(Response.Status.CREATED).entity(dto).build();
+    public Response createTopic(TopicCreateRequest request) {
+        TopicDTO dto = topicHandler.createTopic(organizationIdSupplier.get(), EventNotificationDtoMapper.toService(request));
+        return Response.status(Response.Status.CREATED).entity(EventNotificationDtoMapper.toApi(dto)).build();
     }
 
     @GET
@@ -75,7 +78,7 @@ public class TopicEndpoint {
             @QueryParam("sort") String sort) {
         PaginatedResult<TopicDTO> result = topicHandler.listTopics(organizationIdSupplier.get(), status,
                 search, limit, offset, sort);
-        return Response.ok(result).build();
+        return Response.ok(EventNotificationDtoMapper.topics(result)).build();
     }
 
     @DELETE
@@ -83,6 +86,6 @@ public class TopicEndpoint {
     public Response deleteTopic(
             @PathParam("topicId") String topicId) {
         TopicDTO dto = topicHandler.deleteTopic(organizationIdSupplier.get(), topicId);
-        return Response.ok(dto).build();
+        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
     }
 }
