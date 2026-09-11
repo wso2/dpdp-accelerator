@@ -327,7 +327,16 @@ export default function ConsentRegistryTable({
                       {formatEpochTimestamp(row.timestamp)}
                     </TableCell>
                     <TableCell align="center">
-                      <Stack direction="row" spacing={0.5} justifyContent="center">
+                      <Box
+                        sx={{
+                          display: 'grid',
+                          gridTemplateColumns: (theme) => `repeat(3, ${theme.spacing(4)})`,
+                          gap: 0.5,
+                          justifyContent: 'center',
+                          justifyItems: 'center',
+                          alignItems: 'center',
+                        }}
+                      >
                         <Tooltip title={t('consentRegistry.actions.view')}>
                           <IconButton
                             size="small"
@@ -339,39 +348,43 @@ export default function ConsentRegistryTable({
                             <Eye size={16} />
                           </IconButton>
                         </Tooltip>
-                        {approvable ? (
-                          <Tooltip title={t('consentRegistry.actions.approve')}>
-                            <span>
-                              <IconButton
-                                size="small"
-                                color="warning"
-                                aria-label={t('consentRegistry.actions.approve')}
-                                disabled={isMutating}
-                                data-consent-id={row.id}
-                                onClick={handleApproveClick}
-                              >
-                                <CircleCheckBig size={16} />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                        ) : null}
-                        {revokable ? (
-                          <Tooltip title={t('consentRegistry.actions.revoke')}>
-                            <span>
-                              <IconButton
-                                size="small"
-                                color="error"
-                                aria-label={t('consentRegistry.actions.revoke')}
-                                disabled={isMutating}
-                                data-consent-id={row.id}
-                                onClick={handleRevokeClick}
-                              >
-                                <Ban size={16} />
-                              </IconButton>
-                            </span>
-                          </Tooltip>
-                        ) : null}
-                      </Stack>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                          {approvable ? (
+                            <Tooltip title={t('consentRegistry.actions.approve')}>
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  color="warning"
+                                  aria-label={t('consentRegistry.actions.approve')}
+                                  disabled={isMutating}
+                                  data-consent-id={row.id}
+                                  onClick={handleApproveClick}
+                                >
+                                  <CircleCheckBig size={16} />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          ) : null}
+                        </Box>
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                          {revokable ? (
+                            <Tooltip title={t('consentRegistry.actions.revoke')}>
+                              <span>
+                                <IconButton
+                                  size="small"
+                                  color="error"
+                                  aria-label={t('consentRegistry.actions.revoke')}
+                                  disabled={isMutating}
+                                  data-consent-id={row.id}
+                                  onClick={handleRevokeClick}
+                                >
+                                  <Ban size={16} />
+                                </IconButton>
+                              </span>
+                            </Tooltip>
+                          ) : null}
+                        </Box>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 )
