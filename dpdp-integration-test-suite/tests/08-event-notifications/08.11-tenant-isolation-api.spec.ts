@@ -31,7 +31,7 @@ const SYSTEM_TOPICS = ['consent.update', 'consent.revoke', 'consent.expire', 'us
  * tests/05-multi-tenancy does for consent-mgt resources.
  */
 test.describe('Event Notification tenant isolation', () => {
-  test('09.02.01 - Tenants with the same topic name receive separate topic identities and lists', async ({
+  test('08.11.01 - Tenants with the same topic name receive separate topic identities and lists', async ({
     tenant,
     tenantB,
   }) => {
@@ -58,7 +58,7 @@ test.describe('Event Notification tenant isolation', () => {
     expect(itemsB.map((t) => t.topicId)).not.toContain(topicA.topicId)
   })
 
-  test("09.02.02 - Tenant A cannot read, delete, verify, or list history for tenant B resources", async ({
+  test("08.11.02 - Tenant A cannot read, delete, verify, or list history for tenant B resources", async ({
     tenant,
     tenantB,
   }) => {
@@ -84,13 +84,13 @@ test.describe('Event Notification tenant isolation', () => {
     expect((await stillThere.json()).status).toBe('active')
   })
 
-  test('09.02.04 - A newly created tenant receives Event Notification authorization and default topics', async ({
+  test('08.11.03 - A newly created tenant receives Event Notification authorization and default topics', async ({
     tenant,
   }) => {
     // tenant.fixtures.ts's own setup already proves the portal app/role provisioning succeeded
     // (the owner signed into their tenant-qualified portal for real to build ownerEventApi) - this
-    // test asserts the two things the spreadsheet calls out specifically: the system topics exist
-    // as active/system, and the owner can manage user topics/subscriptions with no extra manual
+    // test asserts the two things provisioning must get right: the system topics exist as
+    // active/system, and the owner can manage user topics/subscriptions with no extra manual
     // API-resource registration (i.e. ordinary calls just work).
     const listed = await tenant.ownerEventApi.listTopics({ limit: 100 })
     expect(listed.status()).toBe(200)

@@ -77,7 +77,24 @@ export class ConsoleAddUserWizard {
   }
 
   async open(): Promise<void> {
-    await this.addUserButton.click()
+    // "Add User" opens a dropdown whose items stay mounted while hidden, so a first click that
+    // doesn't register (the button renders before Console attaches its handler, which is easy to
+    // lose when several workers drive Console at once) leaves singleUserOption resolvable but
+    // permanently invisible. Waiting cannot recover from that - the menu never opens without
+    // another click - and the blind second click then stalls until the worker fixture's own
+    // 240s timeout, surfacing as "fixture timeout during setup" rather than a clear failure.
+    // Retry the opening gesture instead.
+    for (let attempt = 1; attempt <= 3; attempt += 1) {
+      await this.addUserButton.click()
+      try {
+        await this.singleUserOption.waitFor({ state: 'visible', timeout: 5_000 })
+        break
+      } catch {
+        if (attempt === 3) {
+          throw new Error('Console\'s "Add User" menu did not open after 3 attempts.')
+        }
+      }
+    }
     await this.singleUserOption.click()
   }
 

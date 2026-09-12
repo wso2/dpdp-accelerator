@@ -37,7 +37,7 @@ import { AppSidebarPage } from '../../pages/AppSidebarPage'
  * wants both grants the account both roles; no persona in this suite does.
  */
 test.describe('Complaints route-level access control and sidebar visibility (UI)', () => {
-  test('05.08.01 - A Data Principal navigating directly to /complaints is not redirected away', async ({
+  test('07.08.01 - A Data Principal navigating directly to /complaints is not redirected away', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -46,7 +46,7 @@ test.describe('Complaints route-level access control and sidebar visibility (UI)
     await dataPrincipalPage.context().close()
   })
 
-  test('05.08.02 - A Data Principal navigating directly to /complaint-management is redirected away', async ({
+  test('07.08.02 - A Data Principal navigating directly to /complaint-management is redirected away', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -55,7 +55,7 @@ test.describe('Complaints route-level access control and sidebar visibility (UI)
     await dataPrincipalPage.context().close()
   })
 
-  test('05.08.03 - A Data Principal\'s sidebar shows a "My Complaints" entry, not "Complaints"', async ({
+  test('07.08.03 - A Data Principal\'s sidebar shows a "My Complaints" entry, not "Complaints"', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -68,7 +68,7 @@ test.describe('Complaints route-level access control and sidebar visibility (UI)
     await dataPrincipalPage.context().close()
   })
 
-  test('05.08.04 - A Consent Admin can reach /complaint-management directly, and their sidebar shows "Complaints", not "My Complaints"', async ({
+  test('07.08.04 - A Consent Admin can reach /complaint-management directly, and their sidebar shows "Complaints", not "My Complaints"', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

@@ -5,20 +5,24 @@
   "type": "module",
   "scripts": {
     "test": "playwright test",
+    "bootstrap:provisioning-app": "tsx scripts/bootstrap-provisioning-app.ts",
     "test:ui": "playwright test --ui",
     "test:elements": "playwright test tests/01-elements",
     "test:purposes": "playwright test tests/02-purposes",
     "test:consents": "playwright test tests/03-consents",
     "test:authorization": "playwright test tests/04-authorization",
     "test:multi-tenancy": "playwright test tests/05-multi-tenancy",
-    "test:event-notifications": "playwright test tests/08-event-notifications",
     "test:account": "playwright test tests/06-account",
+    "test:complaints": "playwright test tests/07-complaints",
+    "test:event-notifications": "playwright test tests/08-event-notifications",
+    "typecheck": "tsc --noEmit",
+    "verify:ids": "node scripts/verify-test-ids.mjs",
     "report": "playwright show-report"
   },
   "devDependencies": {
     "@playwright/test": "1.62.1",
     "@types/node": "26.4.1",
-    "dotenv": "17.4.2",
+    "tsx": "4.23.13",
     "typescript": "7.0.2"
   }
 }

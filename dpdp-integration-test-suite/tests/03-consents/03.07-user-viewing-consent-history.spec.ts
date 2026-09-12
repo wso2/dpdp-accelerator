@@ -45,7 +45,7 @@ import { seedConsent } from '../../utils/consentSetup'
  * card and dialog would otherwise keep showing stale data - a real product gap, not a test quirk.
  */
 test.describe('User viewing Consent History (UI)', () => {
-  test('02.07.01 - Approving a Pending consent records CREATE then AUTHORIZE_APPROVE, oldest-first in the table and newest-first in the dialog', async ({
+  test('03.07.01 - Approving a Pending consent records CREATE then AUTHORIZE_APPROVE, oldest-first in the table and newest-first in the dialog', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -84,7 +84,12 @@ test.describe('User viewing Consent History (UI)', () => {
 
     await detailPage.openFullHistoryDialog()
     const dialog = new ConsentFullHistoryDialogPage(userPage)
-    await expect(dialog.dialog).toBeVisible()
+    // The dialog's heading renders as soon as it opens, but its history is fetched lazily *on
+    // open* - so gating on `dialog.dialog` (which is defined by that heading) proves nothing
+    // about the entries. allTextContents() below does not retry, so without a gate on real
+    // content it can snapshot an empty accordion list. Gate on the newest entry: it is the last
+    // one the fetch can produce, so its presence means the list is fully rendered.
+    await expect(dialog.entry('Approved', env.user.username)).toBeVisible()
 
     // Newest-first in the dialog, reversed relative to the table above. Summary text uses "·",
     // not "by" - see ConsentFullHistoryDialogPage - so these checks drop "by".
@@ -108,7 +113,7 @@ test.describe('User viewing Consent History (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.07.02 - Rejecting a Pending consent records AUTHORIZE_REJECT with a diffed authorization', async ({
+  test('03.07.02 - Rejecting a Pending consent records AUTHORIZE_REJECT with a diffed authorization', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -128,7 +133,7 @@ test.describe('User viewing Consent History (UI)', () => {
     await detailPage.openActionDialog('reject')
     await detailPage.confirmAction('reject')
     // .first(): the metadata card's state chip and the authorizations table's own state chip
-    // both render the literal state text (see 02.01.02's identical comment).
+    // both render the literal state text (see 03.01.02's identical comment).
     await expect(userPage.getByText('Rejected', { exact: true }).first()).toBeVisible()
 
     await detailPage.goto(consentId)
@@ -145,7 +150,7 @@ test.describe('User viewing Consent History (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.07.03 - A full self-service lifecycle (created, approved, then revoked) is captured in order end to end', async ({
+  test('03.07.03 - A full self-service lifecycle (created, approved, then revoked) is captured in order end to end', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -189,7 +194,12 @@ test.describe('User viewing Consent History (UI)', () => {
 
     await detailPage.openFullHistoryDialog()
     const dialog = new ConsentFullHistoryDialogPage(userPage)
-    await expect(dialog.dialog).toBeVisible()
+    // The dialog's heading renders as soon as it opens, but its history is fetched lazily *on
+    // open* - so gating on `dialog.dialog` (which is defined by that heading) proves nothing
+    // about the entries. allTextContents() below does not retry, so without a gate on real
+    // content it can snapshot an empty accordion list. Gate on the newest entry: it is the last
+    // one the fetch can produce, so its presence means the list is fully rendered.
+    await expect(dialog.entry('Revoked', env.user.username)).toBeVisible()
     const summaryTexts = await dialog.entrySummaries.allTextContents()
     const dialogCreatedIndex = summaryTexts.findIndex((text) => text.includes('Consent created'))
     const dialogApprovedIndex = summaryTexts.findIndex((text) => text.includes('Approved'))
@@ -208,7 +218,7 @@ test.describe('User viewing Consent History (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.07.04 - A delegated consent (parent approving on behalf of a child) attributes the approval to the parent, not the subject', async ({
+  test('03.07.04 - A delegated consent (parent approving on behalf of a child) attributes the approval to the parent, not the subject', async ({
     browser,
     request,
     consentAdminConsentApi,
@@ -216,7 +226,7 @@ test.describe('User viewing Consent History (UI)', () => {
   }) => {
     // No dedicated "parent"/"child" persona exists - the second, generic user account stands in
     // for the parent, and env.user (this file's usual subject) stands in for the child.
-    test.skip(!hasSecondUser(), 'TEST_USER_2_USERNAME/PASSWORD is not configured')
+    test.skip(!hasSecondUser(), 'personas.user2 is not configured')
     const parent = env.secondUser()
     if (!parent) {
       throw new Error('Unreachable: hasSecondUser() already checked this above.')
@@ -254,7 +264,7 @@ test.describe('User viewing Consent History (UI)', () => {
     const childPage = await loginAsUser(browser)
     const detailPage = new ConsentDetailPage(childPage, 'self')
     await detailPage.goto(consentId)
-    // The page's own metadata card renders the subject as plain text (see 02.02.01) - confirms
+    // The page's own metadata card renders the subject as plain text (see 03.02.01) - confirms
     // the child, not the parent, is who this consent is about.
     await expect(childPage.getByText(env.user.username)).toBeVisible()
     await expect(detailPage.lifecycleRow('Approved', parent.username)).toBeVisible()

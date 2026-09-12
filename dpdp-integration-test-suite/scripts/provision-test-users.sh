@@ -29,46 +29,91 @@
 # dpdp-consent-admin are never evicted).
 #
 # Usage:
-#   TEST_PASSWORD='Str0ng!Pass' bash scripts/provision-test-users.sh
+#   bash scripts/provision-test-users.sh
 #
-# Environment:
-#   TEST_PASSWORD        required - password set on all three accounts
-#   IS_BASE_URL          default https://localhost:9443
-#   IS_ADMIN_USERNAME    default admin
-#   IS_ADMIN_PASSWORD    default admin
-#   IGNORE_HTTPS_ERRORS  default true (the shipped IS certificate is self-signed)
+# Every setting - server URL, the three usernames, their password, the roles to assign - comes
+# from e2e-config.json plus the optional e2e-config.local.json beside it, the same single
+# configuration the TypeScript side reads (see utils/config.ts). There are no environment
+# variables and no defaults inlined here. ./scripts/setup-local.sh generates the password into
+# the local file; without it this script says which key is missing.
 #
-# When run inside GitHub Actions it also writes the usernames to $GITHUB_OUTPUT
-# as `user`, `user2` and `admin`, so the workflow never hardcodes them twice.
+# Authenticates as the provisioning client recorded in that same config - see AUTHENTICATION
+# below. Mint it with: npm run bootstrap:provisioning-app
 
 set -euo pipefail
 
-IS_BASE_URL="${IS_BASE_URL:-https://localhost:9443}"
-IS_BASE_URL="${IS_BASE_URL%/}"
-IS_ADMIN_USERNAME="${IS_ADMIN_USERNAME:-admin}"
-IS_ADMIN_PASSWORD="${IS_ADMIN_PASSWORD:-admin}"
-IGNORE_HTTPS_ERRORS="${IGNORE_HTTPS_ERRORS:-true}"
+SUITE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# The plain user persona must NOT be an administrator: tests/04-authorization asserts
-# it holds only internal_login. dpdp-consent-user carries zero permissions (it is
-# created with an empty permission list), so assigning it grants no scopes and cannot
-# perturb those assertions - it is assigned only to mirror the documented setup.
-# Email-shaped because the accelerator enforces it: the username regex is
-# ^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$, so a bare "dpdp-ci-user" is
-# rejected with SCIM2 31301 and provisioning aborts.
-USER_NAME="dpdp-ci-user@dpdp.test"
-USER_2_NAME="dpdp-ci-user-2@dpdp.test"
-ADMIN_NAME="dpdp-ci-admin@dpdp.test"
-USER_ROLE="dpdp-consent-user"
-ADMIN_ROLE="dpdp-consent-admin"
+# The persona usernames must stay identical to what the TypeScript side signs in as, so both
+# read them from the same file rather than each carrying its own copy. They are email-shaped
+# because the accelerator enforces it: the username regex is
+# ^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$, so a bare "dpdp-ci-user" is rejected with
+# SCIM2 31301 and provisioning aborts.
+#
+# The plain user persona must NOT be an administrator: tests/04-authorization asserts it holds
+# only internal_login. dpdp-consent-user carries zero permissions (it is created with an empty
+# permission list), so assigning it grants no scopes and cannot perturb those assertions - it is
+# assigned only to mirror the documented setup.
+CONFIG_EXPORTS="$(python3 - "${SUITE_DIR}" <<'PYEOF'
+import json, os, shlex, sys
 
-if [ -z "${TEST_PASSWORD:-}" ]; then
-  echo "ERROR: TEST_PASSWORD is not set. Give the test accounts a password that satisfies" >&2
-  echo "       the server's password policy, e.g. TEST_PASSWORD='Str0ng!Pass'." >&2
-  exit 2
-fi
+root = sys.argv[1]
 
-CURL_OPTS=(-s --max-time 30 -u "${IS_ADMIN_USERNAME}:${IS_ADMIN_PASSWORD}")
+
+def load(name):
+    try:
+        with open(os.path.join(root, name)) as handle:
+            return json.load(handle)
+    except FileNotFoundError:
+        return {}
+
+
+def merge(base, override):
+    merged = dict(base)
+    for key, value in override.items():
+        if isinstance(value, dict) and isinstance(merged.get(key), dict):
+            merged[key] = merge(merged[key], value)
+        else:
+            merged[key] = value
+    return merged
+
+
+config = merge(load('e2e-config.json'), load('e2e-config.local.json'))
+
+
+def require(value, key):
+    if value in (None, ''):
+        sys.exit(
+            'ERROR: "%s" is not configured. Set it in e2e-config.local.json, or run\n'
+            '       ./scripts/setup-local.sh, which generates everything this script needs.' % key
+        )
+    return value
+
+
+emit = {
+    'IS_BASE_URL': require(config['identityServer']['baseUrl'], 'identityServer.baseUrl').rstrip('/'),
+    'IGNORE_HTTPS_ERRORS': 'true' if config['identityServer']['ignoreHttpsErrors'] else 'false',
+    'USER_ROLE': require(config['personaRoles']['user'], 'personaRoles.user'),
+    'PROVISIONING_CLIENT_ID': require(
+        (config.get('provisioningClient') or {}).get('clientId'), 'provisioningClient.clientId'
+    ),
+    'PROVISIONING_CLIENT_SECRET': require(
+        (config.get('provisioningClient') or {}).get('clientSecret'), 'provisioningClient.clientSecret'
+    ),
+    'ADMIN_ROLE': require(config['personaRoles']['consentAdmin'], 'personaRoles.consentAdmin'),
+}
+for shell_name, persona in (('USER', 'user'), ('USER_2', 'user2'), ('ADMIN', 'consentAdmin')):
+    entry = config['personas'][persona]
+    emit['%s_NAME' % shell_name] = require(entry['username'], 'personas.%s.username' % persona)
+    emit['%s_PASSWORD' % shell_name] = require(entry['password'], 'personas.%s.password' % persona)
+
+for name, value in emit.items():
+    print('%s=%s' % (name, shlex.quote(value)))
+PYEOF
+)"
+eval "${CONFIG_EXPORTS}"
+
+CURL_OPTS=(-s --max-time 30)
 if [ "${IGNORE_HTTPS_ERRORS}" = "true" ]; then
   CURL_OPTS+=(-k)
 fi
@@ -111,8 +156,8 @@ print(res[0]["id"] if res else "")
 }
 
 create_user() {
-  local username="$1" body response status
-  body=$(TP="${TEST_PASSWORD}" UN="${username}" python3 -c '
+  local username="$1" password="$2" body response status
+  body=$(TP="${password}" UN="${username}" python3 -c '
 import json, os
 print(json.dumps({
     "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
@@ -149,7 +194,7 @@ assign_role() {
 
 # Creates the user if absent, then ensures the role membership.
 provision() {
-  local username="$1" role_name="$2" user_id role_id
+  local username="$1" password="$2" role_name="$3" user_id role_id
 
   role_id=$(find_role_id "${role_name}")
   if [ -z "${role_id}" ]; then
@@ -163,7 +208,7 @@ provision() {
   if [ -n "${user_id}" ]; then
     echo "  ${username}: already exists (${user_id})"
   else
-    user_id=$(create_user "${username}")
+    user_id=$(create_user "${username}" "${password}")
     echo "  ${username}: created (${user_id})"
   fi
 
@@ -171,24 +216,52 @@ provision() {
   echo "  ${username}: member of ${role_name}"
 }
 
+# --- authentication ---------------------------------------------------------
+#
+# Identity Server 7.3 disables HTTP Basic auth on protected resources for any deployment whose
+# root organization was created on or after the cutoff in
+# repository/conf/compatibility-settings-metadata.json (`basicAuth.disableBasicAuth`,
+# 2026-08-13). The shipped H2 database carries a root org stamped at WSO2's own build time
+# (2026-04-23), which is why Basic auth still works there; every other backend writes
+# CURRENT_TIMESTAMP at install (see the UM_ORG seed row in dbscripts/mysql.sql) and so lands
+# past the cutoff. A client_credentials token is the one approach that behaves identically on
+# every database type, so it is the only one this script supports - a Basic-auth fallback would
+# work on exactly one backend and fail confusingly everywhere else.
+
+SCOPES="internal_user_mgt_list internal_user_mgt_create internal_role_mgt_view internal_role_mgt_users_update"
+
+# Exchanges the client credentials for an access token, printing it. Non-zero on any failure.
+mint_token() {
+  local response
+  response=$(curl "${CURL_OPTS[@]}" -X POST "${IS_BASE_URL}/oauth2/token" \
+    -u "${PROVISIONING_CLIENT_ID}:${PROVISIONING_CLIENT_SECRET}" \
+    -d grant_type=client_credentials --data-urlencode "scope=${SCOPES}") || return 1
+  printf '%s' "${response}" | json '
+import json, sys
+try:
+    print(json.load(sys.stdin)["access_token"])
+except Exception:
+    raise SystemExit(1)
+'
+}
+
+TOKEN="$(mint_token)" || fail "the provisioning client ${PROVISIONING_CLIENT_ID} could not obtain a
+       token from ${IS_BASE_URL}/oauth2/token. Re-mint it with:
+         npm run bootstrap:provisioning-app"
+CURL_OPTS+=(-H "Authorization: Bearer ${TOKEN}")
+echo "Authenticating as the provisioning client ${PROVISIONING_CLIENT_ID}."
+
 # --- main -------------------------------------------------------------------
 
 echo "Provisioning integration-test accounts on ${IS_BASE_URL}"
 
 api -o /dev/null -f "${IS_BASE_URL}/scim2/Users?count=1" \
-  || fail "cannot reach ${IS_BASE_URL}/scim2 as ${IS_ADMIN_USERNAME}. Is the server running,
-       and are IS_ADMIN_USERNAME / IS_ADMIN_PASSWORD correct?"
+  || fail "cannot reach ${IS_BASE_URL}/scim2 with the provisioning client's token. Is the server
+       running? A 403 here means the client is missing a scope - re-run
+       npm run bootstrap:provisioning-app, which re-authorizes it."
 
-provision "${USER_NAME}"   "${USER_ROLE}"
-provision "${USER_2_NAME}" "${USER_ROLE}"
-provision "${ADMIN_NAME}"  "${ADMIN_ROLE}"
+provision "${USER_NAME}"   "${USER_PASSWORD}"   "${USER_ROLE}"
+provision "${USER_2_NAME}" "${USER_2_PASSWORD}" "${USER_ROLE}"
+provision "${ADMIN_NAME}"  "${ADMIN_PASSWORD}"  "${ADMIN_ROLE}"
 
-if [ -n "${GITHUB_OUTPUT:-}" ]; then
-  {
-    echo "user=${USER_NAME}"
-    echo "user2=${USER_2_NAME}"
-    echo "admin=${ADMIN_NAME}"
-  } >> "${GITHUB_OUTPUT}"
-fi
-
-echo "Done. Point TEST_USER_USERNAME at ${USER_NAME} and TEST_CONSENT_ADMIN_USERNAME at ${ADMIN_NAME}."
+echo "Done."

@@ -28,12 +28,12 @@ import { uniqueMarker } from '../../utils/testData'
 /**
  * End-to-end scenarios driving both surfaces together through the real UI, in the order an actual
  * grievance-redressal case plays out - as opposed to every other file in this directory, which
- * exercises one surface/action in isolation. See tests/06-complaints-api/06.06 for the same
- * scenarios' API-only counterparts (officer-assisted phone intake, category/priority sweep,
- * concurrent replies) - not repeated here since they have no UI of their own to exercise.
+ * exercises one surface/action in isolation. The API-only counterparts (officer-assisted phone
+ * intake, category/priority sweep, concurrent replies) have no UI of their own and no automated
+ * coverage - see TEST-SCENARIOS.md, "Known gaps".
  */
 test.describe('Real-world complaint scenarios (UI)', () => {
-  test('05.09.02 - A citizen replying to a Resolved complaint posts the message and reopen it', async ({
+  test('07.09.01 - A citizen replying to a Resolved complaint posts the message and reopens it', async ({
     browser,
   }) => {
     // ComplaintDetailPage.tsx's onSend only attaches a toStatus when the complaint is currently
@@ -44,7 +44,7 @@ test.describe('Real-world complaint scenarios (UI)', () => {
     // complaint RESOLVED and hidden from the officer's default queue - this test asserts that
     // actual, current behavior rather than the reopen flow the backend alone would support.
     // Several full-page navigations/reloads happen below, each forcing a silent OIDC re-auth
-    // round trip (see the matching comment on 05.05.01) - the default 30s test timeout is too
+    // round trip - the default 30s test timeout is too
     // tight once that compounds across this test's many sequential steps.
     test.setTimeout(60_000)
     const dataPrincipalPage = await loginAsUser(browser)
@@ -67,8 +67,10 @@ test.describe('Real-world complaint scenarios (UI)', () => {
     await queuePage.goto()
     await queuePage.setRowsPerPage(25)
     await queuePage.openByReferenceId(referenceId)
-    // Confirms the navigation itself actually landed before asserting on page content - see the
-    // matching comment in 05.09.01.
+    // Confirms the navigation itself actually landed before asserting on page content: a
+    // deep-linked navigation that drifts elsewhere (this suite's documented flake mode - see
+    // TEST-SCENARIOS.md) otherwise surfaces as a confusing strict-mode violation on a locator
+    // matching leftover content from whatever page it did land on.
     await expect(officerPage).toHaveURL(/\/complaint-management\/[^/]+$/, { timeout: 15_000 })
     const caseDetailPage = new ComplaintCaseDetailPage(officerPage)
     await caseDetailPage.selectNextStatusBeforeSending('In Progress')
@@ -84,7 +86,7 @@ test.describe('Real-world complaint scenarios (UI)', () => {
 
     // Citizen isn't satisfied and replies again. The citizen never left the /complaints list
     // after submitting - openByReferenceId navigates into the complaint's detail page for the
-    // first time (see the matching comment in 05.09.01).
+    // first time.
     await listPage.openByReferenceId(referenceId)
     await expect(dataPrincipalPage).toHaveURL(/\/complaints\/[^/]+$/, { timeout: 15_000 })
     const detailPage = new ComplaintDetailPage(dataPrincipalPage)
@@ -102,7 +104,7 @@ test.describe('Real-world complaint scenarios (UI)', () => {
     await officerPage.context().close()
   })
 
-  test('05.09.03 - A multi-round officer/citizen exchange leaves the whole thread visible to both sides', async ({
+  test('07.09.02 - A multi-round officer/citizen exchange leaves the whole thread visible to both sides', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -114,7 +116,7 @@ test.describe('Real-world complaint scenarios (UI)', () => {
     // rows from before the comment that had just been posted. The message appeared to vanish
     // until some later request happened to reuse a connection with a newer snapshot.
     //
-    // What makes this catch it where 05.07.01's single reply does not: several rounds, each read
+    // What makes this catch it where 07.07.01's single reply does not: several rounds, each read
     // back from BOTH surfaces, and every read asserting the entire thread so far rather than only
     // the newest line. A single reply read back once can land on the very connection that just
     // committed it and pass while the bug is present. It is still probabilistic - which pooled
@@ -125,7 +127,7 @@ test.describe('Real-world complaint scenarios (UI)', () => {
     // complaint row itself: a transition recorded FROM_STATUS=OPEN long after the complaint had
     // moved on, because requireComplaint read it from a pinned snapshot.
     //
-    // Many full-page navigations, each forcing a silent OIDC re-auth round trip (see 05.05.01) -
+    // Many full-page navigations, each forcing a silent OIDC re-auth round trip (see 07.05.01) -
     // the default 30s timeout is nowhere near enough once that compounds over five rounds.
     test.setTimeout(180_000)
 

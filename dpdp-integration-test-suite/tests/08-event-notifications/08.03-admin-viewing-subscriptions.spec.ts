@@ -29,7 +29,7 @@ import { SubscriptionDetailsPage } from '../../pages/SubscriptionDetailsPage'
  * list totals or emptiness.
  */
 test.describe('Admin viewing Subscriptions', () => {
-  test('06.03.01 - The subscription list renders configuration and accepts pagination', async ({
+  test('08.03.01 - The subscription list renders configuration and accepts pagination', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -48,8 +48,8 @@ test.describe('Admin viewing Subscriptions', () => {
       await expect(row).toContainText('Poll')
       await expect(row).toContainText('Active')
 
-      // Pagination should remain functional after a real page-size change - 25 (the spreadsheet's
-      // number) isn't one of the real options ([10, 20, 50], see README's Drift section); 20 is.
+      // Pagination should remain functional after a real page-size change - the control offers
+      // [10, 20, 50] only, so 20 rather than 25.
       await subscriptionsPage.setRowsPerPage(20)
       await expect(subscriptionsPage.table).toBeVisible()
       await expect(subscriptionsPage.rowBySubscriptionId(subscription.subscriptionId)).toBeVisible()
@@ -58,7 +58,7 @@ test.describe('Admin viewing Subscriptions', () => {
     }
   })
 
-  test('06.03.02 - Status and delivery-mode filters narrow the list and Clear restores it', async ({
+  test('08.03.02 - Status and delivery-mode filters narrow the list and Clear restores it', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -104,7 +104,7 @@ test.describe('Admin viewing Subscriptions', () => {
       // The search term is already webhookTopic.name from above and doesn't change again here -
       // each FILTER change gets its own checkpoint before the next one fires, so the two requests
       // can't resolve out of order and leave the table on a stale intermediate combination (see
-      // 05.02.04's identical fix for the full explanation). webhookSub (search already narrows to
+      // utils/filterCommit.ts for the full explanation). webhookSub (search already narrows to
       // it) becoming visible is real, verifiable proof each filter change actually took effect.
       // The searches themselves are checkpointed inside SubscriptionsPage.search() rather than
       // here - a row assertion can't stand in for one, see utils/filterCommit.ts.
@@ -124,7 +124,7 @@ test.describe('Admin viewing Subscriptions', () => {
     }
   })
 
-  test('06.03.03 - Searching by a partial subscription, topic, or callback value finds matching rows', async ({
+  test('08.03.03 - Searching by a partial subscription, topic, or callback value finds matching rows', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -151,7 +151,7 @@ test.describe('Admin viewing Subscriptions', () => {
     }
   })
 
-  test('06.03.04 - Subscription details show configuration, timestamps, and deliveries', async ({
+  test('08.03.04 - Subscription details show configuration, timestamps, and deliveries', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -200,7 +200,7 @@ test.describe('Admin viewing Subscriptions', () => {
     }
   })
 
-  test('06.03.05 - An unknown subscription id shows load failure without leaking data', async ({ browser }) => {
+  test('08.03.05 - An unknown subscription id shows load failure without leaking data', async ({ browser }) => {
     const page = await loginAsConsentAdmin(browser)
     try {
       const detailsPage = new SubscriptionDetailsPage(page)
@@ -213,7 +213,7 @@ test.describe('Admin viewing Subscriptions', () => {
       await page.context().close()
     }
     // Cross-tenant coverage (a real tenant-B subscription id read from tenant A) lives in
-    // 05.10-event-tenant-isolation.spec.ts (09.02.02) at the API level, using the two-tenant
+    // 08.11-tenant-isolation-api.spec.ts (08.11.02) at the API level, using the two-tenant
     // fixtures - not duplicated here to avoid paying for a second tenant's setup twice.
   })
 })

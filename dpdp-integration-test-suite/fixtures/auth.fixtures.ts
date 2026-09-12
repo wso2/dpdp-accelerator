@@ -53,13 +53,13 @@ interface Fixtures {
   userConsentApi: ConsentApiClient
   consentAdminConsentApi: ConsentApiClient
   consentCleanupTracker: ConsentCleanupTracker
-  // "Officer" here is any dpdp-consent-admin holder (see tests/07-complaints/README.md's
+  // "Officer" here is any dpdp-consent-admin holder (see AGENTS.md's
   // Personas section) - reuses the same consent-admin persona/login as consentAdminConsentApi,
   // just wrapped in the complaint client instead of the consent one.
   userComplaintApi: ComplaintApiClient
   officerComplaintApi: ComplaintApiClient
   // dpdp-consent-admin holds every notifications:* scope (see
-  // tests/08-event-notifications/README.md), so this one persona doubles as the admin, the
+  // AGENTS.md), so this one persona doubles as the admin, the
   // event publisher, and the webhook-verification actor - same "one role covers every surface"
   // rationale as officerComplaintApi above.
   consentAdminEventApi: EventNotificationApiClient
@@ -115,7 +115,7 @@ async function verifyConsentAdminAuthorized(state: PersonaAuthState): Promise<vo
   })
   if (response.status === 401 || response.status === 403) {
     throw new Error(
-      `TEST_CONSENT_ADMIN_USERNAME ("${env.consentAdmin.username}") logged in successfully but ` +
+      `The consent admin ("${env.consentAdmin.username}") logged in successfully but ` +
         `is not authorized for the consent-management admin API (got ${String(response.status)} ` +
         `from ${consentPurposesApiUrl('')}). Assign this account the dpdp-consent-admin role in ` +
         `the Console - see docs/configuration-guide.md, "Grant administration access".`,
@@ -533,8 +533,8 @@ export function hasSecondUser(): boolean {
 
 /**
  * Same rationale as hasSecondUser/env.secondUser(): the ownership-isolation tests in
- * tests/06-complaints-api need a second real user's ComplaintApiClient, and there is no
- * always-on fixture for it since most runs don't configure TEST_USER_2_USERNAME/PASSWORD.
+ * the complaint ownership-isolation tests need a second real user's ComplaintApiClient, and there is no
+ * always-on fixture for it since most runs don't configure personas.user2.
  * Returns undefined when it isn't configured; callers check hasSecondUser() first and skip
  * themselves, same pattern as the consent-side ownership tests.
  */

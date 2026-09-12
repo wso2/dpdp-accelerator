@@ -43,7 +43,7 @@ export async function seedActiveTopic(api: EventNotificationApiClient, label = '
  * round trip) - the right default for any test that only cares about event/fan-out/authorization
  * behavior, not the webhook transport itself. Webhook-specific tests build their own
  * SubscriptionCreateRequest directly against a WebhookReceiver instead (see
- * tests/08-event-notifications/README.md).
+ * AGENTS.md).
  *
  * There is deliberately no `groupId` parameter here: confirmed live, `SubscriptionHandler
  * .createSubscription` (`internal-webapps/.../endpoint/handler/SubscriptionHandler.java`) never

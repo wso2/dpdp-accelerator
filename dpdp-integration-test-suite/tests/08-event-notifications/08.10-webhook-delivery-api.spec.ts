@@ -23,10 +23,10 @@ import { webhookTestsEnabled, WebhookReceiver } from '../../utils/webhookReceive
 
 /**
  * Real webhook delivery - retries, exhaustion. Every test needs an actual network-reachable
- * receiver (see README.md, "Webhook-dependent tests") and skips itself otherwise.
+ * receiver (see AGENTS.md, "Webhook-dependent tests") and skips itself otherwise.
  *
- * The three core-success-path tests that used to live here (08.01.01-03: full payload envelope +
- * integrity headers, HMAC signature verification, 2xx-marks-delivered) were removed - they were
+ * The three core-success-path tests that used to live here (full payload envelope + integrity
+ * headers, HMAC signature verification, 2xx-marks-delivered) were removed - they were
  * unreliable on a machine whose LAN IP changes mid-session, which broke webhook verification
  * regardless of the tests themselves being correct (confirmed passing standalone earlier). The
  * remaining tests are skipped by default for being slow (see each one's own comment), not for
@@ -34,7 +34,7 @@ import { webhookTestsEnabled, WebhookReceiver } from '../../utils/webhookReceive
  */
 test.describe('Webhook delivery', () => {
   test.beforeEach(() => {
-    test.skip(!webhookTestsEnabled(), 'WEBHOOK_RECEIVER_HOST is not configured - see README.md, "Webhook-dependent tests"')
+    test.skip(!webhookTestsEnabled(), 'webhook.receiverHost is not configured - see README.md, "Webhook-dependent tests"')
   })
 
   /** Registers a webhook subscription, waits for the verification GET to be answered, and returns the receiver already past `pending`. */
@@ -65,7 +65,7 @@ test.describe('Webhook delivery', () => {
 
   /**
    * A one-shot `listSubscriptionEvents` call right after publish is fine when nothing else has
-   * happened yet (see 08.01.01-03), but the retry tests (08.02.xx) first poll the receiver for
+   * happened yet, but the retry tests below first poll the receiver for
    * several webhook attempts - tens of seconds of real elapsed time in which this shared
    * `consent-admin` persona's session can be invalidated by an entirely different concurrent test
    * run also using it (this environment is real and shared - see AGENTS.md), turning the next API
@@ -99,8 +99,8 @@ test.describe('Webhook delivery', () => {
   // Skipped by default, not deleted: real, working coverage (confirmed passing standalone -
   // ~29s), but base_backoff_seconds=5 x3-multiplier retries make it genuinely slow (up to 90s)
   // to wait through in every routine run. Run explicitly with
-  // `npx playwright test -g "08.02.01"` when touching retry/backoff logic.
-  test.skip('08.02.01 - A non-2xx response records failure and retries with the same delivery id', async ({
+  // `npx playwright test -g "08\.10\.01"` when touching retry/backoff logic.
+  test.skip('08.10.01 - A non-2xx response records failure and retries with the same delivery id', async ({
     consentAdminEventApi,
   }) => {
     test.setTimeout(120_000)
@@ -155,9 +155,9 @@ test.describe('Webhook delivery', () => {
 
   // Skipped by default, not deleted: max_retries=5 at x3-multiplier backoff genuinely takes up
   // to ~11 minutes to exhaust (5+15+45+135+405s) - real product behavior, not a bug, but far too
-  // slow for a routine run. Run explicitly with `npx playwright test -g "08.02.02"` when
+  // slow for a routine run. Run explicitly with `npx playwright test -g "08\.10\.02"` when
   // touching retry-exhaustion logic.
-  test.skip('08.02.02 - Persistent receiver failure transitions the delivery to failed', async ({ consentAdminEventApi }) => {
+  test.skip('08.10.02 - Persistent receiver failure transitions the delivery to failed', async ({ consentAdminEventApi }) => {
     // base_backoff_seconds=5, max_retries=5, x3 multiplier per attempt: 5+15+45+135+405 =~ 605s
     // to exhaust every retry. Generous timeout is the point, not a bug.
     test.setTimeout(700_000)
@@ -201,14 +201,14 @@ test.describe('Webhook delivery', () => {
   })
 
   test.skip(
-    '08.02.03 - A stale in-flight delivery is reclaimed once without duplicate concurrent dispatch',
+    '08.10.03 - A stale in-flight delivery is reclaimed once without duplicate concurrent dispatch',
     () => {
       // Reproducing a genuinely "stuck" in_flight delivery (a worker that crashed mid-dispatch)
       // isn't achievable from outside the process - there is no test-only hook to force a delivery
       // into in_flight and abandon it, and this suite has no direct DB-write fixture the way the
       // DAO-level Java unit tests do (stuck_inflight_threshold_seconds/pending_subscription_recovery_*
       // are real background-worker timers, not something a black-box HTTP/UI test can force). See
-      // README.md, "What this suite cannot verify".
+      // TEST-SCENARIOS.md, "What this suite cannot verify".
     },
   )
 })

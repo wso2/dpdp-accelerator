@@ -105,3 +105,37 @@ jobs:
 
       - name: Format check
         run: npm run format:check
+
+  # The E2E suite itself only runs behind the Action/trigger-e2e label (pr-e2e.yml) and needs a
+  # live Identity Server. These two checks need neither, so they gate every PR instead - otherwise
+  # a numbering or typing regression lands unreviewed on any unlabelled push.
+  e2e-suite-quality:
+    name: E2E suite quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: dpdp-integration-test-suite
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: dpdp-integration-test-suite/package-lock.json
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      # Playwright transpiles with esbuild and never typechecks, so a bad import fails at runtime
+      # and reports as "0 tests in 0 files" across the whole suite rather than as one broken spec.
+      - name: Typecheck
+        run: npm run typecheck
+
+      # Enforces the numbering rules in the suite's AGENTS.md, and that TEST-SCENARIOS.md still
+      # matches the tree.
+      - name: Verify test IDs and scenario catalogue
+        run: npm run verify:ids

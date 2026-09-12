@@ -1,0 +1,37 @@
+{
+  "identityServer": {
+    "baseUrl": "https://localhost:9443",
+    "portalBaseUrl": "https://localhost:9443/consent-portal",
+    "ignoreHttpsErrors": true
+  },
+  "superAdmin": {
+    "username": "admin@wso2.com",
+    "password": "wso2123"
+  },
+  "provisioningClient": null,
+  "personas": {
+    "user": {
+      "username": "dpdp-ci-user@dpdp.test",
+      "password": null
+    },
+    "user2": {
+      "username": "dpdp-ci-user-2@dpdp.test",
+      "password": null
+    },
+    "consentAdmin": {
+      "username": "dpdp-ci-admin@dpdp.test",
+      "password": null
+    }
+  },
+  "personaRoles": {
+    "user": "dpdp-consent-user",
+    "consentAdmin": "dpdp-consent-admin"
+  },
+  "webhook": {
+    "receiverHost": null,
+    "allowPrivateNetwork": false
+  },
+  "consentExpiry": {
+    "schedulerPollTimeoutMs": null
+  }
+}

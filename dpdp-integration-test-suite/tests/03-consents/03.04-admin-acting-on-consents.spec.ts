@@ -31,7 +31,7 @@ import { seedConsent } from '../../utils/consentSetup'
  * needs are created through the real admin UI forms first, on this same consentAdminPage.
  */
 test.describe('Admin acting on Consents (UI)', () => {
-  test('02.04.01 - Admin can revoke an Active consent from the list', async ({
+  test('03.04.01 - Admin can revoke an Active consent from the list', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -55,7 +55,7 @@ test.describe('Admin acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.04.02 - The admin detail page shows Revoke but never Approve or Reject for an Active consent', async ({
+  test('03.04.02 - The admin detail page shows Revoke but never Approve or Reject for an Active consent', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -77,7 +77,7 @@ test.describe('Admin acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.04.03 - The admin list shows no Approve action for a Pending consent, and no Revoke action either', async ({
+  test('03.04.03 - The admin list shows no Approve action for a Pending consent, and no Revoke action either', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -101,7 +101,7 @@ test.describe('Admin acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.04.04 - The admin detail page offers no action at all for a Pending consent', async ({
+  test('03.04.04 - The admin detail page offers no action at all for a Pending consent', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,

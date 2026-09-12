@@ -32,7 +32,7 @@ import { seedConsent } from '../../utils/consentSetup'
  * just the admin's own actions - something the self-viewing spec's single persona can't show.
  */
 test.describe('Admin viewing Consent History (UI)', () => {
-  test('02.08.01 - Revoking an Active consent as admin attributes CREATE and REVOKE to the admin, showing only the state transition in the diff', async ({
+  test('03.08.01 - Revoking an Active consent as admin attributes CREATE and REVOKE to the admin, showing only the state transition in the diff', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -70,7 +70,7 @@ test.describe('Admin viewing Consent History (UI)', () => {
     await expect(dialog.dialog).toBeVisible()
 
     // This consent was created directly in ACTIVE state with no authorizations to cascade, so
-    // the only change is `state` itself (Active -> Revoked) - no ambiguity like 02.07.03's
+    // the only change is `state` itself (Active -> Revoked) - no ambiguity like 03.07.03's
     // revoke-after-approve case.
     await dialog.expand('Revoked', env.consentAdmin.username)
     await expect(
@@ -81,7 +81,7 @@ test.describe('Admin viewing Consent History (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test("02.08.02 - The admin surface shows the data principal's own approval, not just admin-authored history", async ({
+  test("03.08.02 - The admin surface shows the data principal's own approval, not just admin-authored history", async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -125,7 +125,7 @@ test.describe('Admin viewing Consent History (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.08.03 - A full multi-actor lifecycle (admin creates, the data principal approves, admin revokes) is captured in order with each actor attributed correctly', async ({
+  test('03.08.03 - A full multi-actor lifecycle (admin creates, the data principal approves, admin revokes) is captured in order with each actor attributed correctly', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -177,7 +177,12 @@ test.describe('Admin viewing Consent History (UI)', () => {
 
     await adminDetailPage.openFullHistoryDialog()
     const dialog = new ConsentFullHistoryDialogPage(consentAdminPage)
-    await expect(dialog.dialog).toBeVisible()
+    // The dialog's heading renders as soon as it opens, but its history is fetched lazily *on
+    // open* - so gating on `dialog.dialog` (which is defined by that heading) proves nothing
+    // about the entries. allTextContents() below does not retry, so without a gate on real
+    // content it can snapshot an empty accordion list. Gate on the newest entry: it is the last
+    // one the fetch can produce, so its presence means the list is fully rendered.
+    await expect(dialog.entry('Revoked', env.consentAdmin.username)).toBeVisible()
     // Summary text uses "·", not "by" - see ConsentFullHistoryDialogPage.
     const summaryTexts = await dialog.entrySummaries.allTextContents()
     const dialogCreatedIndex = summaryTexts.findIndex(

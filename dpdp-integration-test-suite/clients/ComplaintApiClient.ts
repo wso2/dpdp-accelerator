@@ -23,9 +23,8 @@ import type { AuthHeaders } from '../utils/authStorage'
 /**
  * Ground truth for these shapes is the actual Java source under
  * dpdp-accelerator/{components,internal-webapps}/org.wso2.dpdp.accelerator.complaint.mgt.*, not
- * complaint-server-API.yaml alone - the two have drifted in a couple of places (see
- * tests/06-complaints-api/README.md, "Spec-vs-implementation drift found while writing this
- * suite"). Types below match what the server actually does.
+ * complaint-server-API.yaml alone - the two have drifted in a couple of places. Types below match
+ * what the server actually does.
  */
 export type ComplaintCategory =
   | 'DATA_BREACH'
@@ -99,7 +98,9 @@ export class ComplaintApiClient {
   private toFormData(files: UploadFile[], extra?: Record<string, string>): FormData {
     const form = new FormData()
     for (const file of files) {
-      form.append('file', new Blob([file.buffer], { type: file.mimeType }), file.name)
+      // Copy into a plain Uint8Array: Node's Buffer is backed by ArrayBufferLike, which
+      // BlobPart does not accept.
+      form.append('file', new Blob([new Uint8Array(file.buffer)], { type: file.mimeType }), file.name)
     }
     if (extra) {
       for (const [key, value] of Object.entries(extra)) {

@@ -22,11 +22,11 @@ import { seedActiveTopic } from '../../utils/eventNotificationSetup'
 
 /**
  * Listing, searching, and filtering Event Notification topics (TopicsPage.tsx/TopicTable.tsx/
- * TopicFilters.tsx). See tests/08-event-notifications/README.md for the rows-per-page drift
- * (real options are [10, 20, 50], not the spreadsheet's "25").
+ * TopicFilters.tsx). The rows-per-page control offers [10, 20, 50] - see
+ * pages/TopicsPage.ts's ROWS_PER_PAGE_OPTIONS.
  */
 test.describe('Admin viewing and searching Topics', () => {
-  test('05.02.01 - The Topics list renders active and deregistered rows with pagination controls', async ({
+  test('08.02.01 - The Topics list renders and paginates', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -40,7 +40,7 @@ test.describe('Admin viewing and searching Topics', () => {
       await expect(topicsPage.rows.first()).toBeVisible()
       await expect(topicsPage.previousPageButton).toBeDisabled()
 
-      // Real rows-per-page option (20), not the spreadsheet's "25" - see this directory's README.
+      // 20 is a real rows-per-page option; the control offers [10, 20, 50] only.
       await topicsPage.setRowsPerPage(20)
       await expect(topicsPage.table).toBeVisible()
       await expect(topicsPage.rows.first()).toBeVisible()
@@ -49,7 +49,7 @@ test.describe('Admin viewing and searching Topics', () => {
     }
   })
 
-  test('05.02.02 - Searching by a partial topic name finds the matching row', async ({
+  test('08.02.02 - Searching by a partial topic name finds the matching row', async ({
     browser,
     consentAdminEventApi,
   }) => {

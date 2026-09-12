@@ -25,16 +25,16 @@ import { uniqueMarker } from '../../utils/testData'
  * A Data Principal replying on their own complaint's activity thread - ComplaintReplyComposer.tsx
  * as rendered by ComplaintDetailPage.tsx, with canPostInternalNote=false (no "Internal note"
  * toggle - a Data Principal can only ever post a public reply, unlike the officer surface in
- * 05.07-officer-replying-in-thread.spec.ts).
+ * 07.07-officer-replying-in-thread.spec.ts).
  *
  * ComplaintDetailPage.tsx's onSend attaches a toStatus of AWAITING_INTERNAL_REVIEW in the two
  * cases StatusTransitionValidator.java allows a reply to auto-advance - WAITING_ON_CLIENT (the
- * officer asked for information, see 05.04.05) and RESOLVED (a reply is the only way a closed
- * complaint reopens, see 05.04.08). Every other status (OPEN, IN_PROGRESS) posts the reply with
- * no toStatus at all and is left unchanged - see 05.04.04 and 05.04.06.
+ * officer asked for information, see 07.04.05) and RESOLVED (a reply is the only way a closed
+ * complaint reopens, see 07.04.08). Every other status (OPEN, IN_PROGRESS) posts the reply with
+ * no toStatus at all and is left unchanged - see 07.04.04 and 07.04.06.
  */
 test.describe('Data Principal replying in a complaint thread (UI)', () => {
-  test('05.04.01 - Sending a reply appends it to the activity feed', async ({
+  test('07.04.01 - Sending a reply appends it to the activity feed', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -55,7 +55,7 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test("05.04.02 - Sending a reply clears the composer's text field", async ({
+  test("07.04.02 - Sending a reply clears the composer's text field", async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -72,7 +72,7 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.04.03 - The composer has no "Internal note" toggle for a Data Principal', async ({
+  test('07.04.03 - The composer has no "Internal note" toggle for a Data Principal', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -87,7 +87,7 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.04.04 - Replying to a freshly-OPEN complaint posts the message without changing its status', async ({
+  test('07.04.04 - Replying to a freshly-OPEN complaint posts the message without changing its status', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -106,7 +106,7 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.04.05 - Replying to a complaint the officer asked for more information on routes it back for internal review', async ({
+  test('07.04.05 - Replying to a complaint the officer asked for more information on routes it back for internal review', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -124,12 +124,12 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.04.06 - Replying while the complaint is In Progress posts the message without changing its status', async ({
+  test('07.04.06 - Replying while the complaint is In Progress posts the message without changing its status', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
   }) => {
-    // Same "no toStatus unless WAITING_ON_CLIENT" rule as 05.04.04 - IN_PROGRESS is not
+    // Same "no toStatus unless WAITING_ON_CLIENT" rule as 07.04.04 - IN_PROGRESS is not
     // WAITING_ON_CLIENT, so this reply carries no implicit transition either.
     const seeded = await seedComplaint(userComplaintApi, 'OTHER', 'reply-from-in-progress')
     await moveComplaintToStatus(officerComplaintApi, seeded.id, 'IN_PROGRESS')
@@ -155,7 +155,7 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.04.07 - "Attach" is disabled while a file is staged, and removing it lets a different file be attached', async ({
+  test('07.04.07 - "Attach" is disabled while a file is staged, and removing it lets a different file be attached', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -180,7 +180,7 @@ test.describe('Data Principal replying in a complaint thread (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.04.08 - Replying to a resolved complaint reopens it for internal review', async ({
+  test('07.04.08 - Replying to a resolved complaint reopens it for internal review', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,

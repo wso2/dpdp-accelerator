@@ -25,16 +25,17 @@ import { uniqueMarker } from '../../utils/testData'
  * A Complaint Officer replying on a case's activity thread - ComplaintReplyComposer.tsx as
  * rendered by ComplaintCaseDetailPage.tsx, with canPostInternalNote=true and statusOptions from
  * COMPLAINT_NEXT_STATUSES[complaint.status] (unlike the Data Principal composer in
- * 05.04-data-principal-replying-in-thread.spec.ts, which has neither).
+ * 07.04-data-principal-replying-in-thread.spec.ts, which has neither).
  *
  * COMPLAINT_NEXT_STATUSES.ts is deliberately narrower than StatusTransitionValidator.java allows
  * (e.g. it never offers OPEN -> AWAITING_INTERNAL_REVIEW as a menu option, and offers nothing at
  * all once RESOLVED) - not a bug, a UI choice to expose a curated subset of the backend's real
- * transition graph. 05.07.03 asserts that curated menu, not the backend's full one (see
- * tests/06-complaints-api's status-transition tests for the backend's actual rules).
+ * transition graph. 07.07.03 asserts that curated menu, not the backend's full one; the
+ * backend's own rules live in StatusTransitionValidator.java and have no E2E coverage of their
+ * own (see TEST-SCENARIOS.md, "Known gaps").
  */
 test.describe("Complaint Officer replying in a case thread (UI)", () => {
-  test('05.07.01 - Sending a public reply appends it to the activity feed', async ({
+  test('07.07.01 - Sending a public reply appends it to the activity feed', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -49,7 +50,7 @@ test.describe("Complaint Officer replying in a case thread (UI)", () => {
     await officerPage.context().close()
   })
 
-  test('05.07.02 - Sending a reply with a status change transitions the complaint and records the transition', async ({
+  test('07.07.02 - Sending a reply with a status change transitions the complaint and records the transition', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -64,7 +65,7 @@ test.describe("Complaint Officer replying in a case thread (UI)", () => {
     await officerPage.context().close()
   })
 
-  test("05.07.03 - Only OPEN's curated next statuses (In Progress, Waiting on Client) appear in the status menu", async ({
+  test("07.07.03 - Only OPEN's curated next statuses (In Progress, Waiting on Client) appear in the status menu", async ({
     browser,
     userComplaintApi,
   }) => {
@@ -83,7 +84,7 @@ test.describe("Complaint Officer replying in a case thread (UI)", () => {
     await officerPage.context().close()
   })
 
-  test('05.07.04 - Switching to "Internal note" posts a note the Data Principal never sees', async ({
+  test('07.07.04 - Switching to "Internal note" posts a note the Data Principal never sees', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -103,7 +104,7 @@ test.describe("Complaint Officer replying in a case thread (UI)", () => {
     await officerPage.context().close()
   })
 
-  test('05.07.05 - Resolving requires confirmation, and cancelling leaves the complaint open and the draft intact', async ({
+  test('07.07.05 - Resolving requires confirmation, and cancelling leaves the complaint open and the draft intact', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -134,7 +135,7 @@ test.describe("Complaint Officer replying in a case thread (UI)", () => {
     await officerPage.context().close()
   })
 
-  test('05.07.06 - Confirming the resolve dialog resolves the complaint and locks the composer', async ({
+  test('07.07.06 - Confirming the resolve dialog resolves the complaint and locks the composer', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -154,13 +155,13 @@ test.describe("Complaint Officer replying in a case thread (UI)", () => {
     await officerPage.context().close()
   })
 
-  test('05.07.07 - Sending a reply with a status change and an attachment transitions the complaint and uploads the file', async ({
+  test('07.07.07 - Sending a reply with a status change and an attachment transitions the complaint and uploads the file', async ({
     browser,
     userComplaintApi,
   }) => {
     // Exercises message + nextStatus + attachment together, the way a real
-    // resolving-with-evidence workflow does - 05.07.01/05.07.02 cover message/nextStatus alone,
-    // 05.04.07 covers attachment staging alone on the self surface.
+    // resolving-with-evidence workflow does - 07.07.01/07.07.02 cover message/nextStatus alone,
+    // 07.04.07 covers attachment staging alone on the self surface.
     const seeded = await seedComplaint(userComplaintApi, 'OTHER', 'officer-reply-with-evidence')
     const officerPage = await loginAsConsentAdmin(browser)
     const caseDetailPage = new ComplaintCaseDetailPage(officerPage)

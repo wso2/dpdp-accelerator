@@ -23,13 +23,13 @@ import { moveComplaintToStatus, seedComplaint } from '../../utils/complaintSetup
 /**
  * Narrowing a Data Principal's own complaint list - ComplaintListPage.tsx only offers a status
  * filter (no free-text search field, unlike the officer queue's - see
- * 05.06-officer-searching-complaints.spec.ts). This environment never resets (see the suite root
+ * 07.06-officer-searching-complaints.spec.ts). This environment never resets (see the suite root
  * README), so every assertion below is "my complaint is/isn't in this filtered view", never "the
  * filtered view has exactly N rows" or "is empty" - either could be false purely from other
  * accounts' or prior runs' history sharing the same status.
  */
 test.describe('Data Principal searching/filtering complaints (UI)', () => {
-  test('05.03.01 - Filtering to "Open" shows an Open complaint and hides an In Progress one', async ({
+  test('07.03.01 - Filtering to "Open" shows an Open complaint and hides an In Progress one', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -49,7 +49,7 @@ test.describe('Data Principal searching/filtering complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.03.02 - Filtering to "In Progress" shows the In Progress complaint and hides the Open one', async ({
+  test('07.03.02 - Filtering to "In Progress" shows the In Progress complaint and hides the Open one', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -69,7 +69,7 @@ test.describe('Data Principal searching/filtering complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.03.03 - Clearing the status filter (back to "All") restores complaints of every status', async ({
+  test('07.03.03 - Clearing the status filter (back to "All") restores complaints of every status', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,

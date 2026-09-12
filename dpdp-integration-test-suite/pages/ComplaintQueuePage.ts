@@ -28,7 +28,7 @@ export type ComplaintStatusLabel =
 /**
  * ComplaintQueuePage.tsx at /complaint-management - the Complaint Officer's org-wide queue.
  * Reached with the same `dpdp-consent-admin` persona as the rest of this suite's admin surface -
- * see tests/07-complaints/README.md: there is no distinct Complaint Officer role, "the officer" is
+ * see AGENTS.md: there is no distinct Complaint Officer role, "the officer" is
  * defined as any dpdp-consent-admin member (COMPLAINT-NOTIFICATION-DESIGN.md section 4).
  */
 export class ComplaintQueuePage {

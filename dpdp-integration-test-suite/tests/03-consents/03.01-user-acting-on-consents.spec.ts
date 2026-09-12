@@ -31,7 +31,7 @@ import { seedConsent } from '../../utils/consentSetup'
  * both consent scopes here, so the existing user persona needs no extra role for any of this.
  */
 test.describe('User acting on Consents (UI)', () => {
-  test('02.01.01 - Approving a Pending consent from the list moves it to Active', async ({
+  test('03.01.01 - Approving a Pending consent from the list moves it to Active', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -61,7 +61,7 @@ test.describe('User acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.01.02 - Rejecting a Pending consent from its detail page moves it to Rejected', async ({
+  test('03.01.02 - Rejecting a Pending consent from its detail page moves it to Rejected', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -90,7 +90,7 @@ test.describe('User acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.01.03 - Revoking an Active consent from the list moves it to Revoked and removes the revoke action', async ({
+  test('03.01.03 - Revoking an Active consent from the list moves it to Revoked and removes the revoke action', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -121,7 +121,7 @@ test.describe('User acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.01.04 - Approving from the detail page works the same way as from the list', async ({
+  test('03.01.04 - Approving from the detail page works the same way as from the list', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -146,7 +146,7 @@ test.describe('User acting on Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.01.05 - A Rejected consent offers no approve, reject, or revoke action on its detail page', async ({
+  test('03.01.05 - A Rejected consent offers no approve, reject, or revoke action on its detail page', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,

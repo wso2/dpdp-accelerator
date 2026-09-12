@@ -68,7 +68,7 @@ export class PurposeFormDialog {
    * searching for specific just-created elements by name. The picker only fetches its first
    * 200 elements (oldest first, see PurposeElementPicker.tsx), so a freshly created one is not
    * guaranteed to be among them once the shared environment has accumulated more than that -
-   * the same class of gap as the catalog lists' own pagination (see tests/plan.md).
+   * the same class of gap as the catalog lists' own pagination.
    * Returns the selected elements' label text, in selection order, for the caller to assert
    * against. A single-element purpose is just `addElements([true])`.
    */

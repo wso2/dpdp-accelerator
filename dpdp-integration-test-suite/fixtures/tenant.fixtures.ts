@@ -58,7 +58,7 @@ export interface TenantContext {
 // `tenant`/`tenantB` are worker-scoped (see the `test.extend` call below), which Playwright's
 // fixture typing requires declaring as the *second* type parameter, separate from any per-test
 // fixtures - there are none needed here, hence the empty first type argument. `tenantB` exists
-// only for tests/08-event-notifications/05.10-event-tenant-isolation.spec.ts, which needs two
+// only for tests/08-event-notifications/08.11-tenant-isolation-api.spec.ts, which needs two
 // distinct tenants live at once (proving tenant A's data never leaks into tenant B's view and
 // vice versa) - every other multi-tenancy test in this suite only ever needed one.
 interface WorkerFixtures {
@@ -331,7 +331,7 @@ export const test = base.extend<object, WorkerFixtures>({
     { scope: 'worker', timeout: 240_000 },
   ],
 
-  // Only tests/08-event-notifications/05.10-event-tenant-isolation.spec.ts requests this fixture
+  // Only tests/08-event-notifications/08.11-tenant-isolation-api.spec.ts requests this fixture
   // (Playwright only runs a worker fixture's setup when some test in that worker actually uses
   // it), so no other spec pays createTenant's cost twice.
   tenantB: [
@@ -360,7 +360,7 @@ export async function loginAsTenantOwner(browser: Browser, tenant: TenantContext
 
 /**
  * Same login as loginAsTenantOwner, but also returns the owner's own bearer token - needed only
- * by tests/08-event-notifications/05.09-event-authorization.spec.ts's wrong-tenant-token check,
+ * by tests/08-event-notifications/08.05-event-notifications-authorization.spec.ts's wrong-tenant-token check,
  * which replays a genuinely valid token for tenant A against tenant B's API base URL. Every other
  * caller just needs the signed-in Page (loginAsTenantOwner above) or the ready-made
  * `ownerEventApi`/`ownerConsentApi` on TenantContext, both already tenant-qualified to the

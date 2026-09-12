@@ -22,15 +22,14 @@ import { PurposeListPage } from '../../pages/PurposeListPage'
 import { uniquePurposeName } from '../../utils/testData'
 
 /**
- * The "Add Purpose" form's edge cases and validation rules. The happy-path creation flow itself
- * moved to tests/02-consents/02.07-admin-creating-a-consent-end-to-end.spec.ts's second step,
- * which chains straight from creating an Element into using it here and then into a Consent -
- * see that file's header comment for why. Purposes/Elements created here are registered with
- * `consentCleanupTracker` so they're deleted again once the test finishes - see
- * fixtures/auth.fixtures.ts's ConsentCleanupTracker.
+ * The "Add Purpose" form's edge cases and validation rules. The happy-path creation flow is not
+ * duplicated here: every consent test drives this same form as setup via `seedConsent`
+ * (utils/consentSetup.ts), so a passing 03-consents run already proves it. Purposes/Elements
+ * created here are registered with `consentCleanupTracker` so they're deleted again once the test
+ * finishes - see fixtures/auth.fixtures.ts's ConsentCleanupTracker.
  */
 test.describe('Admin creating Purposes (UI)', () => {
-  test('04.01.01 - A purpose with no elements and no properties shows the catalog empty-state messages', async ({
+  test('02.01.01 - A purpose with no elements and no properties shows the catalog empty-state messages', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -55,7 +54,7 @@ test.describe('Admin creating Purposes (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('04.01.02 - Leaving name, type, and version empty shows all three required-field errors and blocks submission', async ({
+  test('02.01.02 - Leaving name, type, and version empty shows all three required-field errors and blocks submission', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)
@@ -77,7 +76,7 @@ test.describe('Admin creating Purposes (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('04.01.03 - A property value with no key blocks submission until the key is filled in or the row is removed', async ({
+  test('02.01.03 - A property value with no key blocks submission until the key is filled in or the row is removed', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

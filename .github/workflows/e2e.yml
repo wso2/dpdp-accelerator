@@ -41,6 +41,17 @@ on:
         required: false
         type: string
         default: s3
+      db_type:
+        description: >-
+          Database the Identity Server runs on - any type with a block in the accelerator's
+          repository/conf/dbprofiles.properties, currently `h2` or `mysql`. The accelerator
+          ships `h2` so a fresh install needs no database server; CI defaults to `mysql`
+          because that is what a real deployment uses, and because Identity Server 7.3
+          disables Basic auth on any deployment whose root organization postdates
+          2026-08-13 - true of every MySQL install, so it is the path worth guarding.
+        required: false
+        type: string
+        default: mysql
       allow_unsafe_pr_checkout:
         description: Permit checking out fork code. Only ever true for a reviewed, label-gated PR.
         required: false
@@ -76,6 +87,7 @@ jobs:
       IS_ADMIN_USERNAME: admin@wso2.com
       IS_ADMIN_PASSWORD: wso2123
       IS_SOURCE: ${{ inputs.is_source }}
+      DB_TYPE: ${{ inputs.db_type }}
     steps:
       # pull_request_target checks out the TARGET branch by default, which would
       # silently test the wrong code. Callers therefore pass an explicit ref:
@@ -390,6 +402,19 @@ jobs:
           echo "IS update level: ${level}"
           echo "IS update level \`${level}\`" >> "$GITHUB_STEP_SUMMARY"
 
+      # The runner image ships MySQL 8 stopped, with root/root - which is already what the
+      # accelerator's configure.properties expects, so only DB_TYPE below needs changing.
+      - name: Start MySQL
+        if: inputs.db_type == 'mysql'
+        run: |
+          sudo systemctl start mysql
+          for _ in $(seq 1 30); do
+            mysqladmin ping -h 127.0.0.1 -u root -proot --silent 2>/dev/null && break
+            sleep 2
+          done
+          mysql -h 127.0.0.1 -u root -proot -e 'SELECT VERSION();' \
+            || { echo "::error::MySQL did not become reachable on the runner"; exit 1; }
+
       - name: Apply the accelerator
         run: |
           zip_path=$(find dpdp-accelerator/accelerators/dpdp-is/target -maxdepth 1 -name "wso2-dpdpiam-accelerator-*.zip" | head -1)
@@ -399,6 +424,17 @@ jobs:
           fi
           unzip -q "${zip_path}" -d "$IS_HOME"
           cd "${IS_HOME}/$(basename "${zip_path}" .zip)"
+
+          # configure.properties is the accelerator's own knob for this and it ships `h2`, so
+          # selecting a database here is an edit to that file rather than a new mechanism.
+          # configure.sh sources it, which would discard anything exported into the environment.
+          properties="repository/conf/configure.properties"
+          sed -i -E "s/^DB_TYPE=.*/DB_TYPE=${DB_TYPE}/" "${properties}"
+          grep -qx "DB_TYPE=${DB_TYPE}" "${properties}" \
+            || { echo "::error::could not set DB_TYPE=${DB_TYPE} in ${properties}"; exit 1; }
+          echo "Installing against ${DB_TYPE}"
+          echo "Database \`${DB_TYPE}\`" >> "$GITHUB_STEP_SUMMARY"
+
           bash bin/merge.sh     "$IS_HOME"
           bash bin/configure.sh "$IS_HOME"
 
@@ -425,10 +461,73 @@ jobs:
           tail -200 "${IS_HOME}/repository/logs/wso2carbon.log"
           exit 1
 
+      # Moved ahead of provisioning: the bootstrap below signs in through a real browser, so the
+      # suite's dependencies and Chromium have to exist before the first authenticated call, not
+      # after it.
+      - name: Install the suite's dependencies
+        working-directory: dpdp-integration-test-suite
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      # The suite's one configuration file: e2e-config.json holds every default, and this local
+      # override supplies only what is generated per run. Written before provisioning, which now
+      # reads the account password from here rather than taking it as an environment variable.
+      - name: Configure the suite
+        working-directory: dpdp-integration-test-suite
+        run: |
+          # Ephemeral - thrown away with the runner - but masked so it cannot reach a log.
+          password="$(openssl rand -base64 18 | tr -dc 'A-Za-z0-9')Aa1!"
+          echo "::add-mask::${password}"
+          PASSWORD="${password}" WEBHOOK_HOST="${WEBHOOK_RECEIVER_HOST}" python3 - <<'PYEOF'
+          import json, os
+
+          password = os.environ['PASSWORD']
+          config = {
+              'personas': {
+                  name: {'password': password} for name in ('user', 'user2', 'consentAdmin')
+              },
+              'webhook': {
+                  'receiverHost': os.environ['WEBHOOK_HOST'] or None,
+                  'allowPrivateNetwork': True,
+              },
+          }
+          with open('e2e-config.local.json', 'w') as handle:
+              json.dump(config, handle, indent=2)
+              handle.write('\n')
+          PYEOF
+
+      # Identity Server 7.3 disables Basic auth for deployments whose root organization was
+      # created on or after 2026-08-13 (see compatibility-settings-metadata.json). That is every
+      # backend except the shipped H2 file, whose root org is stamped at WSO2's build time - so
+      # every authenticated call below uses a client_credentials token instead, which behaves the
+      # same on all of them. See scripts/bootstrap-provisioning-app.ts.
+      - name: Bootstrap the provisioning client
+        working-directory: dpdp-integration-test-suite
+        run: npm run --silent bootstrap:provisioning-app
+
       - name: Verify accelerator provisioning
         run: |
+          # Written by the bootstrap step above. It lives here rather than under .auth/ because
+          # the suite's global teardown removes that whole directory after every run.
+          creds="dpdp-integration-test-suite/e2e-config.local.json"
+          read_cred() {
+            python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["provisioningClient"][sys.argv[2]])' \
+              "${creds}" "$1"
+          }
+          client_id="$(read_cred clientId)"
+          client_secret="$(read_cred clientSecret)"
+          token="$(curl -sk -X POST "${IS_BASE_URL}/oauth2/token" \
+            -u "${client_id}:${client_secret}" \
+            -d grant_type=client_credentials \
+            --data-urlencode 'scope=internal_role_mgt_view' \
+            | python3 -c 'import json, sys; print(json.load(sys.stdin)["access_token"])')"
+          if [ -z "${token}" ]; then
+            echo "::error::could not mint a token for the provisioning client"
+            exit 1
+          fi
           roles_found() {
-            curl -sk -u "${IS_ADMIN_USERNAME}:${IS_ADMIN_PASSWORD}" \
+            curl -sk -H "Authorization: Bearer ${token}" \
               "${IS_BASE_URL}/scim2/v2/Roles?filter=displayName+eq+dpdp-consent-admin" \
               | python3 -c 'import json, sys; print(json.load(sys.stdin).get("totalResults", 0))'
           }
@@ -462,36 +561,10 @@ jobs:
           fi
 
       - name: Provision test users
-        id: users
-        run: |
-          # Ephemeral - thrown away with the runner - but masked so it cannot reach a log.
-          password="$(openssl rand -base64 18 | tr -dc 'A-Za-z0-9')Aa1!"
-          echo "::add-mask::${password}"
-          echo "TEST_PASSWORD=${password}" >> "$GITHUB_ENV"
-          TEST_PASSWORD="${password}" \
-            bash dpdp-integration-test-suite/scripts/provision-test-users.sh
+        run: bash dpdp-integration-test-suite/scripts/provision-test-users.sh
 
       # tests/08-event-notifications' real webhook-delivery tests run via WEBHOOK_RECEIVER_HOST -
       # no secret needed, see "Enable private-network webhook callbacks..." above.
-      - name: Configure the suite
-        working-directory: dpdp-integration-test-suite
-        run: |
-          cat > .env <<EOF
-          PORTAL_BASE_URL=${IS_BASE_URL}/consent-portal
-          IS_BASE_URL=${IS_BASE_URL}
-          IGNORE_HTTPS_ERRORS=true
-          TEST_USER_USERNAME=${{ steps.users.outputs.user }}
-          TEST_USER_PASSWORD=${TEST_PASSWORD}
-          TEST_CONSENT_ADMIN_USERNAME=${{ steps.users.outputs.admin }}
-          TEST_CONSENT_ADMIN_PASSWORD=${TEST_PASSWORD}
-          TEST_USER_2_USERNAME=${{ steps.users.outputs.user2 }}
-          TEST_USER_2_PASSWORD=${TEST_PASSWORD}
-          WEBHOOK_RECEIVER_HOST=${WEBHOOK_RECEIVER_HOST}
-          WEBHOOK_RECEIVER_ALLOW_PRIVATE_NETWORK=true
-          EOF
-          npm ci
-          npx playwright install --with-deps chromium
-
       # npm ci and the browser install are already done, so run-e2e.sh skips both and
       # just execs playwright. The github reporter adds inline annotations; the config
       # itself only declares html.

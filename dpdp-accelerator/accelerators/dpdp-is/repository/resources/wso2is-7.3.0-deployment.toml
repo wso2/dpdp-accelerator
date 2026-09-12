@@ -12,23 +12,38 @@ create_admin_account = true
 type = "database_unique_id"
 
 [database.identity_db]
-type = "h2"
-url = "jdbc:h2:./repository/database/WSO2IDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
-username = "wso2carbon"
-password = "wso2carbon"
+type = "DB_DIALECT"
+url = "DB_IDENTITY_URL"
+username = "DB_CONN_USERNAME"
+password = "DB_CONN_PASSWORD"
+driver = "DB_DRIVER_CLASS"
+
+[database.identity_db.pool_options]
+validationQuery = "SELECT 1"
+validationInterval = "30000"
+testOnBorrow = true
 
 [database.shared_db]
-type = "h2"
-url = "jdbc:h2:./repository/database/WSO2SHARED_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
-username = "wso2carbon"
-password = "wso2carbon"
+type = "DB_DIALECT"
+url = "DB_SHARED_URL"
+username = "DB_CONN_USERNAME"
+password = "DB_CONN_PASSWORD"
+driver = "DB_DRIVER_CLASS"
+
+[database.shared_db.pool_options]
+validationQuery = "SELECT 1"
+validationInterval = "30000"
+testOnBorrow = true
 
 [datasource.AgentIdentity]
 id = "AgentIdentity"
-url = "jdbc:h2:./repository/database/WSO2AGENTIDENTITY_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
-username = "wso2carbon"
-password = "wso2carbon"
-driver = "org.h2.Driver"
+url = "DB_AGENT_URL"
+username = "DB_CONN_USERNAME"
+password = "DB_CONN_PASSWORD"
+driver = "DB_DRIVER_CLASS"
+pool_options.validationQuery = "SELECT 1"
+pool_options.validationInterval = "30000"
+pool_options.testOnBorrow = true
 
 [keystore.primary]
 file_name = "wso2carbon.p12"
@@ -97,10 +112,13 @@ subscriptions = ["POST_DELETE_USER", "POST_SET_USER_CLAIMS"]
 
 [datasource.WSO2DPDP_DB]
 id = "WSO2DPDP_DB"
-url = "jdbc:h2:./repository/database/WSO2DPDP_DB;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000"
-username = "wso2carbon"
-password = "wso2carbon"
-driver = "org.h2.Driver"
+url = "DB_DPDP_URL"
+username = "DB_CONN_USERNAME"
+password = "DB_CONN_PASSWORD"
+driver = "DB_DRIVER_CLASS"
+pool_options.validationQuery = "SELECT 1"
+pool_options.validationInterval = "30000"
+pool_options.testOnBorrow = true
 
 # JDBCPersistenceManager resolves this JNDI datasource name for every accelerator DB read/write.
 # data_source_name must match [datasource.WSO2DPDP_DB].id above (prefixed with "jdbc/") - it's a

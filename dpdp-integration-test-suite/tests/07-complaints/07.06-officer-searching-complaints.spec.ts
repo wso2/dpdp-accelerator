@@ -23,7 +23,7 @@ import { moveComplaintToStatus, seedComplaint } from '../../utils/complaintSetup
 /**
  * Narrowing the officer's org-wide queue - ComplaintQueueFilters.tsx offers a status filter, a
  * priority filter, and a free-text search box, unlike the Data Principal's list (status filter
- * only, see 05.03-data-principal-searching-complaints.spec.ts).
+ * only, see 07.03-data-principal-searching-complaints.spec.ts).
  *
  * The search box (ComplaintQueuePage.tsx's `rows` memo) filters client-side over whatever page
  * the server already returned for the current status/priority filters and pagination, not via a
@@ -31,7 +31,7 @@ import { moveComplaintToStatus, seedComplaint } from '../../utils/complaintSetup
  * odds this test's own freshly-created complaint is actually present in the page being searched.
  */
 test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
-  test('05.06.01 - Filtering by status shows a matching complaint and hides a non-matching one', async ({
+  test('07.06.01 - Filtering by status shows a matching complaint and hides a non-matching one', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -51,7 +51,7 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
     await officerPage.context().close()
   })
 
-  test('05.06.02 - Filtering by priority shows a matching complaint and hides a non-matching one', async ({
+  test('07.06.02 - Filtering by priority shows a matching complaint and hides a non-matching one', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -69,7 +69,7 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
     await officerPage.context().close()
   })
 
-  test('05.06.03 - Explicitly filtering by "Resolved" status reveals an otherwise-hidden resolved complaint', async ({
+  test('07.06.03 - Explicitly filtering by "Resolved" status reveals an otherwise-hidden resolved complaint', async ({
     browser,
     userComplaintApi,
     officerComplaintApi,
@@ -83,7 +83,7 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
     await queuePage.goto()
     await queuePage.setRowsPerPage(25)
 
-    // Complements 05.05.03 (resolved complaints hidden by default) - the same status filter that
+    // Complements 07.05.02 (resolved complaints hidden by default) - the same status filter that
     // hides them by default is what surfaces them again once selected explicitly.
     await expect(queuePage.rowByReferenceId(seeded.referenceId)).not.toBeVisible()
     await queuePage.filterByStatus('Resolved')
@@ -91,7 +91,7 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
     await officerPage.context().close()
   })
 
-  test('05.06.04 - Searching by reference id narrows the queue to that complaint', async ({
+  test('07.06.04 - Searching by reference id narrows the queue to that complaint', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -103,11 +103,13 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
 
     await queuePage.searchByReferenceOrName(seeded.referenceId)
     await expect(queuePage.rowByReferenceId(seeded.referenceId)).toBeVisible()
-    await expect(queuePage.rows).toHaveCount(1)
+    // Every surviving row carries the searched reference id - asserted as "no row lacks it"
+    // rather than "exactly one row", which would be a count assertion on a shared list.
+    await expect(queuePage.rows.filter({ hasNotText: seeded.referenceId })).toHaveCount(0)
     await officerPage.context().close()
   })
 
-  test("05.06.05 - Searching by the Data Principal's name narrows the queue to that principal's complaints", async ({
+  test("07.06.05 - Searching by the Data Principal's name narrows the queue to that principal's complaints", async ({
     browser,
     userComplaintApi,
   }) => {
@@ -121,13 +123,13 @@ test.describe('Complaint Officer searching/filtering the queue (UI)', () => {
     await queuePage.setRowsPerPage(25)
 
     await queuePage.searchByReferenceOrName(dataPrincipalName)
-    // Every visible row belongs to this same Data Principal (other complaints of theirs from
-    // other tests may also match - not asserting an exact count) - not just that ours is present.
     await expect(queuePage.rowByReferenceId(seeded.referenceId)).toBeVisible()
-    const rowCount = await queuePage.rows.count()
-    for (let index = 0; index < rowCount; index += 1) {
-      await expect(queuePage.rows.nth(index)).toContainText(dataPrincipalName)
-    }
+    // Every visible row belongs to this same Data Principal - other complaints of theirs from
+    // other tests may also match, so this is "no row lacks the name" rather than an exact count.
+    // One assertion over a filtered locator, never a loop over rows.nth(): the row count can
+    // change between the count() and the assertion while the search's own refetch is still
+    // narrowing the table (see 08.02.02's identical fix).
+    await expect(queuePage.rows.filter({ hasNotText: dataPrincipalName })).toHaveCount(0)
     await officerPage.context().close()
   })
 

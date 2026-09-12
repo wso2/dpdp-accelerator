@@ -30,7 +30,7 @@ import { randomServiceId } from '../../utils/testData'
  * results".
  */
 test.describe('Admin searching Consents (UI)', () => {
-  test('02.06.01 - Filtering by the exact consent id shows only that consent and disables the state filter', async ({
+  test('03.06.01 - Filtering by the exact consent id shows only that consent and disables the state filter', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -61,7 +61,7 @@ test.describe('Admin searching Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.06.02 - The advanced subject and service filters narrow the list', async ({
+  test('03.06.02 - The advanced subject and service filters narrow the list', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -90,7 +90,7 @@ test.describe('Admin searching Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.06.03 - Combining the state filter with the advanced subject/service filters narrows the list further', async ({
+  test('03.06.03 - Combining the state filter with the advanced subject/service filters narrows the list further', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -130,7 +130,7 @@ test.describe('Admin searching Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.06.04 - Searching by a non-existent consent id shows the load-failed message, not the empty-results one', async ({
+  test('03.06.04 - Searching by a non-existent consent id shows the load-failed message, not the empty-results one', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)
@@ -148,7 +148,7 @@ test.describe('Admin searching Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.06.05 - A subject/service filter matching nothing shows the empty-results message', async ({
+  test('03.06.05 - A subject/service filter matching nothing shows the empty-results message', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

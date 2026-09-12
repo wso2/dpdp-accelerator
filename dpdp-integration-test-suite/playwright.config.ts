@@ -20,7 +20,7 @@ import { defineConfig, devices } from '@playwright/test'
 import { env } from './utils/env'
 
 // No webServer entry: this suite targets a real, already-running WSO2 IS + accelerator
-// deployment (configured via .env.example / .env), not something this config starts itself.
+// deployment (configured via e2e-config.json), not something this config starts itself.
 export default defineConfig({
   testDir: 'tests',
   fullyParallel: true,

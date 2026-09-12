@@ -1,3 +1,0 @@
-Second sample attachment used by tests/05-complaints/05.01-data-principal-creating-complaints.spec.ts
-to verify only one attachment is kept when multiple files are selected at once, or when a new file
-is attached after one is already staged.

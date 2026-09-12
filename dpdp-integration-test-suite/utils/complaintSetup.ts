@@ -28,10 +28,10 @@ export interface SeededComplaint {
 /**
  * Same rationale as utils/consentSetup.ts's seedConsent: the UI tests in tests/07-complaints care
  * about the detail/reply/attachment/queue *pages*, not about re-proving the create form works on
- * every single test (that's 05.01's own job) - so most of them seed a complaint straight through
- * the real REST API (same ComplaintApiClient tests/06-complaints-api uses) instead of driving
+ * every single test (that's 07.01's own job) - so most of them seed a complaint straight through
+ * the real REST API via ComplaintApiClient instead of driving
  * ComplaintSubmitDialog every time. Unlike seedConsent, there's no cleanup tracker: complaints have
- * no delete-by-id endpoint at all (see this suite's root README's Operating principles).
+ * no delete-by-id endpoint at all (see AGENTS.md).
  */
 export async function seedComplaint(
   api: ComplaintApiClient,

@@ -18,15 +18,83 @@
 
 import { test, expect } from '../../fixtures/auth.fixtures'
 import { publishMarkedEvent, seedActiveTopic, seedPollSubscription } from '../../utils/eventNotificationSetup'
+import { uniqueMarker } from '../../utils/testData'
 
 /**
- * Acting on subscriptions - re-verification state checks and deletion
- * (SubscriptionServiceImpl.retryVerification/deleteSubscription). The one receiver-dependent
- * test that used to live here (06.02.04, re-verifying a stale webhook subscription) was removed -
- * see tests/08-event-notifications/README.md, "Webhook-dependent tests".
+ * Server-side subscription lifecycle rules (SubscriptionServiceImpl / SubscriptionDAOImpl):
+ * duplicate and mixed-delivery-mode rejection on register, what re-verification allows, and what
+ * blocks a delete. API-only - SubscriptionRegisterDialog.tsx can register and
+ * SubscriptionDeleteDialog.tsx can delete (both exercised via 08.03), but neither surfaces these
+ * rules.
+ *
+ * The webhook-verification-dependent tests that used to sit alongside these (register+verify,
+ * callback-URL validation, webhook intent verification, and re-verifying a stale subscription)
+ * were removed: they need a network-reachable receiver and were unreliable on a machine whose LAN
+ * IP changes mid-session. See TEST-SCENARIOS.md for the resulting gap.
  */
-test.describe('Admin acting on Subscriptions', () => {
-  test('06.02.05 - An active or deleted subscription cannot be re-verified', async ({ consentAdminEventApi }) => {
+test.describe('Subscription lifecycle rules', () => {
+  test('08.07.01 - An overlapping subscription with equivalent purposes and callback URL is rejected', async ({
+    consentAdminEventApi,
+  }) => {
+    const topic = await seedActiveTopic(consentAdminEventApi, 'duplicate-check')
+    const callbackUrl = `https://Example.com/${uniqueMarker('hook')}`
+    const first = await consentAdminEventApi.createSubscription({
+      topic: topic.name,
+      filter: { type: 'specific', purposes: ['Account', 'Profile'] },
+      delivery: { mode: 'webhook', callbackUrl, sharedSecret: uniqueMarker('secret') },
+    })
+    expect(first.status()).toBe(201)
+
+    // Same host with different casing, same purposes with different order/casing/duplicates -
+    // CallbackUrlCanonicalizer/PurposeOverlapUtils treat these as equivalent to the original.
+    const duplicate = await consentAdminEventApi.createSubscription({
+      topic: topic.name,
+      filter: { type: 'specific', purposes: ['profile', 'ACCOUNT', 'account'] },
+      delivery: { mode: 'webhook', callbackUrl: callbackUrl.toLowerCase(), sharedSecret: uniqueMarker('secret') },
+    })
+    expect(duplicate.status()).toBe(409)
+  })
+
+  test('08.07.02 - The same tenant/group/topic cannot mix webhook and poll delivery modes', async ({
+    consentAdminEventApi,
+  }) => {
+    const topicA = await seedActiveTopic(consentAdminEventApi, 'mixed-mode-a')
+    const groupA = uniqueMarker('group')
+    const webhookFirst = await consentAdminEventApi.createSubscription({
+      topic: topicA.name,
+      groupId: groupA,
+      filter: { type: 'all' },
+      delivery: { mode: 'webhook', callbackUrl: 'https://example.com/hook-a', sharedSecret: uniqueMarker('secret') },
+    })
+    expect(webhookFirst.status()).toBe(201)
+    const pollConflict = await consentAdminEventApi.createSubscription({
+      topic: topicA.name,
+      groupId: groupA,
+      filter: { type: 'all' },
+      delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
+    })
+    expect(pollConflict.status()).toBe(409)
+
+    const topicB = await seedActiveTopic(consentAdminEventApi, 'mixed-mode-b')
+    const groupB = uniqueMarker('group')
+    const pollFirst = await consentAdminEventApi.createSubscription({
+      topic: topicB.name,
+      groupId: groupB,
+      filter: { type: 'all' },
+      delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
+    })
+    expect(pollFirst.status()).toBe(201)
+    const webhookConflict = await consentAdminEventApi.createSubscription({
+      topic: topicB.name,
+      groupId: groupB,
+      filter: { type: 'all' },
+      delivery: { mode: 'webhook', callbackUrl: 'https://example.com/hook-b', sharedSecret: uniqueMarker('secret') },
+    })
+    expect(webhookConflict.status()).toBe(409)
+  })
+
+
+  test('08.07.03 - An active or deleted subscription cannot be re-verified', async ({ consentAdminEventApi }) => {
     // Two separate topics, not one shared topic: every subscription's groupId is currently
     // forced to the org's own id server-side (see eventNotificationSetup.ts), so two
     // same-filter poll subscriptions on the very same topic would collide as duplicates.
@@ -46,12 +114,12 @@ test.describe('Admin acting on Subscriptions', () => {
     expect(deletedVerify.status()).toBe(404)
   })
 
-  test('06.04.01 - Deleting a subscription soft-deletes it while preserving its record', async ({
+  test('08.07.04 - Deleting a subscription soft-deletes it while preserving its record', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'sub-delete')
-    // No deliveries at all - one of the two preconditions the spreadsheet itself allows
-    // ("Subscription with completed/no deliveries") and the simplest to seed reliably.
+    // No deliveries at all - deleting is allowed with either completed or no deliveries, and no
+    // deliveries is the simplest of the two to seed reliably.
     const subscription = await seedPollSubscription(consentAdminEventApi, topic.name)
 
     const deleteResponse = await consentAdminEventApi.deleteSubscription(subscription.subscriptionId)
@@ -68,7 +136,7 @@ test.describe('Admin acting on Subscriptions', () => {
     expect(eventsResponse.ok()).toBe(true)
   })
 
-  test('06.04.02 - A subscription with a pending delivery cannot be deleted', async ({ consentAdminEventApi }) => {
+  test('08.07.05 - A subscription with a pending delivery cannot be deleted', async ({ consentAdminEventApi }) => {
     // A POLL subscription's own delivery stays `pending` until it's consumed via the poll
     // endpoint (confirmed: SubscriptionServiceImpl.deleteSubscription checks
     // subscriptionDAO.hasPendingOrInFlightDeliveries) - the reliable, receiver-free way to get a
@@ -94,7 +162,7 @@ test.describe('Admin acting on Subscriptions', () => {
     expect((await getResponse.json()).status).toBe('active')
   })
 
-  test('06.04.03 - Deleting an already-deleted subscription returns not found', async ({ consentAdminEventApi }) => {
+  test('08.07.06 - Deleting an already-deleted subscription returns not found', async ({ consentAdminEventApi }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'sub-delete-twice')
     const subscription = await seedPollSubscription(consentAdminEventApi, topic.name)
 

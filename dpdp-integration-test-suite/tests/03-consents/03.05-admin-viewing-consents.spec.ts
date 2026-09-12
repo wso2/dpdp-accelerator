@@ -25,11 +25,11 @@ import { seedConsent } from '../../utils/consentSetup'
 /**
  * The admin registry's read surface: a freshly-created consent appearing in the list, and the
  * load-failed path for an unknown id. See
- * tests/02-consents/02.04-admin-acting-on-consents.spec.ts for Revoke and the action-gating
+ * tests/03-consents/03.04-admin-acting-on-consents.spec.ts for Revoke and the action-gating
  * invariants.
  */
 test.describe('Admin viewing Consents (UI)', () => {
-  test('02.05.01 - A consent created via the API appears in the admin list with its subject', async ({
+  test('03.05.01 - A consent created via the API appears in the admin list with its subject', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -46,15 +46,14 @@ test.describe('Admin viewing Consents (UI)', () => {
     const registryPage = new AdminConsentPage(consentAdminPage)
     await registryPage.goto()
     // The unfiltered list is sorted oldest-first with no way to jump pages, so a freshly
-    // created row is found by its own id rather than by browsing - see
-    // tests/plan.md.
+    // created row is found by its own id rather than by browsing.
     await registryPage.searchByConsentId(consentId)
     await expect(registryPage.rowByConsentId(consentId)).toContainText(env.user.username)
     await expect(registryPage.rowByConsentId(consentId)).toContainText(serviceId)
     await consentAdminPage.context().close()
   })
 
-  test('02.05.02 - An unknown consent id shows the load-failed message with a way back to the registry', async ({
+  test('03.05.02 - An unknown consent id shows the load-failed message with a way back to the registry', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

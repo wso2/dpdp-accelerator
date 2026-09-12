@@ -16,63 +16,31 @@
  * under the License.
  */
 
-import { config as loadDotenv } from 'dotenv'
-import path from 'node:path'
-
-// .env.example is committed and carries non-secret defaults; a gitignored .env overrides it
-// with the real per-environment values (credentials, non-default hosts). Loaded in this order
-// so .env.example always applies first and .env only overrides what it actually sets.
-loadDotenv({ path: path.resolve(import.meta.dirname, '..', '.env.example') })
-loadDotenv({ path: path.resolve(import.meta.dirname, '..', '.env'), override: true })
-
-function required(name: string): string {
-  const value = process.env[name]
-  if (!value) {
-    throw new Error(
-      `Missing required environment variable "${name}". Copy .env.example to .env and fill it in - see README.md.`,
-    )
-  }
-  return value
-}
-
-function optional(name: string): string | undefined {
-  const value = process.env[name]
-  return value && value.length > 0 ? value : undefined
-}
-
-function optionalWithDefault(name: string, fallback: string): string {
-  return optional(name) ?? fallback
-}
-
-function trimTrailingSlash(value: string): string {
-  return value.endsWith('/') ? value.slice(0, -1) : value
-}
+import { config, requireConfigured, trimTrailingSlash } from './config'
 
 export interface Persona {
   username: string
   password: string
 }
 
-const rawPortalBaseUrl = trimTrailingSlash(required('PORTAL_BASE_URL'))
-const ignoreHttpsErrors = (process.env.IGNORE_HTTPS_ERRORS ?? 'true') === 'true'
+/**
+ * Everything below is read from e2e-config.json (plus the optional, gitignored
+ * e2e-config.local.json) - see utils/config.ts. There are no environment-variable fallbacks and
+ * no defaults inlined here: a missing value fails with the key that is missing.
+ *
+ * This object's shape is what the whole suite consumes, so it is kept stable independently of
+ * how the configuration is stored.
+ */
 
-// Node's global fetch (unlike Playwright's own browser/request APIs) has no per-call option to
-// ignore an untrusted certificate - it only honors this process-wide env var. The shipped
-// Identity Server certificate is self-signed, so without this every plain fetch() call in
-// fixtures/auth.fixtures.ts (terminateAllSessions, verifyConsentAdminAuthorized) fails with a
-// generic "fetch failed"/"self-signed certificate" error.
-//
-// Set HERE, not only in global-setup.ts, because global-setup.ts runs in Playwright's own
-// orchestrator process, and whether that mutation is actually visible to a given TEST WORKER
-// process depends on exactly when Playwright forks that worker relative to globalSetup
-// finishing - confirmed non-deterministic live (an isolated `--workers=1 -g "..."` run
-// reproducibly hit the unset case on a fresh persona login, right after a run that had it set
-// throughout). Every worker imports this module directly (via env.ts's own consumers, including
-// auth.fixtures.ts), so setting it here executes it in-process for whichever process actually
-// makes the plain fetch() call, with no cross-process inheritance to race.
-if (ignoreHttpsErrors) {
-  process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
+function persona(which: 'user' | 'user2' | 'consentAdmin'): Persona {
+  const configured = config.personas[which]
+  return {
+    username: requireConfigured(configured.username, `personas.${which}.username`),
+    password: requireConfigured(configured.password, `personas.${which}.password`),
+  }
 }
+
+const rawPortalBaseUrl = trimTrailingSlash(config.identityServer.portalBaseUrl)
 
 export const env = {
   portalBaseUrl: rawPortalBaseUrl,
@@ -85,23 +53,17 @@ export const env = {
   // chasing as an OAuth/IS problem before landing here. portalBaseUrl itself stays slash-free since
   // the consent API URL helpers below need that form.
   portalNavigationBaseUrl: `${rawPortalBaseUrl}/`,
-  identityServerBaseUrl: trimTrailingSlash(required('IS_BASE_URL')),
-  ignoreHttpsErrors,
+  identityServerBaseUrl: trimTrailingSlash(config.identityServer.baseUrl),
+  ignoreHttpsErrors: config.identityServer.ignoreHttpsErrors,
 
-  user: {
-    username: required('TEST_USER_USERNAME'),
-    password: required('TEST_USER_PASSWORD'),
-  } satisfies Persona,
+  user: persona('user'),
 
   // Must be a real user assigned the dpdp-consent-admin role. The accelerator provisions the role
   // itself automatically, but never role membership - run scripts/provision-test-users.sh to
   // create this account with its role already assigned. Grants every internal_consent_mgt_*
   // scope, so this single persona both drives the admin consent registry UI and creates
   // Purposes/Elements/Consents via the API as test setup for the UI layer.
-  consentAdmin: {
-    username: required('TEST_CONSENT_ADMIN_USERNAME'),
-    password: required('TEST_CONSENT_ADMIN_PASSWORD'),
-  } satisfies Persona,
+  consentAdmin: persona('consentAdmin'),
 
   /**
    * Optional: a second user account, used only by ownership-isolation tests that
@@ -109,22 +71,19 @@ export const env = {
    * since a real environment can't fabricate extra user accounts the way a stubbed IdP could.
    */
   secondUser: (): Persona | undefined => {
-    const username = optional('TEST_USER_2_USERNAME')
-    const password = optional('TEST_USER_2_PASSWORD')
+    const { username, password } = config.personas.user2
     return username && password ? { username, password } : undefined
   },
 
   /**
-   * The super-tenant admin - defaults to admin/admin, matching both
-   * scripts/provision-test-users.sh's own default and the accelerator's own configure.properties
-   * default for a fresh install. Only used by tests/05-multi-tenancy, to create a throwaway
-   * tenant through the Console's "New Root Organization" flow - see fixtures/tenant.fixtures.ts.
-   * Not required in .env: unlike TEST_USER_USERNAME/TEST_CONSENT_ADMIN_USERNAME, a wrong default
-   * here just makes that one test area fail its own login, not silently corrupt other tests.
+   * The super-tenant admin. Used by scripts/bootstrap-provisioning-app.ts for its one-time
+   * Console sign-in, and by tests/05-multi-tenancy to create a throwaway tenant through the
+   * Console's "New Root Organization" flow - see fixtures/tenant.fixtures.ts. Whatever is in
+   * e2e-config.json must match the account the target deployment actually has.
    */
   superAdmin: {
-    username: optionalWithDefault('IS_ADMIN_USERNAME', 'admin'),
-    password: optionalWithDefault('IS_ADMIN_PASSWORD', 'admin'),
+    username: requireConfigured(config.superAdmin.username, 'superAdmin.username'),
+    password: requireConfigured(config.superAdmin.password, 'superAdmin.password'),
   } satisfies Persona,
 }
 
@@ -209,7 +168,7 @@ export function consentHistoryApiUrl(path: string, tenantDomain?: string): strin
 }
 
 /**
- * Opt-in only (see .env.example): the real ConsentExpiryJob's default daily cron makes waiting on
+ * Opt-in only (see README.md, "Configuration"): the real ConsentExpiryJob's default daily cron makes waiting on
  * it impractical for an automated run, so the one test that actually waits on the live scheduler
  * (rather than triggering DPDPConsentExpiryReconciler via a mutation) needs the operator to have
  * both shortened [dpdp_accelerator.consent_expiry].cron_value in deployment.toml and restarted the
@@ -217,23 +176,21 @@ export function consentHistoryApiUrl(path: string, tenantDomain?: string): strin
  * configured" - that test skips itself, mirroring hasSecondUser()/webhookReceiverConfig() above.
  */
 export function consentExpirySchedulerPollTimeoutMs(): number | undefined {
-  const raw = optional('CONSENT_EXPIRY_SCHEDULER_POLL_TIMEOUT_MS')
-  return raw ? Number(raw) : undefined
+  return config.consentExpiry.schedulerPollTimeoutMs ?? undefined
 }
 
 /**
  * A real webhook end-to-end round trip (subscription verification, signed delivery, retries)
  * needs a receiver process the WSO2 IS host can actually reach over the network to POST/GET
  * against - EventNotificationUrlValidator rejects loopback/127.0.0.1 unconditionally (see
- * tests/08-event-notifications/README.md, "Webhook-dependent tests"), so a receiver bound to
+ * AGENTS.md, "Webhook-dependent tests"), so a receiver bound to
  * this machine's own loopback interface can never pass callback-URL validation no matter what
  * deployment.toml says. Tests that need this skip themselves (mirroring hasSecondUser()) unless
  * both a receiver host and confirmation that the deployment allows it are explicitly configured.
  */
 export function webhookReceiverConfig(): { host: string; allowPrivateNetwork: boolean } | undefined {
-  const host = optional('WEBHOOK_RECEIVER_HOST')
-  const allowPrivateNetwork = (process.env.WEBHOOK_RECEIVER_ALLOW_PRIVATE_NETWORK ?? 'false') === 'true'
-  return host ? { host, allowPrivateNetwork } : undefined
+  const { receiverHost, allowPrivateNetwork } = config.webhook
+  return receiverHost ? { host: receiverHost, allowPrivateNetwork } : undefined
 }
 
 export type PersonaName = 'user' | 'user-2' | 'consent-admin'

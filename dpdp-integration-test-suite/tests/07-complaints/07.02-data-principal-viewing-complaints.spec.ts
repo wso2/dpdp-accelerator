@@ -29,12 +29,12 @@ import { seedComplaint } from '../../utils/complaintSetup'
  * "The environment never resets" operating principles.
  *
  * Not covered here: the list's true empty state (complaints.list.empty) - this suite's shared
- * "user" persona (TEST_USER_USERNAME) is used by every complaint test in this run and by every
+ * "user" persona (personas.user) is used by every complaint test in this run and by every
  * prior run against this environment, so there is no way to observe it with a known-empty
  * account without a dedicated, never-otherwise-used env var this suite doesn't currently define.
  */
 test.describe('Data Principal viewing complaints (UI)', () => {
-  test('05.02.01 - The complaint list shows reference id, category, status, submitted and updated columns', async ({
+  test('07.02.01 - The complaint list shows reference id, category, status, submitted and updated columns', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -51,7 +51,7 @@ test.describe('Data Principal viewing complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.02.02 - A freshly submitted complaint appears in the list with its category and Open status', async ({
+  test('07.02.02 - A freshly submitted complaint appears in the list with its category and Open status', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -70,7 +70,7 @@ test.describe('Data Principal viewing complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.02.03 - Opening a complaint from the list navigates to its detail page showing the same reference id', async ({
+  test('07.02.03 - Opening a complaint from the list navigates to its detail page showing the same reference id', async ({
     browser,
     userComplaintApi,
   }) => {
@@ -86,7 +86,7 @@ test.describe('Data Principal viewing complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test("05.02.04 - A complaint's detail page shows its category, description, submitted date, and an empty attachments tab", async ({
+  test("07.02.04 - A complaint's detail page shows its category, description, submitted date, and an empty attachments tab", async ({
     browser,
     userComplaintApi,
   }) => {
@@ -104,7 +104,7 @@ test.describe('Data Principal viewing complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.02.05 - Navigating to an unknown complaint id shows the not-found state with a way back to the list', async ({
+  test('07.02.05 - Navigating to an unknown complaint id shows the not-found state with a way back to the list', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)

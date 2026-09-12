@@ -28,7 +28,7 @@ import { UserProfileMenuPage } from '../../pages/UserProfileMenuPage'
  * assert who is offered the option, which is safe to run against the shared personas.
  */
 test.describe('Account deletion visibility (UI)', () => {
-  test('04.03.01 - A user is offered account deletion in the profile menu', async ({ browser }) => {
+  test('06.02.01 - A user is offered account deletion in the profile menu', async ({ browser }) => {
     const userPage = await loginAsUser(browser)
     await userPage.goto('dashboard')
     const menu = new UserProfileMenuPage(userPage)
@@ -39,7 +39,7 @@ test.describe('Account deletion visibility (UI)', () => {
     await userPage.context().close()
   })
 
-  test('04.03.02 - A Consent Admin is not offered account deletion', async ({ browser }) => {
+  test('06.02.02 - A Consent Admin is not offered account deletion', async ({ browser }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)
     await consentAdminPage.goto('dashboard')
     const menu = new UserProfileMenuPage(consentAdminPage)

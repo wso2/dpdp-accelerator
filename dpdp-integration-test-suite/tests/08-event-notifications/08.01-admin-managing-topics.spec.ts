@@ -20,20 +20,20 @@ import { loginAsConsentAdmin, test, expect } from '../../fixtures/auth.fixtures'
 import { TopicDeleteDialog } from '../../pages/TopicDeleteDialog'
 import { TopicRegisterDialog } from '../../pages/TopicRegisterDialog'
 import { TopicsPage } from '../../pages/TopicsPage'
-import { seedActiveTopic, seedPollSubscription } from '../../utils/eventNotificationSetup'
+import { seedActiveTopic } from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 
 /**
  * Registering and deregistering Event Notification topics through the portal UI
  * (TopicsPage.tsx/TopicRegisterDialog.tsx/TopicDeleteDialog.tsx) and TopicServiceImpl's
- * server-side rules. See tests/08-event-notifications/README.md for setup and known drift -
+ * server-side rules. See AGENTS.md for setup and known drift -
  * notably: creating a topic shows NO literal "success message" toast (useCreateTopicMutation has
  * no onSuccess snackbar); the dialog closing and the row appearing are the only observable
  * success signals.
  */
 test.describe('Admin managing Topics', () => {
   test.describe('Creating Topics', () => {
-    test('05.01.01 - Creates a user topic through the Register Topic dialog', async ({ browser }) => {
+    test('08.01.01 - Creates a user topic through the Register Topic dialog', async ({ browser }) => {
       const page = await loginAsConsentAdmin(browser)
       try {
         const topicsPage = new TopicsPage(page)
@@ -55,7 +55,7 @@ test.describe('Admin managing Topics', () => {
       }
     })
 
-    test('05.01.02 - Leaving the topic name empty shows the required-field error and blocks submission', async ({
+    test('08.01.02 - Leaving the topic name empty shows the required-field error and blocks submission', async ({
       browser,
     }) => {
       const page = await loginAsConsentAdmin(browser)
@@ -87,7 +87,7 @@ test.describe('Admin managing Topics', () => {
       }
     })
 
-    test('05.01.03 - Creating a topic whose name already exists is rejected case-insensitively', async ({
+    test('08.01.03 - Creating a topic whose name already exists is rejected case-insensitively', async ({
       browser,
       consentAdminEventApi,
     }) => {
@@ -118,7 +118,7 @@ test.describe('Admin managing Topics', () => {
       }
     })
 
-    test('05.01.04 - Topic input is trimmed before persistence', async ({ browser, consentAdminEventApi }) => {
+    test('08.01.04 - Topic input is trimmed before persistence', async ({ browser, consentAdminEventApi }) => {
       const page = await loginAsConsentAdmin(browser)
       try {
         const topicsPage = new TopicsPage(page)
@@ -142,7 +142,7 @@ test.describe('Admin managing Topics', () => {
   })
 
   test.describe('Deregistering Topics', () => {
-    test('05.03.01 - Deregisters a user-created topic with no active subscriptions', async ({
+    test('08.01.05 - Deregisters a user-created topic with no active subscriptions', async ({
       browser,
       consentAdminEventApi,
     }) => {
@@ -168,61 +168,6 @@ test.describe('Admin managing Topics', () => {
       } finally {
         await page.context().close()
       }
-    })
-
-    test('05.03.03 - A topic with a live subscription cannot be deregistered', async ({
-      consentAdminEventApi,
-    }) => {
-      const topic = await seedActiveTopic(consentAdminEventApi, 'has-subscription')
-      await seedPollSubscription(consentAdminEventApi, topic.name)
-
-      const deleteResponse = await consentAdminEventApi.deleteTopic(topic.topicId)
-      expect(deleteResponse.status()).toBe(409)
-      const body = await deleteResponse.json()
-      expect(body.description).toContain('has active subscriptions')
-
-      const getResponse = await consentAdminEventApi.listTopics({ search: topic.name })
-      const { items } = (await getResponse.json()) as { items: { topicId: string; status: string }[] }
-      const stillThere = items.find((t) => t.topicId === topic.topicId)
-      expect(stillThere?.status.toUpperCase()).toBe('ACTIVE')
-    })
-
-    test('05.03.04 - Deregistering the same topic twice does not mutate it again', async ({
-      consentAdminEventApi,
-    }) => {
-      const topic = await seedActiveTopic(consentAdminEventApi, 'double-deregister')
-      const first = await consentAdminEventApi.deleteTopic(topic.topicId)
-      expect(first.status()).toBe(200)
-
-      const second = await consentAdminEventApi.deleteTopic(topic.topicId)
-      expect(second.status()).toBe(404)
-
-      const listResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DEREGISTERED' })
-      const { items } = (await listResponse.json()) as { items: { topicId: string }[] }
-      expect(items.filter((t) => t.topicId === topic.topicId)).toHaveLength(1)
-    })
-  })
-
-  test.describe('Recreating Topics', () => {
-    test('05.03.05 - Re-registering a previously deregistered topic name creates a new topic', async ({
-      consentAdminEventApi,
-    }) => {
-      const original = await seedActiveTopic(consentAdminEventApi, 'reused-name')
-      const deregisterResponse = await consentAdminEventApi.deleteTopic(original.topicId)
-      expect(deregisterResponse.status()).toBe(200)
-
-      const recreateResponse = await consentAdminEventApi.createTopic({ name: original.name })
-      expect(recreateResponse.status()).toBe(201)
-      const recreated = await recreateResponse.json()
-      expect(recreated.topicId).not.toBe(original.topicId)
-      expect(recreated.status.toUpperCase()).toBe('ACTIVE')
-
-      const listResponse = await consentAdminEventApi.listTopics({ search: original.name })
-      const { items } = (await listResponse.json()) as { items: { topicId: string; status: string }[] }
-      const oldRow = items.find((t) => t.topicId === original.topicId)
-      const newRow = items.find((t) => t.topicId === recreated.topicId)
-      expect(oldRow?.status.toUpperCase()).toBe('DEREGISTERED')
-      expect(newRow?.status.toUpperCase()).toBe('ACTIVE')
     })
   })
 })

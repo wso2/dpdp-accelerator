@@ -23,11 +23,11 @@ import { uniqueMarker, uniquePurposeName } from '../../utils/testData'
 
 /**
  * The Purposes list's search bar: substring name matching, exact type matching, Reset, and the
- * no-match empty state. See tests/04-purposes/04.01-admin-creating-purposes.spec.ts for the
+ * no-match empty state. See tests/02-purposes/02.01-admin-creating-purposes.spec.ts for the
  * actual creation flow.
  */
 test.describe('Admin searching the Purposes list (UI)', () => {
-  test('04.03.01 - Searching by a partial name still finds the matching purpose', async ({
+  test('02.03.01 - Searching by a partial name still finds the matching purpose', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -56,7 +56,7 @@ test.describe('Admin searching the Purposes list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('04.03.02 - Filtering by an exact type finds only purposes of that type', async ({
+  test('02.03.02 - Filtering by an exact type finds only purposes of that type', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -85,7 +85,7 @@ test.describe('Admin searching the Purposes list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('04.03.03 - Resetting the search clears both filters and shows the unfiltered list again', async ({
+  test('02.03.03 - Resetting the search clears both filters and shows the unfiltered list again', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -114,7 +114,7 @@ test.describe('Admin searching the Purposes list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('04.03.04 - A search with no matches shows the empty-results message', async ({
+  test('02.03.04 - A search with no matches shows the empty-results message', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

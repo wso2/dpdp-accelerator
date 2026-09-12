@@ -25,11 +25,11 @@ import { uniqueMarker } from '../../utils/testData'
 /**
  * Submitting a new complaint through ComplaintSubmitDialog.tsx, opened from ComplaintListPage.tsx.
  * There is no equivalent "officer creating a complaint" UI - ComplaintQueuePage.tsx has no create
- * action; officer-assisted intake (POST /complaints) has no frontend of its own, only the API
- * coverage in tests/06-complaints-api/06.04.
+ * action, and officer-assisted intake (POST /complaints) has no frontend of its own. It has no
+ * automated coverage either; see TEST-SCENARIOS.md, "Known gaps".
  */
 test.describe('Data Principal creating complaints (UI)', () => {
-  test('05.01.01 - Submitting a complaint with a category and description shows a success banner with a reference id', async ({
+  test('07.01.01 - Submitting a complaint with a category and description shows a success banner with a reference id', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -47,7 +47,7 @@ test.describe('Data Principal creating complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.01.02 - Submitting without selecting a category shows a validation error and does not submit', async ({
+  test('07.01.02 - Submitting without selecting a category shows a validation error and does not submit', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -64,7 +64,7 @@ test.describe('Data Principal creating complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.01.03 - Submitting without a description shows a validation error and does not submit', async ({
+  test('07.01.03 - Submitting without a description shows a validation error and does not submit', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -81,7 +81,7 @@ test.describe('Data Principal creating complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.01.04 - Attaching a file before submitting carries it through to the created complaint', async ({
+  test('07.01.04 - Attaching a file before submitting carries it through to the created complaint', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -112,7 +112,7 @@ test.describe('Data Principal creating complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.01.05 - "Upload files" is disabled while a file is staged, and removing it lets a different file be attached', async ({
+  test('07.01.05 - "Upload files" is disabled while a file is staged, and removing it lets a different file be attached', async ({
     browser,
   }) => {
     const dataPrincipalPage = await loginAsUser(browser)
@@ -134,7 +134,7 @@ test.describe('Data Principal creating complaints (UI)', () => {
     await dataPrincipalPage.context().close()
   })
 
-  test('05.01.06 - Cancelling the dialog discards the draft without creating a complaint', async ({ browser }) => {
+  test('07.01.06 - Cancelling the dialog discards the draft without creating a complaint', async ({ browser }) => {
     const dataPrincipalPage = await loginAsUser(browser)
     const listPage = new ComplaintListPage(dataPrincipalPage)
     await listPage.goto()

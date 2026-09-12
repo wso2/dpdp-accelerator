@@ -40,7 +40,7 @@ export interface ReceiverResponse {
  * IS host to open a network connection to a receiver process - EventNotificationUrlValidator
  * rejects loopback callback URLs unconditionally, so this can never be exercised by pointing a
  * callback at 127.0.0.1/localhost, no matter what deployment.toml says (see
- * tests/08-event-notifications/README.md, "Webhook-dependent tests"). `WEBHOOK_RECEIVER_HOST`
+ * AGENTS.md, "Webhook-dependent tests"). `webhook.receiverHost`
  * (utils/env.ts) supplies a real, externally-reachable address for `start()` to bind to and hand
  * back as `http://<host>:<port>` - for local/CI use where the test runner and IS share a
  * machine/LAN (see that env var's own doc comment for the deployment.toml prerequisite this path
@@ -60,7 +60,7 @@ export interface ReceiverResponse {
  * lands in that list and gets rejected with `EN-4001 Invalid callback URL` (confirmed live). 80
  * and 443 need root to bind; 8443 is the one already-allowed, unprivileged port, which is why
  * this suite's own local/CI deployment.toml widens the list to 8443-8455 (see this directory's
- * README) - several candidates, not just one, so more than one WEBHOOK_RECEIVER_HOST-mode test
+ * README) - several candidates, not just one, so more than one webhook.receiverHost-mode test
  * can run concurrently (this suite assumes parallel execution) without every worker fighting over
  * a single port.
  */
@@ -94,9 +94,9 @@ export class WebhookReceiver {
     const config = webhookReceiverConfig()
     if (!config) {
       throw new Error(
-        'WebhookReceiver.start() called without WEBHOOK_RECEIVER_HOST configured - callers must ' +
+        'WebhookReceiver.start() called without webhook.receiverHost configured - callers must ' +
           'guard with webhookTestsEnabled()/test.skip() first, see ' +
-          'tests/08-event-notifications/README.md.',
+          'AGENTS.md.',
       )
     }
 

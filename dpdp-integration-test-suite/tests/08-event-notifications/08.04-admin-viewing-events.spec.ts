@@ -17,7 +17,7 @@
  */
 
 // Imported from tenant.fixtures (a superset of auth.fixtures's `test`) rather than auth.fixtures
-// directly - only 07.02.06's cross-tenant half actually requests the worker-scoped `tenant`
+// directly - only 08.04.05's cross-tenant half actually requests the worker-scoped `tenant`
 // fixture, every other test here just uses the same consentAdminEventApi/loginAsConsentAdmin
 // auth.fixtures already provides.
 import { test, expect } from '../../fixtures/tenant.fixtures'
@@ -31,13 +31,13 @@ import { uniqueMarker } from '../../utils/testData'
 /**
  * `GET /events`, `GET /events/{id}`, `GET /events/{id}/deliveries`, `GET /events/{deliveryId}/history`
  * (EventEndpoint) plus the portal's Events list/detail screens - see
- * tests/08-event-notifications/README.md for the "no publish-event UI" and "no `25` rows-per-page"
+ * AGENTS.md for the "no publish-event UI" and "no `25` rows-per-page"
  * notes this file relies on. Every event published here goes through
  * utils/eventNotificationSetup.ts's publishMarkedEvent, whose unique `marker` in the payload is
  * what search-based assertions key off, since this environment never resets.
  */
 test.describe('Admin viewing and searching Events', () => {
-  test('07.02.01 - The Events list renders publication and delivery summary data with pagination', async ({
+  test('08.04.01 - The Events list renders publication and delivery summary data with pagination', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -69,7 +69,7 @@ test.describe('Admin viewing and searching Events', () => {
     }
   })
 
-  test('07.02.02 - Search finds an event by a partial payload value', async ({ browser, consentAdminEventApi }) => {
+  test('08.04.02 - Search finds an event by a partial payload value', async ({ browser, consentAdminEventApi }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'payload-search')
     // groupId MUST come from a seeded subscription's own returned groupId, never a caller-chosen
     // value directly (see README's "Bugs found" - EventEndpoint.listEvents hardcodes the caller's
@@ -105,7 +105,7 @@ test.describe('Admin viewing and searching Events', () => {
     }
   })
 
-  test('07.02.04 - Event details show exact payload, metadata, and subscription-specific deliveries', async ({
+  test('08.04.03 - Event details show exact payload, metadata, and subscription-specific deliveries', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -164,7 +164,7 @@ test.describe('Admin viewing and searching Events', () => {
     }
   })
 
-  test('07.02.05 - An event with no matching subscribers shows the no-deliveries state', async ({
+  test('08.04.04 - An event with no matching subscribers shows the no-deliveries state', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -182,7 +182,7 @@ test.describe('Admin viewing and searching Events', () => {
     }
   })
 
-  test('07.02.06 - An unknown or cross-tenant event id is not exposed', async ({ browser, tenant }) => {
+  test('08.04.05 - An unknown or cross-tenant event id is not exposed', async ({ browser, tenant }) => {
     const page = await loginAsConsentAdmin(browser)
     try {
       const detailsPage = new EventDetailsPage(page)
@@ -203,79 +203,5 @@ test.describe('Admin viewing and searching Events', () => {
     } finally {
       await page.context().close()
     }
-  })
-
-  test('07.03.02 - The subscriptionId filter returns only events delivered to that subscription', async ({
-    consentAdminEventApi,
-  }) => {
-    const topic = await seedActiveTopic(consentAdminEventApi, 'subscription-filter')
-    const subA = await seedPollSubscription(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['account'],
-    })
-    const subB = await seedPollSubscription(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['marketing'],
-    })
-    const groupId = subA.groupId!
-
-    const { event: accountEvent } = await publishMarkedEvent(consentAdminEventApi, groupId, topic.name, ['account'])
-    const { event: marketingEvent } = await publishMarkedEvent(consentAdminEventApi, groupId, topic.name, [
-      'marketing',
-    ])
-
-    const forA = (
-      (await (await consentAdminEventApi.listEvents({ subscriptionId: subA.subscriptionId, limit: 100 })).json()) as {
-        items: { eventId: string }[]
-      }
-    ).items
-    expect(forA.some((item) => item.eventId === accountEvent.eventId)).toBe(true)
-    expect(forA.some((item) => item.eventId === marketingEvent.eventId)).toBe(false)
-
-    const forB = (
-      (await (await consentAdminEventApi.listEvents({ subscriptionId: subB.subscriptionId, limit: 100 })).json()) as {
-        items: { eventId: string }[]
-      }
-    ).items
-    expect(forB.some((item) => item.eventId === marketingEvent.eventId)).toBe(true)
-    expect(forB.some((item) => item.eventId === accountEvent.eventId)).toBe(false)
-  })
-
-  test("07.03.03 - A delivery id belonging to another subscription can't be read through the wrong subscription path", async ({
-    consentAdminEventApi,
-  }) => {
-    const topic = await seedActiveTopic(consentAdminEventApi, 'wrong-subscription-path')
-    // Disjoint SPECIFIC filters, not overlapping ones - see 07.02.04's comment on why two
-    // subscriptions with overlapping purpose sets on the same topic 409 as duplicates.
-    const subA = await seedPollSubscription(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['account'],
-    })
-    const subB = await seedPollSubscription(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['other'],
-    })
-    const groupId = subA.groupId!
-    const { event } = await publishMarkedEvent(consentAdminEventApi, groupId, topic.name, ['account', 'other'])
-
-    const deliveriesForB = (
-      (await (await consentAdminEventApi.listSubscriptionEvents(subB.subscriptionId)).json()) as {
-        items: SubscriptionDeliveryRecord[]
-      }
-    ).items
-    const deliveryOfB = deliveriesForB.find((delivery) => delivery.eventId === event.eventId)
-    expect(deliveryOfB, 'subscription B should have a delivery for this event').toBeTruthy()
-
-    const mismatchedResponse = await consentAdminEventApi.getSubscriptionEventHistory(
-      subA.subscriptionId,
-      deliveryOfB!.deliveryId,
-    )
-    expect(mismatchedResponse.status()).toBe(404)
-
-    const validResponse = await consentAdminEventApi.getSubscriptionEventHistory(
-      subB.subscriptionId,
-      deliveryOfB!.deliveryId,
-    )
-    expect(validResponse.ok()).toBe(true)
   })
 })

@@ -21,7 +21,7 @@ import { type Locator, type Page } from '@playwright/test'
 /**
  * ComplaintListPage.tsx - a Data Principal's own complaint registry at /complaints. Built
  * directly off the component source and public/i18n/en/common.json's "complaints.list.*" keys
- * (see tests/07-complaints/README.md for how this suite's ground truth was established).
+ * (see AGENTS.md for how this suite's ground truth was established).
  */
 export class ComplaintListPage {
   readonly heading: Locator

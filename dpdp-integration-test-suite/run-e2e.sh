@@ -17,18 +17,20 @@
 # under the License.
 #
 # Single local entrypoint: installs dependencies if needed, then runs the suite against
-# whatever real environment is configured in .env (see .env.example and README.md). Unlike a
-# self-contained suite, this script does not start or stop any server - the target environment
-# is expected to already be running.
+# whatever real environment is configured in e2e-config.json (see README.md, "Configuration").
+# Unlike a self-contained suite, this script does not start or stop any server - the target
+# environment is expected to already be running, with its test accounts provisioned by
+# ./scripts/setup-local.sh.
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
-if [ ! -f .env ]; then
-  echo "No .env found. Copy .env.example to .env and fill in the test account credentials first:" >&2
-  echo "  cp .env.example .env" >&2
+if [ ! -f e2e-config.local.json ]; then
+  echo "No e2e-config.local.json found - the test accounts have not been provisioned against" >&2
+  echo "this environment yet. Run this first (once per environment):" >&2
+  echo "  ./scripts/setup-local.sh" >&2
   exit 1
 fi
 

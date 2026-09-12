@@ -29,7 +29,7 @@ import type { AuthHeaders } from '../utils/authStorage'
  * header (`EventNotificationEndpointConstants.GROUP_ID_HEADER`), never part of the body, even
  * though the frontend's own `EventInput` type optimistically declares a body-level `groupId` that
  * `publishEvent` (topicsApi.ts) never actually sends anywhere - there is no publish-event UI at
- * all (see tests/08-event-notifications/README.md).
+ * all (see AGENTS.md).
  */
 
 // Every one of these enums (TopicStatus, Initiator, SubscriptionStatus, PurposeFilterMode,

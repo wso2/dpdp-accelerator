@@ -24,11 +24,11 @@ import { uniquePurposeName } from '../../utils/testData'
 
 /**
  * The read-only Purposes list at /purposes: pagination, and the load-failed path for a bad
- * detail-page id. See tests/04-purposes/04.01-admin-creating-purposes.spec.ts for the actual
+ * detail-page id. See tests/02-purposes/02.01-admin-creating-purposes.spec.ts for the actual
  * creation flow.
  */
 test.describe('Admin viewing the Purposes list (UI)', () => {
-  test('04.02.01 - The rows-per-page control accepts a new page size without erroring', async ({
+  test('02.02.01 - The rows-per-page control accepts a new page size without erroring', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -53,7 +53,7 @@ test.describe('Admin viewing the Purposes list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('04.02.02 - An unknown purpose id shows the load-failed message with a way back to the list', async ({
+  test('02.02.02 - An unknown purpose id shows the load-failed message with a way back to the list', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

@@ -17,6 +17,7 @@
  */
 
 import { env, scim2UsersUrl, type Persona } from './env'
+import { provisioningHeaders } from './provisioningClient'
 
 /**
  * Creates and removes disposable user accounts through SCIM2, for the account-deletion test.
@@ -30,7 +31,14 @@ import { env, scim2UsersUrl, type Persona } from './env'
 
 const SCIM2_USER_SCHEMA = 'urn:ietf:params:scim:schemas:core:2.0:User'
 
-function adminHeaders(admin: Persona): Record<string, string> {
+/**
+ * The approval-task endpoints below are `/me/` resources - they act as the signed-in user, so a
+ * client_credentials token (which carries no user) cannot address them and this stays on Basic
+ * auth. That path is best-effort cleanup and only runs where a Delete User approval workflow is
+ * configured, which is not the default; on a deployment with Basic auth disabled it simply
+ * no-ops, exactly as it already does when the admin holds no matching task.
+ */
+function basicAdminHeaders(admin: Persona): Record<string, string> {
   const credentials = Buffer.from(`${admin.username}:${admin.password}`).toString('base64')
   return {
     Authorization: `Basic ${credentials}`,
@@ -49,7 +57,6 @@ export interface ThrowawayUser extends Persona {
  * carries `account:self:delete` exactly the way a real portal user's does.
  */
 export async function createThrowawayUser(
-  admin: Persona,
   roleName: string,
   usernamePrefix: string,
 ): Promise<ThrowawayUser> {
@@ -60,7 +67,7 @@ export async function createThrowawayUser(
 
   const response = await fetch(scim2UsersUrl(''), {
     method: 'POST',
-    headers: adminHeaders(admin),
+    headers: await provisioningHeaders(),
     body: JSON.stringify({
       schemas: [SCIM2_USER_SCHEMA],
       // Unqualified: SCIM2 puts the user in the primary user store. Prefixing a store
@@ -77,7 +84,8 @@ export async function createThrowawayUser(
   if (response.status !== 201) {
     throw new Error(
       `Could not create the throwaway user "${username}" via SCIM2 (status ${String(response.status)}): ` +
-        `${await response.text()}. IS_ADMIN_USERNAME needs the SCIM2 user-management scopes.`,
+        `${await response.text()}. The provisioning client needs the SCIM2 user-management scopes - `
+        + 'run npm run bootstrap:provisioning-app to re-authorize it.',
     )
   }
 
@@ -86,7 +94,7 @@ export async function createThrowawayUser(
     throw new Error(`SCIM2 created "${username}" but returned no resource id.`)
   }
 
-  await assignRole(admin, created.id, roleName)
+  await assignRole(created.id, roleName)
   return { id: created.id, username, password }
 }
 
@@ -94,10 +102,10 @@ export async function createThrowawayUser(
  * Adds the user to an existing application role by patching the role's member list. The role is
  * provisioned per tenant by the accelerator, so this looks it up rather than creating it.
  */
-async function assignRole(admin: Persona, userId: string, roleName: string): Promise<void> {
+async function assignRole(userId: string, roleName: string): Promise<void> {
   const searchResponse = await fetch(
     `${env.identityServerBaseUrl}/scim2/v2/Roles?filter=${encodeURIComponent(`displayName eq ${roleName}`)}`,
-    { headers: adminHeaders(admin), signal: AbortSignal.timeout(20_000) },
+    { headers: await provisioningHeaders(), signal: AbortSignal.timeout(20_000) },
   )
   if (!searchResponse.ok) {
     throw new Error(
@@ -117,7 +125,7 @@ async function assignRole(admin: Persona, userId: string, roleName: string): Pro
 
   const patchResponse = await fetch(`${env.identityServerBaseUrl}/scim2/v2/Roles/${roleId}`, {
     method: 'PATCH',
-    headers: adminHeaders(admin),
+    headers: await provisioningHeaders(),
     body: JSON.stringify({
       schemas: ['urn:ietf:params:scim:api:messages:2.0:PatchOp'],
       Operations: [{ op: 'add', path: 'users', value: [{ value: userId }] }],
@@ -147,7 +155,7 @@ export async function deleteThrowawayUser(
 ): Promise<void> {
   const response = await fetch(scim2UsersUrl(`/${userId}`), {
     method: 'DELETE',
-    headers: adminHeaders(admin),
+    headers: await provisioningHeaders(),
     signal: AbortSignal.timeout(20_000),
   }).catch(() => undefined)
 
@@ -164,7 +172,7 @@ export async function deleteThrowawayUser(
 async function approvePendingDeletion(admin: Persona, username: string): Promise<void> {
   try {
     const listed = await fetch(`${env.identityServerBaseUrl}/api/users/v2/me/approval-tasks`, {
-      headers: adminHeaders(admin),
+      headers: basicAdminHeaders(admin),
       signal: AbortSignal.timeout(20_000),
     })
     if (!listed.ok) {
@@ -174,7 +182,7 @@ async function approvePendingDeletion(admin: Persona, username: string): Promise
     for (const task of tasks.filter((t) => t.approvalStatus === 'READY')) {
       const detailResponse = await fetch(
         `${env.identityServerBaseUrl}/api/users/v2/me/approval-tasks/${task.id}`,
-        { headers: adminHeaders(admin), signal: AbortSignal.timeout(20_000) },
+        { headers: basicAdminHeaders(admin), signal: AbortSignal.timeout(20_000) },
       )
       if (!detailResponse.ok) {
         continue
@@ -186,7 +194,7 @@ async function approvePendingDeletion(admin: Persona, username: string): Promise
       }
       await fetch(`${env.identityServerBaseUrl}/api/users/v2/me/approval-tasks/${task.id}/state`, {
         method: 'PUT',
-        headers: adminHeaders(admin),
+        headers: basicAdminHeaders(admin),
         body: JSON.stringify({ action: 'APPROVE' }),
         signal: AbortSignal.timeout(20_000),
       })
@@ -202,9 +210,9 @@ async function approvePendingDeletion(admin: Persona, username: string): Promise
  * Whether the account still exists. Used to prove the deletion actually reached the user store,
  * rather than trusting the portal's own redirect.
  */
-export async function userExists(admin: Persona, userId: string): Promise<boolean> {
+export async function userExists(userId: string): Promise<boolean> {
   const response = await fetch(scim2UsersUrl(`/${userId}`), {
-    headers: adminHeaders(admin),
+    headers: await provisioningHeaders(),
     signal: AbortSignal.timeout(20_000),
   })
   return response.status === 200

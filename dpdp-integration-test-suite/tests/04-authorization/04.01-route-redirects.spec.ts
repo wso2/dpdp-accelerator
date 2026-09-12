@@ -28,7 +28,7 @@ import { test, expect, loginAsUser } from '../../fixtures/auth.fixtures'
  * /dashboard, /consents, /purposes, /elements, /administration/consents, in that order) and
  * issues a client-side replace redirect to the first path the user IS authorized for.
  * NoAccessPage ("No portal access") only renders when a user holds none of those five scopes at
- * all - no persona in this suite's .env is scope-less, so that page isn't reachable here and
+ * all - no persona in this suite's configuration is scope-less, so that page isn't reachable here and
  * isn't covered below.
  *
  * The user persona (`ctizen1`, plain `internal_login`) holds only
@@ -40,7 +40,7 @@ import { test, expect, loginAsUser } from '../../fixtures/auth.fixtures'
  * the resource actually exists is irrelevant here.
  */
 test.describe('Route-level access control (UI)', () => {
-  test('01.01.01 - A user navigating directly to /purposes is redirected to the dashboard', async ({
+  test('04.01.01 - A user navigating directly to /purposes is redirected to the dashboard', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -49,7 +49,7 @@ test.describe('Route-level access control (UI)', () => {
     await userPage.context().close()
   })
 
-  test('01.01.02 - A user navigating directly to /elements is redirected to the dashboard', async ({
+  test('04.01.02 - A user navigating directly to /elements is redirected to the dashboard', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -58,7 +58,7 @@ test.describe('Route-level access control (UI)', () => {
     await userPage.context().close()
   })
 
-  test('01.01.03 - A user navigating directly to /administration/consents is redirected to the dashboard', async ({
+  test('04.01.03 - A user navigating directly to /administration/consents is redirected to the dashboard', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -67,7 +67,7 @@ test.describe('Route-level access control (UI)', () => {
     await userPage.context().close()
   })
 
-  test('01.01.04 - A user navigating directly to a Purpose detail page by link is redirected to the dashboard', async ({
+  test('04.01.04 - A user navigating directly to a Purpose detail page by link is redirected to the dashboard', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -76,7 +76,7 @@ test.describe('Route-level access control (UI)', () => {
     await userPage.context().close()
   })
 
-  test('01.01.05 - A user navigating directly to an Element detail page by link is redirected to the dashboard', async ({
+  test('04.01.05 - A user navigating directly to an Element detail page by link is redirected to the dashboard', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -85,7 +85,7 @@ test.describe('Route-level access control (UI)', () => {
     await userPage.context().close()
   })
 
-  test('01.01.06 - A user navigating directly to an admin Consent detail page by link is redirected to the dashboard', async ({
+  test('04.01.06 - A user navigating directly to an admin Consent detail page by link is redirected to the dashboard', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)

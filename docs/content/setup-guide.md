@@ -69,12 +69,50 @@ schema.
 > (`DB_TYPE=h2`, the default), this step creates `WSO2DPDP_DB` and runs every
 > `h2.sql` it finds under
 > `accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/` — one
-> subdirectory per DPDP feature (currently `consent-history/` and
-> `event-notification/`); a feature added later just needs its own
-> subdirectory, no script changes required. For any other `DB_TYPE`, create
-> the database yourself first, then execute each feature subdirectory's
-> matching `<db-type>.sql` against it in any order — the scripts are
-> idempotent (`CREATE TABLE IF NOT EXISTS`) and independent of each other.
+> subdirectory per DPDP feature (currently `complaint/`, `consent-history/`
+> and `event-notification/`); a feature added later just needs its own
+> subdirectory, no script changes required. The scripts are idempotent
+> (`CREATE TABLE IF NOT EXISTS`), so re-running is always safe.
+
+### Running against MySQL instead of H2
+
+Set `DB_TYPE=mysql` in `repository/conf/configure.properties`, along with
+`DB_HOST`, `DB_USER` and `DB_PASS` for a MySQL server you already have running.
+`configure.sh` then does the rest: it fills the datasource placeholders in
+`deployment.toml` with the MySQL URL, driver, credentials and database names,
+downloads the pinned JDBC driver into `<IS_HOME>/repository/components/lib`,
+creates the four databases, and applies both the Identity Server's own schema and
+the DPDP feature schemas.
+
+Unlike H2 — where WSO2 bakes a fully populated `WSO2IDENTITY_DB` into the pack —
+a MySQL server starts empty, so the product's own `dbscripts` have to be applied:
+
+| Script (under `<IS_HOME>`) | Database |
+| --- | --- |
+| `dbscripts/mysql.sql` | `WSO2SHARED_DB` |
+| `dbscripts/identity/mysql.sql` | `WSO2IDENTITY_DB` |
+| `dbscripts/consent/mysql.sql` | `WSO2IDENTITY_DB` |
+| `dbscripts/migrations/consent/mysql-migration.txt` | `WSO2IDENTITY_DB` |
+| `dbscripts/identity/agent/mysql.sql` | `WSO2AGENTIDENTITY_DB` |
+| `dbscripts/dpdp-accelerator/*/mysql.sql` | `WSO2DPDP_DB` |
+
+The account in `DB_USER` needs `CREATE DATABASE` rights on the first run.
+
+> **Re-running never destroys data.** The Identity Server's own DDL is not
+> idempotent (`dbscripts/consent/mysql.sql` guards none of its ten
+> `CREATE TABLE`s), so it is applied *only* to a database that this run just
+> created. A database that already exists is left untouched, and the script says
+> so. To start clean — for a test run, or a local reset — set
+> `RECREATE_DATABASES=true`, which **drops and recreates all four databases**.
+> It is off by default.
+
+**Supporting another database type.** Two additions, no change to `configure.sh`:
+a block in `repository/conf/dbprofiles.properties` keyed on the uppercased type
+name (the JDBC URL, driver, and how to create the databases and run the client);
+and a matching `<type>.sql` in each `dbscripts/dpdp-accelerator/<feature>/`
+directory. The datasource placeholders in `deployment.toml` are shared by every
+type. Note that only `event-notification` currently ships DDL beyond H2 and MySQL,
+so the other features' scripts would have to be written first.
 
 > **`deployment.toml` is replaced, not merged.** The accelerator ships a
 > complete file — `repository/resources/wso2is-7.3.0-deployment.toml`, the

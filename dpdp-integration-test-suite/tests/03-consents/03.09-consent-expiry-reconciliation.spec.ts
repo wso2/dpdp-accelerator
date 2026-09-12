@@ -45,20 +45,20 @@ interface HistoryEntry {
  * `pre*` hook (DPDPConsentHistoryListener), so a lapsed consent gets reconciled the moment
  * anything touches it again, whichever happens first.
  *
- * 02.09.01/02.09.02 below trigger that shared logic via a mutation (no server config needed, run
- * always). 02.09.03 instead waits on the literal scheduled job with no mutation at all, so it only
- * runs when CONSENT_EXPIRY_SCHEDULER_POLL_TIMEOUT_MS is configured (see .env.example) - it skips
+ * 03.09.01/03.09.02 below trigger that shared logic via a mutation (no server config needed, run
+ * always). 03.09.03 instead waits on the literal scheduled job with no mutation at all, so it only
+ * runs when consentExpiry.schedulerPollTimeoutMs is configured (see README.md) - it skips
  * itself otherwise.
  *
  * Confirmed live: revoking a consent whose expiry has already passed 409s (CM_00112 - stock
  * carbon-consent-management resolves the receipt's state to EXPIRED before validating the revoke,
  * and rejects any non-PENDING/ACTIVE-as-persisted transition). That 409 is a real, separate product
- * behaviour 02.09.02 doesn't assert on either way - preRevokeConsent's call to
+ * behaviour 03.09.02 doesn't assert on either way - preRevokeConsent's call to
  * DPDPConsentExpiryReconciler.expireConsentIfDue runs, and the EXPIRE row is written, before that
  * later validation ever gets to run and reject the revoke itself.
  */
 test.describe('Consent expiry reconciliation (API)', () => {
-  test('02.09.01 - A consent whose expiry time has not yet passed has no EXPIRE entry in its history', async ({
+  test('03.09.01 - A consent whose expiry time has not yet passed has no EXPIRE entry in its history', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -83,7 +83,7 @@ test.describe('Consent expiry reconciliation (API)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.09.02 - Revoking a consent past its expiry time first reconciles the lapse into an EXPIRE history entry', async ({
+  test('03.09.02 - Revoking a consent past its expiry time first reconciles the lapse into an EXPIRE history entry', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -126,7 +126,7 @@ test.describe('Consent expiry reconciliation (API)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.09.03 - The background ConsentExpiryJob reconciles a lapsed consent within one scheduler cycle, with an accurate history timestamp', async ({
+  test('03.09.03 - The background ConsentExpiryJob reconciles a lapsed consent within one scheduler cycle, with an accurate history timestamp', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -134,7 +134,7 @@ test.describe('Consent expiry reconciliation (API)', () => {
     const pollTimeout = consentExpirySchedulerPollTimeoutMs()
     test.skip(
       !pollTimeout,
-      'CONSENT_EXPIRY_SCHEDULER_POLL_TIMEOUT_MS is not configured - see .env.example. Requires ' +
+      'consentExpiry.schedulerPollTimeoutMs is not configured - see README.md. Requires ' +
         "shortening deployment.toml's [dpdp_accelerator.consent_expiry].cron_value and restarting " +
         'the server, so this is opt-in rather than run by default.',
     )
@@ -156,7 +156,7 @@ test.describe('Consent expiry reconciliation (API)', () => {
       dueSince,
     )
 
-    // No mutation is performed on this consent anywhere in this test - unlike 02.09.02, the only
+    // No mutation is performed on this consent anywhere in this test - unlike 03.09.02, the only
     // thing that can produce the EXPIRE entry below is the real ConsentExpiryJob's own batch pass
     // finding and claiming it on its own schedule.
     await expect

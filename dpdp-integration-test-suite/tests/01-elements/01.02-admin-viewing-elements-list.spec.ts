@@ -26,7 +26,7 @@ import { uniqueElementName } from '../../utils/testData'
 /**
  * The read-only Elements list at /elements: rendering, pagination, and the load-failed path for
  * a bad detail-page id. Elements seeded here only exist to give the list rows to page through -
- * see tests/03-elements/03.01-admin-creating-elements.spec.ts for the actual creation flow.
+ * see tests/01-elements/01.01-admin-creating-elements.spec.ts for the actual creation flow.
  */
 
 /** Creates an element through the UI, tracks it for cleanup, and returns its id. */
@@ -47,7 +47,7 @@ async function createElementViaUi(page: Page, tracker: ConsentCleanupTracker): P
 }
 
 test.describe('Admin viewing the Elements list (UI)', () => {
-  test('03.02.01 - The list renders and its rows-per-page control accepts a new page size without erroring', async ({
+  test('01.02.01 - The list renders and its rows-per-page control accepts a new page size without erroring', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -65,7 +65,7 @@ test.describe('Admin viewing the Elements list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('03.02.02 - The rows-per-page control caps the number of rendered rows at the selected size', async ({
+  test('01.02.02 - The rows-per-page control caps the number of rendered rows at the selected size', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -87,7 +87,7 @@ test.describe('Admin viewing the Elements list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('03.02.03 - An unknown element id shows the load-failed message with a way back to the list', async ({
+  test('01.02.03 - An unknown element id shows the load-failed message with a way back to the list', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

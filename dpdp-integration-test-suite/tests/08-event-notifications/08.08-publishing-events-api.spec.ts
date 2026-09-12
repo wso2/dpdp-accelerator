@@ -24,7 +24,7 @@ import { uniqueMarker } from '../../utils/testData'
 /**
  * `POST /events` (EventEndpoint.publishEvent, backed by EventPublishServiceImpl#publishEvent) -
  * real API calls against a real deployment, no UI (there is no publish-event screen anywhere in
- * the portal, see tests/08-event-notifications/README.md).
+ * the portal, see AGENTS.md).
  *
  * Every subscription here is POLL-mode (see utils/eventNotificationSetup.ts's seedPollSubscription):
  * fan-out matching itself has nothing to do with delivery transport, and POLL needs no callback
@@ -36,7 +36,7 @@ import { uniqueMarker } from '../../utils/testData'
  * than inventing its own.
  */
 test.describe('Publisher publishing events', () => {
-  test('07.01.01 - Publishing an event creates matching delivery records atomically', async ({
+  test('08.08.01 - Publishing an event creates matching delivery records atomically', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'atomic')
@@ -70,7 +70,7 @@ test.describe('Publisher publishing events', () => {
     expect(subscriptionDeliveries.some((delivery) => delivery.eventId === event.eventId)).toBe(true)
   })
 
-  test('07.01.02 - Publishing without a group-id header is rejected', async ({ consentAdminEventApi }) => {
+  test('08.08.02 - Publishing without a group-id header is rejected', async ({ consentAdminEventApi }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'no-group-id')
     // An empty header value hits the exact same `groupId == null || groupId.trim().isEmpty()`
     // check the server uses for a genuinely absent header (EventPublishServiceImpl#publishEvent).
@@ -80,7 +80,7 @@ test.describe('Publisher publishing events', () => {
     expect(body.code).toBe('EN-4001')
   })
 
-  test('07.01.03 - Publishing to an unknown or deregistered topic is rejected', async ({ consentAdminEventApi }) => {
+  test('08.08.03 - Publishing to an unknown or deregistered topic is rejected', async ({ consentAdminEventApi }) => {
     const groupId = uniqueMarker('group')
 
     const unknownResponse = await consentAdminEventApi.publishEvent(groupId, {
@@ -102,7 +102,7 @@ test.describe('Publisher publishing events', () => {
     expect((await deregisteredResponse.json()).code).toBe('EN-4041')
   })
 
-  test('07.01.04 - A null or missing payload is rejected rather than treated as an empty object', async ({
+  test('08.08.04 - A null or missing payload is rejected rather than treated as an empty object', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'null-payload')
@@ -122,7 +122,7 @@ test.describe('Publisher publishing events', () => {
     expect((await missingPayloadResponse.json()).code).toBe('EN-4002')
   })
 
-  test('07.01.05 - An ALL-filter subscription receives every event regardless of purposes', async ({
+  test('08.08.05 - An ALL-filter subscription receives every event regardless of purposes', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'all-filter')
@@ -138,7 +138,7 @@ test.describe('Publisher publishing events', () => {
     }
   })
 
-  test('07.01.06 - SPECIFIC purpose matching is case-insensitive and requires overlap', async ({
+  test('08.08.06 - SPECIFIC purpose matching is case-insensitive and requires overlap', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'specific-filter')
@@ -172,7 +172,7 @@ test.describe('Publisher publishing events', () => {
     )
   })
 
-  test('07.01.07 - ALL_EXCEPT matches only when the event carries a purpose outside the exclusion set', async ({
+  test('08.08.07 - ALL_EXCEPT matches only when the event carries a purpose outside the exclusion set', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopic(consentAdminEventApi, 'all-except-filter')
@@ -207,11 +207,11 @@ test.describe('Publisher publishing events', () => {
   })
 
   // There is no test-only hook anywhere in this codebase to force a DELIVERY insert to fail mid
-  // fan-out transaction - see tests/08-event-notifications/README.md, "What this suite cannot
+  // fan-out transaction - see AGENTS.md, "What this suite cannot
   // verify". Adding one would mean shipping production code whose only purpose is to be
   // exploitable by a test, which is out of scope here.
   test.skip(
-    '07.01.08 - A fan-out persistence failure rolls back the event and its purposes',
+    '08.08.08 - A fan-out persistence failure rolls back the event and its purposes',
     () => {
       // Intentionally not implemented - see the skip reason above.
     },

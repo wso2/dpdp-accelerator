@@ -49,7 +49,7 @@ test.describe('Self-service account deletion (UI)', () => {
   let session: ThrowawaySession | undefined
 
   test.beforeEach(async ({ browser }) => {
-    throwaway = await createThrowawayUser(admin, PORTAL_USER_ROLE, 'dpdp-e2e-delete')
+    throwaway = await createThrowawayUser(PORTAL_USER_ROLE, 'dpdp-e2e-delete')
     session = await loginAsThrowawayUser(browser, throwaway)
   })
 
@@ -92,7 +92,7 @@ test.describe('Self-service account deletion (UI)', () => {
       await expect(page.getByText('Your account has been deleted')).toBeVisible()
       expect(page.url()).toContain('/account-deleted')
       // The redirect is the portal's own claim; this is the user store's answer.
-      expect(await userExists(admin, throwaway!.id)).toBe(false)
+      expect(await userExists(throwaway!.id)).toBe(false)
       return
     }
 
@@ -100,7 +100,7 @@ test.describe('Self-service account deletion (UI)', () => {
     await expect(page.getByText('Your account has been deleted')).toHaveCount(0)
     expect(page.url()).not.toContain('/account-deleted')
     // Still a real account until somebody approves the request.
-    expect(await userExists(admin, throwaway!.id)).toBe(true)
+    expect(await userExists(throwaway!.id)).toBe(true)
   })
 
   test('06.01.02 - Cancelling leaves the account untouched', async () => {
@@ -113,7 +113,7 @@ test.describe('Self-service account deletion (UI)', () => {
     await menu.cancelDeleteButton().click()
 
     await expect(page.getByText('Your account has been deleted')).toHaveCount(0)
-    expect(await userExists(admin, throwaway!.id)).toBe(true)
+    expect(await userExists(throwaway!.id)).toBe(true)
   })
 
   test('06.01.03 - The self-delete scope does not authorize deleting anybody else', async () => {
@@ -124,12 +124,12 @@ test.describe('Self-service account deletion (UI)', () => {
      * SCIM2 with the throwaway user's own access token - the same token the portal's own delete
      * uses - against a second, real account, and expects the server to refuse.
      */
-    const victim = await createThrowawayUser(admin, PORTAL_USER_ROLE, 'dpdp-e2e-victim')
+    const victim = await createThrowawayUser(PORTAL_USER_ROLE, 'dpdp-e2e-victim')
     try {
       const status = await attemptDeleteAsUser(session!.bearerToken, victim.id)
 
       expect([401, 403]).toContain(status)
-      expect(await userExists(admin, victim.id)).toBe(true)
+      expect(await userExists(victim.id)).toBe(true)
     } finally {
       await deleteThrowawayUser(admin, victim.id, victim.username)
     }

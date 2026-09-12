@@ -32,11 +32,11 @@ import { seedActiveTopic, seedPollSubscription } from '../../utils/eventNotifica
  * entries in deployment.toml for `/api/dpdp/event-notifications/v1/*` (see the module's own
  * README "Setup" section for the full scope list). `dpdp-consent-admin` holds every
  * `notifications:*` scope; `dpdp-consent-user` holds none - there is no dedicated persona
- * anywhere in this environment holding a strict subset (e.g. read-only), so 09.01.03 documents
+ * anywhere in this environment holding a strict subset (e.g. read-only), so 08.05.03 documents
  * that gap explicitly rather than asserting something this environment can't actually prove.
  */
 test.describe('Event Notification authorization and access control', () => {
-  test('09.01.01 - A Consent Admin sees and can open Events, Topics, and Subscriptions', async ({
+  test('08.05.01 - A Consent Admin sees and can open Events, Topics, and Subscriptions', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -75,7 +75,7 @@ test.describe('Event Notification authorization and access control', () => {
     await adminPage.context().close()
   })
 
-  test('09.01.02 - A Data Principal without Event Notification scopes cannot access event routes', async ({
+  test('08.05.02 - A Data Principal without Event Notification scopes cannot access event routes', async ({
     browser,
     userEventApi,
   }) => {
@@ -103,15 +103,15 @@ test.describe('Event Notification authorization and access control', () => {
     expect((await userEventApi.listEvents()).status()).toBe(403)
   })
 
-  test('09.01.03 - A token without write scopes cannot perform write operations', async ({
+  test('08.05.03 - A token without write scopes cannot perform write operations', async ({
     consentAdminEventApi,
     userEventApi,
   }) => {
     // This environment has no dedicated read-only Event Notification role/client to test true
     // read/write scope SEPARATION with (dpdp-consent-admin holds every notifications:* scope;
-    // dpdp-consent-user holds none) - same gap tests/06-complaints-api/README.md documents for
-    // complaints ("No role/scope exists for 'read-only' vs. 'write' separately here beyond what's
-    // already granted"). What IS provable: the admin's full-scope token can read, and a token
+    // dpdp-consent-user holds none) - the same gap the complaint scopes have, since no role
+    // separates 'read-only' from 'write' beyond what is already granted. What IS provable: the
+    // admin's full-scope token can read, and a token
     // with none of the notifications:* scopes cannot write (or read) anything.
     expect((await consentAdminEventApi.listTopics()).status()).toBe(200)
     expect((await consentAdminEventApi.listSubscriptions()).status()).toBe(200)
@@ -138,7 +138,7 @@ test.describe('Event Notification authorization and access control', () => {
   })
 
   tenantTest(
-    '09.01.04 - Missing, expired, or wrong-tenant tokens cannot access Event Notification APIs',
+    '08.05.04 - Missing, expired, or wrong-tenant tokens cannot access Event Notification APIs',
     async ({ browser, request, tenant }) => {
       // No token.
       const noTokenResponse = await request.get(eventNotificationsApiUrl('/topics'))
@@ -155,9 +155,9 @@ test.describe('Event Notification authorization and access control', () => {
       // authenticates fine, it's simply for the wrong org, which the API must still reject. Note:
       // this deliberately omits the token-binding cookie (`atbv`, see utils/authStorage.ts) the
       // consent-portal app normally sends alongside a Bearer token, so a 401 here may reflect
-      // that missing binding rather than tenant enforcement specifically - either way the
-      // spreadsheet's own expectation is just "401/403 as appropriate", which this satisfies; the
-      // tenant-specific mechanism is exercised more precisely in 05.10 (tenant isolation).
+      // that missing binding rather than tenant enforcement specifically - either way the call
+      // must be refused, which is what this asserts; the tenant-specific mechanism is exercised
+      // more precisely in 08.11 (tenant isolation).
       const { bearerToken } = await loginAsTenantOwnerWithToken(browser, tenant)
       const wrongTenantResponse = await request.get(eventNotificationsApiUrl('/topics'), {
         headers: { Authorization: `Bearer ${bearerToken}` },

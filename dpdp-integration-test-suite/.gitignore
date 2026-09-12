@@ -1,5 +1,5 @@
 node_modules/
-.env
+e2e-config.local.json
 test-results/
 playwright-report/
 blob-report/

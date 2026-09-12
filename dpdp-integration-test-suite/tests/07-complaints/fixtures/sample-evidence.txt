@@ -1,2 +1,0 @@
-Sample attachment used by tests/05-complaints/05.01-data-principal-creating-complaints.spec.ts to
-verify a file selected in ComplaintSubmitDialog.tsx carries through to the created complaint.

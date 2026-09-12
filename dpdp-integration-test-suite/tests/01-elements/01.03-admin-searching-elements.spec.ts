@@ -24,7 +24,7 @@ import { uniqueElementName } from '../../utils/testData'
 
 /**
  * The Elements list's search box: substring matching, Reset, and the no-match empty state. See
- * tests/03-elements/03.01-admin-creating-elements.spec.ts for the actual creation flow.
+ * tests/01-elements/01.01-admin-creating-elements.spec.ts for the actual creation flow.
  */
 
 /** Creates an element through the UI, tracks it for cleanup, and returns its id. */
@@ -45,7 +45,7 @@ async function createElementViaUi(page: Page, tracker: ConsentCleanupTracker): P
 }
 
 test.describe('Admin searching the Elements list (UI)', () => {
-  test('03.03.01 - Searching by a partial name still finds the matching element', async ({
+  test('01.03.01 - Searching by a partial name still finds the matching element', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -74,7 +74,7 @@ test.describe('Admin searching the Elements list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('03.03.02 - Resetting the search clears the filter and shows the unfiltered list again', async ({
+  test('01.03.02 - Resetting the search clears the filter and shows the unfiltered list again', async ({
     browser,
     consentCleanupTracker,
   }) => {
@@ -96,7 +96,7 @@ test.describe('Admin searching the Elements list (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('03.03.03 - A search with no matches shows the empty-results message', async ({
+  test('01.03.03 - A search with no matches shows the empty-results message', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

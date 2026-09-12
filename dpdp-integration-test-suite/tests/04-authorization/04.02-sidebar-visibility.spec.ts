@@ -20,7 +20,7 @@ import { test, expect, loginAsUser, loginAsConsentAdmin } from '../../fixtures/a
 import { AppSidebarPage } from '../../pages/AppSidebarPage'
 
 test.describe('Sidebar navigation visibility (UI)', () => {
-  test("01.02.01 - A user's sidebar shows only the Dashboard and Consent sections", async ({
+  test("04.02.01 - A user's sidebar shows only the Dashboard and Consent sections", async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -40,7 +40,7 @@ test.describe('Sidebar navigation visibility (UI)', () => {
     await userPage.context().close()
   })
 
-  test('01.02.02 - A Consent Admin\'s sidebar shows every section, including Definitions and Administration', async ({
+  test('04.02.02 - A Consent Admin\'s sidebar shows every section, including Definitions and Administration', async ({
     browser,
   }) => {
     const consentAdminPage = await loginAsConsentAdmin(browser)

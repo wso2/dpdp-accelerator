@@ -33,10 +33,10 @@ import { seedConsent } from '../../utils/consentSetup'
  * A user's own consent detail page at /consents/:id: what it renders, the load-failed
  * path for an unknown id, and that a different user can't reach someone else's
  * consent by guessing its id. See
- * tests/02-consents/02.01-user-acting-on-consents.spec.ts for approve/reject/revoke.
+ * tests/03-consents/03.01-user-acting-on-consents.spec.ts for approve/reject/revoke.
  */
 test.describe('User viewing Consents (UI)', () => {
-  test('02.02.01 - The detail page renders subject, service, and purpose/element structure', async ({
+  test('03.02.01 - The detail page renders subject, service, and purpose/element structure', async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
@@ -63,7 +63,7 @@ test.describe('User viewing Consents (UI)', () => {
     await consentAdminPage.context().close()
   })
 
-  test('02.02.02 - An unknown consent id shows the load-failed message with a way back to the registry', async ({
+  test('03.02.02 - An unknown consent id shows the load-failed message with a way back to the registry', async ({
     browser,
   }) => {
     const userPage = await loginAsUser(browser)
@@ -75,12 +75,12 @@ test.describe('User viewing Consents (UI)', () => {
     await userPage.context().close()
   })
 
-  test("02.02.03 - A different user cannot open another user's consent by its URL", async ({
+  test("03.02.03 - A different user cannot open another user's consent by its URL", async ({
     browser,
     consentAdminConsentApi,
     consentCleanupTracker,
   }) => {
-    test.skip(!hasSecondUser(), 'TEST_USER_2_USERNAME/PASSWORD is not configured')
+    test.skip(!hasSecondUser(), 'personas.user2 is not configured')
     // hasSecondUser() already confirmed this is set - the skip above guards it.
     const secondUser = env.secondUser()
     if (!secondUser) {
