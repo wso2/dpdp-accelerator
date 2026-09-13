@@ -22,6 +22,8 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.consent.extensions.dao.ConsentHistoryDAO;
+import org.wso2.dpdp.accelerator.consent.extensions.dao.exceptions.ConsentHistoryDataInsertionException;
+import org.wso2.dpdp.accelerator.consent.extensions.dao.exceptions.ConsentHistoryDataRetrievalException;
 import org.wso2.dpdp.accelerator.consent.extensions.dao.models.ConsentHistoryRecord;
 import org.wso2.dpdp.accelerator.consent.extensions.dao.models.ConsentStatusAuditRecord;
 
@@ -137,6 +139,52 @@ public class ConsentHistoryDAOImplTest {
         assertEquals(records.get(0).getSnapshot(), "{\"state\":\"REVOKED\"}");
 
         assertEquals(consentHistoryDAO.getConsentHistoryCount(connection, TENANT_DOMAIN, CONSENT_ID), 2);
+    }
+
+    // A closed connection is the cheapest way to make the driver raise a real SQLException, so the
+    // DAO's translation of it into the module's unchecked exceptions is exercised end to end
+    // rather than against a mocked ResultSet.
+
+    @Test(expectedExceptions = ConsentHistoryDataInsertionException.class)
+    public void insertStatusAuditWrapsSqlFailure() throws Exception {
+
+        connection.close();
+        insertStatusAudit(null, "PENDING", "CREATE", 1000L);
+    }
+
+    @Test(expectedExceptions = ConsentHistoryDataInsertionException.class)
+    public void insertHistorySnapshotWrapsSqlFailure() throws Exception {
+
+        connection.close();
+        insertHistorySnapshot("CREATE", "{}", 1000L);
+    }
+
+    @Test(expectedExceptions = ConsentHistoryDataRetrievalException.class)
+    public void getStatusAuditHistoryWrapsSqlFailure() throws Exception {
+
+        connection.close();
+        consentHistoryDAO.getStatusAuditHistory(connection, TENANT_DOMAIN, CONSENT_ID, 20, 0);
+    }
+
+    @Test(expectedExceptions = ConsentHistoryDataRetrievalException.class)
+    public void getStatusAuditHistoryCountWrapsSqlFailure() throws Exception {
+
+        connection.close();
+        consentHistoryDAO.getStatusAuditHistoryCount(connection, TENANT_DOMAIN, CONSENT_ID);
+    }
+
+    @Test(expectedExceptions = ConsentHistoryDataRetrievalException.class)
+    public void getConsentHistoryWrapsSqlFailure() throws Exception {
+
+        connection.close();
+        consentHistoryDAO.getConsentHistory(connection, TENANT_DOMAIN, CONSENT_ID, 20, 0);
+    }
+
+    @Test(expectedExceptions = ConsentHistoryDataRetrievalException.class)
+    public void getConsentHistoryCountWrapsSqlFailure() throws Exception {
+
+        connection.close();
+        consentHistoryDAO.getConsentHistoryCount(connection, TENANT_DOMAIN, CONSENT_ID);
     }
 
     private void insertStatusAudit(String previousStatus, String currentStatus, String actionType, long actionTime)

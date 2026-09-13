@@ -19,24 +19,14 @@
 package org.wso2.dpdp.accelerator.consent.extensions.dao.constants;
 
 /**
- * Table and column names for {@code DPDP_CONSENT_STATUS_AUDIT} and {@code DPDP_CONSENT_HISTORY}.
+ * Table names for {@code DPDP_CONSENT_STATUS_AUDIT} and {@code DPDP_CONSENT_HISTORY}. Column
+ * names live in {@link ConsentHistoryDBColumns} - mirrors the Complaint DAO's
+ * {@code DAOConstants}/{@code ComplaintDBColumns} split.
  */
 public final class ConsentHistoryDAOConstants {
 
     public static final String STATUS_AUDIT_TABLE = "DPDP_CONSENT_STATUS_AUDIT";
     public static final String HISTORY_TABLE = "DPDP_CONSENT_HISTORY";
-
-    public static final String COLUMN_AUDIT_ID = "AUDIT_ID";
-    public static final String COLUMN_HISTORY_ID = "HISTORY_ID";
-    public static final String COLUMN_CONSENT_ID = "CONSENT_ID";
-    public static final String COLUMN_ORG_ID = "ORG_ID";
-    public static final String COLUMN_PREVIOUS_STATUS = "PREVIOUS_STATUS";
-    public static final String COLUMN_CURRENT_STATUS = "CURRENT_STATUS";
-    public static final String COLUMN_ACTION_TYPE = "ACTION_TYPE";
-    public static final String COLUMN_ACTION_BY = "ACTION_BY";
-    public static final String COLUMN_ACTION_TIME = "ACTION_TIME";
-    public static final String COLUMN_SNAPSHOT = "SNAPSHOT";
-    public static final String COLUMN_TOTAL_COUNT = "TOTAL_COUNT";
 
     public static final String DEFAULT_ORG_ID = "carbon.super";
 

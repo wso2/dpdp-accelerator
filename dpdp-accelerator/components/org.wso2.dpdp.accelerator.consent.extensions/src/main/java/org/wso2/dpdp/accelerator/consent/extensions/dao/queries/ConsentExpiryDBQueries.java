@@ -22,7 +22,9 @@ import org.wso2.dpdp.accelerator.consent.extensions.dao.constants.ConsentExpiryD
 
 /**
  * SQL for {@code DPDP_CONSENT_EXPIRY_TRACKER}. h2 and mysql DML is identical, so one class serves
- * both dialects, mirroring {@link org.wso2.dpdp.accelerator.consent.extensions.dao.queries.ConsentHistoryDBQueries}.
+ * both dialects; unlike {@link ConsentHistoryCommonDBQueries} this has no dialect-resolving
+ * factory in front of it - the tracker table has a single caller ({@code ConsentExpiryServiceImpl})
+ * and no foreseeable need for a dialect-specific override, so the extra indirection is skipped.
  */
 public class ConsentExpiryDBQueries {
 
