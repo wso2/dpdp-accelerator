@@ -554,8 +554,8 @@
         <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
         <testng.version>7.12.0</testng.version>
         <mockito.version>5.23.0</mockito.version>
-        <slf4j.version>2.0.18</slf4j.version>
-        <h2.version>2.4.240</h2.version>
+        <slf4j.version>2.0.19</slf4j.version>
+        <h2.version>2.5.250</h2.version>
         <testcontainers.version>1.21.4</testcontainers.version>
         <mysql.connector.version>26.7.0</mysql.connector.version>
         <postgresql.driver.version>42.7.13</postgresql.driver.version>
