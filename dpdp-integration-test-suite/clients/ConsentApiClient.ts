@@ -95,7 +95,7 @@ export interface MyConsentListParams {
 
 /**
  * Wraps two of WSO2 IS's own REST APIs, called directly (no backend proxy any more - see
- * docs/configuration-guide.md): the self-service surface (`/api/users/v1/me/consents/*`, from
+ * docs/content/configuration-guide.md): the self-service surface (`/api/users/v1/me/consents/*`, from
  * org.wso2.carbon.identity.rest.api.user.consent.v1, needing only the `internal_login` scope every
  * signed-in user already has - see consent.yaml bundled in that jar) and the administrative
  * surface (`/api/identity/consent-mgt/v2.0/{consents,purposes,elements}`, from

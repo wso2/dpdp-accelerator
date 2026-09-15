@@ -20,7 +20,7 @@ import { test, expect } from '../../fixtures/tenant.fixtures'
 import { uniquePurposeName } from '../../utils/testData'
 
 /**
- * docs/configuration-guide.md's claim that "consents, catalog data, roles and sessions are all
+ * docs/content/configuration-guide.md's claim that "consents, catalog data, roles and sessions are all
  * partitioned per tenant by the server" has no automated coverage before this. Uses only the
  * consent-mgt v2 API - confirmed live to work tenant-qualified over a real bearer token (see
  * fixtures/tenant.fixtures.ts) - never SCIM2, which is confirmed broken for a secondary tenant on

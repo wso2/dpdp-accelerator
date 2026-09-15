@@ -119,7 +119,7 @@ async function assignRole(userId: string, roleName: string): Promise<void> {
   if (!roleId) {
     throw new Error(
       `The "${roleName}" role does not exist in this tenant. It is provisioned automatically - ` +
-        `see docs/configuration-guide.md, "Recovering a broken tenant".`,
+        `see docs/content/configuration-guide.md, "Recovering a broken tenant".`,
     )
   }
 

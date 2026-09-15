@@ -478,7 +478,7 @@ snapshot_enabled = true
 # reports EXPIRED on read once expiryTime passes; this only fills in the missing history
 # record for when that happened). cron_value is a standard Quartz cron expression; the
 # default runs once daily at midnight. In a clustered deployment, see the "Clustering
-# requirements" section of docs/configuration-guide.md before relying on this in production.
+# requirements" section of docs/content/configuration-guide.md before relying on this in production.
 [dpdp_accelerator.consent_expiry]
 enabled = true
 cron_value = "0 0 0 * * ?"

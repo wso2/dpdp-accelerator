@@ -87,7 +87,7 @@ export const env = {
   } satisfies Persona,
 }
 
-// The portal has no backend of its own any more (see docs/configuration-guide.md) - the frontend
+// The portal has no backend of its own any more (see docs/content/configuration-guide.md) - the frontend
 // calls these WSO2 IS-native REST APIs directly from the browser, so tests do the same. Self-service
 // consents live under the User Consent Management API (org.wso2.carbon.identity.rest.api.user.consent.v1,
 // unversioned base); admin consents/purposes/elements live under consent-mgt v2
@@ -152,7 +152,7 @@ export function meComplaintsApiUrl(path: string): string {
 
 // The accelerator's own event-notification webapp (org.wso2.dpdp.accelerator.event.notifications.endpoint,
 // finalName "api#dpdp#event-notifications#v1"). Unlike the complaint-server, this IS
-// tenant-qualified (see docs/event-notification-guide.md) - every path goes through
+// tenant-qualified (see docs/content/event-notification-guide.md) - every path goes through
 // tenantSegment the same way the IS-native consent APIs above do.
 export function eventNotificationsApiUrl(path: string, tenantDomain?: string): string {
   return `${env.identityServerBaseUrl}${tenantSegment(tenantDomain)}/api/dpdp/event-notifications/v1${path}`

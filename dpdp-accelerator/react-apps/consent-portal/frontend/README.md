@@ -142,7 +142,7 @@ bundled into the JS.
 
 For operating a live deployment (correcting wording, localizing a Purpose or
 Element without a rebuild), see
-[`docs/localization-guide.md`](../../../../docs/localization-guide.md) at the
+[`docs/content/localization-guide.md`](../../../../docs/content/localization-guide.md) at the
 repository root.
 
 ## CI

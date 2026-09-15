@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="570" viewBox="0 70 1100 570" role="img" aria-labelledby="title description">
+  <title id="title">Participants in the DPDP ecosystem</title>
+  <desc id="description">Data Principal, Data Fiduciary, Data Processor, Consent Manager, and the Data Protection Board of India, and their interactions under the DPDP Act. The Data Principal and Data Fiduciary exchange personal data and consent for a notice and rights response. The Data Fiduciary contracts the Data Processor. The Data Principal and Consent Manager manage consent together. The Consent Manager registers with the Board, and the Board issues inquiries and directions to the Data Fiduciary.</desc>
+  <defs>
+    <marker id="arr" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5B6B76"/>
+    </marker>
+    <marker id="arr-d" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#AEB9C0"/>
+    </marker>
+    <style>
+      .title { font: 700 24px 'Segoe UI', Helvetica, Arial, sans-serif; fill: #16222B; }
+      .name  { font: 600 16px 'Segoe UI', Helvetica, Arial, sans-serif; fill: #16222B; text-anchor: middle; }
+      .desc  { font: 400 13px 'Segoe UI', Helvetica, Arial, sans-serif; fill: #8A97A0; text-anchor: middle; }
+      .lbl   { font: 500 13px 'Segoe UI', Helvetica, Arial, sans-serif; fill: #3A4750; text-anchor: middle; }
+      .lbl-d { font: italic 12.5px 'Segoe UI', Helvetica, Arial, sans-serif; fill: #8A97A0; text-anchor: middle; }
+      .icon  { fill: #FFFFFF; stroke: currentColor; stroke-width: 2.5; stroke-linejoin: round; }
+      .arr   { stroke: #5B6B76; stroke-width: 2; fill: none; marker-end: url(#arr); }
+      .arr-d { stroke: #AEB9C0; stroke-width: 2; fill: none; stroke-dasharray: 6 5; marker-end: url(#arr-d); }
+    </style>
+
+    <g id="icon-person">
+      <circle class="icon" cx="0" cy="-10" r="16"/>
+      <path class="icon" d="M -26 30 C -26 4, 26 4, 26 30"/>
+    </g>
+    <g id="icon-building">
+      <path class="icon" d="M -27 -19 L 27 -19 L 0 -39 Z"/>
+      <rect class="icon" x="-20" y="-19" width="8" height="38"/>
+      <rect class="icon" x="-4" y="-19" width="8" height="38"/>
+      <rect class="icon" x="12" y="-19" width="8" height="38"/>
+      <rect class="icon" x="-31" y="19" width="62" height="8" rx="1.5"/>
+    </g>
+  </defs>
+
+  <rect width="1100" height="640" fill="#FAFAF8"/>
+
+
+  <!-- Row 1 -->
+  <g transform="translate(150,160)" style="color:#FF7300"><use href="#icon-person"/></g>
+  <text class="name" x="150" y="232">Data Principal</text>
+  <text class="desc" x="150" y="250">Individual, the data subject</text>
+
+  <g transform="translate(550,160)" style="color:#FF7300"><use href="#icon-building"/></g>
+  <text class="name" x="550" y="232">Data Fiduciary</text>
+  <text class="desc" x="550" y="250">Determines purpose and means</text>
+
+  <g transform="translate(950,160)" style="color:#5B6B76"><use href="#icon-building"/></g>
+  <text class="name" x="950" y="232">Data Processor</text>
+  <text class="desc" x="950" y="250">Processes on the fiduciary's behalf</text>
+
+  <!-- Row 2 -->
+  <g transform="translate(150,460)" style="color:#FF7300"><use href="#icon-person"/></g>
+  <text class="name" x="150" y="532">Consent Manager</text>
+  <text class="desc" x="150" y="550">Manages consent on the principal's behalf</text>
+
+  <g transform="translate(950,460)" style="color:#16222B"><use href="#icon-building"/></g>
+  <text class="name" x="950" y="532">Data Protection Board</text>
+  <text class="desc" x="950" y="550">of India</text>
+  <text class="desc" x="950" y="566">Statutory authority</text>
+
+  <!-- Row 1 connectors -->
+  <path class="arr" d="M 200 145 H 505"/>
+  <text class="lbl" x="352" y="136">Personal data and consent</text>
+
+  <path class="arr" d="M 505 178 H 200"/>
+  <text class="lbl" x="352" y="196">Notice and rights response</text>
+
+  <path class="arr" d="M 600 160 H 905"/>
+  <text class="lbl" x="752" y="151">Contract</text>
+
+  <!-- Column 1 connector -->
+  <path class="arr" d="M 138 272 V 418"/>
+  <path class="arr" d="M 162 418 V 272"/>
+  <text class="lbl" x="80" y="345" transform="rotate(-90 80 345)">Manage consent</text>
+
+  <!-- Regulatory connectors (dashed, orthogonal) -->
+  <path class="arr-d" d="M 950 420 V 330 H 550 V 265"/>
+  <text class="lbl-d" x="750" y="320">Inquiries and directions</text>
+
+  <path class="arr-d" d="M 150 565 V 600 H 950 V 580"/>
+  <text class="lbl-d" x="550" y="590">Registered with the Board</text>
+
+
+</svg>

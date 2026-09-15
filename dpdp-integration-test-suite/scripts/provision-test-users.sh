@@ -19,7 +19,7 @@
 #
 # The accelerator provisions the DPDP Consent Portal application and both roles
 # automatically, but never any user and never role membership - see
-# docs/configuration-guide.md, which documents membership as a manual Console step.
+# docs/content/configuration-guide.md, which documents membership as a manual Console step.
 # This script is that manual step, automated, so CI and a fresh local install can
 # reach a runnable state the same way.
 #

@@ -353,7 +353,7 @@ jobs:
               'bash bin/configure.sh <IS_HOME>',
               '```',
               '',
-              `See the [setup guide](${src}/docs/setup-guide.md) for prerequisites and the full procedure, and the [configuration guide](${src}/docs/configuration-guide.md) for the consent portal application and roles.`,
+              `See the [quickstart](${src}/docs/content/quickstart.md) for prerequisites and installation, and the [configuration guide](${src}/docs/content/configuration-guide.md) for the consent portal application and roles.`,
             ];
 
             if (highlights) {

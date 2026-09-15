@@ -8,14 +8,16 @@ involved.
 
 | Artifact | Location |
 |---|---|
-| Consent portal (React SPA + Java BFF) | `<IS_HOME>/repository/deployment/server/webapps/consent-portal.war` |
-| Portal configuration | `<IS_HOME>/repository/conf/dpdp-portal.properties` |
+| Consent portal (React SPA + JSP shell; no Java BFF) | `<IS_HOME>/repository/deployment/server/webapps/consent-portal/` |
+| Portal runtime configuration | `<IS_HOME>/repository/deployment/server/webapps/consent-portal/deployment.config.json` |
 | Server settings | `<IS_HOME>/repository/conf/deployment.toml`, replaced from the shipped template |
+| Generated accelerator configuration | `<IS_HOME>/repository/conf/dpdp-accelerator.xml` |
 
 ## Prerequisites
 
 - WSO2 Identity Server 7.3.0
-- JDK 11 or later on the PATH
+- JDK 21 or later on the PATH
+- Mandatory WSO2 U2 updates applied to the Identity Server pack
 
 ## Installation
 
@@ -33,10 +35,22 @@ Building from source? See the [repository README](../../../README.md#build)
    ```
    sh bin/configure.sh <IS_HOME>
    ```
-   Edit `repository/conf/configure.properties` first if your hostname, port,
-   administrator credentials or database differ from the defaults. This step
-   installs `deployment.toml`, writes `dpdp-portal.properties`, and applies the
-   consent and complaint management schema migrations.
+   Edit `repository/conf/configure.properties` first for hostname,
+   administrator-credential, database type, and schema-migration settings.
+   `IS_PORT` is not currently substituted. The script installs
+   `deployment.toml`, applies the Identity Server consent migration and DPDP
+   feature schemas automatically for the embedded H2 database. For
+   `DB_TYPE=mysql`, it downloads the configured JDBC driver, configures the
+   datasources, creates missing databases, and applies the Identity Server
+   schemas to newly created databases. The consent and DPDP migrations are
+   controlled by their respective flags in `configure.properties`. Keep
+   `RECREATE_DATABASES=false` to preserve existing databases.
+
+   See the [Setup Guide](../../../docs/content/setup-guide.md) for automated
+   MySQL prerequisites and manual database setup. Do not repeat migrations
+   already applied by the installer. PostgreSQL, Oracle, and Microsoft SQL
+   Server have no shipped installer profile and require manual datasource
+   and schema configuration before startup.
 
    > **`deployment.toml` is replaced, not merged.** The accelerator ships a
    > complete file — `repository/resources/wso2is-7.3.0-deployment.toml`, the
@@ -48,16 +62,24 @@ Building from source? See the [repository README](../../../README.md#build)
 
 4. Start the Identity Server.
 
-5. Register the portal application by following
-   [`docs/setup-guide.md`](../../../docs/setup-guide.md).
+5. Wait for tenant provisioning to create the **DPDP Consent Portal**
+   application and the three portal roles. For a new ordinary tenant, create
+   the tenant after startup. For an existing tenant, update one tenant property
+   to run reconciliation.
 
-6. Restart the Identity Server so the portal picks up its client credentials.
+6. Assign the required role to a user and sign in again to obtain a fresh
+   access token.
 
 7. Open `https://<host>:9443/consent-portal/`.
 
+For a first local verification, follow the
+[`Quickstart`](../../../docs/content/quickstart.md).
+
 ## Granting administration access
 
-Every authenticated user can see and manage their own consents. The
-administration and catalog areas additionally require the consent management
-scopes, which are granted through the `dpdp-consent-admin` role created in
-step 5 — assign users to that role in the Console.
+Every authenticated user can see and manage their own consents without a
+portal role. Assign `dpdp-consent-user` for personal history, complaint
+self-service, and account deletion; `dpdp-consent-admin` for full portal
+administration; or `dpdp-consent-dpo` for organization-wide complaint handling
+without full administration. See the
+[`Role Management Guide`](../../../docs/content/role-guide.md).

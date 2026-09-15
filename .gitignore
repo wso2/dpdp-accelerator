@@ -19,6 +19,7 @@ pom.xml.releaseBackup
 **/frontend/dist/
 **/frontend/npm/
 npm-debug.log*
+docs/pnpm-lock.yaml
 
 # Docusaurus (docs site build output and cache)
 docs/.docusaurus/

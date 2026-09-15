@@ -1,144 +1,339 @@
----
-title: Setting up the DPDP Identity Server Accelerator
-sidebar_position: 1
----
+# Setting up databases for the DPDP Accelerator
 
-# Setting up the DPDP Identity Server Accelerator
-
-Gets the Identity Server running with the consent portal deployed. Complete
-this before [`configuration-guide.md`](configuration-guide.md), which
-registers the portal application.
+Use this guide to prepare the databases and datasource configuration for WSO2
+Identity Server and the DPDP Accelerator. Complete the Identity Server and
+accelerator installation first, then follow these steps before starting the
+server.
 
 ## Prerequisites
 
-- JDK 21 or later on the PATH
-- Maven 3.6.3+ and Node.js 20.19+ (or 22.12+) with npm, only if building the
-  accelerator from source
-- A WSO2 subscription, to apply the mandatory U2 updates to the Identity Server
+- WSO2 Identity Server 7.3.0 with the mandatory U2 updates applied
+- A database administrator account for the selected DBMS
+- The database client tools needed to create databases and execute SQL scripts
+- The JDBC driver JAR for the selected DBMS
 
-## 1. Get WSO2 Identity Server
+## Choose automated or manual database setup
 
-Download and extract WSO2 Identity Server 7.3.0 from the
-[WSO2 Identity Server](https://wso2.com/identity-and-access-management/)
-site. The extracted directory is `<IS_HOME>` in the steps below.
+The installer supports `h2` and `mysql` profiles in
+`repository/conf/dbprofiles.properties`. For automated MySQL setup, edit
+`repository/conf/configure.properties` before running `bin/configure.sh`:
+set `DB_TYPE=mysql`, `DB_HOST`, `DB_PORT` if needed, `DB_USER`, and `DB_PASS`.
+Install the `mysql` command-line client and give the configured account
+permission to create the databases on the first run.
 
-Apply the U2 updates to the pack before going any further. The accelerator does
-not run on an un-updated 7.3.0.
+The script downloads the configured JDBC driver into
+`<IS_HOME>/repository/components/lib`, configures the datasource URLs, creates
+missing databases, and applies the Identity Server schemas to databases it
+creates. It applies the consent migration to a newly created identity database
+when `APPLY_IS_CONSENT_MGT_V2_MIGRATION=true`, and the DPDP schemas when
+`APPLY_DPDP_DB_MIGRATION=true`. Keep `RECREATE_DATABASES=false` to preserve
+existing databases; setting it to `true` drops and recreates all four.
 
-## 2. Get the accelerator
+After a successful automated run, review the generated connection settings
+for your environment, including TLS, and skip schema steps already completed.
+For manually managed databases, follow the steps below and apply each required
+migration only once. PostgreSQL, Oracle, and Microsoft SQL Server require
+manual configuration; they do not have shipped installer profiles. See the
+[Quickstart](quickstart.md) for installation commands.
 
-Either download a released `wso2-dpdpiam-accelerator-<version>.zip`, or build
-it from source:
+## 1. Create the databases
 
-```sh
-mvn clean install
+Create the databases required by the Identity Server and the accelerator. Use
+separate databases for the Identity Server data and the DPDP data:
+
+- `WSO2IDENTITY_DB` for Identity Server identity and consent data
+- `WSO2SHARED_DB` for Identity Server shared data
+- `WSO2AGENTIDENTITY_DB` for the Identity Server `AgentIdentity` datasource
+- `WSO2DPDP_DB` for DPDP Accelerator data
+
+Use the database names, users, character sets, and permissions recommended by
+your DBMS documentation.
+
+For example, the following MySQL commands create the databases used by the
+Identity Server and accelerator. Replace the user and host for your environment.
+Keep the Identity Server databases on `latin1` for the shipped MySQL scripts:
+these scripts mix explicitly `latin1` tables with tables that inherit the
+database character set, including foreign-key relationships. Use `utf8mb4` for
+the DPDP database, matching the installer database profile:
+
+```sql
+CREATE DATABASE WSO2IDENTITY_DB CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE WSO2SHARED_DB CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE WSO2AGENTIDENTITY_DB CHARACTER SET latin1 COLLATE latin1_swedish_ci;
+CREATE DATABASE WSO2DPDP_DB CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE USER '<database-user>'@'localhost' IDENTIFIED BY '<database-password>';
+GRANT ALL PRIVILEGES ON WSO2IDENTITY_DB.* TO '<database-user>'@'localhost';
+GRANT ALL PRIVILEGES ON WSO2SHARED_DB.* TO '<database-user>'@'localhost';
+GRANT ALL PRIVILEGES ON WSO2AGENTIDENTITY_DB.* TO '<database-user>'@'localhost';
+GRANT ALL PRIVILEGES ON WSO2DPDP_DB.* TO '<database-user>'@'localhost';
+FLUSH PRIVILEGES;
 ```
 
-Run from the repository root — this produces
-`dpdp-accelerator/accelerators/dpdp-is/target/wso2-dpdpiam-accelerator-<version>.zip`.
-See the [repository README](https://github.com/wso2/dpdp-accelerator#build) for details.
+For PostgreSQL, Oracle, and Microsoft SQL Server, create equivalent databases
+or schemas and grant the required permissions using the commands recommended
+by the selected DBMS.
 
-## 3. Extract the accelerator
+## 2. Install the JDBC driver
 
-Unzip the accelerator inside `<IS_HOME>` (or anywhere, passing `<IS_HOME>` to
-each script in the next steps).
+Download the JDBC driver that matches the selected DBMS and its supported
+version. Copy the driver JAR to:
 
-## 4. Copy the artifacts in
-
-With the server stopped:
-
-```sh
-sh bin/merge.sh <IS_HOME>
+```text
+<IS_HOME>/repository/components/dropins
 ```
 
-## 5. Apply the configuration
+> **Note:** The MySQL, PostgreSQL, Oracle, and Microsoft SQL Server JDBC driver
+> JARs must be downloaded separately and copied to the Identity Server
+> `dropins` directory before the server starts. Use the driver version
+> recommended for your DBMS and Identity Server version.
 
-Still stopped:
+The driver versions listed in the WSO2 reference are:
 
-```sh
-sh bin/configure.sh <IS_HOME>
+| DBMS | JDBC driver JAR |
+|---|---|
+| MySQL 8.0 | `mysql-connector-j-8.x.jar` (use the version supported by your WSO2 Identity Server release) |
+| Oracle 19c | `ojdbc11.jar` |
+| Microsoft SQL Server 2022 | `mssql-jdbc-12.10.0.jre11.jar` |
+| PostgreSQL 17.2 | `postgresql-42.2.17.jar` |
+
+## 3. Configure `deployment.toml`
+
+Open `<IS_HOME>/repository/conf/deployment.toml` and update the database
+sections for the selected DBMS. The relevant sections are:
+
+- `[database.identity_db]`
+- `[database.shared_db]`
+- `[datasource.AgentIdentity]`
+- `[datasource.WSO2DPDP_DB]`
+
+Keep the existing section names and datasource IDs. In particular,
+`[dpdp_accelerator.jdbc_persistence_manager]` must continue to use
+`data_source_name = "jdbc/WSO2DPDP_DB"`, matching the `WSO2DPDP_DB` datasource
+ID. The `jdbc/` prefix is the JNDI name prefix; `WSO2DPDP_DB` is the datasource
+ID declared in `deployment.toml`.
+
+The following examples show the DBMS-specific connection values to use. Apply
+the selected values to each relevant database section, using the database name
+assigned to that section.
+
+| Database | `deployment.toml` section |
+|---|---|
+| `WSO2IDENTITY_DB` | `[database.identity_db]` |
+| `WSO2SHARED_DB` | `[database.shared_db]` |
+| `WSO2AGENTIDENTITY_DB` | `[datasource.AgentIdentity]` |
+| `WSO2DPDP_DB` | `[datasource.WSO2DPDP_DB]` |
+
+<details>
+<summary>MySQL</summary>
+
+The following example enables TLS and certificate verification. Configure the
+Identity Server JVM truststore with the MySQL server certificate or its issuing
+CA before using it in a deployed environment.
+
+```toml
+    [database.identity_db]
+    type = "mysql"
+    url = "jdbc:mysql://localhost:3306/WSO2IDENTITY_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
+    username = "<database-user>"
+    password = "<database-password>"
+
+    [database.shared_db]
+    type = "mysql"
+    url = "jdbc:mysql://localhost:3306/WSO2SHARED_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
+    username = "<database-user>"
+    password = "<database-password>"
+
+    [datasource.AgentIdentity]
+    id = "AgentIdentity"
+    url = "jdbc:mysql://localhost:3306/WSO2AGENTIDENTITY_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "com.mysql.cj.jdbc.Driver"
+
+    [datasource.WSO2DPDP_DB]
+    id = "WSO2DPDP_DB"
+    url = "jdbc:mysql://localhost:3306/WSO2DPDP_DB?useSSL=true&requireSSL=true&verifyServerCertificate=true&serverTimezone=UTC"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "com.mysql.cj.jdbc.Driver"
+    jmx_enable = false
+    pool_options.maxActive = "150"
+    pool_options.maxWait = "60000"
+    pool_options.minIdle = "5"
+    pool_options.testOnBorrow = true
+    pool_options.validationQuery = "SELECT 1"
+    pool_options.validationInterval = "30000"
+    pool_options.defaultAutoCommit = true
 ```
 
-Edit `repository/conf/configure.properties` first if your hostname, port,
-administrator credentials or database differ from the defaults. This step
-installs `deployment.toml`, applies the Identity Server's own consent schema
-migration, and creates the `WSO2DPDP_DB` database with every DPDP feature's
-schema.
+</details>
 
-> **Creating the DPDP database and tables.** With the embedded H2 database
-> (`DB_TYPE=h2`, the default), this step creates `WSO2DPDP_DB` and runs every
-> `h2.sql` it finds under
-> `accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/` — one
-> subdirectory per DPDP feature (currently `complaint/`, `consent-history/`
-> and `event-notification/`); a feature added later just needs its own
-> subdirectory, no script changes required. The scripts are idempotent
-> (`CREATE TABLE IF NOT EXISTS`), so re-running is always safe.
+<details>
+<summary>PostgreSQL</summary>
 
-### Running against MySQL instead of H2
+```toml
+    [database.identity_db]
+    type = "postgresql"
+    url = "jdbc:postgresql://localhost:5432/WSO2IDENTITY_DB"
+    username = "<database-user>"
+    password = "<database-password>"
 
-Set `DB_TYPE=mysql` in `repository/conf/configure.properties`, along with
-`DB_HOST`, `DB_USER` and `DB_PASS` for a MySQL server you already have running.
-`configure.sh` then does the rest: it fills the datasource placeholders in
-`deployment.toml` with the MySQL URL, driver, credentials and database names,
-downloads the pinned JDBC driver into `<IS_HOME>/repository/components/lib`,
-creates the four databases, and applies both the Identity Server's own schema and
-the DPDP feature schemas.
+    [database.shared_db]
+    type = "postgresql"
+    url = "jdbc:postgresql://localhost:5432/WSO2SHARED_DB"
+    username = "<database-user>"
+    password = "<database-password>"
 
-Unlike H2 — where WSO2 bakes a fully populated `WSO2IDENTITY_DB` into the pack —
-a MySQL server starts empty, so the product's own `dbscripts` have to be applied:
+    [datasource.AgentIdentity]
+    id = "AgentIdentity"
+    url = "jdbc:postgresql://localhost:5432/WSO2AGENTIDENTITY_DB"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "org.postgresql.Driver"
 
-| Script (under `<IS_HOME>`) | Database |
-| --- | --- |
-| `dbscripts/mysql.sql` | `WSO2SHARED_DB` |
-| `dbscripts/identity/mysql.sql` | `WSO2IDENTITY_DB` |
-| `dbscripts/consent/mysql.sql` | `WSO2IDENTITY_DB` |
-| `dbscripts/migrations/consent/mysql-migration.txt` | `WSO2IDENTITY_DB` |
-| `dbscripts/identity/agent/mysql.sql` | `WSO2AGENTIDENTITY_DB` |
-| `dbscripts/dpdp-accelerator/*/mysql.sql` | `WSO2DPDP_DB` |
+    [datasource.WSO2DPDP_DB]
+    id = "WSO2DPDP_DB"
+    url = "jdbc:postgresql://localhost:5432/WSO2DPDP_DB"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "org.postgresql.Driver"
+    jmx_enable = false
+    pool_options.maxActive = "150"
+    pool_options.maxWait = "60000"
+    pool_options.minIdle = "5"
+    pool_options.testOnBorrow = true
+    pool_options.validationQuery = "SELECT 1"
+    pool_options.validationInterval = "30000"
+    pool_options.defaultAutoCommit = true
+```
 
-The account in `DB_USER` needs `CREATE DATABASE` rights on the first run.
+</details>
 
-> **Re-running never destroys data.** The Identity Server's own DDL is not
-> idempotent (`dbscripts/consent/mysql.sql` guards none of its ten
-> `CREATE TABLE`s), so it is applied *only* to a database that this run just
-> created. A database that already exists is left untouched, and the script says
-> so. To start clean — for a test run, or a local reset — set
-> `RECREATE_DATABASES=true`, which **drops and recreates all four databases**.
-> It is off by default.
+<details>
+<summary>Oracle</summary>
 
-**Supporting another database type.** Two additions, no change to `configure.sh`:
-a block in `repository/conf/dbprofiles.properties` keyed on the uppercased type
-name (the JDBC URL, driver, and how to create the databases and run the client);
-and a matching `<type>.sql` in each `dbscripts/dpdp-accelerator/<feature>/`
-directory. The datasource placeholders in `deployment.toml` are shared by every
-type. Note that only `event-notification` currently ships DDL beyond H2 and MySQL,
-so the other features' scripts would have to be written first.
+```toml
+    [database.identity_db]
+    type = "oracle"
+    url = "jdbc:oracle:thin:@localhost:1521/WSO2IDENTITY_DB"
+    username = "<database-user>"
+    password = "<database-password>"
 
-> **`deployment.toml` is replaced, not merged.** The accelerator ships a
-> complete file — `repository/resources/wso2is-7.3.0-deployment.toml`, the
-> stock Identity Server 7.3.0 configuration plus the accelerator's own
-> settings, including the `[tenant_context.rewrite]` entry that serves the
-> portal tenant-qualified at `/t/<tenant>/consent-portal/`. Your existing file is copied to `deployment.toml.bak-<timestamp>`
-> first; re-apply any local customisation from that backup before starting
-> the server. To target a different Identity Server version, add a template
-> beside the shipped one and point `PRODUCT_CONF_PATH` at it. It also carries
-> the `[dpdp_accelerator.consent_portal]` section that controls the portal's
-> auto-provisioning — edit it here if you want different values from the
-> start; see [`configuration-guide.md`](configuration-guide.md#2-change-or-turn-off-the-auto-provisioning).
+    [database.shared_db]
+    type = "oracle"
+    url = "jdbc:oracle:thin:@localhost:1521/WSO2SHARED_DB"
+    username = "<database-user>"
+    password = "<database-password>"
 
-## 6. Start the Identity Server
+    [datasource.AgentIdentity]
+    id = "AgentIdentity"
+    url = "jdbc:oracle:thin:@localhost:1521/WSO2AGENTIDENTITY_DB"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "oracle.jdbc.OracleDriver"
 
-From `<IS_HOME>`:
+    [datasource.WSO2DPDP_DB]
+    id = "WSO2DPDP_DB"
+    url = "jdbc:oracle:thin:@localhost:1521/WSO2DPDP_DB"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "oracle.jdbc.OracleDriver"
+    jmx_enable = false
+    pool_options.maxActive = "150"
+    pool_options.maxWait = "60000"
+    pool_options.minIdle = "5"
+    pool_options.testOnBorrow = true
+    pool_options.validationQuery = "SELECT 1 FROM DUAL"
+    pool_options.validationInterval = "30000"
+    pool_options.defaultAutoCommit = true
+```
+
+</details>
+
+<details>
+<summary>Microsoft SQL Server</summary>
+
+```toml
+    [database.identity_db]
+    type = "mssql"
+    url = "jdbc:sqlserver://localhost:1433;databaseName=WSO2IDENTITY_DB;encrypt=false"
+    username = "<database-user>"
+    password = "<database-password>"
+
+    [database.shared_db]
+    type = "mssql"
+    url = "jdbc:sqlserver://localhost:1433;databaseName=WSO2SHARED_DB;encrypt=false"
+    username = "<database-user>"
+    password = "<database-password>"
+
+    [datasource.AgentIdentity]
+    id = "AgentIdentity"
+    url = "jdbc:sqlserver://localhost:1433;databaseName=WSO2AGENTIDENTITY_DB;encrypt=false"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+
+    [datasource.WSO2DPDP_DB]
+    id = "WSO2DPDP_DB"
+    url = "jdbc:sqlserver://localhost:1433;databaseName=WSO2DPDP_DB;encrypt=false"
+    username = "<database-user>"
+    password = "<database-password>"
+    driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver"
+    jmx_enable = false
+    pool_options.maxActive = "150"
+    pool_options.maxWait = "60000"
+    pool_options.minIdle = "5"
+    pool_options.testOnBorrow = true
+    pool_options.validationQuery = "SELECT 1"
+    pool_options.validationInterval = "30000"
+    pool_options.defaultAutoCommit = true
+```
+
+</details>
+
+Keep the `id` values as `AgentIdentity` and `WSO2DPDP_DB`. Preserve the
+remaining Identity Server and accelerator settings in the file.
+
+## 4. Create the database tables
+
+Run the Identity Server SQL migrations and the DPDP Accelerator SQL scripts
+against the databases selected in `deployment.toml`.
+
+The Identity Server scripts are under:
+
+```text
+<IS_HOME>/dbscripts
+```
+
+The accelerator feature scripts are under:
+
+```text
+<ACCELERATOR_HOME>/carbon-home/dbscripts/dpdp-accelerator/
+```
+
+Each feature directory contains the DBMS-specific script where that DBMS is
+provided:
+
+- `consent-history/`
+- `complaint/`
+- `event-notification/`
+
+Choose the script matching the selected DBMS. Do not run a script for a
+different database engine. If the package does not contain a matching DPDP
+script for a DBMS, confirm the supported schema package or migration path with
+the release documentation before starting the server.
+
+## 5. Start Identity Server
+
+After the databases, JDBC driver, datasource settings, and SQL migrations are
+ready, start Identity Server from `<IS_HOME>`:
 
 ```sh
 sh bin/wso2server.sh
 ```
 
-On Windows, run `bin\wso2server.bat` instead.
+On Windows, run `bin\\wso2server.bat` instead.
 
-Wait for the console to print `WSO2 Identity Server started in ...` before
-continuing.
-
-## Next: register the portal application
-
-Follow [`configuration-guide.md`](configuration-guide.md).
+After the server starts, continue with the [Configuration Guide](configuration-guide.md)
+to configure access and runtime features.

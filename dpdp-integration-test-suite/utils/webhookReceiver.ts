@@ -177,7 +177,7 @@ export class WebhookReceiver {
 
 /**
  * Matches the real hub.mode/hub.challenge webhook-intent-verification protocol
- * (docs/event-notification-guide.md): a GET carrying `hub.challenge` gets that exact value
+ * (docs/content/event-notification-guide.md): a GET carrying `hub.challenge` gets that exact value
  * echoed back as the body with a 200; anything else (the actual signed event delivery POST)
  * gets an empty 204, which SubscriptionServiceImpl/DeliveryWorker treat as "delivered".
  */

@@ -11,7 +11,9 @@ real OAuth2 logins and a real consent-management database. Nothing here is mocke
 - [Continuous integration](#continuous-integration)
 - [Running the tests](#running-the-tests)
 - [Project structure](#project-structure)
-- [Test areas](#test-areas)
+- [Test categories](#test-categories)
+- [Operating principles](#operating-principles)
+- [Known limitations](#known-limitations)
 - [Further reading](#further-reading)
 
 ## Prerequisites
@@ -29,7 +31,7 @@ real OAuth2 logins and a real consent-management database. Nothing here is mocke
    satisfy:
    - **User** — no role needed; every signed-in user manages their own consents. Must *not* be an
      administrator: `tests/04-authorization` asserts this account holds only `internal_login`.
-   - **Consent Admin** — assigned `dpdp-consent-admin` (see `docs/configuration-guide.md`,
+   - **Consent Admin** — assigned `dpdp-consent-admin` (see `../docs/content/configuration-guide.md`,
      "Grant administration access"). Drives the admin UI and seeds Purposes/Elements/Consents via
      the API for `tests/01-elements`, `tests/02-purposes` and `tests/03-consents`.
    - **Second User** — optional, a distinct plain account. Without it the ownership-isolation
@@ -226,5 +228,40 @@ A filename ending `-api.spec.ts` drives no browser at all.
 |---|---|
 | [`AGENTS.md`](AGENTS.md) | Rules and conventions — read before writing or changing a test. Covers the shared-environment premise every rule follows from, the numbering scheme, personas, page objects and the seed helpers |
 | [`TEST-SCENARIOS.md`](TEST-SCENARIOS.md) | Every test, known gaps, product bugs, known flakiness |
-| `docs/setup-guide.md` (repo root) | Installing and starting the Identity Server |
-| `docs/configuration-guide.md` (repo root) | Portal application and role configuration |
+| [Quickstart](../docs/content/quickstart.md) | Installing and starting the Identity Server |
+| [Configuration Guide](../docs/content/configuration-guide.md) | Portal application and role configuration |
+
+| Directory | Covers |
+| --- | --- |
+| `01-elements/` | Element catalog: admin creating, viewing, and searching Elements |
+| `02-purposes/` | Purpose catalog: admin creating, viewing, and searching Purposes |
+| `03-consents/` | Consent records: User and admin registries (view/search/act) |
+| `04-authorization/` | Route-level access control and sidebar visibility per persona's scopes, including who is offered self-service account deletion |
+| `05-multi-tenancy/` | Tenant provisioning, data isolation and user/role assignment, driven through the real Console UI |
+| `06-account/` | Self-service account deletion end to end. Destructive and irreversible, so each test creates and signs in as its own throwaway user rather than any shared persona, and removes it again afterwards |
+
+## Operating principles
+
+A handful of things shape how every test here is written, driven by running against a real,
+persistent, shared environment rather than a disposable one:
+
+- **The environment never resets.** Data from every prior run is still there. Tests assert by
+  unique marker or server-issued ID, never by "the list is empty" or exact row counts.
+- **Tests run in parallel by default** (Playwright's `fullyParallel: true`) — no extra setup
+  needed to make a full run fast.
+- **Personas log in once per run, not once per test.** IS allows only one active session per
+  account; `fixtures/auth.fixtures.ts` caches each persona's login across every worker so
+  concurrent tests don't invalidate each other's sessions.
+- **Tests clean up their own setup data — except Consents.** Elements/Purposes created as setup
+  are deleted when the test finishes; Consents are left in place, since the product has no
+  delete-by-id for them.
+- **Every spec is independent.** Nothing in the suite uses `test.describe.serial` — every test can
+  run in any order, on any worker, without coordination.
+
+## Known limitations
+
+- **Session concurrency is capped by IS itself**, not this suite — scaling truly concurrent
+  logins for the same persona means provisioning additional test accounts, not a config change.
+- **Consents created as test setup are never deleted** and accumulate in the shared environment
+  over time (see [Operating principles](#operating-principles)).
+

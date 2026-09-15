@@ -270,7 +270,7 @@ async function createTenant(browser: Browser): Promise<CreatedTenant> {
   })
 
   // Role MEMBERSHIP is never auto-provisioned, only the roles themselves - true for the
-  // super tenant too (see scripts/provision-test-users.sh and docs/configuration-guide.md's
+  // super tenant too (see scripts/provision-test-users.sh and docs/content/configuration-guide.md's
   // "Recovering a broken tenant" section) and confirmed live here: the freshly created owner
   // has no admin sidebar items at all until explicitly assigned dpdp-consent-admin. Being the
   // tenant's owner only grants Console/IS-level administration, not this custom application

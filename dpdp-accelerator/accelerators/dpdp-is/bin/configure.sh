@@ -433,4 +433,4 @@ fi
 echo
 echo "Configuration complete. Now:"
 echo "  1. Start the Identity Server."
-echo "  2. Follow docs/configuration-guide.md to register the portal application."
+echo "  2. Follow docs/content/configuration-guide.md to assign portal roles and configure runtime features."

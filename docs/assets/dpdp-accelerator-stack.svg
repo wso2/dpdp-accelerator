@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1540" height="560" viewBox="0 0 1540 560" role="img" aria-labelledby="title desc">
+  <title id="title">WSO2 Identity Server and DPDP Accelerator stack</title>
+  <desc id="desc">A three-layer architecture showing the WSO2 core stack, DPDP Accelerator capabilities, and DPDP compliance operations.</desc>
+  <defs>
+    <style>
+      .panel { fill: #43596a; }
+      .card { fill: #dce7e5; }
+      .result { fill: #fbe4cf; }
+      .title { fill: #ffffff; font: 700 27px Arial, sans-serif; text-anchor: middle; }
+      .label { fill: #43596a; font: 700 20px Arial, sans-serif; text-anchor: middle; }
+      .small { fill: #43596a; font: 700 15px Arial, sans-serif; text-anchor: middle; }
+      .orange { fill: #f47721; }
+      .result-text { fill: #f47721; font: 700 22px Arial, sans-serif; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <rect width="1400" height="560" fill="#ffffff"/>
+  <rect x="20" y="20" width="395" height="520" rx="2" class="panel"/>
+  <rect x="465" y="20" width="470" height="520" rx="2" class="panel"/>
+  <rect x="985" y="20" width="270" height="520" rx="2" class="panel"/>
+  <path d="M1255 20h38v205l47 55-47 55v205h-38z" class="orange"/>
+  <rect x="1340" y="125" width="170" height="310" class="result"/>
+
+  <text x="218" y="70" class="title">Core WSO2 Stack</text>
+  <rect x="50" y="125" width="335" height="75" class="card"/>
+  <text x="218" y="155" class="label"><tspan x="218">WSO2 API Manager &amp;</tspan><tspan x="218" dy="25">Enterprise Integrator</tspan></text>
+  <rect x="50" y="240" width="335" height="75" class="card"/>
+  <text x="218" y="285" class="label">WSO2 Identity Server</text>
+  <rect x="50" y="355" width="335" height="75" class="card"/>
+  <text x="218" y="400" class="label">WSO2 Streaming Integrator</text>
+
+  <text x="700" y="70" class="title">DPDP Accelerator</text>
+  <rect x="495" y="110" width="195" height="85" class="card"/>
+  <text x="593" y="145" class="label"><tspan x="593">Consent</tspan><tspan x="593" dy="25">management</tspan></text>
+  <rect x="710" y="110" width="195" height="85" class="card"/>
+  <text x="808" y="145" class="label"><tspan x="808">Consent</tspan><tspan x="808" dy="25">Portal</tspan></text>
+  <rect x="495" y="230" width="195" height="85" class="card"/>
+  <text x="593" y="265" class="label"><tspan x="593">Audit and</tspan><tspan x="593" dy="25">history</tspan></text>
+  <rect x="710" y="230" width="195" height="85" class="card"/>
+  <text x="808" y="265" class="label"><tspan x="808">Grievance</tspan><tspan x="808" dy="25">handling</tspan></text>
+  <rect x="495" y="350" width="195" height="85" class="card"/>
+  <text x="593" y="385" class="label"><tspan x="593">Purpose and</tspan><tspan x="593" dy="25">data catalog</tspan></text>
+  <rect x="710" y="350" width="195" height="85" class="card"/>
+  <text x="808" y="385" class="label"><tspan x="808">Event</tspan><tspan x="808" dy="25">notifications</tspan></text>
+
+  <text x="1120" y="70" class="title">DPDP Operations</text>
+  <rect x="1015" y="125" width="210" height="75" class="card"/>
+  <text x="1120" y="155" class="label"><tspan x="1120">Consent</tspan><tspan x="1120" dy="25">governance</tspan></text>
+  <rect x="1015" y="240" width="210" height="75" class="card"/>
+  <text x="1120" y="270" class="label"><tspan x="1120">Grievance</tspan><tspan x="1120" dy="25">redressal</tspan></text>
+  <rect x="1015" y="355" width="210" height="75" class="card"/>
+  <text x="1120" y="385" class="label"><tspan x="1120">Lifecycle</tspan><tspan x="1120" dy="25">coordination</tspan></text>
+
+  <text x="1425" y="210" class="result-text"><tspan x="1425">Operational</tspan><tspan x="1425" dy="31">DPDP</tspan><tspan x="1425" dy="31">compliance</tspan></text>
+  <path d="M415 155h32m-8-7 8 7-8 7M415 280h32m-8-7 8 7-8 7M415 405h32m-8-7 8 7-8 7M935 155h42m-8-7 8 7-8 7M935 280h42m-8-7 8 7-8 7M935 405h42m-8-7 8 7-8 7" stroke="#43596a" stroke-width="3" fill="none"/>
+</svg>

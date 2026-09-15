@@ -102,7 +102,7 @@ async function terminateAllSessions(persona: Persona): Promise<void> {
 /**
  * A successful login only proves the consent-admin persona's credentials are valid, not that the
  * account actually holds the `dpdp-consent-admin` role - that role assignment is a manual Console
- * step (see docs/configuration-guide.md, "Grant administration access") that's easy to forget for
+ * step (see docs/content/configuration-guide.md, "Grant administration access") that's easy to forget for
  * a freshly created test account. Without this check, a missing role surfaces as dozens of
  * unrelated, confusing assertion failures scattered across the suite (every seeded
  * Purpose/Element/Consent creation silently 401s/403s) instead of one clear error naming the
@@ -118,7 +118,7 @@ async function verifyConsentAdminAuthorized(state: PersonaAuthState): Promise<vo
       `The consent admin ("${env.consentAdmin.username}") logged in successfully but ` +
         `is not authorized for the consent-management admin API (got ${String(response.status)} ` +
         `from ${consentPurposesApiUrl('')}). Assign this account the dpdp-consent-admin role in ` +
-        `the Console - see docs/configuration-guide.md, "Grant administration access".`,
+        `the Console - see docs/content/configuration-guide.md, "Grant administration access".`,
     )
   }
 }
@@ -126,7 +126,7 @@ async function verifyConsentAdminAuthorized(state: PersonaAuthState): Promise<vo
 /**
  * Waits for `persona` to reach a signed-in state on `page`, filling in the real Identity Server
  * login form if (and only if) it actually appears, and returns the request that proved sign-in
- * completed. The portal has no backend of its own any more (see docs/configuration-guide.md): the
+ * completed. The portal has no backend of its own any more (see docs/content/configuration-guide.md): the
  * SPA keeps its access token inside its auth SDK's own web worker, never in a cookie or anywhere
  * else `storageState` or page JS can read directly (see utils/authStorage.ts) - so "signed in" has
  * to be observed off the wire instead, as the first outgoing request that actually carries a
