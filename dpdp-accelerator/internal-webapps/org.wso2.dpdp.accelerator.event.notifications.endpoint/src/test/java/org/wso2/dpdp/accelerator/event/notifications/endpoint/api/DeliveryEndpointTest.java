@@ -42,9 +42,12 @@ public class DeliveryEndpointTest {
 
     @Test
     public void completeDeliveryDelegatesAndReturnsNoContent() {
-        Response response = endpoint.completeDelivery("delivery-1", "group-1", "sha256=signature", "{}");
+        String body = "{\n  \"completionEvidence\": \"https://example.com/receipt\","
+                + "\n  \"completionStatus\": \"completed\"\n}";
+        Response response = endpoint.completeDelivery("delivery-1", "group-1", "sha256=signature", body);
 
         assertEquals(response.getStatus(), Response.Status.NO_CONTENT.getStatusCode());
-        verify(eventHandler).completeDelivery("org1", "group-1", "delivery-1", "{}", "sha256=signature");
+        org.testng.Assert.assertNull(response.getEntity());
+        verify(eventHandler).completeDelivery("org1", "group-1", "delivery-1", body, "sha256=signature");
     }
 }

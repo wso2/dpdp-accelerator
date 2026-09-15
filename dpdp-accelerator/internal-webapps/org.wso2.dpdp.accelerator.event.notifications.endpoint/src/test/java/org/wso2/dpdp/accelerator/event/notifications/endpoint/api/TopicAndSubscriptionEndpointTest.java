@@ -42,8 +42,8 @@ public class TopicAndSubscriptionEndpointTest {
         when(topicHandler.listTopics("org-1", "active", "search", 20, 0, "name")).thenReturn(page);
         when(topicHandler.deleteTopic("org-1", "topic-1")).thenReturn(topic);
 
-        assertEquals(topicEndpoint.createTopic(topic).getStatus(), 201);
-        assertEquals(topicEndpoint.listTopics("active", "search", 20, 0, "name").getEntity(), page);
+        assertEquals(topicEndpoint.createTopic(new org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.TopicCreateRequest().name(topic.getName())).getStatus(), 201);
+        assertJsonEquals(topicEndpoint.listTopics("active", "search", 20, 0, "name").getEntity(), page);
         assertEquals(topicEndpoint.deleteTopic("topic-1").getStatus(), 200);
         verify(topicHandler).deleteTopic("org-1", "topic-1");
     }
@@ -61,11 +61,16 @@ public class TopicAndSubscriptionEndpointTest {
         when(subscriptionHandler.retryVerification("org-1", "sub-1")).thenReturn(subscription);
         when(subscriptionHandler.getSubscriptionEventHistory("org-1", "sub-1", "delivery-1")).thenReturn(history);
 
-        assertEquals(subscriptionEndpoint.createSubscription(subscription).getStatus(), 201);
-        assertEquals(subscriptionEndpoint.listSubscriptions("active", "marketing", "search", 20, 0, "createdAt").getEntity(), page);
-        assertEquals(subscriptionEndpoint.getSubscription("sub-1").getEntity(), subscription);
-        assertEquals(subscriptionEndpoint.deleteSubscription("sub-1").getEntity(), subscription);
-        assertEquals(subscriptionEndpoint.retryVerification("sub-1").getEntity(), subscription);
-        assertEquals(subscriptionEndpoint.getSubscriptionEventHistory("sub-1", "delivery-1").getEntity(), history);
+        assertEquals(subscriptionEndpoint.createSubscription(new org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.SubscriptionCreateRequest().topic(subscription.getTopic())).getStatus(), 201);
+        assertJsonEquals(subscriptionEndpoint.listSubscriptions("active", "marketing", "search", 20, 0, "createdAt").getEntity(), page);
+        assertJsonEquals(subscriptionEndpoint.getSubscription("sub-1").getEntity(), subscription);
+        assertJsonEquals(subscriptionEndpoint.deleteSubscription("sub-1").getEntity(), subscription);
+        assertJsonEquals(subscriptionEndpoint.retryVerification("sub-1").getEntity(), subscription);
+        assertJsonEquals(subscriptionEndpoint.getSubscriptionEventHistory("sub-1", "delivery-1").getEntity(), history);
+    }
+    private static void assertJsonEquals(Object actual, Object expected) {
+        com.fasterxml.jackson.databind.ObjectMapper json = new com.fasterxml.jackson.databind.ObjectMapper();
+        assertEquals((Object) json.valueToTree(actual), (Object) json.valueToTree(expected));
+        org.testng.Assert.assertTrue(actual.getClass().getPackage().getName().endsWith(".endpoint.dto"));
     }
 }

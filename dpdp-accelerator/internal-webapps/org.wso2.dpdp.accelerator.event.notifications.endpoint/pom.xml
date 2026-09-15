@@ -40,6 +40,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-annotations</artifactId>
+        </dependency>
+        <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
             <scope>provided</scope>
@@ -124,6 +128,49 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.openapitools</groupId>
+                <artifactId>openapi-generator-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <skip>${dpdp.dto.codegen.skip}</skip>
+                            <inputSpec>${project.basedir}/src/main/resources/event-notifications.yaml</inputSpec>
+                            <generatorName>jaxrs-cxf</generatorName>
+                            <templateDirectory>${project.basedir}/src/main/openapi-templates</templateDirectory>
+                            <generateApis>false</generateApis>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <modelPackage>org.wso2.dpdp.accelerator.event.notifications.endpoint.dto</modelPackage>
+                            <typeMappings><typeMapping>URI=String</typeMapping></typeMappings>
+                            <configOptions>
+                                <sourceFolder>src/gen/java</sourceFolder>
+                                <useBeanValidation>false</useBeanValidation>
+                                <openApiNullable>false</openApiNullable>
+                                <containerDefaultToNull>true</containerDefaultToNull>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                            </configOptions>
+                            <output>${project.basedir}</output>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>add-generated-dto-source</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/gen/java</source></sources></configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
@@ -154,6 +201,7 @@
                     <excludes>
                         <exclude>**/*Constants.class</exclude>
                         <exclude>**/*ErrorCodes.class</exclude>
+                        <exclude>**/endpoint/dto/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

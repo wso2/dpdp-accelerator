@@ -55,7 +55,7 @@ public class EventNotificationExceptionMapperTest {
         assertEquals(response.getMediaType(), MediaType.APPLICATION_JSON_TYPE);
 
         @SuppressWarnings("unchecked")
-        Map<String, Object> entity = (Map<String, Object>) response.getEntity();
+        Map<String, Object> entity = new com.fasterxml.jackson.databind.ObjectMapper().convertValue(response.getEntity(), Map.class);
         assertNotNull(entity);
         assertEquals(entity.get("code"), "EN-4040");
         assertEquals(entity.get("message"), "Resource not found");
@@ -69,7 +69,12 @@ public class EventNotificationExceptionMapperTest {
 
         assertNotNull(response);
         assertEquals(response.getStatus(), 409);
-        assertTrue(response.getEntity() instanceof Map);
+        assertTrue(response.getEntity() instanceof org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error);
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error entity =
+                (org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error) response.getEntity();
+        assertEquals(entity.getCode(), "EN-4090");
+        assertEquals(entity.getMessage(), "Topic already exists");
+        assertEquals(entity.getDescription(), "Topic name conflict.");
     }
 
     @Test
