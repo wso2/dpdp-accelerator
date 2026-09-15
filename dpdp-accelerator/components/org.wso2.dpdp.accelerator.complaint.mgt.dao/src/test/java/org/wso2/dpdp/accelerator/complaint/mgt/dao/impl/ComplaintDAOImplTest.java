@@ -177,7 +177,7 @@ class ComplaintDAOImplTest {
 
         int[] totalOut = new int[1];
         List<Complaint> results =
-                dao.listComplaints("org1", "OPEN", null, null, 10, 0, null, totalOut);
+                dao.listComplaints("org1", "OPEN", null, null, null, 10, 0, null, totalOut);
 
         assertEquals(2, totalOut[0]);
         assertEquals(2, results.size());
@@ -191,8 +191,8 @@ class ComplaintDAOImplTest {
         }
 
         int[] totalOut = new int[1];
-        List<Complaint> page1 = dao.listComplaints("org1", null, null, null, 2, 0, "updatedTime", totalOut);
-        List<Complaint> page2 = dao.listComplaints("org1", null, null, null, 2, 2, "updatedTime", totalOut);
+        List<Complaint> page1 = dao.listComplaints("org1", null, null, null, null, 2, 0, "updatedTime", totalOut);
+        List<Complaint> page2 = dao.listComplaints("org1", null, null, null, null, 2, 2, "updatedTime", totalOut);
 
         assertEquals(5, totalOut[0]);
         assertEquals(2, page1.size());
@@ -203,13 +203,30 @@ class ComplaintDAOImplTest {
     }
 
     @Test
+    void listComplaintsFiltersBySearchAgainstReferenceIdOrUserName() {
+        dao.addComplaint(sampleComplaint("c1", "org1", "OPEN", "HIGH", "user1", 100L, 100L));
+        dao.addComplaint(sampleComplaint("c2", "org1", "OPEN", "HIGH", "user2", 200L, 200L));
+
+        int[] totalOut = new int[1];
+        List<Complaint> byReferenceId =
+                dao.listComplaints("org1", null, null, null, "cmp-2026-c1", 10, 0, null, totalOut);
+        List<Complaint> byUserName =
+                dao.listComplaints("org1", null, null, null, "user2-name", 10, 0, null, totalOut);
+
+        assertEquals(1, byReferenceId.size());
+        assertEquals("c1", byReferenceId.get(0).getComplaintId());
+        assertEquals(1, byUserName.size());
+        assertEquals("c2", byUserName.get(0).getComplaintId());
+    }
+
+    @Test
     void listComplaintsSortsDescendingWhenSortHasMinusPrefix() {
         dao.addComplaint(sampleComplaint("c1", "org1", "OPEN", "HIGH", "user1", 100L, 100L));
         dao.addComplaint(sampleComplaint("c2", "org1", "OPEN", "HIGH", "user1", 300L, 300L));
         dao.addComplaint(sampleComplaint("c3", "org1", "OPEN", "HIGH", "user1", 200L, 200L));
 
         int[] totalOut = new int[1];
-        List<Complaint> results = dao.listComplaints("org1", null, null, null, 10, 0, "-updatedTime", totalOut);
+        List<Complaint> results = dao.listComplaints("org1", null, null, null, null, 10, 0, "-updatedTime", totalOut);
 
         assertEquals("c2", results.get(0).getComplaintId());
         assertEquals("c3", results.get(1).getComplaintId());
@@ -222,7 +239,7 @@ class ComplaintDAOImplTest {
         dao.addComplaint(sampleComplaint("c2", "org1", "OPEN", "HIGH", "user1", 300L, 300L));
 
         int[] totalOut = new int[1];
-        List<Complaint> results = dao.listComplaints("org1", null, null, null, 10, 0, null, totalOut);
+        List<Complaint> results = dao.listComplaints("org1", null, null, null, null, 10, 0, null, totalOut);
 
         assertEquals("c2", results.get(0).getComplaintId());
         assertEquals("c1", results.get(1).getComplaintId());

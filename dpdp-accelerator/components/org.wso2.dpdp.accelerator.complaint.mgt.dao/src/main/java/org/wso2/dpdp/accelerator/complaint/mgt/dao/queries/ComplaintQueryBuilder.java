@@ -31,6 +31,7 @@ public class ComplaintQueryBuilder {
     private String status;
     private String priority;
     private String userId;
+    private String search;
     private String sort;
 
     public ComplaintQueryBuilder(String orgId, ComplaintCommonDBQueries queries) {
@@ -50,6 +51,11 @@ public class ComplaintQueryBuilder {
 
     public ComplaintQueryBuilder setUserId(String userId) {
         this.userId = userId;
+        return this;
+    }
+
+    public ComplaintQueryBuilder setSearch(String search) {
+        this.search = search;
         return this;
     }
 
@@ -88,6 +94,17 @@ public class ComplaintQueryBuilder {
         if (userId != null && !userId.trim().isEmpty()) {
             sql.append("AND ").append(ComplaintDBColumns.USER_ID).append(" = ? ");
             params.add(userId.trim());
+        }
+        if (search != null && !search.trim().isEmpty()) {
+            sql.append("AND (")
+                    .append(QueryBuilderUtils.buildEscapedLikePredicate(
+                            "LOWER(" + ComplaintDBColumns.REFERENCE_ID + ")"))
+                    .append(" OR ").append(QueryBuilderUtils.buildEscapedLikePredicate(
+                            "LOWER(" + ComplaintDBColumns.USER_NAME + ")"))
+                    .append(") ");
+            String term = QueryBuilderUtils.buildCaseInsensitiveContainsPattern(search);
+            params.add(term);
+            params.add(term);
         }
         return params;
     }

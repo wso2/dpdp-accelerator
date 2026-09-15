@@ -54,6 +54,7 @@ import { buildComplaintDetail, buildComplaintRecord } from '../utils/complaintMa
 interface ComplaintListParams {
   status?: ComplaintStatus
   priority?: ComplaintPriorityAPI
+  search?: string
   limit?: number
   offset?: number
 }
@@ -67,6 +68,7 @@ function toListQueryParams(params: ComplaintListParams): ComplaintListQueryParam
   return {
     status: params.status,
     priority: params.priority,
+    search: params.search,
     limit: params.limit ?? 100,
     offset: params.offset ?? 0,
   }

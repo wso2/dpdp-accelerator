@@ -79,11 +79,12 @@ public class ComplaintEndpoint {
             @QueryParam("status") String status,
             @QueryParam("priority") String priority,
             @QueryParam("userId") String userId,
+            @QueryParam("search") String search,
             @QueryParam("limit") Integer limit,
             @QueryParam("offset") Integer offset,
             @QueryParam("sort") String sort) {
-        ComplaintListResponseDTO response =
-                complaintHandler.listComplaints(currentOrgId(), status, priority, userId, limit, offset, sort);
+        ComplaintListResponseDTO response = complaintHandler.listComplaints(currentOrgId(), status, priority, userId,
+                search, limit, offset, sort);
         return Response.ok(response).build();
     }
 

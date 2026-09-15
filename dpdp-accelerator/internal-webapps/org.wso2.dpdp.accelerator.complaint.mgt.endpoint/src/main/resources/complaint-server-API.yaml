@@ -541,6 +541,14 @@ paths:
           description: Exact match — filter to a specific Data Principal
           schema:
             type: string
+        - name: search
+          in: query
+          required: false
+          description: >
+            Case-insensitive substring match against the complaint's reference ID
+            or the Data Principal's display name.
+          schema:
+            type: string
         - name: limit
           in: query
           required: false

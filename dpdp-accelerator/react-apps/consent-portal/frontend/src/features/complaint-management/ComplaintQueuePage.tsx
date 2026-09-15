@@ -22,7 +22,6 @@ import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
-import type { ComplaintStatus } from '../../types/complaint'
 import { COMPLAINT_QUEUE_ROWS_PER_PAGE_OPTIONS } from '../complaints/constants'
 import {
   useManagedComplaintListQuery,
@@ -37,8 +36,6 @@ const DEFAULT_FILTERS: ComplaintQueueFiltersState = {
   priority: 'All',
   search: '',
 }
-
-const CLOSED_OUT_STATUSES: ComplaintStatus[] = ['RESOLVED']
 
 const DEFAULT_PAGE = 0
 const DEFAULT_ROWS_PER_PAGE = 10
@@ -63,32 +60,12 @@ function ComplaintQueuePage(): React.JSX.Element {
   const listQuery = useManagedComplaintListQuery({
     status: filters.status === 'All' ? undefined : filters.status,
     priority: filters.priority === 'All' ? undefined : filters.priority,
+    search: filters.search.trim() || undefined,
     limit: rowsPerPage,
     offset: page * rowsPerPage,
   })
-  const pageComplaints = useMemo(() => listQuery.data?.rows ?? [], [listQuery.data])
+  const rows = useMemo(() => listQuery.data?.rows ?? [], [listQuery.data])
   const total = listQuery.data?.total ?? 0
-
-  const rows = useMemo(() => {
-    const search = filters.search.trim().toLowerCase()
-
-    // Both narrowings below apply only within the current, already server-paginated
-    // page - hiding resolved complaints by default and the reference/name search can
-    // each make a page render fewer than rowsPerPage rows. Previous/Next stay correct
-    // regardless, since they're driven by the server's offset and total, not by what's
-    // left standing here.
-    return pageComplaints.filter((complaint) => {
-      if (filters.status === 'All' && CLOSED_OUT_STATUSES.includes(complaint.status)) {
-        return false
-      }
-
-      return !(
-        search &&
-        !complaint.referenceId.toLowerCase().includes(search) &&
-        !complaint.dataPrincipalName.toLowerCase().includes(search)
-      )
-    })
-  }, [pageComplaints, filters])
 
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>

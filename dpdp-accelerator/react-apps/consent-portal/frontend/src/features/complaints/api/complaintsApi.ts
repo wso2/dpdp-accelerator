@@ -41,6 +41,7 @@ function listQuery(params: ComplaintListQueryParamsAPI) {
     status: params.status,
     priority: params.priority,
     userId: params.userId,
+    search: params.search,
     limit: params.limit,
     offset: params.offset,
     sort: params.sort,

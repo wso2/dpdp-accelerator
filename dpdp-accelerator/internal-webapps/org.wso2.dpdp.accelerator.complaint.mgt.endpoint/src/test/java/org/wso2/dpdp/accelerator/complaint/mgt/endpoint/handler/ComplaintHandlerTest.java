@@ -127,10 +127,11 @@ class ComplaintHandlerTest {
 
     @Test
     void listComplaintsDefaultsLimitTo10AndOffsetTo0WhenNotProvided() {
-        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), eq(10), eq(0), any(), any()))
+        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), any(), eq(10), eq(0), any(), any()))
                 .thenReturn(List.of());
 
-        ComplaintListResponseDTO response = handler.listComplaints(ORG_ID, null, null, null, null, null, null);
+        ComplaintListResponseDTO response =
+                handler.listComplaints(ORG_ID, null, null, null, null, null, null, null);
 
         assertEquals(10, response.getMetadata().getLimit());
         assertEquals(0, response.getMetadata().getOffset());
@@ -138,30 +139,43 @@ class ComplaintHandlerTest {
 
     @Test
     void listComplaintsCapsLimitAt100() {
-        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), eq(100), eq(0), any(), any()))
+        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), any(), eq(100), eq(0), any(), any()))
                 .thenReturn(List.of());
 
-        ComplaintListResponseDTO response = handler.listComplaints(ORG_ID, null, null, null, 500, null, null);
+        ComplaintListResponseDTO response =
+                handler.listComplaints(ORG_ID, null, null, null, null, 500, null, null);
 
         assertEquals(100, response.getMetadata().getLimit());
     }
 
     @Test
     void listComplaintsAttachesAttachmentsAndReportsAccuratePageMetadata() {
-        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), eq(10), eq(0), any(), any()))
+        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), any(), eq(10), eq(0), any(), any()))
                 .thenAnswer(invocation -> {
-                    int[] totalOut = invocation.getArgument(7);
+                    int[] totalOut = invocation.getArgument(8);
                     totalOut[0] = 42;
                     return List.of(sampleComplaint("c1", "user1", "OPEN"), sampleComplaint("c2", "user1",
                             "IN_PROGRESS"));
                 });
         when(complaintAttachmentService.listAttachmentsForComplaint(eq(ORG_ID), anyString())).thenReturn(List.of());
 
-        ComplaintListResponseDTO response = handler.listComplaints(ORG_ID, null, null, null, null, null, null);
+        ComplaintListResponseDTO response =
+                handler.listComplaints(ORG_ID, null, null, null, null, null, null, null);
 
         assertEquals(2, response.getData().size());
         assertEquals(42, response.getMetadata().getTotal());
         assertEquals(2, response.getMetadata().getCount());
+    }
+
+    @Test
+    void listComplaintsPassesSearchThroughToTheService() {
+        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), any(), eq("CMP-2026"), eq(10), eq(0), any(),
+                any())).thenReturn(List.of());
+
+        handler.listComplaints(ORG_ID, null, null, null, "CMP-2026", null, null, null);
+
+        verify(complaintService).listComplaints(eq(ORG_ID), any(), any(), any(), eq("CMP-2026"), eq(10), eq(0),
+                any(), any());
     }
 
     @Test
@@ -237,8 +251,8 @@ class ComplaintHandlerTest {
 
     @Test
     void listOwnComplaintsScopesToOwnerAndFiltersPrivateAttachments() {
-        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), eq("user1"), eq(10), eq(0), any(), any()))
-                .thenReturn(List.of(sampleComplaint("c1", "user1", "OPEN")));
+        when(complaintService.listComplaints(eq(ORG_ID), any(), any(), eq("user1"), any(), eq(10), eq(0), any(),
+                any())).thenReturn(List.of(sampleComplaint("c1", "user1", "OPEN")));
         when(complaintAttachmentService.listAttachmentsForComplaint(ORG_ID, "c1"))
                 .thenReturn(List.of(attachmentBean("a1", false)));
 

@@ -138,6 +138,7 @@ export interface ComplaintListQueryParamsAPI {
   status?: ComplaintStatus
   priority?: ComplaintPriorityAPI
   userId?: string
+  search?: string
   limit?: number
   offset?: number
   sort?: string

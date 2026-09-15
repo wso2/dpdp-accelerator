@@ -100,8 +100,8 @@ public class ComplaintHandler {
     }
 
     public ComplaintListResponseDTO listComplaints(String orgId, String status, String priority, String userId,
-            Integer limit, Integer offset, String sort) {
-        return listComplaints(orgId, status, priority, userId, limit, offset, sort, false);
+            String search, Integer limit, Integer offset, String sort) {
+        return listComplaints(orgId, status, priority, userId, search, limit, offset, sort, false);
     }
 
     public ComplaintQueueStatsResponseDTO getQueueStats(String orgId) {
@@ -144,7 +144,7 @@ public class ComplaintHandler {
 
     public ComplaintListResponseDTO listOwnComplaints(String orgId, String ownerUserId, String status,
             Integer limit, Integer offset, String sort) {
-        return listComplaints(orgId, status, null, ownerUserId, limit, offset, sort, true);
+        return listComplaints(orgId, status, null, ownerUserId, null, limit, offset, sort, true);
     }
 
     public ComplaintStatusUpdateResponseDTO updateOwnStatus(String orgId, String complaintId, String ownerUserId,
@@ -158,13 +158,13 @@ public class ComplaintHandler {
     // ---- shared ----
 
     private ComplaintListResponseDTO listComplaints(String orgId, String status, String priority, String userId,
-            Integer limit, Integer offset, String sort, boolean restrictToPublicAttachments) {
+            String search, Integer limit, Integer offset, String sort, boolean restrictToPublicAttachments) {
         int lim = limit != null && limit > 0 ? Math.min(limit, 100) : 10;
         int off = offset != null && offset >= 0 ? offset : 0;
         int[] totalOut = new int[]{0};
 
-        List<Complaint> list = complaintService.listComplaints(orgId, status, priority, userId, lim, off, sort,
-                totalOut);
+        List<Complaint> list = complaintService.listComplaints(orgId, status, priority, userId, search, lim, off,
+                sort, totalOut);
 
         List<ComplaintRecordDTO> beanList = new ArrayList<>();
         for (Complaint complaint : list) {

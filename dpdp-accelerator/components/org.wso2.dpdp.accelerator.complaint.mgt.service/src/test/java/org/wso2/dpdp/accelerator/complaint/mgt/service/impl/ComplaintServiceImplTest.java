@@ -314,11 +314,11 @@ class ComplaintServiceImplTest {
         Complaint c2 = new Complaint("c2", "org1", "user1", "User One", "CMP-2026-00002", "OTHER", "LOW", "OPEN",
                 "desc2", 4L, 5L, 6L);
         int[] totalOut = new int[1];
-        when(complaintDAO.listComplaints("org1", "OPEN", null, "user1", 10, 0, "-updatedTime", totalOut))
+        when(complaintDAO.listComplaints("org1", "OPEN", null, "user1", null, 10, 0, "-updatedTime", totalOut))
                 .thenReturn(List.of(c1, c2));
 
-        List<Complaint> results =
-                complaintService.listComplaints("org1", "OPEN", null, "user1", 10, 0, "-updatedTime", totalOut);
+        List<Complaint> results = complaintService.listComplaints("org1", "OPEN", null, "user1", null, 10, 0,
+                "-updatedTime", totalOut);
 
         assertEquals(2, results.size());
         assertEquals("c1", results.get(0).getComplaintId());
@@ -328,15 +328,15 @@ class ComplaintServiceImplTest {
     @Test
     void listComplaintsReturnsEmptyListWhenDaoReturnsNothing() {
         int[] totalOut = new int[1];
-        when(complaintDAO.listComplaints(anyString(), any(), any(), any(), anyInt(), anyInt(), any(), eq(totalOut)))
-                .thenReturn(List.of());
+        when(complaintDAO.listComplaints(anyString(), any(), any(), any(), any(), anyInt(), anyInt(), any(),
+                eq(totalOut))).thenReturn(List.of());
 
         List<Complaint> results =
-                complaintService.listComplaints("org1", null, null, null, 10, 0, null, totalOut);
+                complaintService.listComplaints("org1", null, null, null, null, 10, 0, null, totalOut);
 
         assertTrue(results.isEmpty());
-        verify(complaintDAO, times(1)).listComplaints(anyString(), any(), any(), any(), anyInt(), anyInt(), any(),
-                eq(totalOut));
+        verify(complaintDAO, times(1)).listComplaints(anyString(), any(), any(), any(), any(), anyInt(), anyInt(),
+                any(), eq(totalOut));
     }
 
     @Test
@@ -344,7 +344,7 @@ class ComplaintServiceImplTest {
         int[] totalOut = new int[1];
 
         ComplaintException ex = expectThrows(ComplaintException.class,
-                () -> complaintService.listComplaints("org1", "OPEN_TYPO", null, null, 10, 0, null, totalOut));
+                () -> complaintService.listComplaints("org1", "OPEN_TYPO", null, null, null, 10, 0, null, totalOut));
 
         assertEquals("CO-4002", ex.getCode());
         verifyNoInteractions(complaintDAO);
@@ -355,7 +355,7 @@ class ComplaintServiceImplTest {
         int[] totalOut = new int[1];
 
         ComplaintException ex = expectThrows(ComplaintException.class,
-                () -> complaintService.listComplaints("org1", null, "URGENT", null, 10, 0, null, totalOut));
+                () -> complaintService.listComplaints("org1", null, "URGENT", null, null, 10, 0, null, totalOut));
 
         assertEquals("CO-4002", ex.getCode());
         verifyNoInteractions(complaintDAO);

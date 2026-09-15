@@ -87,10 +87,10 @@ class ComplaintEndpointTest {
     @Test
     void listComplaintsReturns200WithHandlerResponse() {
         ComplaintListResponseDTO handlerResponse = new ComplaintListResponseDTO();
-        when(complaintHandler.listComplaints(ORG_ID, "OPEN", "HIGH", "user1", 10, 0, "updatedTime"))
+        when(complaintHandler.listComplaints(ORG_ID, "OPEN", "HIGH", "user1", "CMP-2026", 10, 0, "updatedTime"))
                 .thenReturn(handlerResponse);
 
-        Response response = endpoint.listComplaints("OPEN", "HIGH", "user1", 10, 0, "updatedTime");
+        Response response = endpoint.listComplaints("OPEN", "HIGH", "user1", "CMP-2026", 10, 0, "updatedTime");
 
         assertEquals(200, response.getStatus());
         assertSame(handlerResponse, response.getEntity());
