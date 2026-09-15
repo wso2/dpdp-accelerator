@@ -127,7 +127,7 @@ class ComplaintCommentHandlerTest {
 
         assertEquals("e1", response.getId());
         assertEquals("USER", response.getActorRole());
-        verify(complaintService).requireOwnedComplaint(ORG_ID, "c1", "user1");
+        verify(complaintService).getOwnedComplaint(ORG_ID, "c1", "user1");
     }
 
 }

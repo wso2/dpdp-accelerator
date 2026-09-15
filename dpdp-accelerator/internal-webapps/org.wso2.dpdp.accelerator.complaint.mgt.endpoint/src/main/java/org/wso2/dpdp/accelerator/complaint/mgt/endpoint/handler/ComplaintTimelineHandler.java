@@ -77,7 +77,7 @@ public class ComplaintTimelineHandler {
 
     public TimelineListResponseDTO getOwnTimeline(String orgId, String complaintId, String ownerUserId,
             Long fromTime, Long toTime, String order, Integer limit, Integer offset) {
-        complaintService.requireOwnedComplaint(orgId, complaintId, ownerUserId);
+        complaintService.getOwnedComplaint(orgId, complaintId, ownerUserId);
         return getTimeline(orgId, complaintId, fromTime, toTime, true, order, limit, offset);
     }
 

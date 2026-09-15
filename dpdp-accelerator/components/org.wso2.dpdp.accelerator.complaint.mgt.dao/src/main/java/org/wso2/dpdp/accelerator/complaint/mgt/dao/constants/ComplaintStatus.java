@@ -18,12 +18,7 @@
 
 package org.wso2.dpdp.accelerator.complaint.mgt.dao.constants;
 
-/**
- * The valid values of the COMPLAINT.STATUS column. Enforced here at the application layer (see
- * isValid/StatusTransitionValidator) as well as by CHK_COMPLAINT_STATUS in mysql.sql - the DB
- * CHECK is a backstop against direct writes that bypass this layer, not the primary enforcement,
- * since adding a value here needs only a code change, not a DB migration.
- */
+/** The valid values of the COMPLAINT.STATUS column; CHK_COMPLAINT_STATUS in mysql.sql is a backstop, not the primary enforcement. */
 public enum ComplaintStatus {
 
     OPEN,

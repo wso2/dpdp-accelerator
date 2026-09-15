@@ -77,7 +77,7 @@ class ComplaintAttachmentHandlerTest {
 
     @BeforeClass
     void seedConfigurationService() {
-        // Normally bound by ComplaintServiceComponent's OSGi @Reference; AttachmentPolicy reads
+        // Normally bound by ComplaintServiceComponent's OSGi @Reference; ComplaintServiceUtil reads
         // it via ComplaintServiceDataHolder, so a test running outside a live Carbon environment
         // must seed it itself.
         ComplaintServiceDataHolder.getInstance().setConfigurationService(new DPDPConfigurationServiceImpl());
@@ -210,7 +210,7 @@ class ComplaintAttachmentHandlerTest {
 
         assertEquals("CO-4002", ex.getCode());
         assertTrue(ex.getDescription().contains("big.pdf"));
-        // AttachmentPolicy.getMaxSizeBytes() defaults to 10 MB outside a real Carbon environment
+        // ComplaintServiceUtil.getAttachmentMaxSizeBytes() defaults to 10 MB outside a real Carbon environment
         // (no dpdp-accelerator.xml on disk) - confirms the handler stopped reading shortly after
         // that, not somewhere arbitrarily far into the (infinite) stream.
         assertTrue(infiniteStream.getBytesServed() < 20L * 1024 * 1024);

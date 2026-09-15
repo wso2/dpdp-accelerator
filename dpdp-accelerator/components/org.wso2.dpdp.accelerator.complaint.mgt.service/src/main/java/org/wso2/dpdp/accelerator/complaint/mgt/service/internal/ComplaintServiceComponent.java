@@ -72,10 +72,10 @@ public class ComplaintServiceComponent {
         ComplaintService complaintService = new ComplaintServiceImpl(
                 daoProvider.getComplaintDAO(), daoProvider.getComplaintEventDAO(), notificationClient);
         ComplaintEventService complaintEventService = new ComplaintEventServiceImpl(
-                daoProvider.getComplaintEventDAO(), daoProvider.getComplaintDAO(), complaintService,
-                notificationClient);
+                daoProvider.getComplaintEventDAO(), daoProvider.getComplaintDAO(), notificationClient);
         ComplaintAttachmentService complaintAttachmentService = new ComplaintAttachmentServiceImpl(
-                daoProvider.getComplaintAttachmentDAO(), daoProvider.getComplaintEventDAO(), complaintService);
+                daoProvider.getComplaintAttachmentDAO(), daoProvider.getComplaintEventDAO(),
+                daoProvider.getComplaintDAO());
 
         complaintServiceRegistration = context.getBundleContext().registerService(
                 ComplaintService.class, complaintService, null);

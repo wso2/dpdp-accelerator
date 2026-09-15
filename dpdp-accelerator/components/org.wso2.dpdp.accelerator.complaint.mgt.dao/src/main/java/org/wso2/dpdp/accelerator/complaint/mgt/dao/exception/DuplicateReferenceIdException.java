@@ -2,12 +2,7 @@ package org.wso2.dpdp.accelerator.complaint.mgt.dao.exception;
 
 import java.sql.SQLException;
 
-/**
- * Thrown when {@code addComplaint} fails because another concurrent request already took the same
- * (ORG_ID, REFERENCE_ID) - the count-then-format sequence in ReferenceIdGenerator is inherently
- * racy under concurrent submissions, so the caller is expected to catch this, generate a fresh
- * reference ID, and retry rather than surface a generic 500.
- */
+/** Thrown when {@code addComplaint} hits a concurrent (ORG_ID, REFERENCE_ID) collision; the caller should retry with a fresh reference ID. */
 public class DuplicateReferenceIdException extends ComplaintDAOException {
 
     public DuplicateReferenceIdException(SQLException cause) {

@@ -135,7 +135,7 @@ class ComplaintTimelineHandlerTest {
 
     @Test
     void getOwnTimelineVerifiesOwnershipAndRestrictsToPublicEntries() {
-        when(complaintService.requireOwnedComplaint(ORG_ID, "c1", "user1"))
+        when(complaintService.getOwnedComplaint(ORG_ID, "c1", "user1"))
                 .thenReturn(new Complaint("c1", ORG_ID, "user1", "User One", "CMP-1", "DATA_BREACH", "LOW", "OPEN",
                         "d", 1L, 1L, 1L));
         when(complaintEventService.getTimeline(eq(ORG_ID), eq("c1"), isNull(), isNull(), eq(true), isNull(), eq(20),
@@ -145,7 +145,7 @@ class ComplaintTimelineHandlerTest {
                 handler.getOwnTimeline(ORG_ID, "c1", "user1", null, null, null, null, null);
 
         assertEquals(1, response.getData().size());
-        verify(complaintService).requireOwnedComplaint(ORG_ID, "c1", "user1");
+        verify(complaintService).getOwnedComplaint(ORG_ID, "c1", "user1");
     }
 
 }

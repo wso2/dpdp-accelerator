@@ -36,7 +36,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.ComplaintStatusUpdate
 import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.MeComplaintCreateRequestDTO;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.MeComplaintStatusUpdateRequestDTO;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.dto.PageMetadataDTO;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.util.PriorityMapper;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.util.ComplaintServiceUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,7 +109,7 @@ public class ComplaintHandler {
     }
 
     public CategoryListResponseDTO getCategories() {
-        Map<String, String> categoryPriorities = new TreeMap<>(PriorityMapper.getCategoryPriorities());
+        Map<String, String> categoryPriorities = new TreeMap<>(ComplaintServiceUtil.getCategoryPriorities());
         List<ComplaintCategoryDTO> beanList = new ArrayList<>();
         for (Map.Entry<String, String> entry : categoryPriorities.entrySet()) {
             beanList.add(new ComplaintCategoryDTO(entry.getKey(), entry.getValue()));
@@ -136,7 +136,7 @@ public class ComplaintHandler {
     }
 
     public ComplaintRecordDTO getOwnComplaint(String orgId, String complaintId, String ownerUserId) {
-        Complaint complaint = complaintService.requireOwnedComplaint(orgId, complaintId, ownerUserId);
+        Complaint complaint = complaintService.getOwnedComplaint(orgId, complaintId, ownerUserId);
         List<ComplaintAttachmentResponseDTO> attachments =
                 complaintAttachmentService.listAttachmentsForComplaint(orgId, complaintId);
         return ComplaintRecordDTO.from(complaint, publicOnly(attachments));
@@ -149,7 +149,7 @@ public class ComplaintHandler {
 
     public ComplaintStatusUpdateResponseDTO updateOwnStatus(String orgId, String complaintId, String ownerUserId,
             String ownerUserName, MeComplaintStatusUpdateRequestDTO request) {
-        complaintService.requireOwnedComplaint(orgId, complaintId, ownerUserId);
+        complaintService.getOwnedComplaint(orgId, complaintId, ownerUserId);
         String toStatus = request != null ? request.getToStatus() : null;
         return complaintEventService.updateStatus(orgId, complaintId, ownerUserId, ownerUserName, "USER", toStatus,
                 null);

@@ -29,7 +29,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.service.ComplaintService;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintErrorCode;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintException;
 import org.wso2.dpdp.accelerator.complaint.mgt.service.exception.ComplaintServiceConstants;
-import org.wso2.dpdp.accelerator.complaint.mgt.service.util.AttachmentPolicy;
+import org.wso2.dpdp.accelerator.complaint.mgt.service.util.ComplaintServiceUtil;
 
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayOutputStream;
@@ -108,7 +108,7 @@ public class ComplaintAttachmentHandler {
         // materialized list in ComplaintAttachmentServiceImpl#validateFiles - otherwise many
         // individually-small parts would still force this method to buffer all of them in heap
         // before the count is ever checked.
-        int maxFiles = AttachmentPolicy.getMaxFilesPerUpload();
+        int maxFiles = ComplaintServiceUtil.getAttachmentMaxFilesPerUpload();
         if (fileParts.size() > maxFiles) {
             throw new ComplaintException(ComplaintErrorCode.VALIDATION_FAILED,
                     String.format(ComplaintServiceConstants.TOO_MANY_FILES_ERROR, maxFiles, fileParts.size()));
@@ -133,12 +133,12 @@ public class ComplaintAttachmentHandler {
     }
 
     /**
-     * Enforces {@link AttachmentPolicy#getMaxSizeBytes()} while reading, not after - buffering an
+     * Enforces {@link ComplaintServiceUtil#getAttachmentMaxSizeBytes()} while reading, not after - buffering an
      * entire oversized part into a byte[] first (then rejecting it) still lets one request force the
      * JVM to hold the whole thing in heap, defeating the point of a size cap.
      */
     private byte[] readAllBytes(InputStream in, String fileName) throws IOException {
-        long maxSize = AttachmentPolicy.getMaxSizeBytes();
+        long maxSize = ComplaintServiceUtil.getAttachmentMaxSizeBytes();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         byte[] chunk = new byte[8192];
         long total = 0;

@@ -74,7 +74,7 @@ public class ComplaintCommentHandler {
 
     public ComplaintCommentCreateResponseDTO addOwnComment(String orgId, String complaintId, String ownerUserId,
             String ownerUserName, MeComplaintMessageRequestDTO request) {
-        complaintService.requireOwnedComplaint(orgId, complaintId, ownerUserId);
+        complaintService.getOwnedComplaint(orgId, complaintId, ownerUserId);
         String message = request != null ? request.getMessage() : null;
         String toStatus = request != null ? request.getToStatus() : null;
 
