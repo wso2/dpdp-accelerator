@@ -57,7 +57,7 @@
 
         <!--
             complaint.mgt.service's NotificationClient references IdentityEventService, (for the
-            officer deep link) ApplicationManagementService, and (for resolving dpdp-consent-admin
+            officer deep link) ApplicationManagementService, and (for resolving dpdp-consent-dpo
             membership) RoleManagementService - all provided scope there, so not transitive.
             Declared here too so this module's own tests that construct real handler/service
             graphs (e.g. ComplaintCommentHandlerTest #noArgsConstructorWiresRealServices) don't

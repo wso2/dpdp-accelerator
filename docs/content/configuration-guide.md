@@ -34,11 +34,14 @@ with no operator step and no REST call involved:
 | Revoke tokens on logout | enabled | Signing out invalidates the tokens immediately. |
 
 It also authorizes the consent management, consent-history, event-notification
-and complaint-management APIs (RBAC), and creates two roles. `dpdp-consent-admin`
+and complaint-management APIs (RBAC), and creates three roles. `dpdp-consent-admin`
 holds every consent management scope, the consent-history "any" scopes, the
 event-notification scopes, and the complaint management API's two "any" scopes
 (`complaints:read:any`, `complaints:write:any`) — viewing and managing every
 complaint in the org, including internal notes and status transitions.
+`dpdp-consent-dpo` holds only the same two complaint "any" scopes, and is the
+role complaint-related emails (creation, comments, acknowledgements) are sent
+to — see [Configure email notifications](#5-configure-email-notifications).
 `dpdp-consent-user` holds `account:self:delete` (see
 [Self-service account deletion](#7-self-service-account-deletion)) plus the
 complaint API's two "self" scopes (`complaints:read:self`,
@@ -109,6 +112,7 @@ what is *beyond* that.
 |---|---|---|
 | `dpdp-consent-user` | Regular users | Deleting their own account, and reading/writing their own complaints (`complaints:read/write:self`). Neither is needed for self-service consent management, which works without any role. |
 | `dpdp-consent-admin` | Administrators | Administering *other people's* consents, editing the purpose and element catalog, and reading/writing *any* complaint in the org (`complaints:read/write:any`), including internal notes and status transitions. **Not** self-service account deletion, which is `dpdp-consent-user` only. |
+| `dpdp-consent-dpo` | Data Protection / Grievance Officers | Reading/writing *any* complaint in the org (`complaints:read/write:any`), same as `dpdp-consent-admin`. This is the role complaint-related emails are sent to — assign it to whoever should actually receive and act on complaints, whether or not they also hold `dpdp-consent-admin`. |
 
 > **Users who don't hold `dpdp-consent-user` will not see "Delete my
 > account".** The option is gated on the `account:self:delete` scope that
@@ -156,6 +160,11 @@ In the Console:
 
 Make sure the primary email address is valid and accessible. Notifications
 sent to the user will be delivered to the configured primary email address.
+
+Complaint emails (creation, comments, acknowledgements) are off by default, independently of the
+SMTP settings above. Turn them on by setting
+`[dpdp_accelerator.complaints] email_notifications_enabled = true`. This flag is read once, at
+server startup, so a change requires restarting the Identity Server to take effect.
 
 ## 6. Open the portal
 

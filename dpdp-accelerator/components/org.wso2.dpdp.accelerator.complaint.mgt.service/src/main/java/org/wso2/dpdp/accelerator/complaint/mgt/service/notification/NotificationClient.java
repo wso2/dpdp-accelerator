@@ -31,7 +31,7 @@ import org.wso2.dpdp.accelerator.complaint.mgt.dao.model.ComplaintEvent;
  */
 public interface NotificationClient {
 
-    /** Notifies the complaint officers (dpdp-consent-admin role members) that a complaint was filed. */
+    /** Notifies the complaint officers (dpdp-consent-dpo role members) that a complaint was filed. */
     void notifyComplaintCreated(Complaint complaint);
 
     /**
