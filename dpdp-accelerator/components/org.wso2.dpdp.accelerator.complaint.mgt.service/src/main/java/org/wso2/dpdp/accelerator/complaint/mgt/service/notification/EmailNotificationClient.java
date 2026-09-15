@@ -89,6 +89,7 @@ public class EmailNotificationClient implements NotificationClient {
     private static final String PLACEHOLDER_HEADLINE_HTML = "headline-html";
     private static final String PLACEHOLDER_FOOTER_TEXT = "footer-text";
     private static final String PLACEHOLDER_ACTION_BADGE_HTML = "action-badge-html";
+    private static final String PLACEHOLDER_ACTION_BUTTON_HTML = "action-button-html";
     private static final String PLACEHOLDER_LOGO_URL = "logo-url";
 
     private static final String EMAIL_CLAIM = "http://wso2.org/claims/emailaddress";
@@ -273,6 +274,10 @@ public class EmailNotificationClient implements NotificationClient {
                     "You're receiving this because you filed this complaint. We'll email you when there's "
                             + "an update.");
             properties.put(PLACEHOLDER_ACTION_BADGE_HTML, ACKNOWLEDGEMENT_BADGE_HTML);
+            // Acknowledgement has no CTA (buildActionButton) but must still set this key to "":
+            // an omitted key leaves the placeholder unresolved, and IS ships that as literal
+            // "{{action-button-html}}" text in the mail body instead of blanking it.
+            properties.put(PLACEHOLDER_ACTION_BUTTON_HTML, "");
 
             eventService.handleEvent(new Event(IdentityEventConstants.Event.TRIGGER_NOTIFICATION, properties));
         } catch (Throwable t) {
@@ -506,6 +511,7 @@ public class EmailNotificationClient implements NotificationClient {
         placeholders.put(PLACEHOLDER_HEADLINE_HTML, headlineHtml);
         placeholders.put(PLACEHOLDER_FOOTER_TEXT, footerText);
         placeholders.put(PLACEHOLDER_ACTION_BADGE_HTML, actionBadgeHtml);
+        placeholders.put(PLACEHOLDER_ACTION_BUTTON_HTML, buildActionButton(actionUrl));
         placeholders.put(PLACEHOLDER_LOGO_URL, IdentityUtil.getServerURL(LOGO_PATH, true, false));
         return placeholders;
     }
@@ -529,6 +535,20 @@ public class EmailNotificationClient implements NotificationClient {
         return "<span style=\"display:inline-block;background-color:" + background + ";color:" + color
                 + ";font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;"
                 + "padding:4px 10px;border-radius:999px;\">" + text + "</span>";
+    }
+
+    /**
+     * The URL is interpolated directly since IS's single-pass template substitution won't expand
+     * a placeholder nested inside another placeholder's value.
+     */
+    private static String buildActionButton(String actionUrl) {
+        return "<table role=\"presentation\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\" "
+                + "style=\"margin:0 auto;\"><tr>"
+                + "<td style=\"border-radius:24px;background-color:#f97316;\">"
+                + "<a href=\"" + actionUrl + "\" style=\"display:inline-block;padding:12px 32px;"
+                + "font-size:14px;font-weight:700;color:#ffffff;text-decoration:none;"
+                + "border-radius:24px;\">Review &amp; Reply</a>"
+                + "</td></tr></table>";
     }
 
     private static String htmlEscape(String value) {
