@@ -75,6 +75,10 @@ public class EventNotificationServiceConstants {
         public static final String EVENT_NOT_FOUND_ERROR_MSG = "No event exists with the specified ID for this organization.";
         public static final String SUBSCRIPTION_NOT_FOUND_ERROR_MSG = "No subscription exists with the specified ID for this organization.";
         public static final String DELIVERY_NOT_FOUND_ERROR_MSG = "No delivery exists with the specified ID for this subscription.";
+        public static final String DELIVERY_MANUAL_RETRY_NOT_ELIGIBLE_ERROR_MSG =
+                "Manual retry is only available once after a webhook delivery exhausts all automatic retries.";
+        public static final String DELIVERY_MANUAL_RETRY_UNAVAILABLE_ERROR_MSG =
+                "The webhook delivery worker is not available.";
         public static final String ONLY_STALE_SUBSCRIPTIONS_VERIFIABLE_ERROR_MSG = "Only subscriptions in 'stale' state can be re-verified.";
         public static final String NO_CALLBACK_URL_ERROR_MSG = "Subscription does not have a callback URL — re-verification is only applicable to webhook subscriptions.";
         public static final String WEBHOOK_VERIFICATION_FAILED_ERROR_MSG = "Webhook intent verification failed for callback URL.";

@@ -84,4 +84,8 @@ public class SubscriptionHandler {
             String deliveryId) {
         return subscriptionService.getSubscriptionEventHistory(orgId, subscriptionId, deliveryId);
     }
+
+    public SubscriptionEventHistoryDTO retryDelivery(String orgId, String subscriptionId, String deliveryId) {
+        return subscriptionService.retryDelivery(orgId, subscriptionId, deliveryId);
+    }
 }

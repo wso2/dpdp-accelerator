@@ -33,6 +33,7 @@ import java.net.http.HttpClient;
 import java.sql.Connection;
 import java.sql.Timestamp;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
@@ -177,6 +178,57 @@ public class WebhookDeliveryWorkerTest {
 
         assertEquals(counts[0], 50, "50 pending rows should be submitted");
         verify(deliveryDAO, never()).getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any());
+        verify(deliveryDAO, never()).claimWebhookDelivery(any(Connection.class), anyString());
+    }
+
+    @Test
+    public void testManualRetryIsPreparedAndQueuedOnce() {
+        WebhookDeliveryDispatchContext dispatchContext = context("manual-1", 6);
+        when(configurationService.getEventNotificationMaxRetries()).thenReturn(5);
+        when(deliveryDAO.getWebhookDeliveryDispatchContext(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("manual-1"))).thenReturn(Optional.of(dispatchContext));
+        when(deliveryDAO.prepareManualRetry(any(Connection.class), eq("org-1"), eq("sub-1"), eq("manual-1"),
+                eq(5))).thenReturn(true);
+
+        WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                configurationService);
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = worker.submitManualRetry(
+                "org-1", "sub-1", "manual-1");
+
+        assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.ACCEPTED);
+        verify(deliveryDAO).prepareManualRetry(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("manual-1"), eq(5));
+        verify(deliveryDAO, never()).claimWebhookDelivery(any(Connection.class), anyString());
+    }
+
+    @Test
+    public void testManualRetryRejectsMissingDelivery() {
+        when(deliveryDAO.getWebhookDeliveryDispatchContext(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("missing"))).thenReturn(Optional.empty());
+
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = new WebhookDeliveryWorker(
+                deliveryDAO, scheduler, httpClient, configurationService).submitManualRetry(
+                        "org-1", "sub-1", "missing");
+
+        assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND);
+        verify(deliveryDAO, never()).prepareManualRetry(any(Connection.class), anyString(), anyString(), anyString(),
+                anyInt());
+    }
+
+    @Test
+    public void testManualRetryRejectsAlreadyUsedDelivery() {
+        WebhookDeliveryDispatchContext dispatchContext = context("manual-used", 6);
+        when(configurationService.getEventNotificationMaxRetries()).thenReturn(5);
+        when(deliveryDAO.getWebhookDeliveryDispatchContext(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("manual-used"))).thenReturn(Optional.of(dispatchContext));
+        when(deliveryDAO.prepareManualRetry(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("manual-used"), eq(5))).thenReturn(false);
+
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = new WebhookDeliveryWorker(
+                deliveryDAO, scheduler, httpClient, configurationService).submitManualRetry(
+                        "org-1", "sub-1", "manual-used");
+
+        assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE);
         verify(deliveryDAO, never()).claimWebhookDelivery(any(Connection.class), anyString());
     }
 

@@ -31,6 +31,7 @@ import java.net.http.HttpClient;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,6 +67,12 @@ import org.apache.commons.logging.LogFactory;
  * </p>
  */
 public class WebhookDeliveryWorker implements Runnable {
+
+    public enum ManualRetrySubmissionResult {
+        ACCEPTED,
+        NOT_FOUND,
+        NOT_ELIGIBLE
+    }
 
     private static final Log LOG = LogFactory.getLog(WebhookDeliveryWorker.class);
 
@@ -136,6 +143,41 @@ public class WebhookDeliveryWorker implements Runnable {
             LOG.info("Webhook delivery tick: submitted=" + submitted + ", reclaimed=" + reclaimed + ".");
         }
         return new int[] { submitted, reclaimed };
+    }
+
+    /**
+     * Atomically consumes the one-time manual retry and submits exactly one exhausted delivery.
+     * The persisted attempt count is retained, so a failure in the ordinary task path remains
+     * terminal and cannot schedule another automatic retry.
+     */
+    public ManualRetrySubmissionResult submitManualRetry(String orgId, String subscriptionId, String deliveryId) {
+        WebhookDeliveryDispatchContext[] contextHolder = new WebhookDeliveryDispatchContext[1];
+        ManualRetrySubmissionResult result = DatabaseUtils.executeInTransaction(conn -> {
+            Optional<WebhookDeliveryDispatchContext> context = deliveryDAO.getWebhookDeliveryDispatchContext(
+                    conn, orgId, subscriptionId, deliveryId);
+            if (!context.isPresent()) {
+                return ManualRetrySubmissionResult.NOT_FOUND;
+            }
+            boolean prepared = deliveryDAO.prepareManualRetry(conn, orgId, subscriptionId, deliveryId,
+                    getConfiguration().getEventNotificationMaxRetries());
+            if (!prepared) {
+                return ManualRetrySubmissionResult.NOT_ELIGIBLE;
+            }
+            contextHolder[0] = context.get();
+            return ManualRetrySubmissionResult.ACCEPTED;
+        });
+        if (result != ManualRetrySubmissionResult.ACCEPTED) {
+            return result;
+        }
+
+        try {
+            executor.execute(() -> executeClaimed(contextHolder[0], false, null));
+        } catch (RuntimeException e) {
+            // The row remains pending and due, so the regular worker can pick it up on its next tick.
+            LOG.error("Manual webhook retry was persisted but could not be submitted immediately for delivery ["
+                    + LogSanitizer.sanitize(deliveryId) + "]: " + LogSanitizer.sanitize(e.getMessage()), e);
+        }
+        return ManualRetrySubmissionResult.ACCEPTED;
     }
 
     private List<WebhookDeliveryDispatchContext> fetch(int limit, boolean reclaim) {

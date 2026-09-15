@@ -39,7 +39,10 @@ import {
 import { History } from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
 import { formatEpochTimestamp } from '../../../utils/dateTime'
-import { useSubscriptionEventHistoryQuery } from '../hooks/useSubscriptionQueries'
+import {
+  useRetrySubscriptionDeliveryMutation,
+  useSubscriptionEventHistoryQuery,
+} from '../hooks/useSubscriptionQueries'
 import { getSubscriptionStatusChipColor } from '../utils/subscriptionStatusChip'
 
 interface SubscriptionDeliveryHistoryModalProps {
@@ -57,6 +60,7 @@ export default function SubscriptionDeliveryHistoryModal({
 }: SubscriptionDeliveryHistoryModalProps): React.JSX.Element {
   const { t } = useTranslation('common')
   const historyQuery = useSubscriptionEventHistoryQuery(subscriptionId, deliveryId)
+  const retryMutation = useRetrySubscriptionDeliveryMutation(subscriptionId, deliveryId)
   const historyData = historyQuery.data
 
   return (
@@ -115,6 +119,10 @@ export default function SubscriptionDeliveryHistoryModal({
                   {historyData.completionEvidence ? ` — ${historyData.completionEvidence}` : ''}
                 </Typography>
               </Box>
+            ) : null}
+
+            {retryMutation.isError ? (
+              <Alert severity="error">{t('subscriptions.deliveryHistory.loadFailed')}</Alert>
             ) : null}
 
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -185,6 +193,16 @@ export default function SubscriptionDeliveryHistoryModal({
           bgcolor: 'background.default',
         }}
       >
+        {historyData?.manualRetryAvailable ? (
+          <Button
+            variant="contained"
+            disabled={retryMutation.isPending}
+            onClick={() => retryMutation.mutate()}
+            startIcon={retryMutation.isPending ? <CircularProgress size={16} /> : undefined}
+          >
+            {t('catalog.actions.retry')}
+          </Button>
+        ) : null}
         <Button variant="outlined" onClick={onClose}>
           {t('subscriptions.actions.close')}
         </Button>

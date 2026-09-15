@@ -54,11 +54,13 @@ public class HandlerCoverageTest {
         handler.listSubscriptionEvents("org", "sub", 0, null);
         handler.listSubscriptionEvents("org", "sub", Integer.MAX_VALUE, 3);
         handler.getSubscriptionEventHistory("org", "sub", "delivery");
+        handler.retryDelivery("org", "sub", "delivery");
 
         verify(service).getSubscription("org", "sub");
         verify(service).deleteSubscription("org", "sub");
         verify(service).retryVerification("org", "sub");
         verify(service).getSubscriptionEventHistory("org", "sub", "delivery");
+        verify(service).retryDelivery("org", "sub", "delivery");
     }
 
     @Test

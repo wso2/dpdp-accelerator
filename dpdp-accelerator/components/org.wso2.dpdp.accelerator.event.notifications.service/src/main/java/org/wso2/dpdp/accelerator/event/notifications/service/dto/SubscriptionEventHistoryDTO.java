@@ -35,6 +35,8 @@ public class SubscriptionEventHistoryDTO {
     private String completionStatus;
     private String completionEvidence;
     private List<SubscriptionDeliveryAttemptDTO> history;
+    private boolean manualRetryUsed;
+    private boolean manualRetryAvailable;
 
     public SubscriptionEventHistoryDTO() {
     }
@@ -132,5 +134,21 @@ public class SubscriptionEventHistoryDTO {
 
     public void setHistory(List<SubscriptionDeliveryAttemptDTO> history) {
         this.history = history;
+    }
+
+    public boolean isManualRetryUsed() {
+        return manualRetryUsed;
+    }
+
+    public void setManualRetryUsed(boolean manualRetryUsed) {
+        this.manualRetryUsed = manualRetryUsed;
+    }
+
+    public boolean isManualRetryAvailable() {
+        return manualRetryAvailable;
+    }
+
+    public void setManualRetryAvailable(boolean manualRetryAvailable) {
+        this.manualRetryAvailable = manualRetryAvailable;
     }
 }

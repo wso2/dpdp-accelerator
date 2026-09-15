@@ -36,6 +36,7 @@ public class EventNotificationCommonDBQueries {
     protected static final String SQL_SUBSCRIPTION_DELETED = "'" + SubscriptionStatus.DELETED.getValue() + "'";
     protected static final String SQL_DELIVERY_PENDING = "'" + DeliveryStatus.PENDING.getValue() + "'";
     protected static final String SQL_DELIVERY_IN_FLIGHT = "'" + DeliveryStatus.IN_FLIGHT.getValue() + "'";
+    protected static final String SQL_DELIVERY_FAILED = "'" + DeliveryStatus.FAILED.getValue() + "'";
     protected static final String SQL_POLL_PENDING = "'" + PollStatus.PENDING.getValue() + "'";
     protected static final String SQL_POLL_ACKNOWLEDGED = "'" + PollStatus.ACKNOWLEDGED.getValue() + "'";
     protected static final String SQL_WEBHOOK_MODE = "'" + DeliveryMode.WEBHOOK.getValue() + "'";
@@ -203,7 +204,7 @@ public class EventNotificationCommonDBQueries {
 
     public String getGetWebhookDeliveryByIdAndOrgQuery() {
         return "SELECT d.DELIVERY_ID, d.SUBSCRIPTION_ID, d.EVENT_ID, d.STATUS, d.ATTEMPT_COUNT, d.NEXT_RETRY_AT, " +
-                "d.CREATED_AT, d.UPDATED_AT, d.DELIVERED_AT " +
+                "d.CREATED_AT, d.UPDATED_AT, d.DELIVERED_AT, d.MANUAL_RETRY_USED " +
                 "FROM WEBHOOK_DELIVERY d JOIN SUBSCRIPTION s ON d.SUBSCRIPTION_ID = s.SUBSCRIPTION_ID " +
                 "WHERE d.DELIVERY_ID = ? AND s.ORG_ID = ?";
     }
@@ -284,6 +285,7 @@ public class EventNotificationCommonDBQueries {
     // already filters out via isDeliverable(...).
     private static final String DISPATCH_SELECT = "SELECT d.DELIVERY_ID, d.SUBSCRIPTION_ID, d.EVENT_ID, d.STATUS, " +
             "d.ATTEMPT_COUNT, d.NEXT_RETRY_AT, d.CREATED_AT, d.UPDATED_AT, d.DELIVERED_AT, " +
+            "d.MANUAL_RETRY_USED, " +
             "s.ORG_ID, s.GROUP_ID, s.CALLBACK_URL, s.SHARED_SECRET, e.PAYLOAD, " +
             "t.NAME AS TOPIC_NAME ";
 
@@ -308,6 +310,25 @@ public class EventNotificationCommonDBQueries {
                 "WHERE d.STATUS = " + SQL_DELIVERY_IN_FLIGHT + " AND s.STATUS = " + SQL_SUBSCRIPTION_ACTIVE
                 + " AND d.UPDATED_AT <= ? " +
                 "ORDER BY d.UPDATED_AT ASC LIMIT ?";
+    }
+
+    public String getGetWebhookDeliveryDispatchContextQuery() {
+        return DISPATCH_SELECT +
+                "FROM WEBHOOK_DELIVERY d " +
+                "JOIN SUBSCRIPTION s ON d.SUBSCRIPTION_ID = s.SUBSCRIPTION_ID " +
+                "LEFT JOIN EVENT e ON d.EVENT_ID = e.EVENT_ID " +
+                "JOIN TOPIC t ON e.TOPIC_ID = t.TOPIC_ID " +
+                "WHERE d.DELIVERY_ID = ? AND d.SUBSCRIPTION_ID = ? AND s.ORG_ID = ? " +
+                "AND s.STATUS = " + SQL_SUBSCRIPTION_ACTIVE;
+    }
+
+    public String getPrepareManualRetryQuery() {
+        return "UPDATE WEBHOOK_DELIVERY SET STATUS = " + SQL_DELIVERY_PENDING +
+                ", NEXT_RETRY_AT = CURRENT_TIMESTAMP, MANUAL_RETRY_USED = ?, UPDATED_AT = CURRENT_TIMESTAMP " +
+                "WHERE DELIVERY_ID = ? AND SUBSCRIPTION_ID = ? AND STATUS = " + SQL_DELIVERY_FAILED +
+                " AND MANUAL_RETRY_USED = ? AND ATTEMPT_COUNT > ? " +
+                "AND EXISTS (SELECT 1 FROM SUBSCRIPTION s WHERE s.SUBSCRIPTION_ID = WEBHOOK_DELIVERY.SUBSCRIPTION_ID " +
+                "AND s.ORG_ID = ? AND s.STATUS = " + SQL_SUBSCRIPTION_ACTIVE + ")";
     }
 
     // WEBHOOK_DELIVERY_ACK Queries

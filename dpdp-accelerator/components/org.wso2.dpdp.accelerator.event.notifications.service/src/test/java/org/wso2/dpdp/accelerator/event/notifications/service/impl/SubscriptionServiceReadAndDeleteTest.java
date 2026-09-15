@@ -19,6 +19,7 @@ import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryAck;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryAudit;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionEventHistoryDTO;
+import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.WebhookDeliveryWorker;
 import org.wso2.dpdp.accelerator.event.notifications.service.model.PaginatedResult;
 
 import javax.sql.DataSource;
@@ -226,6 +227,54 @@ public class SubscriptionServiceReadAndDeleteTest {
         assertEquals(result.getCompletionEvidence(), "evidence");
         assertEquals(result.getHistory().size(), 2);
         assertEquals(result.getNextRetryAt().longValue(), 2000L);
+        assertTrue(!result.isManualRetryAvailable());
+    }
+
+    @Test
+    public void webhookHistoryExposesManualRetryAvailabilityAfterExhaustion() {
+        Subscription sub = subscription("sub-1", "topic-1", "active");
+        when(subscriptionDAO.getSubscriptionById(any(Connection.class), eq("sub-1"), eq("org-1")))
+                .thenReturn(Optional.of(sub));
+        SubscriptionDeliverySummary summary = new SubscriptionDeliverySummary("del-1", "evt-1", "sub-1",
+                "topic", "failed", "webhook", new Timestamp(1000), new Timestamp(900), null);
+        when(deliveryDAO.getSubscriptionDeliveryById(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("del-1"))).thenReturn(Optional.of(summary));
+        when(deliveryDAO.getWebhookDeliveryById(any(Connection.class), eq("del-1"), eq("org-1")))
+                .thenReturn(Optional.of(new WebhookDelivery("del-1", "sub-1", "evt-1", "failed", 2,
+                        null, null, null, null, false)));
+        when(deliveryDAO.getWebhookDeliveryAudits(any(Connection.class), eq("del-1"), eq("org-1")))
+                .thenReturn(Collections.emptyList());
+
+        SubscriptionEventHistoryDTO result = service.getSubscriptionEventHistory("org-1", "sub-1", "del-1");
+
+        assertTrue(result.isManualRetryAvailable());
+        assertTrue(!result.isManualRetryUsed());
+    }
+
+    @Test
+    public void retryDeliveryMapsMissingDeliveryToNotFound() {
+        service.setManualRetryDispatcher((orgId, subscriptionId, deliveryId) ->
+                WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND);
+
+        org.wso2.dpdp.accelerator.event.notifications.service.exception.EventNotificationException exception =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.service.exception.EventNotificationException.class,
+                        () -> service.retryDelivery("org-1", "sub-1", "missing"));
+
+        assertEquals(exception.getStatusCode(), 404);
+    }
+
+    @Test
+    public void retryDeliveryMapsIneligibleDeliveryToConflict() {
+        service.setManualRetryDispatcher((orgId, subscriptionId, deliveryId) ->
+                WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE);
+
+        org.wso2.dpdp.accelerator.event.notifications.service.exception.EventNotificationException exception =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.service.exception.EventNotificationException.class,
+                        () -> service.retryDelivery("org-1", "sub-1", "del-1"));
+
+        assertEquals(exception.getStatusCode(), 409);
     }
 
     @Test

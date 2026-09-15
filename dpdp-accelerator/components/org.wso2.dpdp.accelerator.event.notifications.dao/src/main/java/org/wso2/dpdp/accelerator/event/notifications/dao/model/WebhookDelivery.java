@@ -31,11 +31,20 @@ public class WebhookDelivery {
     private Timestamp createdAt;
     private Timestamp updatedAt;
     private Timestamp deliveredAt;
+    private boolean manualRetryUsed;
 
     public WebhookDelivery() {
     }
 
     public WebhookDelivery(String deliveryId, String subscriptionId, String eventId, String status, int attemptCount, Timestamp nextRetryAt, Timestamp createdAt, Timestamp updatedAt, Timestamp deliveredAt) {
+
+        this(deliveryId, subscriptionId, eventId, status, attemptCount, nextRetryAt, createdAt, updatedAt,
+                deliveredAt, false);
+    }
+
+    public WebhookDelivery(String deliveryId, String subscriptionId, String eventId, String status, int attemptCount,
+            Timestamp nextRetryAt, Timestamp createdAt, Timestamp updatedAt, Timestamp deliveredAt,
+            boolean manualRetryUsed) {
         this.deliveryId = deliveryId;
         this.subscriptionId = subscriptionId;
         this.eventId = eventId;
@@ -45,6 +54,7 @@ public class WebhookDelivery {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.deliveredAt = deliveredAt;
+        this.manualRetryUsed = manualRetryUsed;
     }
 
     public String getDeliveryId() {
@@ -117,5 +127,13 @@ public class WebhookDelivery {
 
     public void setDeliveredAt(Timestamp deliveredAt) {
         this.deliveredAt = deliveredAt;
+    }
+
+    public boolean isManualRetryUsed() {
+        return manualRetryUsed;
+    }
+
+    public void setManualRetryUsed(boolean manualRetryUsed) {
+        this.manualRetryUsed = manualRetryUsed;
     }
 }

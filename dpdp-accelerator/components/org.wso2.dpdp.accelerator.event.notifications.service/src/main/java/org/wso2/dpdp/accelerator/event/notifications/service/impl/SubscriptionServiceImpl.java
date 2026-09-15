@@ -42,6 +42,7 @@ import org.wso2.dpdp.accelerator.event.notifications.service.dto.FilterDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDeliveryDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionEventHistoryDTO;
+import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.WebhookDeliveryWorker;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.PurposeFilterMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.SubscriptionStatus;
@@ -87,6 +88,13 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
     private ScheduledExecutorService scheduler;
     private HttpClient httpClient;
+    private ManualRetryDispatcher manualRetryDispatcher;
+
+    @FunctionalInterface
+    public interface ManualRetryDispatcher {
+        WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String subscriptionId,
+                String deliveryId);
+    }
 
     public SubscriptionServiceImpl() {
     }
@@ -122,6 +130,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         if (scheduler != null && !scheduler.isShutdown()) {
             scheduler.shutdownNow();
         }
+    }
+
+    public void setManualRetryDispatcher(ManualRetryDispatcher manualRetryDispatcher) {
+        this.manualRetryDispatcher = manualRetryDispatcher;
     }
 
     @Override
@@ -782,8 +794,47 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             }
 
             return DeliveryHistoryMapper.map(conn, orgId.trim(), deliveryId.trim(),
-                    summaryOpt.get(), deliveryDAO, deliveryAckDAO);
+                    summaryOpt.get(), deliveryDAO, deliveryAckDAO,
+                    getConfiguration().getEventNotificationMaxRetries());
         });
+    }
+
+    @Override
+    public SubscriptionEventHistoryDTO retryDelivery(String orgId, String subscriptionId, String deliveryId) {
+        if (orgId == null || orgId.trim().isEmpty()) {
+            throw new EventNotificationException(EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
+                    EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                    EventNotificationServiceConstants.ORG_ID_MISSING_ERROR_MSG, 400);
+        }
+        if (subscriptionId == null || subscriptionId.trim().isEmpty()) {
+            throw new EventNotificationException(EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
+                    EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                    EventNotificationServiceConstants.SUBSCRIPTION_ID_MISSING_ERROR_MSG, 400);
+        }
+        if (deliveryId == null || deliveryId.trim().isEmpty()) {
+            throw new EventNotificationException(EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
+                    EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                    EventNotificationServiceConstants.DELIVERY_ID_MISSING_ERROR_MSG, 400);
+        }
+        if (manualRetryDispatcher == null) {
+            throw new EventNotificationException(EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_UNAVAILABLE_ERROR_MSG, 500);
+        }
+
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = manualRetryDispatcher.submit(
+                orgId.trim(), subscriptionId.trim(), deliveryId.trim());
+        if (result == WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND) {
+            throw new EventNotificationException(EventNotificationServiceConstants.ERROR_CODE_DELIVERY_NOT_FOUND,
+                    EventNotificationServiceConstants.ERROR_TITLE_DELIVERY_NOT_FOUND,
+                    EventNotificationServiceConstants.DELIVERY_NOT_FOUND_ERROR_MSG, 404);
+        }
+        if (result == WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE) {
+            throw new EventNotificationException(EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE,
+                    EventNotificationServiceConstants.ERROR_TITLE_INVALID_STATE,
+                    EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_NOT_ELIGIBLE_ERROR_MSG, 409);
+        }
+        return getSubscriptionEventHistory(orgId, subscriptionId, deliveryId);
     }
 
     private SubscriptionDTO mapToDTO(Subscription sub, String topicName) {

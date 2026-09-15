@@ -49,4 +49,6 @@ public interface SubscriptionService {
 
     SubscriptionEventHistoryDTO getSubscriptionEventHistory(String orgId, String subscriptionId, String deliveryId);
 
+    SubscriptionEventHistoryDTO retryDelivery(String orgId, String subscriptionId, String deliveryId);
+
 }

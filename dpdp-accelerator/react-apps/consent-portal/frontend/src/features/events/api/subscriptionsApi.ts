@@ -106,3 +106,15 @@ export async function fetchSubscriptionEventHistory(
     },
   )
 }
+
+export async function retrySubscriptionDelivery(
+  subscriptionId: string,
+  deliveryId: string,
+): Promise<SubscriptionEventHistoryRecord> {
+  return apiRequest<SubscriptionEventHistoryRecord>(
+    `/api/dpdp/event-notifications/v1/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}/retry`,
+    {
+      method: 'POST',
+    },
+  )
+}

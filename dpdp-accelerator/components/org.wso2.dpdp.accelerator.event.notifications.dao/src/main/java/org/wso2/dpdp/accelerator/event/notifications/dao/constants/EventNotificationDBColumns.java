@@ -25,6 +25,7 @@ public final class EventNotificationDBColumns {
     public static final String AUDIT_ID = "AUDIT_ID";
     public static final String ATTEMPT_AT = "ATTEMPT_AT";
     public static final String ATTEMPT_COUNT = "ATTEMPT_COUNT";
+    public static final String MANUAL_RETRY_USED = "MANUAL_RETRY_USED";
     public static final String CALLBACK_URL = "CALLBACK_URL";
     public static final String COMPLETED_AT = "COMPLETED_AT";
     public static final String COMPLETION_EVIDENCE = "COMPLETION_EVIDENCE";

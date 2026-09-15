@@ -60,6 +60,7 @@ public class TopicAndSubscriptionEndpointTest {
         when(subscriptionHandler.deleteSubscription("org-1", "sub-1")).thenReturn(subscription);
         when(subscriptionHandler.retryVerification("org-1", "sub-1")).thenReturn(subscription);
         when(subscriptionHandler.getSubscriptionEventHistory("org-1", "sub-1", "delivery-1")).thenReturn(history);
+        when(subscriptionHandler.retryDelivery("org-1", "sub-1", "delivery-1")).thenReturn(history);
 
         assertEquals(subscriptionEndpoint.createSubscription(subscription).getStatus(), 201);
         assertEquals(subscriptionEndpoint.listSubscriptions("active", "marketing", "search", 20, 0, "createdAt").getEntity(), page);
@@ -67,5 +68,6 @@ public class TopicAndSubscriptionEndpointTest {
         assertEquals(subscriptionEndpoint.deleteSubscription("sub-1").getEntity(), subscription);
         assertEquals(subscriptionEndpoint.retryVerification("sub-1").getEntity(), subscription);
         assertEquals(subscriptionEndpoint.getSubscriptionEventHistory("sub-1", "delivery-1").getEntity(), history);
+        assertEquals(subscriptionEndpoint.retryDelivery("sub-1", "delivery-1").getStatus(), 202);
     }
 }

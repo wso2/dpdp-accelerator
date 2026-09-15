@@ -60,6 +60,7 @@ public class DeliveryRecoveryService {
 
     private ScheduledExecutorService scheduler;
     private ExecutorService workerPool;
+    private WebhookDeliveryWorker webhookDeliveryWorker;
 
     public DeliveryRecoveryService() {
     }
@@ -110,8 +111,9 @@ public class DeliveryRecoveryService {
                 recoveryIntervalSeconds, TimeUnit.SECONDS);
 
         int deliveryPollSeconds = configurationService.getEventNotificationDeliveryWorkerPollSeconds();
+        this.webhookDeliveryWorker = new WebhookDeliveryWorker(deliveryDAO, this.workerPool, configurationService);
         this.scheduler.scheduleWithFixedDelay(
-                new WebhookDeliveryWorker(deliveryDAO, this.workerPool, configurationService),
+                webhookDeliveryWorker,
                 initialDelaySeconds,
                 deliveryPollSeconds,
                 TimeUnit.SECONDS);
@@ -133,6 +135,14 @@ public class DeliveryRecoveryService {
 
     public void stop() {
         deactivate();
+    }
+
+    public WebhookDeliveryWorker.ManualRetrySubmissionResult submitManualRetry(String orgId, String subscriptionId,
+            String deliveryId) {
+        if (webhookDeliveryWorker == null) {
+            throw new IllegalStateException("Webhook delivery worker is not initialized.");
+        }
+        return webhookDeliveryWorker.submitManualRetry(orgId, subscriptionId, deliveryId);
     }
 
     private static void shutdownGracefully(String name, java.util.concurrent.ExecutorService pool,
