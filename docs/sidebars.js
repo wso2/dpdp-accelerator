@@ -11,6 +11,7 @@ const sidebars = {
         'setup-guide',
         'configuration-guide',
         'event-notification-guide',
+        'complaint-management-guide',
         'localization-guide',
         'release-guide',
       ],

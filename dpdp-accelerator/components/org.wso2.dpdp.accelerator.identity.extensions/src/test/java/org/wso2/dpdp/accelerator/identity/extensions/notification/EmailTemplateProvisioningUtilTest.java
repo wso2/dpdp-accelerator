@@ -23,6 +23,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.carbon.identity.governance.IdentityMgtConstants;
 import org.wso2.carbon.identity.governance.exceptions.notiification.NotificationTemplateManagerException;
 import org.wso2.carbon.identity.governance.model.NotificationTemplate;
 import org.wso2.carbon.identity.governance.service.notification.NotificationTemplateManager;
@@ -34,6 +35,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
@@ -83,11 +85,8 @@ public class EmailTemplateProvisioningUtilTest {
     @Test
     public void provisionTemplatesStillWritesContentWhenTheTypeIsAlreadyRegistered() throws Exception {
 
-        // addNotificationTemplateType throws once a tenant already has the type registered -
-        // unlike addNotificationTemplate, it is not itself upsert-safe. That failure must be
-        // swallowed without skipping the content (re)write below it, since re-running this on
-        // every tenant startup is exactly how an updated template body reaches an already-
-        // provisioned tenant.
+        // addNotificationTemplateType isn't upsert-safe - that failure must be swallowed
+        // without skipping the content-existence check below it.
         org.mockito.Mockito.doThrow(new NotificationTemplateManagerException("already exists"))
                 .when(notificationTemplateManager).addNotificationTemplateType(anyString(), anyString(), anyString());
 
@@ -106,5 +105,46 @@ public class EmailTemplateProvisioningUtilTest {
 
         // Must not throw - a provisioning failure for one tenant shouldn't break the caller.
         EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+    }
+
+    @Test
+    public void provisionTemplatesLeavesAnAlreadyExistingTemplateUntouched() throws Exception {
+
+        // A tenant re-update must never reset an administrator's Console edit.
+        when(notificationTemplateManager.getNotificationTemplate(eq(EMAIL_CHANNEL), anyString(), eq(DEFAULT_LOCALE),
+                eq(TENANT_DOMAIN))).thenReturn(new NotificationTemplate());
+
+        EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+
+        verify(notificationTemplateManager, org.mockito.Mockito.never()).addNotificationTemplate(
+                org.mockito.ArgumentMatchers.any(NotificationTemplate.class), anyString());
+    }
+
+    @Test
+    public void provisionTemplatesWritesContentWhenTheTemplateIsGenuinelyNotFound() throws Exception {
+
+        // Throwing with the "not found" error code (instead of returning null) must still
+        // proceed to the write.
+        when(notificationTemplateManager.getNotificationTemplate(eq(EMAIL_CHANNEL), anyString(), eq(DEFAULT_LOCALE),
+                eq(TENANT_DOMAIN))).thenThrow(new NotificationTemplateManagerException(
+                IdentityMgtConstants.ErrorMessages.ERROR_CODE_NO_TEMPLATE_FOUND.getCode(), "not found"));
+
+        EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+
+        verify(notificationTemplateManager, times(3)).addNotificationTemplate(
+                org.mockito.ArgumentMatchers.any(NotificationTemplate.class), eq(TENANT_DOMAIN));
+    }
+
+    @Test
+    public void provisionTemplatesSkipsWriteWhenTheExistenceCheckFailsUnexpectedly() throws Exception {
+
+        // Any other error code could be hiding an existing customization - must skip the write.
+        when(notificationTemplateManager.getNotificationTemplate(eq(EMAIL_CHANNEL), anyString(), eq(DEFAULT_LOCALE),
+                eq(TENANT_DOMAIN))).thenThrow(new NotificationTemplateManagerException("lookup failed"));
+
+        EmailTemplateProvisioningUtil.provisionTemplates(TENANT_DOMAIN);
+
+        verify(notificationTemplateManager, org.mockito.Mockito.never()).addNotificationTemplate(
+                org.mockito.ArgumentMatchers.any(NotificationTemplate.class), anyString());
     }
 }
