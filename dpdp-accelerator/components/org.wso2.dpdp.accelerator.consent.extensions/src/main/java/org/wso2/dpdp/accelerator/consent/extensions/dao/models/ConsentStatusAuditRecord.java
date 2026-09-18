@@ -19,7 +19,7 @@
 package org.wso2.dpdp.accelerator.consent.extensions.dao.models;
 
 /**
- * One row of {@code DPDP_CONSENT_STATUS_AUDIT}.
+ * One consent status-audit row.
  */
 public class ConsentStatusAuditRecord {
 

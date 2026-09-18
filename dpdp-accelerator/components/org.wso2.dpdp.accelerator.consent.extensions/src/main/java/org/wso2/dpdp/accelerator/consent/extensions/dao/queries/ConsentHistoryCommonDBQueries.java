@@ -21,12 +21,12 @@ package org.wso2.dpdp.accelerator.consent.extensions.dao.queries;
 import org.wso2.dpdp.accelerator.consent.extensions.dao.constants.ConsentHistoryDAOConstants;
 
 /**
- * SQL for {@code DPDP_CONSENT_STATUS_AUDIT}/{@code DPDP_CONSENT_HISTORY}. h2 and mysql DML is
- * identical, so one class serves both dialects; instance methods (not {@code static final}
- * constants) so a dialect-specific subclass could override an individual query later, mirroring
- * the Financial Services accelerator's own {@code ConsentMgtCommonDBQueries}.
+ * ANSI-baseline SQL for the consent history tables. Dialect-specific subclasses override only the
+ * queries that actually diverge; {@link ConsentHistoryQueryFactory} resolves which one to use per
+ * connection. Instance methods (not {@code static final} constants) are what make that override
+ * possible without touching callers.
  */
-public class ConsentHistoryDBQueries {
+public class ConsentHistoryCommonDBQueries {
 
     public String getInsertStatusAuditQuery() {
 
@@ -57,7 +57,8 @@ public class ConsentHistoryDBQueries {
                 + ConsentHistoryDAOConstants.COLUMN_CURRENT_STATUS + ", "
                 + ConsentHistoryDAOConstants.COLUMN_ACTION_TYPE + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_BY
                 + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_TIME + " FROM "
-                + ConsentHistoryDAOConstants.STATUS_AUDIT_TABLE + " WHERE " + ConsentHistoryDAOConstants.COLUMN_CONSENT_ID
+                + ConsentHistoryDAOConstants.STATUS_AUDIT_TABLE + " WHERE "
+                + ConsentHistoryDAOConstants.COLUMN_CONSENT_ID
                 + " = ? AND " + ConsentHistoryDAOConstants.COLUMN_ORG_ID + " = ? ORDER BY "
                 + ConsentHistoryDAOConstants.COLUMN_ACTION_TIME + " DESC LIMIT ? OFFSET ?";
     }
@@ -65,7 +66,8 @@ public class ConsentHistoryDBQueries {
     public String getStatusAuditHistoryCountQuery() {
 
         return "SELECT COUNT(*) AS " + ConsentHistoryDAOConstants.COLUMN_TOTAL_COUNT + " FROM "
-                + ConsentHistoryDAOConstants.STATUS_AUDIT_TABLE + " WHERE " + ConsentHistoryDAOConstants.COLUMN_CONSENT_ID
+                + ConsentHistoryDAOConstants.STATUS_AUDIT_TABLE + " WHERE "
+                + ConsentHistoryDAOConstants.COLUMN_CONSENT_ID
                 + " = ? AND " + ConsentHistoryDAOConstants.COLUMN_ORG_ID + " = ?";
     }
 
@@ -73,8 +75,10 @@ public class ConsentHistoryDBQueries {
 
         return "SELECT " + ConsentHistoryDAOConstants.COLUMN_HISTORY_ID + ", "
                 + ConsentHistoryDAOConstants.COLUMN_CONSENT_ID + ", " + ConsentHistoryDAOConstants.COLUMN_ORG_ID
-                + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_TYPE + ", " + ConsentHistoryDAOConstants.COLUMN_SNAPSHOT
-                + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_BY + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_TIME
+                + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_TYPE + ", "
+                + ConsentHistoryDAOConstants.COLUMN_SNAPSHOT
+                + ", " + ConsentHistoryDAOConstants.COLUMN_ACTION_BY + ", "
+                + ConsentHistoryDAOConstants.COLUMN_ACTION_TIME
                 + " FROM " + ConsentHistoryDAOConstants.HISTORY_TABLE + " WHERE "
                 + ConsentHistoryDAOConstants.COLUMN_CONSENT_ID + " = ? AND " + ConsentHistoryDAOConstants.COLUMN_ORG_ID
                 + " = ? ORDER BY " + ConsentHistoryDAOConstants.COLUMN_ACTION_TIME + " DESC LIMIT ? OFFSET ?";

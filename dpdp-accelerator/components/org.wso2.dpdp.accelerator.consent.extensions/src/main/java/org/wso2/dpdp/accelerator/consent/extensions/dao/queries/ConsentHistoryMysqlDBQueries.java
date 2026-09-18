@@ -16,18 +16,12 @@
  * under the License.
  */
 
-package org.wso2.dpdp.accelerator.consent.extensions.dao.exceptions;
+package org.wso2.dpdp.accelerator.consent.extensions.dao.queries;
 
 /**
- * Thrown when a {@code DPDP_CONSENT_EXPIRY_TRACKER} row could not be written or read. One type
- * for every operation (unlike the history DAO's insert/retrieval split) - the tracker table is
- * simple internal bookkeeping with a single caller, {@code ConsentExpiryServiceImpl}, that
- * doesn't need to distinguish failure modes.
+ * MySQL dialect query provider for consent history. No query text diverges from the ANSI baseline
+ * today, so this class overrides nothing; it exists as the override point
+ * {@link ConsentHistoryQueryFactory} routes to for a future MySQL-specific quirk.
  */
-public class ConsentExpiryDataAccessException extends RuntimeException {
-
-    public ConsentExpiryDataAccessException(String message, Throwable cause) {
-
-        super(message, cause);
-    }
+public class ConsentHistoryMysqlDBQueries extends ConsentHistoryCommonDBQueries {
 }

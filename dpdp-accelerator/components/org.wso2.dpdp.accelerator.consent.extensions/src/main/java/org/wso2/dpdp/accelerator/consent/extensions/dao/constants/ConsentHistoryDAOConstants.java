@@ -19,7 +19,7 @@
 package org.wso2.dpdp.accelerator.consent.extensions.dao.constants;
 
 /**
- * Table and column names for {@code DPDP_CONSENT_STATUS_AUDIT} and {@code DPDP_CONSENT_HISTORY}.
+ * Table and column names for the consent history tables.
  */
 public final class ConsentHistoryDAOConstants {
 

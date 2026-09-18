@@ -19,7 +19,7 @@
 package org.wso2.dpdp.accelerator.consent.extensions.dao.models;
 
 /**
- * One row of {@code DPDP_CONSENT_HISTORY} - a full pre-mutation snapshot.
+ * One consent history row - a full pre-mutation snapshot.
  */
 public class ConsentHistoryRecord {
 
