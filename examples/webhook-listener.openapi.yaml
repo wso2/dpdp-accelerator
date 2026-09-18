@@ -1,0 +1,143 @@
+openapi: 3.0.3
+info:
+  title: DPDP reference webhook listener
+  version: 1.0.0
+  description: |
+    Callback contract implemented by `webhook-listener.mjs`, the Node.js reference
+    receiver. This is an integrator-owned receiver API. It is not an Identity Server
+    Event Notification management API.
+servers:
+  - url: https://receiver.example.com
+paths:
+  /dpdp/events:
+    get:
+      summary: Verify a subscription callback URL
+      description: |
+        Identity Server invokes this endpoint during subscription verification. The
+        receiver returns the exact `hub.challenge` value only when the configured topic
+        and `hub.mode=subscribe` are valid.
+      parameters:
+        - name: hub.mode
+          in: query
+          required: true
+          schema:
+            type: string
+            enum: [subscribe]
+        - name: hub.topic
+          in: query
+          required: true
+          description: Must equal the receiver's configured topic.
+          schema:
+            type: string
+        - name: hub.challenge
+          in: query
+          required: true
+          description: One-time challenge, limited by the reference listener to 1,024 characters.
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 1024
+      responses:
+        '200':
+          description: Verification succeeded. The response body is exactly `hub.challenge`.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Invalid mode, topic, or challenge.
+        '404':
+          description: Unknown path.
+        '405':
+          description: Unsupported HTTP method.
+    post:
+      summary: Durably accept a signed event delivery
+      description: |
+        The receiver authenticates the exact raw request body using HMAC-SHA256, then
+        verifies the compact RS256 JWS in `signedPayload` using an operator-pinned JWKS.
+        It validates configured issuer, audience, tenant, group, topic, subscription,
+        and delivery-routing claims before committing the event to its SQLite inbox.
+
+        A `202 Accepted` response means the inbox write committed. It does not mean
+        downstream business processing has completed. Duplicate deliveries with the
+        same delivery ID, event ID, and subscription ID also receive `202` without
+        creating another inbox record.
+      parameters:
+        - $ref: '#/components/parameters/DeliveryId'
+        - $ref: '#/components/parameters/EventSignature'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignedDelivery'
+      responses:
+        '202':
+          description: Delivery was durably committed to the SQLite inbox; downstream processing may still be pending.
+        '401':
+          description: Raw-body HMAC, JWS, or configured routing-claim validation failed.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: Delivery authentication failed
+        '409':
+          description: The delivery ID already belongs to a different event ID or subscription ID.
+        '413':
+          description: Request body exceeds the reference listener's 1 MiB limit.
+        '415':
+          description: Content-Type is not application/json.
+        '503':
+          description: The subscription ID is not configured, or the SQLite inbox is unavailable.
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                unconfiguredSubscription:
+                  value: Configure the subscription ID first
+                unavailableInbox:
+                  value: Inbox unavailable
+        '404':
+          description: Unknown path.
+        '405':
+          description: Unsupported HTTP method.
+components:
+  parameters:
+    DeliveryId:
+      name: Delivery-Id
+      in: header
+      required: true
+      description: Stable delivery identifier. It must equal the JWS `jti` and `payload.deliveryId` claims.
+      schema:
+        type: string
+        minLength: 1
+    EventSignature:
+      name: event-signature
+      in: header
+      required: true
+      description: HMAC-SHA256 of the exact raw request-body bytes using the configured shared secret.
+      schema:
+        type: string
+        pattern: '^sha256=[0-9a-f]{64}$'
+        example: sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+  schemas:
+    SignedDelivery:
+      type: object
+      required: [signedPayload]
+      additionalProperties: true
+      properties:
+        signedPayload:
+          type: string
+          description: |
+            Compact RS256 JWS. The protected header must include a non-empty `kid`,
+            have `alg` set to `RS256`, and omit `crit`. The `kid` must select exactly
+            one compatible RSA signing key from the receiver's pinned JWKS.
+          pattern: '^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+$'
+          example: eyJhbGciOiJSUzI1NiIsImtpZCI6ImtleS0xIn0.eyJpc3MiOiJodHRwczovL2lzLmV4YW1wbGUuY29tL29hdXRoMi90b2tlbiJ9.signature
+      description: |
+        The verified JWS claims must contain `iss`, `sub`, `aud`, a non-future integer
+        `iat`, `jti`, `txn`, and `payload`. `jti` must match `Delivery-Id` and
+        `payload.deliveryId`; `txn` must match `payload.eventId`. The receiver compares
+        the remaining routing values with its configured issuer, audience, tenant,
+        group, topic, and subscription ID.
