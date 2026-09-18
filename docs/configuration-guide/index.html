@@ -4,8 +4,8 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.10.2">
 <title data-rh="true">Configuring the Consent Portal application | WSO2 DPDP Accelerator Documentation</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://wso2.github.io/dpdp-accelerator/img/logo.svg"><meta data-rh="true" name="twitter:image" content="https://wso2.github.io/dpdp-accelerator/img/logo.svg"><meta data-rh="true" property="og:url" content="https://wso2.github.io/dpdp-accelerator/docs/configuration-guide"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Configuring the Consent Portal application | WSO2 DPDP Accelerator Documentation"><meta data-rh="true" name="description" content="Complete this after installing the accelerator and starting the Identity"><meta data-rh="true" property="og:description" content="Complete this after installing the accelerator and starting the Identity"><link data-rh="true" rel="icon" href="/dpdp-accelerator/img/favicon.svg"><link data-rh="true" rel="canonical" href="https://wso2.github.io/dpdp-accelerator/docs/configuration-guide"><link data-rh="true" rel="alternate" href="https://wso2.github.io/dpdp-accelerator/docs/configuration-guide" hreflang="en"><link data-rh="true" rel="alternate" href="https://wso2.github.io/dpdp-accelerator/docs/configuration-guide" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Configure","item":"https://wso2.github.io/dpdp-accelerator/docs/configuration-guide"}]}</script><link rel="stylesheet" href="/dpdp-accelerator/assets/css/styles.cba4be1d.css">
-<script src="/dpdp-accelerator/assets/js/runtime~main.8ede729d.js" defer="defer"></script>
-<script src="/dpdp-accelerator/assets/js/main.7794be77.js" defer="defer"></script>
+<script src="/dpdp-accelerator/assets/js/runtime~main.2992e8b4.js" defer="defer"></script>
+<script src="/dpdp-accelerator/assets/js/main.3e6d1134.js" defer="defer"></script>
 </head>
 <body>
 <svg style="display: none;"><defs>
@@ -24,9 +24,10 @@ the application is provisioned automatically, the same way My Account is.</p>
 <code>https://&lt;host&gt;:9443/t/&lt;tenant&gt;/consent-portal/</code> for the rest, all sharing the
 client id <code>DPDP_CONSENT_PORTAL</code>.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="1-applications-and-roles-are-provisioned-automatically">1. Applications and roles are provisioned automatically<a href="#1-applications-and-roles-are-provisioned-automatically" class="hash-link" aria-label="Direct link to 1. Applications and roles are provisioned automatically" title="Direct link to 1. Applications and roles are provisioned automatically" translate="no">​</a></h2>
-<p>The moment a tenant exists — including the super tenant, on first server
-startup — the accelerator registers <strong>DPDP Consent Portal</strong> in it directly,
-with no operator step and no REST call involved:</p>
+<p>For supported tenants — including the super tenant on server startup — the
+accelerator registers <strong>DPDP Consent Portal</strong> directly,
+with no operator step and no REST call involved. Organization tenants are skipped
+by the tenant listener. New applications receive these settings:</p>
 <table><thead><tr><th>Setting</th><th>Value</th><th>Why</th></tr></thead><tbody><tr><td>Public client</td><td>enabled</td><td>A single page application cannot keep a secret.</td></tr><tr><td>PKCE</td><td>mandatory</td><td>Proves the authorization code was requested by this app.</td></tr><tr><td>Access token binding</td><td><code>cookie</code></td><td>Ties the token to a cookie the page cannot read.</td></tr><tr><td>Validate token bindings</td><td>enabled</td><td>A token lifted out of the browser is rejected.</td></tr><tr><td>Revoke tokens on logout</td><td>enabled</td><td>Signing out invalidates the tokens immediately.</td></tr></tbody></table>
 <p>It also authorizes the consent-management, consent-history,
 event-notification, complaint-management, and account self-service APIs (RBAC)
@@ -61,7 +62,7 @@ role-assignment issue before continuing with feature configuration.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="2-change-or-turn-off-the-auto-provisioning">2. Change or turn off the auto-provisioning<a href="#2-change-or-turn-off-the-auto-provisioning" class="hash-link" aria-label="Direct link to 2. Change or turn off the auto-provisioning" title="Direct link to 2. Change or turn off the auto-provisioning" translate="no">​</a></h2>
 <p>Two settings in <code>deployment.toml</code> control this, under <code>[dpdp_accelerator.consent_portal]</code>:</p>
 <div class="language-toml codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-toml codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.consent_portal</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">auto_provisioning_enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">client_id</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;DPDP_CONSENT_PORTAL&quot;</span><br></div></code></pre></div></div>
-<table><thead><tr><th>Setting</th><th>Default</th><th>Change it if...</th></tr></thead><tbody><tr><td><code>auto_provisioning_enabled</code></td><td><code>true</code></td><td>You want to manage the application and its roles by hand instead. Set to <code>false</code>. This only turns off the automatic <em>creation</em> of the application and roles — it does not disable the portal or sign-in.</td></tr><tr><td><code>client_id</code></td><td><code>DPDP_CONSENT_PORTAL</code></td><td>You&#x27;re changing it, you <strong>must</strong> also update <code>clientID</code> in the deployed portal&#x27;s own <code>deployment.config.json</code> — the two have to match or sign-in breaks.</td></tr></tbody></table>
+<table><thead><tr><th>Setting</th><th>Default</th><th>Change it if...</th></tr></thead><tbody><tr><td><code>auto_provisioning_enabled</code></td><td><code>true</code></td><td>You want to manage the application and its roles by hand instead. Set to <code>false</code>. This turns off automatic creation and reconciliation of the application and roles — it does not disable the portal or sign-in.</td></tr><tr><td><code>client_id</code></td><td><code>DPDP_CONSENT_PORTAL</code></td><td>You&#x27;re changing it, you <strong>must</strong> also update <code>clientID</code> in the deployed portal&#x27;s own <code>deployment.config.json</code> — the two have to match or sign-in breaks.</td></tr></tbody></table>
 <p>When <code>auto_provisioning_enabled</code> is <code>false</code>, the listener skips creation and
 reconciliation of the Consent Portal application, its API authorizations, and
 the <code>dpdp-consent-admin</code>, <code>dpdp-consent-user</code>, and <code>dpdp-consent-dpo</code> roles.
@@ -95,15 +96,16 @@ installation. Restart the server for the change to take effect.</p>
 <p>If a tenant&#x27;s provisioned application or roles get deleted or corrupted,
 restore them without a server restart:</p>
 <ol>
-<li class="">In the Console, delete the <strong>DPDP Consent Portal</strong> application for that
-tenant (Roles are left alone even if the application is gone — deleting
-them too is optional, but harmless, since provisioning recreates whatever
-it doesn&#x27;t find).</li>
-<li class="">Update any property of the tenant (Console → <strong>Tenant Management</strong> → the
-tenant → <strong>Update</strong>).</li>
+<li class="">Confirm that Consent Portal auto-provisioning is enabled.</li>
+<li class="">Update a property of the tenant (Console → <strong>Tenant Management</strong> → the
+tenant → <strong>Update</strong>) to reconcile missing applications, API authorizations,
+and role permissions.</li>
 </ol>
-<p>Saving the update re-runs provisioning for that tenant, recreating the
-application and any missing role.</p>
+<p>Existing applications have their API authorization and roles reconciled;
+provisioning does not reset their OAuth settings. If those settings are damaged,
+restore them through application management, or recreate the application and
+then repeat tenant reconciliation. Preserve existing roles and user assignments;
+recreating a deleted role does not restore its former user assignments.</p>
 <p>The same tenant update also reconciles the Consent API Invoker when its
 provisioning setting is enabled. It is how a tenant provisioned by an older version of the
 accelerator picks up a newly introduced scope: re-running provisioning adds
@@ -131,7 +133,8 @@ than assume.</p>
 two roles&#x27; permissions add up, so an administrator who also holds
 <code>dpdp-consent-user</code> receives <code>account:self:delete</code> and can delete their own
 account. Keep administrators out of <code>dpdp-consent-user</code> if that matters —
-they lose nothing else by not holding it.</p>
+that role also grants self-service complaint permissions, so review the user&#x27;s
+other required permissions before changing their assignments.</p>
 </blockquote>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="5-configure-email-notifications">5. Configure email notifications<a href="#5-configure-email-notifications" class="hash-link" aria-label="Direct link to 5. Configure email notifications" title="Direct link to 5. Configure email notifications" translate="no">​</a></h2>
 <p>The Consent Portal can send email notifications through an SMTP server.
@@ -162,62 +165,65 @@ sent to the user will be delivered to the configured primary email address.</p>
 <code>dpdp-consent-admin</code> when complaint access is part of broader administration.
 See the <a class="" href="/dpdp-accelerator/docs/role-guide">Role Management Guide</a>.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="7-configure-periodical-consent-expiration">7. Configure periodical consent expiration<a href="#7-configure-periodical-consent-expiration" class="hash-link" aria-label="Direct link to 7. Configure periodical consent expiration" title="Direct link to 7. Configure periodical consent expiration" translate="no">​</a></h2>
-<p>Identity Server resolves an eligible <code>ACTIVE</code> or <code>PENDING</code> consent as
-<code>EXPIRED</code> when its <code>expiryTime</code> passes. The accelerator&#x27;s reconciler records
-that transition in status audit and, when enabled, snapshot history. It also
-invokes the consent-expired lifecycle callback, which publishes <code>consent.expire</code>
-when lifecycle publishing is enabled. It does not rewrite the underlying
-consent&#x27;s stored state.</p>
-<p>Keep <code>consent_history.enabled = true</code>: the current consent listener uses this
-setting to enable its callbacks, including expiry tracking. Snapshot storage
-can be disabled separately. To record expiry and publish notifications, merge
-these settings into the corresponding tables in <code>deployment.toml</code>:</p>
-<div class="language-toml codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-toml codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.consent_history</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">snapshot_enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.consent_expiry</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">cron_value</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;0 0 0 * * ?&quot;</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">batch_size</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">100</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.event_notifications.lifecycle_events</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">publishing_enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><br></div></code></pre></div></div>
+<p>Identity Server reports an <code>ACTIVE</code> or <code>PENDING</code> consent as <code>EXPIRED</code> when its
+<code>expiryTime</code> passes. The accelerator reconciles that transition into an audit record, an enabled history
+snapshot, and an enabled lifecycle event. It does not change the source consent.
+An API response showing <code>EXPIRED</code> alone does not prove that reconciliation or
+notification delivery has completed.</p>
+<p>Merge these settings into existing TOML sections; do not define the same section
+twice. Keep consent history enabled so the consent-management listener maintains
+the expiry tracker.</p>
+<div class="language-toml codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-toml codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><div class="token-line" style="color:#393A34"><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.consent_history</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">snapshot_enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.consent_expiry</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">schedule_mode</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;daily&quot;</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">daily_time</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token string" style="color:#e3116c">&quot;00:00&quot;</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># timezone = &quot;Asia/Colombo&quot;</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">batch_size</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">100</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">max_batches_per_run</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">1000</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">max_run_seconds</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token number" style="color:#36acaa">300</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token punctuation" style="color:#393A34">[</span><span class="token table class-name">dpdp_accelerator.event_notifications.lifecycle_events</span><span class="token punctuation" style="color:#393A34">]</span><span class="token plain"></span><br></div><div class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token key property" style="color:#36acaa">publishing_enabled</span><span class="token plain"> </span><span class="token punctuation" style="color:#393A34">=</span><span class="token plain"> </span><span class="token boolean" style="color:#36acaa">true</span><br></div></code></pre></div></div>
 <p>The settings within <code>[dpdp_accelerator.consent_expiry]</code> are:</p>
-<table><thead><tr><th>Setting</th><th>Default</th><th>Meaning</th></tr></thead><tbody><tr><td><code>enabled</code></td><td><code>true</code></td><td>Enables the scheduled job and due-expiry reconciliation invoked by consent callbacks.</td></tr><tr><td><code>cron_value</code></td><td><code>&quot;0 0 0 * * ?&quot;</code></td><td>Quartz cron expression for how often the job checks for newly-expired consents. The default runs once daily at midnight.</td></tr><tr><td><code>batch_size</code></td><td><code>100</code></td><td>Maximum number of expired consents recorded per run, so a large backlog drains gradually instead of in one long transaction.</td></tr></tbody></table>
-<p>Edit these in <code>&lt;IS_HOME&gt;/repository/conf/deployment.toml</code> and restart the
-server for the change to take effect.</p>
-<p>Expiry notifications are not guaranteed at the exact expiry timestamp: the
-scheduled job handles up to <code>batch_size</code> tracked due records per run, and
-eligible consent callbacks can also reconcile a due record. Disabling expiry
-reconciliation does not make an expired consent valid; it stops this
-accelerator&#x27;s expiry recording and callback path. Enabling it does not bulk
-backfill older consents that have no expiry-tracker entry.</p>
-<p>To verify this in an isolated test environment, create a consent with a future
-<code>expiryTime</code> while tracking is enabled, and register an active subscription to
-<code>consent.expire</code> with matching group and purpose filters. For a short test only,
-use <code>cron_value = &quot;0 * * * * ?&quot;</code> (every minute), restart, and allow the expiry
-time and next scheduled run to pass. Check the consent status audit, the
-<code>consent.expire</code> event, delivery history, and the receiver&#x27;s durable inbox.
-Restore the intended schedule afterwards. A consent read returning <code>EXPIRED</code>
-alone does not prove that a notification was published or delivered.</p>
-<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="clustering-requirements">Clustering requirements<a href="#clustering-requirements" class="hash-link" aria-label="Direct link to Clustering requirements" title="Direct link to Clustering requirements" translate="no">​</a></h3>
-<p>By default, with no extra setup, the job runs correctly on a single server.
-<strong>In a cluster, this default is not safe as-is</strong>: without further
-configuration, every node runs its own independent, in-memory copy of the
-job, so it fires once <em>per node</em> instead of once for the whole cluster on
-each scheduled tick.</p>
-<p>To run this job correctly across a cluster:</p>
-<ol>
-<li class="">Copy the sample <code>repository/conf/samples/quartz.properties</code> shipped with
-the accelerator to <code>&lt;IS_HOME&gt;/repository/conf/quartz.properties</code> on
-<strong>every</strong> node in the cluster. Unlike a hand-written Quartz config, this
-sample does not need to be edited per node — it uses
-<code>org.quartz.scheduler.instanceId = AUTO</code>, so each node identifies itself
-automatically.</li>
-<li class="">Create Quartz&#x27;s own clustering tables (<code>QRTZ_*</code>) in the accelerator&#x27;s
-<code>WSO2DPDP_DB</code> database, once, using the DDL scripts published by the
-Quartz project itself for version 2.3.x
-(<code>https://github.com/quartz-scheduler/quartz/tree/quartz-2.3.x/quartz-core/src/main/resources/org/quartz/impl/jdbcjobstore</code>)
-— pick the script matching your database (H2, MySQL, PostgreSQL, etc.).
-These tables are not created automatically; apply them the same way you
-would apply any other third-party schema.</li>
-<li class="">Restart every node.</li>
-</ol>
-<p>With this in place, Quartz coordinates through the shared database so that
-exactly one node executes the job on each scheduled tick, no matter how many
-nodes are running. To confirm it&#x27;s working, check the logs after a
-scheduled run — only one node should log the job firing, not all of them.</p>
+<table><thead><tr><th>Setting</th><th>Default</th><th>Meaning</th></tr></thead><tbody><tr><td><code>enabled</code></td><td><code>true</code></td><td>Enables scheduled and listener-triggered expiry reconciliation. Tracker bookkeeping continues while expiry is disabled, provided consent history keeps the listener enabled.</td></tr><tr><td><code>schedule_mode</code></td><td><code>&quot;daily&quot;</code></td><td><code>daily</code> or <code>interval</code>.</td></tr><tr><td><code>daily_time</code></td><td><code>&quot;00:00&quot;</code></td><td>Local daily execution time, for example <code>&quot;00:00&quot;</code> or <code>&quot;09:30&quot;</code>.</td></tr><tr><td><code>timezone</code></td><td>Server timezone</td><td>Java timezone ID for daily scheduling. Configure the same zone across instances.</td></tr><tr><td><code>interval_seconds</code></td><td>Required in interval mode</td><td>Positive delay after a firing finishes, and before the first interval firing.</td></tr><tr><td><code>batch_size</code></td><td><code>100</code></td><td>Maximum candidates fetched in each SQL query, not a limit on the entire firing.</td></tr><tr><td><code>max_batches_per_run</code></td><td><code>1000</code></td><td>Maximum fetch iterations within a firing.</td></tr><tr><td><code>max_run_seconds</code></td><td><code>300</code></td><td>Elapsed-time budget, checked before fetches and between candidates.</td></tr></tbody></table>
+<p>For interval scheduling, set <code>schedule_mode = &quot;interval&quot;</code> and, for example,
+<code>interval_seconds = 300</code>. Each instance uses one scheduler thread and runs at
+most one scheduled sweep at a time. The expiry scheduler thread count is not configurable.
+Daily time and timezone settings must remain valid even in interval mode, since
+the scheduler validates them at startup.</p>
+<p>Daily mode schedules the next future occurrence on startup, without replaying
+missed firings. During daylight-saving transitions, a nonexistent daily time moves
+forward through the gap and a repeated local time runs once. An unfinished backlog
+remains eligible at the next firing.</p>
+<p>A firing captures a due cutoff, fetches a batch, processes each consent in its own
+transaction, and fetches successive pages until a page contains fewer than
+<code>batch_size</code> rows or a safety limit is reached. Exactly full pages require a final
+empty fetch. Ordering by expiry time and consent ID allows the scan to advance
+past failures without repeatedly selecting the same records. Failed records remain
+pending for a later firing. Concurrent changes may also defer a record to a later
+firing. A short page is the end of that scan, not proof that all failed or
+concurrently changed due records have been processed.</p>
+<p>The elapsed-time limit is a soft budget: an in-progress consent finishes its
+commit or rollback before the worker checks the limit and leaves remaining work
+for a later firing. It does not interrupt an already blocked database or source
+consent call. Configure bounded datasource acquisition, database lock, and JDBC
+query/network timeouts for the deployment. The sweep logs the number fetched,
+completed, skipped, and failed, and whether it stopped at the end of the scan or
+at a limit. Repeated limit warnings indicate that the schedule or limits need
+adjustment. Configuration changes require a server restart.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="transactions-and-multiple-instances">Transactions and multiple instances<a href="#transactions-and-multiple-instances" class="hash-link" aria-label="Direct link to Transactions and multiple instances" title="Direct link to Transactions and multiple instances" translate="no">​</a></h3>
+<p>All instances use the shared <code>WSO2DPDP_DB</code>. No additional scheduler tables or tracker status column are required. The conditional tracker DELETE matches the
+consent, tenant, observed deadline, and due cutoff. Its row lock is held until the
+audit and enabled snapshot have been persisted on the same connection, together
+with the event, purposes, and matching webhook/poll delivery rows when lifecycle
+publication is enabled. One commit makes those writes and the deletion permanent; failure rolls them back together. Competing instances
+may fetch the same candidates, but only a successful claimant processes each
+tracked deadline. Lock timeouts and deadlocks leave an attempt for a later firing.</p>
+<p>Event delivery happens after commit through the existing notification workers;
+HTTP delivery is outside the transaction and can be retried. This does not provide
+exactly-once HTTP delivery or a shared transaction with the separate IS consent
+store. Existing pre-mutation listener hooks remain, but the tracker guard alone
+does not eliminate every concurrent consent-renewal race.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="persisted-expiry-precision-and-existing-tracker-rows">Persisted expiry precision and existing tracker rows<a href="#persisted-expiry-precision-and-existing-tracker-rows" class="hash-link" aria-label="Direct link to Persisted expiry precision and existing tracker rows" title="Direct link to Persisted expiry precision and existing tracker rows" translate="no">​</a></h3>
+<p>Tracker writes use the expiry read back from the saved consent, so the tracker
+matches the source database&#x27;s timestamp precision. If an existing tracker has a
+different deadline, reconciliation conditionally updates it only when its tenant,
+consent ID, and old deadline still match. That attempt is counted as skipped;
+a subsequent fetch can process the corrected row. A repaired deadline earlier
+than the scan cursor is picked up on the next firing.</p>
+<p>If the saved consent deadline is in the future, the repaired tracker remains
+pending until it is due. The repair does not recreate a deleted tracker or
+overwrite one whose deadline another worker has already changed.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="8-self-service-account-deletion">8. Self-service account deletion<a href="#8-self-service-account-deletion" class="hash-link" aria-label="Direct link to 8. Self-service account deletion" title="Direct link to 8. Self-service account deletion" translate="no">​</a></h2>
 <p>A user holding <code>dpdp-consent-user</code> sees <strong>Delete my account</strong> in the portal&#x27;s
 profile menu, beside Sign out. Confirming it calls <code>DELETE /scim2/Me</code>, clears
@@ -239,11 +245,11 @@ require a much narrower scope instead:</p>
 application for it, and grants it through the <code>dpdp-consent-user</code> role only.
 <code>internal_user_mgt_delete</code> is never granted to portal users, so
 <code>DELETE /scim2/Users/{id}</code> stays administrator-only.</p>
-<p><strong>The scope check on the token is the enforcement.</strong> An administrator&#x27;s token
-does not carry <code>account:self:delete</code>, so the server answers their
-<code>DELETE /scim2/Me</code> with a 403 whether it arrives from the portal, curl, or
-anywhere else. The portal hiding the menu item for them is a convenience on
-top of that, not the control itself.</p>
+<p><strong>The scope check on the token is the enforcement.</strong> The admin role alone does
+not grant <code>account:self:delete</code>. An otherwise valid token lacking that scope
+cannot call <code>DELETE /scim2/Me</code>, whether from the portal or another client.
+An administrator granted the scope through another role can use the endpoint;
+hiding the portal menu is not the server-side control.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="with-an-approval-workflow-on-delete-user">With an approval workflow on Delete User<a href="#with-an-approval-workflow-on-delete-user" class="hash-link" aria-label="Direct link to With an approval workflow on Delete User" title="Direct link to With an approval workflow on Delete User" translate="no">​</a></h3>
 <p>If an approval workflow is associated with the <strong>Delete User</strong> operation, the
 account is not deleted when the user confirms. The Identity Server records a
@@ -264,9 +270,9 @@ endpoint for &quot;my pending requests&quot;. A user who tries again simply gets
 <code>400</code> message above.</p>
 <h3 class="anchor anchorTargetStickyNavbar_Vzrq" id="what-this-does-and-does-not-cover">What this does and does not cover<a href="#what-this-does-and-does-not-cover" class="hash-link" aria-label="Direct link to What this does and does not cover" title="Direct link to What this does and does not cover" translate="no">​</a></h3>
 <ul>
-<li class="">It prevents administrators deleting <strong>their own</strong> account <em>through the
-portal</em>, which is what would otherwise risk leaving a tenant with no
-administrator. It does not restrict Identity Server administration: anyone
+<li class="">With the default role grants, users holding only the portal admin role cannot
+delete <strong>their own</strong> account through the portal. It does not restrict Identity
+Server administration: anyone
 holding <code>internal_user_mgt_delete</code> can still delete any account, their own
 included, via <code>/scim2/Users/{id}</code> and the Console. That is unchanged and
 intended.</li>
@@ -286,9 +292,9 @@ the token never carries, and the menu item stays hidden.</p>
 <p>Event Notification Framework runtime settings are configured in the same
 <code>deployment.toml</code> file under <code>[dpdp_accelerator.event_notifications]</code> and its
 payload-signing, lifecycle-event, polling, and webhook sub-tables. The
-accelerator provisions these values into <code>dpdp-accelerator.xml</code>; the ENF
-configuration component then maps them to the typed ENF configuration parser
-before the delivery services activate.</p>
+configuration mapper renders these values into <code>dpdp-accelerator.xml</code> using the
+accelerator template. <code>DPDPConfigParser</code> reads that XML, and the shared
+<code>DPDPConfigurationService</code> supplies the settings to the notification services.</p>
 <p>For the user workflow—creating topics and subscriptions, preparing a webhook,
 publishing events, and viewing delivery history—see
 <a class="" href="/dpdp-accelerator/docs/event-notification-guide"><code>event-notification-guide.md</code></a>.</p>
@@ -327,6 +333,6 @@ remain per-subscription data and are not placed in <code>dpdp-accelerator.xml</c
 The shipped <code>wso2is-7.3.0-deployment.toml</code> is the source of truth for defaults;
 see the <a class="" href="/dpdp-accelerator/docs/event-notification-guide">Event Notification Guide</a> for the
 security and operational meaning of the polling, signing, verification, and
-delivery settings.</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/wso2/dpdp-accelerator/edit/main/docs/content/configuration-guide.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"><span class="theme-last-updated">Last updated<!-- --> on <b><time datetime="2026-09-17T02:34:43.000Z" itemprop="dateModified">Sep 17, 2026</time></b></span></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/dpdp-accelerator/docs/setup-guide"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Setup</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/dpdp-accelerator/docs/learn"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Learn</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#1-applications-and-roles-are-provisioned-automatically" class="table-of-contents__link toc-highlight">1. Applications and roles are provisioned automatically</a></li><li><a href="#verify-the-portal-before-configuring-optional-features" class="table-of-contents__link toc-highlight">Verify the portal before configuring optional features</a></li><li><a href="#2-change-or-turn-off-the-auto-provisioning" class="table-of-contents__link toc-highlight">2. Change or turn off the auto-provisioning</a><ul><li><a href="#consent-api-invoker-provisioning" class="table-of-contents__link toc-highlight">Consent API Invoker provisioning</a></li></ul></li><li><a href="#3-recovering-a-broken-tenant" class="table-of-contents__link toc-highlight">3. Recovering a broken tenant</a></li><li><a href="#4-assign-portal-roles" class="table-of-contents__link toc-highlight">4. Assign portal roles</a></li><li><a href="#5-configure-email-notifications" class="table-of-contents__link toc-highlight">5. Configure email notifications</a><ul><li><a href="#configure-the-recipients-primary-email" class="table-of-contents__link toc-highlight">Configure the recipient&#39;s primary email</a></li></ul></li><li><a href="#6-configure-complaint-management" class="table-of-contents__link toc-highlight">6. Configure complaint management</a></li><li><a href="#7-configure-periodical-consent-expiration" class="table-of-contents__link toc-highlight">7. Configure periodical consent expiration</a><ul><li><a href="#clustering-requirements" class="table-of-contents__link toc-highlight">Clustering requirements</a></li></ul></li><li><a href="#8-self-service-account-deletion" class="table-of-contents__link toc-highlight">8. Self-service account deletion</a><ul><li><a href="#how-it-is-restricted" class="table-of-contents__link toc-highlight">How it is restricted</a></li><li><a href="#with-an-approval-workflow-on-delete-user" class="table-of-contents__link toc-highlight">With an approval workflow on Delete User</a></li><li><a href="#what-this-does-and-does-not-cover" class="table-of-contents__link toc-highlight">What this does and does not cover</a></li><li><a href="#deployments-that-override-the-requested-scopes" class="table-of-contents__link toc-highlight">Deployments that override the requested scopes</a></li></ul></li><li><a href="#9-configure-event-notifications" class="table-of-contents__link toc-highlight">9. Configure Event Notifications</a><ul><li><a href="#local-development-callback-settings" class="table-of-contents__link toc-highlight">Local development callback settings</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Guides</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/setup-guide">Setup</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/configuration-guide">Configuration</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/event-notification-guide">Event Notifications</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/localization-guide">Localization</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/release-guide">Release</a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 WSO2 LLC. Built with Docusaurus.</div></div></div></footer></div>
+delivery settings.</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/wso2/dpdp-accelerator/edit/main/docs/content/configuration-guide.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"><span class="theme-last-updated">Last updated<!-- --> on <b><time datetime="2026-09-17T06:09:08.000Z" itemprop="dateModified">Sep 17, 2026</time></b></span></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/dpdp-accelerator/docs/setup-guide"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Setup</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/dpdp-accelerator/docs/learn"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Learn</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#1-applications-and-roles-are-provisioned-automatically" class="table-of-contents__link toc-highlight">1. Applications and roles are provisioned automatically</a></li><li><a href="#verify-the-portal-before-configuring-optional-features" class="table-of-contents__link toc-highlight">Verify the portal before configuring optional features</a></li><li><a href="#2-change-or-turn-off-the-auto-provisioning" class="table-of-contents__link toc-highlight">2. Change or turn off the auto-provisioning</a><ul><li><a href="#consent-api-invoker-provisioning" class="table-of-contents__link toc-highlight">Consent API Invoker provisioning</a></li></ul></li><li><a href="#3-recovering-a-broken-tenant" class="table-of-contents__link toc-highlight">3. Recovering a broken tenant</a></li><li><a href="#4-assign-portal-roles" class="table-of-contents__link toc-highlight">4. Assign portal roles</a></li><li><a href="#5-configure-email-notifications" class="table-of-contents__link toc-highlight">5. Configure email notifications</a><ul><li><a href="#configure-the-recipients-primary-email" class="table-of-contents__link toc-highlight">Configure the recipient&#39;s primary email</a></li></ul></li><li><a href="#6-configure-complaint-management" class="table-of-contents__link toc-highlight">6. Configure complaint management</a></li><li><a href="#7-configure-periodical-consent-expiration" class="table-of-contents__link toc-highlight">7. Configure periodical consent expiration</a><ul><li><a href="#transactions-and-multiple-instances" class="table-of-contents__link toc-highlight">Transactions and multiple instances</a></li><li><a href="#persisted-expiry-precision-and-existing-tracker-rows" class="table-of-contents__link toc-highlight">Persisted expiry precision and existing tracker rows</a></li></ul></li><li><a href="#8-self-service-account-deletion" class="table-of-contents__link toc-highlight">8. Self-service account deletion</a><ul><li><a href="#how-it-is-restricted" class="table-of-contents__link toc-highlight">How it is restricted</a></li><li><a href="#with-an-approval-workflow-on-delete-user" class="table-of-contents__link toc-highlight">With an approval workflow on Delete User</a></li><li><a href="#what-this-does-and-does-not-cover" class="table-of-contents__link toc-highlight">What this does and does not cover</a></li><li><a href="#deployments-that-override-the-requested-scopes" class="table-of-contents__link toc-highlight">Deployments that override the requested scopes</a></li></ul></li><li><a href="#9-configure-event-notifications" class="table-of-contents__link toc-highlight">9. Configure Event Notifications</a><ul><li><a href="#local-development-callback-settings" class="table-of-contents__link toc-highlight">Local development callback settings</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Guides</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/setup-guide">Setup</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/configuration-guide">Configuration</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/event-notification-guide">Event Notifications</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/localization-guide">Localization</a></li><li class="footer__item"><a class="footer__link-item" href="/dpdp-accelerator/docs/release-guide">Release</a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 WSO2 LLC. Built with Docusaurus.</div></div></div></footer></div>
 </body>
 </html>
