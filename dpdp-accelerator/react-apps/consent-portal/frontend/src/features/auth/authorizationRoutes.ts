@@ -38,13 +38,15 @@ export default function firstAuthorizedPath(scopes: readonly string[]): string |
     requirement.some((scope) => granted.has(scope))
 
   // A DPO's token carries internal_login like everyone else's, so CONSENTS_READ_SELF alone would
-  // still route them to the Dashboard - which hides itself from a DPO precisely because it has
-  // nothing non-duplicate to show them (see isDpoOnlyProfile, AppSidebar, DashboardPage). Landing
-  // them there anyway on sign-in, only to have no link back to it, would be worse than skipping
-  // it here in favor of Complaints further down this list.
+  // still route them to the Dashboard or My Consents - both of which hide themselves from a DPO
+  // precisely because they have nothing non-duplicate to show them (see isDpoOnlyProfile,
+  // AppSidebar, DashboardPage). Landing them there anyway on sign-in, only to have no link back to
+  // it, would be worse than skipping both here in favor of Complaint Management further down this
+  // list.
   const isDpoOnly = isDpoOnlyProfile(hasScope)
+  const dpoSkippedPaths = new Set(['/dashboard', '/consents'])
 
   return AUTHORIZED_DESTINATIONS.find(
-    ({ path, requirement }) => !(isDpoOnly && path === '/dashboard') && hasScope(requirement),
+    ({ path, requirement }) => !(isDpoOnly && dpoSkippedPaths.has(path)) && hasScope(requirement),
   )?.path
 }

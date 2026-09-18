@@ -51,16 +51,16 @@ describe('frontend authorization', () => {
     expect(firstAuthorizedPath([])).toBeUndefined()
   })
 
-  it('skips the dashboard for a DPO-only session, even though internal_login still resolves elsewhere', () => {
-    // A DPO's token carries internal_login like anyone else's (see isDpoOnlyProfile), so the next
-    // CONSENTS_READ_SELF-gated destination in the list (My Consents) is still reachable - only
-    // the Dashboard itself is skipped, since it alone has a DPO-specific exclusion.
+  it('skips the dashboard and my consents for a DPO-only session, landing on complaint management', () => {
+    // A DPO's token carries internal_login like anyone else's (see isDpoOnlyProfile), but both
+    // CONSENTS_READ_SELF-gated destinations (Dashboard, My Consents) are DPO-specific exclusions,
+    // so the DPO lands on the first destination genuinely meant for them: Complaint Management.
     expect(
       firstAuthorizedPath([
         ...REQUIRED_SCOPES.CONSENTS_READ_SELF,
         ...REQUIRED_SCOPES.COMPLAINTS_READ_ANY,
       ]),
-    ).toBe('/consents')
+    ).toBe('/complaint-management')
   })
 
   it('provides typed single, any, and all scope checks', () => {
