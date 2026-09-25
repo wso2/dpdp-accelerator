@@ -21,9 +21,9 @@
     "report": "playwright show-report"
   },
   "devDependencies": {
-    "@playwright/test": "1.62.1",
-    "@types/node": "26.4.1",
-    "tsx": "4.23.13",
+    "@playwright/test": "1.63.0",
+    "@types/node": "26.6.2",
+    "tsx": "4.23.15",
     "typescript": "7.0.2"
   }
 }
