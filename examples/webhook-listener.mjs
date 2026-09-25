@@ -56,7 +56,7 @@ export function authenticate(raw, headers, config) {
       !Number.isSafeInteger(claims.iat) || claims.iat < 0 || claims.iat > Date.now() / 1000 + 60 ||
       !p || !text(claims.jti) || !text(claims.txn) || !text(p.subscriptionId) ||
       claims.jti !== headers['delivery-id'] || claims.jti !== p.deliveryId || claims.txn !== p.eventId ||
-      p.orgId !== config.tenant || p.groupId !== config.group || p.topic !== config.topic ||
+      p.orgId !== config.tenant || p.groupId !== config.group || !(config.topics ?? [config.topic]).includes(p.topic) ||
       p.subscriptionId !== config.subscription || p.eventPayload == null) {
     throw new Error('Invalid claims or routing');
   }
@@ -78,6 +78,12 @@ export function openInbox(filename) {
 
 /** Implements verification and durable acceptance, without business side effects. */
 export function createReceiver(config, db) {
+  const topics = config.topics ?? [config.topic];
+  if (!Array.isArray(topics) || topics.length < 1 || topics.length > 100 ||
+      topics.some(topic => typeof topic !== 'string' || !topic.trim()) ||
+      new Set(topics).size !== topics.length) {
+    throw new Error('Configure between 1 and 100 distinct expected topics');
+  }
   const insert = db.prepare(`INSERT INTO inbox
     (delivery_id, event_id, subscription_id, accepted_at, payload) VALUES (?, ?, ?, ?, ?)
     ON CONFLICT(delivery_id) DO NOTHING`);
@@ -92,13 +98,12 @@ export function createReceiver(config, db) {
     if (req.method === 'GET') {
       const challenge = url.searchParams.get('hub.challenge');
       if (url.searchParams.get('hub.mode') !== 'subscribe' ||
-          url.searchParams.get('hub.topic') !== config.topic || !challenge || challenge.length > 1024) {
+          !(config.topics ?? [config.topic]).includes(url.searchParams.get('hub.topic')) || !challenge || challenge.length > 1024) {
         return reply(400);
       }
       return reply(200, challenge);
     }
     if (req.method !== 'POST') return reply(405);
-    if (!config.subscription) return reply(503, 'Configure the subscription ID first');
     if (req.headers['content-type']?.split(';')[0].trim() !== 'application/json') return reply(415);
     let payload;
     try {
@@ -109,7 +114,22 @@ export function createReceiver(config, db) {
         if (size > 1024 * 1024) return reply(413);
         chunks.push(chunk);
       }
-      payload = authenticate(Buffer.concat(chunks), req.headers, config);
+      const raw = Buffer.concat(chunks);
+      const message = JSON.parse(raw.toString('utf8'));
+      if (message.type === 'subscription.verification') {
+        const allowed = config.topics ?? [config.topic];
+        if (raw.length > 262144 || !Array.isArray(message.topics) || message.topics.length < 1 ||
+            message.topics.length > 100 || new Set(message.topics).size !== message.topics.length ||
+            !message.topics.every(topic => typeof topic === 'string' && allowed.includes(topic)) ||
+            typeof message.subscriptionId !== 'string' || !message.subscriptionId ||
+            (config.subscription && config.subscription !== message.subscriptionId) ||
+            typeof message.challenge !== 'string' || !message.challenge || message.challenge.length > 1024) {
+          return reply(400);
+        }
+        return reply(200, message.challenge);
+      }
+      if (!config.subscription) return reply(503, 'Configure the subscription ID first');
+      payload = authenticate(raw, req.headers, config);
     } catch {
       return reply(401, 'Delivery authentication failed');
     }
@@ -144,7 +164,7 @@ function main() {
   const config = {
     secret: required('SHARED_SECRET'), issuer: required('EXPECTED_ISSUER'),
     tenant: required('EXPECTED_TENANT'), group: required('EXPECTED_GROUP'),
-    topic: required('EXPECTED_TOPIC'), audience: process.env.EXPECTED_AUDIENCE || 'dpdp-event-notifications',
+    topics: process.env.EXPECTED_TOPICS ? JSON.parse(process.env.EXPECTED_TOPICS) : [required('EXPECTED_TOPIC')], audience: process.env.EXPECTED_AUDIENCE || 'dpdp-event-notifications',
     subscription: process.env.EXPECTED_SUBSCRIPTION_ID || '',
     jwks: JSON.parse(readFileSync(required('JWKS_FILE'), 'utf8')),
   };

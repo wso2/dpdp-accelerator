@@ -51,8 +51,13 @@ paths:
         '405':
           description: Unsupported HTTP method.
     post:
-      summary: Durably accept a signed event delivery
+      summary: Verify a topic set or durably accept a signed event delivery
       description: |
+        A subscription.verification message carries a subscription ID, topics array,
+        and challenge. The receiver checks the complete set against configured allowed
+        topics and returns the challenge. It does not store verification as an event.
+        Delivery-Id and event-signature are required only for signed event deliveries.
+
         The receiver authenticates the exact raw request body using HMAC-SHA256, then
         verifies the compact RS256 JWS in `signedPayload` using an operator-pinned JWKS.
         It validates configured issuer, audience, tenant, group, topic, subscription,
@@ -70,8 +75,18 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SignedDelivery'
+              oneOf:
+                - $ref: '#/components/schemas/SubscriptionVerification'
+                - $ref: '#/components/schemas/SignedDelivery'
       responses:
+        '200':
+          description: Topic-set verification succeeded; the body is the exact challenge.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '400':
+          description: Invalid verification topic set, subscription identity, or challenge.
         '202':
           description: Delivery was durably committed to the SQLite inbox; downstream processing may still be pending.
         '401':
@@ -107,7 +122,7 @@ components:
     DeliveryId:
       name: Delivery-Id
       in: header
-      required: true
+      required: false
       description: Stable delivery identifier. It must equal the JWS `jti` and `payload.deliveryId` claims.
       schema:
         type: string
@@ -115,13 +130,35 @@ components:
     EventSignature:
       name: event-signature
       in: header
-      required: true
+      required: false
       description: HMAC-SHA256 of the exact raw request-body bytes using the configured shared secret.
       schema:
         type: string
         pattern: '^sha256=[0-9a-f]{64}$'
         example: sha256=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
   schemas:
+    SubscriptionVerification:
+      type: object
+      required: [type, subscriptionId, topics, challenge]
+      properties:
+        type:
+          type: string
+          enum: [subscription.verification]
+        subscriptionId:
+          type: string
+          minLength: 1
+        topics:
+          type: array
+          minItems: 1
+          maxItems: 100
+          uniqueItems: true
+          items:
+            type: string
+            minLength: 1
+        challenge:
+          type: string
+          minLength: 1
+          maxLength: 1024
     SignedDelivery:
       type: object
       required: [signedPayload]
