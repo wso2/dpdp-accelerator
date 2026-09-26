@@ -71,10 +71,13 @@ The gate tests the U2-updated 7.3.0 pack, pulled from the `updates2.0` S3 bucket
 the `IS_PACK_S3_URI` secret. The published GitHub release zip is not U2-updatable — it lacks
 the `migration-resources/` tree the update tool needs — so that path was abandoned.
 
-Duration is hard to pin down: the E2E job has historically taken 18–25 minutes, and how much
-`wso2update_linux` adds is not yet measured. A release run may also restore an already-warm
-pack cache and skip the download and update entirely. Check a recent run's step timings
-rather than trusting a number here.
+The gate never trusts the pack cache: it deletes the cached pack, applies the latest U2 level
+once, and then runs every database (H2, MySQL and PostgreSQL) in parallel, normally on that same
+pack. A database job that finds no cached pack applies the latest U2 level itself, and each job
+reports the update level it tested.
+Duration is hard to pin down: one database's E2E run has historically taken 18–25 minutes, and
+the pack refresh ahead of it adds the download and `wso2update_linux`. Check a recent run's step
+timings rather than trusting a number here.
 
 `product-is` master is still exercised, but on a schedule — see
 `.github/workflows/weekly-e2e-is-master.yml`.
@@ -93,19 +96,24 @@ to run by hand.
 ## How the pipeline is put together
 
 ```
-prepare ─┬─ e2e ──┐
-         └─ build ─┴─ release ── post-release
+prepare ─┬─ drop-pack-cache ── refresh-pack ── e2e (h2 | mysql | postgresql) ──┐
+         └─ build ──────────────────────────────────────────────────────────────┴─ release ── post-release
 ```
 
 - **prepare** — resolves and validates the version, rejects an existing tag, and refuses a
   non-prerelease off `main`. Everything downstream reads its outputs rather than
   re-deriving them.
+- **drop-pack-cache** and **refresh-pack** — delete the cached Identity Server pack, then
+  download it from S3, apply the latest U2 updates and save it back. Cache entries can't be
+  overwritten, hence the delete. On a branch other than `main` both are skipped and each
+  database leg builds its own fresh pack instead.
 - **e2e** — the same reusable
   [`e2e.yml`](https://github.com/wso2/dpdp-accelerator/blob/main/.github/workflows/e2e.yml) that
-  gates a PR, but broader: it passes no `projects` override, so every Playwright project runs
+  gates a PR, but broader: it runs on every database type (H2, MySQL and PostgreSQL), where a PR
+  runs MySQL alone, and passes no `projects` override, so every Playwright project runs
   (`multi-tenant` and `super-tenant`), where a PR's own gate runs `multi-tenant` alone for speed
-  — see `dpdp-integration-test-suite/README.md`'s Continuous integration section. Skippable with
-  `run_e2e: off`.
+  — see `dpdp-integration-test-suite/README.md`'s Continuous integration section. A failure on any
+  database blocks the release. Skippable with `run_e2e: off`, which skips the pack refresh too.
 - **build** — `versions:set`, then `mvn clean install`, then asserts the zip exists at the
   exact expected path. That assertion is also what proves `versions:set` reached every
   module.

@@ -52,11 +52,10 @@ against the default branch nightly, so a super-tenant-only regression surfaces w
 than going unnoticed until the Saturday weekly jobs or a release gate. `release-builder.yml`
 likewise passes no `projects` override, so a release is still gated on every project.
 
-Every caller of `e2e.yml` takes its `db_type` default, `mysql`, except `nightly-e2e.yml`, which
-runs it as a matrix over every database type (`h2`, `mysql`, `postgresql`), in parallel and with
-`fail-fast: false`; a manual dispatch can narrow it to one database and/or one project. That
-nightly is the only end-to-end h2 and PostgreSQL coverage; a PR or a release is not gated on
-either.
+Every caller of `e2e.yml` takes its `db_type` default, `mysql`, except `nightly-e2e.yml` and
+`release-builder.yml`, which run it as a matrix over every database type (`h2`, `mysql`,
+`postgresql`), in parallel and with `fail-fast: false`; a manual nightly dispatch can narrow it to
+one database and/or one project. A PR is gated on MySQL alone.
 
 The Identity Server under test comes from the `updates2.0` S3 bucket (`IS_PACK_S3_URI`) with U2
 updates applied. The published GitHub release zip is *not* U2-updatable — don't reintroduce that
@@ -68,6 +67,9 @@ including the release gate. Keep the restore read-only. Cache entries are immuta
 `nightly-e2e.yml` refreshes it: unless a manual run ticks `use_cached_is_pack`, it deletes the
 default branch's `is-pack-*` entry, rebuilds the pack at the latest U2 level once
 (`e2e.yml` with `pack_only`), saves it, and runs every database leg on that same pack.
+`release-builder.yml` does the same whenever its E2E gate runs from the default branch; from any
+other branch each database leg applies the latest U2 itself. Either way a release is gated on the
+latest U2 level, never on whatever the cache holds.
 
 Role *membership* is the one thing the accelerator never provisions, so both CI and a fresh local
 install get their accounts from `dpdp-integration-test-suite/scripts/provision-test-users.sh`

@@ -16,8 +16,8 @@
 
 # Builds the accelerator distribution and publishes it as a GitHub release.
 #
-#   prepare ─┬─ e2e ──┐
-#            └─ build ─┴─ release ── post-release
+#   prepare ─┬─ drop-pack-cache ── refresh-pack ── e2e (h2 | mysql | postgresql) ──┐
+#            └─ build ──────────────────────────────────────────────────────────────┴─ release ── post-release
 #
 # The root pom is the single source of truth for the version - there is deliberately no
 # version.txt to drift from it. `mvn versions:set` fans the release version out to every
@@ -161,19 +161,83 @@ jobs:
             echo "| Dry run | \`${{ inputs.dry_run }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-  # Gates the release on the same suite that gates a PR - see e2e.yml. Named
-  # distinctly from the PR workflows' "E2E (label-gated)" commit status so that selecting
-  # required checks by name cannot confuse the two.
-  e2e:
-    name: E2E release gate
+  # Cache entries are immutable, so the old pack has to go before refresh-pack can save a new
+  # one under the same key - otherwise the gate would restore whatever update level the cache
+  # happens to hold. Only the default branch's entry: a release dispatched from another branch
+  # saves into that branch's own scope and could not replace it anyway. Same as nightly-e2e.yml.
+  drop-pack-cache:
+    name: Drop the cached IS pack
     needs: prepare
-    if: ${{ inputs.run_e2e }}
+    if: >-
+      inputs.run_e2e &&
+      github.ref == format('refs/heads/{0}', github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Delete the default branch's pack cache entry
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REF: ${{ github.ref }}
+        run: |
+          # Without pipefail a failed listing reaches `sort -u` as an empty list, so the old pack
+          # would survive and the refresh's save would silently do nothing.
+          set -euo pipefail
+          keys=$(gh api "repos/${GITHUB_REPOSITORY}/actions/caches?ref=${REF}&key=is-pack-" \
+            --jq '.actions_caches[].key' | sort -u)
+          if [ -z "${keys}" ]; then
+            echo "No is-pack-* entry on ${REF}; refresh-pack will create one."
+            exit 0
+          fi
+          echo "${keys}" | while read -r key; do
+            echo "Deleting ${key} on ${REF}"
+            gh api --method DELETE "repos/${GITHUB_REPOSITORY}/actions/caches?key=${key}&ref=${REF}" \
+              > /dev/null
+          done
+
+  # Applies the latest U2 level once and saves it, so the database legs below normally restore
+  # the same pack instead of each applying U2 itself. A leg that finds no entry - the save only
+  # warns on failure, and a concurrent nightly can replace it - applies the latest U2 itself,
+  # so it still gates on the latest level. Each leg reports the level it tested.
+  refresh-pack:
+    name: Refresh the IS pack
+    needs: [prepare, drop-pack-cache]
     uses: ./.github/workflows/e2e.yml
     with:
       ref: ${{ needs.prepare.outputs.sha }}
-      # Gate on the pack operators actually install, not product-is master. Also one of the
-      # events allowed to write the pack cache, so this leaves it warm for later PR runs.
       is_source: s3
+      use_cached_is_pack: false
+      pack_only: true
+    secrets: inherit
+
+  # Gates the release on the same suite that gates a PR - see e2e.yml - but on every database
+  # type and, with no `projects` override, every Playwright project (`multi-tenant` and
+  # `super-tenant`). Named distinctly from the PR workflows' "E2E (label-gated)" commit status
+  # so that selecting required checks by name cannot confuse the two.
+  e2e:
+    needs: [prepare, drop-pack-cache, refresh-pack]
+    # Runs after a refresh, and also when both refresh jobs were skipped because the release
+    # was dispatched from another branch - but not after either of them failed.
+    if: >-
+      inputs.run_e2e && !cancelled() && needs.prepare.result == 'success' &&
+      needs.drop-pack-cache.result != 'failure' && needs.refresh-pack.result != 'failure'
+    strategy:
+      # One database's failure must not cancel the others, so a failed gate reports every
+      # database's result at once.
+      fail-fast: false
+      matrix:
+        db_type: [h2, mysql, postgresql]
+    name: E2E release gate (${{ matrix.db_type }})
+    uses: ./.github/workflows/e2e.yml
+    with:
+      ref: ${{ needs.prepare.outputs.sha }}
+      # Gate on the pack operators actually install, not product-is master.
+      is_source: s3
+      db_type: ${{ matrix.db_type }}
+      # Restore the pack refresh-pack just saved. Off the default branch the refresh was
+      # skipped, so each leg builds its own fresh pack.
+      use_cached_is_pack: ${{ needs.refresh-pack.result == 'success' }}
     secrets: inherit
 
   build:
@@ -237,12 +301,13 @@ jobs:
     name: Publish
     needs: [prepare, build, e2e]
     # `always()` so a deliberately skipped E2E gate doesn't skip the release with it;
-    # the explicit result checks are what actually enforce the gate.
+    # the explicit result checks are what actually enforce the gate. A skipped gate only
+    # counts when E2E was turned off: a failed refresh-pack also skips e2e.
     if: >
       always() &&
       needs.prepare.result == 'success' &&
       needs.build.result == 'success' &&
-      (needs.e2e.result == 'success' || needs.e2e.result == 'skipped')
+      (needs.e2e.result == 'success' || (needs.e2e.result == 'skipped' && !inputs.run_e2e))
     runs-on: ubuntu-latest
     timeout-minutes: 20
     permissions:

@@ -77,6 +77,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           REF: ${{ github.ref }}
         run: |
+          # Without pipefail a failed listing reaches `sort -u` as an empty list, so the old pack
+          # would survive and the refresh's save would silently do nothing.
+          set -euo pipefail
           keys=$(gh api "repos/${GITHUB_REPOSITORY}/actions/caches?ref=${REF}&key=is-pack-" \
             --jq '.actions_caches[].key' | sort -u)
           if [ -z "${keys}" ]; then
