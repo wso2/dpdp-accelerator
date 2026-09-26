@@ -1,0 +1,121 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="510" viewBox="0 0 1160 510" role="img" aria-labelledby="title desc">
+  <title id="title">Webhook Receiver Request Routing Flow</title>
+  <desc id="desc">Incoming HTTP POST requests to the user-configurable callbackUrl are inspected. Verification requests with type subscription.verification return HTTP 200 with the challenge string. Event deliveries with an event-signature header are verified via HMAC-SHA256 and JWS before saving to the inbox and returning HTTP 202 Accepted.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5B6B76"/>
+    </marker>
+    <marker id="arrow-verify" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284C7"/>
+    </marker>
+    <marker id="arrow-delivery" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <style>
+      .node-title { font: 600 14px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #0F172A; }
+      .node-text { font: 400 12.5px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #334155; }
+      .node-mono { font: 600 12px 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; fill: #0F172A; }
+      .badge-text { font: 700 11px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; }
+      .step-num { font: 700 11px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #FFFFFF; text-anchor: middle; }
+      .branch-title { font: 700 15px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; }
+    </style>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1160" height="510" rx="12" fill="#FAFAF8" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- Flow Start Node: Incoming POST -->
+  <g transform="translate(360, 26)">
+    <rect width="440" height="62" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5"/>
+    <rect x="0" y="0" width="6" height="62" rx="3" fill="#FF7300"/>
+    <text x="24" y="25" class="node-title">Incoming HTTP POST</text>
+    <text x="175" y="25" class="node-mono" fill="#FF7300">&lt;callbackUrl&gt;</text>
+    <text x="24" y="47" class="node-text">Single user-configured endpoint receives both lifecycle requests</text>
+  </g>
+
+  <!-- Flow Line to Decision Node -->
+  <path d="M 580 88 L 580 116" stroke="#5B6B76" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Decision Box: Request Router -->
+  <g transform="translate(390, 118)">
+    <rect width="380" height="50" rx="25" fill="#F1F5F9" stroke="#94A3B8" stroke-width="1.5"/>
+    <text x="190" y="23" class="node-title" text-anchor="middle">Inspect Request Payload &amp; Headers</text>
+    <text x="190" y="40" class="node-text" text-anchor="middle">Routes by payload type or event signature</text>
+  </g>
+
+  <!-- Left Branch Path: Verification -->
+  <path d="M 460 168 L 460 205 L 295 205 L 295 240" stroke="#0284C7" stroke-width="2" fill="none" marker-end="url(#arrow-verify)"/>
+  <rect x="150" y="193" width="290" height="24" rx="5" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  <text x="295" y="209" class="node-mono" style="font-size:11.5px; fill:#0369A1;" text-anchor="middle">type == "subscription.verification"</text>
+
+  <!-- Right Branch Path: Event Delivery -->
+  <path d="M 700 168 L 700 205 L 865 205 L 865 240" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow-delivery)"/>
+  <rect x="740" y="193" width="250" height="24" rx="5" fill="#DCFCE7" stroke="#BBF7D0" stroke-width="1"/>
+  <text x="865" y="209" class="node-mono" style="font-size:11.5px; fill:#15803D;" text-anchor="middle">Event-Signature header present</text>
+
+  <!-- LEFT CARD: Verification Handshake -->
+  <g transform="translate(40, 246)">
+    <!-- Container Card -->
+    <rect width="510" height="236" rx="10" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="2"/>
+    <rect x="0" y="0" width="510" height="42" rx="10" fill="#F0F9FF"/>
+    <path d="M 0 32 L 0 42 L 510 42 L 510 32 Z" fill="#F0F9FF"/>
+    <text x="20" y="27" class="branch-title" fill="#0369A1">1. Verification Handshake</text>
+
+    <!-- Badge -->
+    <rect x="360" y="10" width="134" height="22" rx="11" fill="#E0F2FE"/>
+    <text x="427" y="25" class="badge-text" fill="#0284C7">REGISTRATION PHASE</text>
+
+    <!-- Step 1 -->
+    <circle cx="34" cy="72" r="11" fill="#0284C7"/>
+    <text x="34" y="76" class="step-num">1</text>
+    <text x="56" y="68" class="node-title">Validate Subscribed Topics</text>
+    <text x="56" y="85" class="node-text">Verify <tspan class="node-mono">body.topics</tspan> matches topics your receiver expects.</text>
+
+    <!-- Step 2 -->
+    <circle cx="34" cy="120" r="11" fill="#0284C7"/>
+    <text x="34" y="124" class="step-num">2</text>
+    <text x="56" y="116" class="node-title">Echo One-Time Challenge</text>
+    <text x="56" y="133" class="node-text">Return <tspan class="node-mono">body.challenge</tspan> as exact plain text in the HTTP body.</text>
+
+    <!-- Response box -->
+    <g transform="translate(56, 152)">
+      <rect width="430" height="66" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="16" y="24" class="node-mono" fill="#0369A1">HTTP/1.1 200 OK</text>
+      <text x="16" y="42" class="node-mono" fill="#64748B">Content-Type: text/plain</text>
+      <text x="16" y="58" class="node-mono" fill="#0F172A">&lt;raw challenge string&gt;</text>
+    </g>
+  </g>
+
+  <!-- RIGHT CARD: Event Delivery -->
+  <g transform="translate(610, 246)">
+    <!-- Container Card -->
+    <rect width="510" height="236" rx="10" fill="#FFFFFF" stroke="#BBF7D0" stroke-width="2"/>
+    <rect x="0" y="0" width="510" height="42" rx="10" fill="#F0FDF4"/>
+    <path d="M 0 32 L 0 42 L 510 42 L 510 32 Z" fill="#F0FDF4"/>
+    <text x="20" y="27" class="branch-title" fill="#15803D">2. Event Delivery</text>
+
+    <!-- Badge -->
+    <rect x="360" y="10" width="134" height="22" rx="11" fill="#DCFCE7"/>
+    <text x="427" y="25" class="badge-text" fill="#16A34A">LIFECYCLE EVENTS</text>
+
+    <!-- Step 1 -->
+    <circle cx="34" cy="72" r="11" fill="#059669"/>
+    <text x="34" y="76" class="step-num">1</text>
+    <text x="56" y="68" class="node-title">Verify HMAC-SHA256 Signature</text>
+    <text x="56" y="85" class="node-text">Compute HMAC on raw body using <tspan class="node-mono">sharedSecret</tspan>; match <tspan class="node-mono">Event-Signature</tspan>.</text>
+
+    <!-- Step 2 -->
+    <circle cx="34" cy="120" r="11" fill="#059669"/>
+    <text x="34" y="124" class="step-num">2</text>
+    <text x="56" y="116" class="node-title">Persist to Inbox &amp; Acknowledge</text>
+    <text x="56" y="133" class="node-text">Store raw envelope with <tspan class="node-mono">Delivery-Id</tspan> for idempotent worker processing.</text>
+
+    <!-- Response box -->
+    <g transform="translate(56, 152)">
+      <rect width="430" height="66" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+      <text x="16" y="24" class="node-mono" fill="#15803D">HTTP/1.1 202 Accepted</text>
+      <text x="16" y="42" class="node-mono" fill="#64748B">Content-Type: application/json</text>
+      <text x="16" y="58" class="node-mono" fill="#0F172A">{"status": "accepted"}</text>
+    </g>
+  </g>
+</svg>

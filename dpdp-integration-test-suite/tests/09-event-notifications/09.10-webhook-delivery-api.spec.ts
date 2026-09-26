@@ -51,7 +51,7 @@ test.describe('Webhook delivery', () => {
     return total
   }
 
-  /** Registers a webhook subscription, waits for the verification GET to be answered, and returns the receiver already past `pending`. */
+  /** Registers a webhook subscription, waits for the verification POST to be answered, and returns the receiver already past `pending`. */
   async function registerVerifiedWebhookSubscription(
     consentAdminEventApi: import('../../clients/EventNotificationApiClient').EventNotificationApiClient,
     label: string,
@@ -159,7 +159,9 @@ test.describe('Webhook delivery', () => {
       await expect.poll(() => postCount, { timeout: postCountPollTimeoutMs }).toBeGreaterThanOrEqual(3)
 
       const deliveryIds = new Set(
-        receiver.requests.filter((r) => r.method === 'POST').map((r) => r.headers['delivery-id']),
+        receiver.requests
+          .filter((r) => r.method === 'POST' && Boolean(r.headers['delivery-id']))
+          .map((r) => r.headers['delivery-id']),
       )
       expect(deliveryIds.size).toBe(1)
 

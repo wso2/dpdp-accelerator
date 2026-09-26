@@ -35,7 +35,6 @@ import org.wso2.dpdp.accelerator.event.notifications.common.exception.service.Ev
 import org.wso2.dpdp.accelerator.event.notifications.common.util.CallbackUrlCanonicalizer;
 import org.wso2.dpdp.accelerator.event.notifications.common.util.EventNotificationUrlValidator;
 import org.wso2.dpdp.accelerator.event.notifications.common.util.PurposeOverlapUtils;
-import org.wso2.dpdp.accelerator.event.notifications.common.util.WebhookVerificationUriBuilder;
 import org.wso2.dpdp.accelerator.event.notifications.dao.DeliveryAckDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.DeliveryDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.PaginatedDAOResult;
@@ -205,7 +204,7 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         }
 
         validatePurposeFilterMode(filterType, purposes);
-        if (topicNames.size() > 1 && filterType != PurposeFilterMode.ALL
+        if (filterType != PurposeFilterMode.ALL
                 && (normalizedNames.contains("user.account.delete") || normalizedNames.contains("user.data.change"))) {
             throw new EventNotificationServiceException(
                     EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
@@ -519,26 +518,22 @@ public class SubscriptionServiceImpl implements SubscriptionService {
         long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(
                 EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS);
         try {
-            HttpRequest.Builder builder = HttpRequest.newBuilder()
-                    .timeout(Duration.ofSeconds(EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS));
-            if (topics.size() == 1) {
-                builder.uri(WebhookVerificationUriBuilder.build(URI.create(callbackUrl.trim()), topics.get(0),
-                        challenge)).GET();
-            } else {
-                Map<String, Object> body = new LinkedHashMap<>();
-                body.put("type", EventNotificationCommonConstants.SUBSCRIPTION_VERIFICATION_TYPE);
-                body.put("subscriptionId", subscriptionId);
-                body.put("topics", topics);
-                body.put("challenge", challenge);
-                String json = VERIFICATION_JSON.writeValueAsString(body);
-                if (json.getBytes(
-                        StandardCharsets.UTF_8).length > EventNotificationCommonConstants.MAX_VERIFICATION_REQUEST_BYTES) {
-                    throw new IllegalArgumentException("Verification request is too large.");
-                }
-                builder.uri(URI.create(callbackUrl.trim())).header("Content-Type", "application/json")
-                        .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8));
+            Map<String, Object> verificationPayload = new LinkedHashMap<>();
+            verificationPayload.put("type", EventNotificationCommonConstants.SUBSCRIPTION_VERIFICATION_TYPE);
+            verificationPayload.put("subscriptionId", subscriptionId);
+            verificationPayload.put("topics", topics);
+            verificationPayload.put("challenge", challenge);
+            String json = VERIFICATION_JSON.writeValueAsString(verificationPayload);
+            if (json.getBytes(
+                    StandardCharsets.UTF_8).length > EventNotificationCommonConstants.MAX_VERIFICATION_REQUEST_BYTES) {
+                throw new IllegalArgumentException("Verification request is too large.");
             }
-            HttpRequest request = builder.build();
+            HttpRequest request = HttpRequest.newBuilder()
+                    .timeout(Duration.ofSeconds(EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS))
+                    .uri(URI.create(callbackUrl.trim()))
+                    .header("Content-Type", "application/json")
+                    .POST(HttpRequest.BodyPublishers.ofString(json, StandardCharsets.UTF_8))
+                    .build();
 
             HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
             int maxBodyBytes = getConfiguration().getEventNotificationMaxVerificationResponseBodyBytes();

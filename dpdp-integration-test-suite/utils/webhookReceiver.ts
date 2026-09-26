@@ -159,7 +159,7 @@ export class WebhookReceiver {
     })
   }
 
-  /** Overrides how every subsequent request is answered, until changed again. Default: echoes `hub.challenge` on GET, 204 on everything else. */
+  /** Overrides how every subsequent request is answered, until changed again. Default: echoes verification challenge on POST, 204 on event delivery POSTs, and 405 on non-POST requests. */
   respondWith(handler: (request: CapturedRequest) => ReceiverResponse): void {
     this.handler = handler
   }
@@ -175,19 +175,24 @@ export class WebhookReceiver {
 }
 
 /**
- * Matches the real hub.mode/hub.challenge webhook-intent-verification protocol
- * (docs/content/event-notification-guide.md): a GET carrying `hub.challenge` gets that exact value
- * echoed back as the body with a 200; anything else (the actual signed event delivery POST)
+ * Matches the webhook verification protocol (docs/content/event-notification-guide.md):
+ * A POST carrying `{ type: 'subscription.verification', challenge: '...' }` gets that exact value
+ * echoed back as the plain text body with 200; anything else (the actual signed event delivery POST)
  * gets an empty 204, which SubscriptionServiceImpl/DeliveryWorker treat as "delivered".
  */
 function defaultHandler(request: CapturedRequest): ReceiverResponse {
-  if (request.method === 'GET') {
-    const challenge = new URL(request.url, 'http://placeholder').searchParams.get('hub.challenge')
-    if (challenge !== null) {
-      return { status: 200, body: challenge, headers: { 'Content-Type': 'text/plain' } }
+  if (request.method === 'POST') {
+    try {
+      const payload = JSON.parse(request.rawBody.toString('utf8'))
+      if (payload && (payload.type === 'subscription.verification' || payload.challenge)) {
+        return { status: 200, body: String(payload.challenge), headers: { 'Content-Type': 'text/plain' } }
+      }
+    } catch {
+      // not a json verification payload, proceed to 204 delivery response
     }
+    return { status: 204 }
   }
-  return { status: 204 }
+  return { status: 405, body: 'Method Not Allowed', headers: { 'Content-Type': 'text/plain' } }
 }
 
 /** Tests that need a real webhook round trip skip themselves when this is false. */

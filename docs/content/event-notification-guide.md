@@ -251,26 +251,17 @@ topics cannot be deregistered by users.
 
 ## 4. Prepare a webhook receiver
 
-The same callback URL handles verification requests and event deliveries.
-Implement both behaviors before registering the subscription.
+When creating a webhook subscription, you specify a **`callbackUrl`** (e.g. `https://subscriber.example.com/events`, `https://subscriber.example.com/api/v1/webhook`, etc.). The URL path is completely user-configurable.
+
+Identity Server sends all HTTP `POST` requests directly to this `callbackUrl`. The single endpoint handles two distinct phases:
+
+1. **Verification Handshake:** Sent upon subscription registration or retry to verify endpoint ownership.
+2. **Event Delivery:** Sent when events matching your subscription occur.
+![Webhook receiver request routing flow for verification handshake and event delivery](../assets/dpdp-webhook-receiver-flow.svg)
 
 ### Respond to verification
 
-For a singleton subscription, Identity Server verifies a callback URL with an HTTP `GET` request. It appends
-these query parameters while preserving any existing query parameters:
-
-| Parameter | Value |
-|---|---|
-| `hub.mode` | `subscribe` |
-| `hub.topic` | The subscribed topic name. |
-| `hub.challenge` | A generated one-time challenge. |
-
-The receiver must return HTTP `200` with the exact `hub.challenge` value as the
-response body. Surrounding whitespace is ignored, but additional content causes
-verification to fail.
-
-For a subscription with multiple topics, verification uses one HTTP `POST` to the
-same callback URL with `Content-Type: application/json`:
+Identity Server verifies a callback URL by sending an HTTP `POST` request to your `callbackUrl` with `Content-Type: application/json`:
 
 ```json
 {
@@ -281,36 +272,14 @@ same callback URL with `Content-Type: application/json`:
 }
 ```
 
-Validate the complete topic array against the receiver's configured allowed topics,
-then return HTTP `200` with the challenge as plain text. Each verification attempt
-sends one request, including when the subscription contains 100 topics. A failed
-attempt can be retried. The subscription becomes active only after successful
-verification of the complete set.
+The `topics` array contains the subscribed topic names for this subscription.
 
-Verification messages must not enter the event inbox or change configured receiver
-identity. Ordinary event POSTs still require the HMAC and JWS checks below.
-The sample receiver accepts `EXPECTED_TOPICS` as a JSON array; `EXPECTED_TOPIC`
-remains the singleton fallback.
+**What your receiver must do:**
+1. Check `body.type`: if it equals `"subscription.verification"`, handle this as a verification challenge (do not process as an event delivery).
+2. Validate that `body.topics` matches the topics your receiver is configured to accept.
+3. Respond with **HTTP `200 OK`**, `Content-Type: text/plain`, and the exact **`challenge`** string as the response body.
 
-### Register multiple topics
-
-Supply `topics: ["consent.update", "consent.revoke"]` in the subscription creation
-body, together with the usual `filter` and `delivery` objects. Supply between one
-and 100 unique topic names. The deprecated `topic` field remains accepted for
-singleton creation; supplying both fields is rejected.
-
-Creation is atomic: an invalid or conflicting topic rejects the entire request.
-One subscription owns all selected topics, its shared filter and delivery settings,
-and one lifecycle status. Its details return `topics`; the compatibility `topic`
-field is present only for singleton subscriptions. Clients displaying multi-topic
-subscriptions must use `topics`.
-
-A multi-topic selection containing `user.account.delete` or `user.data.change`
-requires the `all` purpose filter. Topics are fixed at creation. Deletion applies
-to the whole subscription and retains the pending-delivery protections. Each event
-still carries its own single topic; polling and delivery history combine matching
-events under the same subscription ID. Referenced topics cannot be deregistered
-while the subscription is active, pending, or stale.
+Surrounding whitespace is ignored, but additional characters or JSON formatting cause verification to fail. A failed attempt can be retried. The subscription becomes `active` once this check passes.
 
 ### Receive and verify deliveries
 
@@ -422,72 +391,60 @@ Server. HTTP callback URLs should be enabled only for controlled development
 environments through the Event Notification settings described in
 [`configuration-guide.md`](configuration-guide.md#9-configure-event-notifications).
 
-### Run the sample listener
+### Run a sample reference listener {#run-the-sample-listener}
 
-The [Node.js sample](pathname:///examples/webhook-listener.mjs) verifies raw-body HMAC and
-RS256 JWS, checks configured routing claims, and commits accepted events to a
-SQLite inbox before returning `202`. Its callback contract is available as an
-[OpenAPI 3.0 definition](pathname:///examples/webhook-listener.openapi.yaml).
-It uses Node.js 24 or later and built-in modules, with no npm dependencies.
-From a repository checkout, its path is `docs/static/examples/webhook-listener.mjs`.
-If downloading it from this page, save it as `webhook-listener.mjs` and replace
-that repository path with `./webhook-listener.mjs` in the commands below.
+To help you test immediately without writing custom receiver code, reference implementations are provided in both **Python** and **Node.js**. Both implementations use only built-in standard libraries—**no package manager, virtual environment, or external dependencies (`pip` or `npm`) are required**:
 
-1. Obtain the tenant's expected issuer and JWKS URL from trusted server
-   configuration. Download the JWKS using certificate validation, for example
-   `curl --fail --cacert /path/to/issuer-ca.pem https://is.example.com:9443/t/example.com/oauth2/jwks -o tenant-jwks.json`.
-   The super tenant normally uses `/oauth2/jwks`. Never obtain the URL from an
-   unverified event. Refresh this file and restart the sample when signing keys
-   rotate.
-2. Set the receiver configuration in a terminal. Use the same shared secret
-   when registering the subscription; treat it as a credential. Initially omit
-   the subscription ID so the listener serves verification requests but returns
-   `503` for event deliveries:
+* **Python (3.9+ or higher; Python 3.10+ recommended):** [`webhook-listener.py`](pathname:///examples/webhook-listener.py) (uses standard libraries `http.server`, `hmac`, `hashlib`, `json`, `base64`)
+* **Node.js (18+ or higher; Node.js 20+ LTS recommended):** [`webhook-listener.mjs`](pathname:///examples/webhook-listener.mjs) (uses built-in `node:http`, `node:crypto`)
+* **Contract definition:** [`webhook-listener.openapi.yaml`](pathname:///examples/webhook-listener.openapi.yaml)
 
-   ```bash
-   export SHARED_SECRET="$(openssl rand -hex 32)"
-   export JWKS_FILE="$PWD/tenant-jwks.json"
-   export EXPECTED_ISSUER="https://is.example.com:9443/t/example.com/oauth2/token"
-   export EXPECTED_TENANT="example.com"
-   export EXPECTED_GROUP="<subscription-group-id>"
-   export EXPECTED_TOPIC="consent.revoke"
-   export INBOX_DB="$PWD/webhook-inbox.sqlite"
-   node docs/static/examples/webhook-listener.mjs
-   ```
+Both listeners automatically handle the verification handshake by echoing `challenge` with HTTP 200,
+verify incoming HMAC-SHA256 signatures when `SHARED_SECRET` is set, and log the complete formatted
+verification and event payloads directly to terminal stdout in real time.
 
-   By default it listens on `127.0.0.1:8443` behind your HTTPS reverse proxy.
-   Expose `/dpdp/events` at a reachable HTTPS address with a certificate trusted
-   by Identity Server. For the isolated LAN tryout instead, set
-   `HOST=0.0.0.0`, use the LAN callback URL, and apply only the
-   [development overrides](configuration-guide.md#local-development-callback-settings).
-3. [Register the subscription](#register-a-webhook-subscription) for the same
-   topic and group, using the configured secret and callback URL. Confirm it
-   becomes `active`. Stop the sample with Ctrl+C, set
-   `export EXPECTED_SUBSCRIPTION_ID="<created-subscription-id>"`, and restart it
-   using the same inbox path. Start triggering events only after this restart.
-4. Follow the [automatic-event tryout](tryout-flows.md#flow-5-publish-and-deliver-an-automatic-lifecycle-event).
-   For `consent.revoke`, revoke a disposable consent whose purpose and group
-   match the subscription. Confirm the event and its `delivered` row in the
-   portal, then run `node docs/static/examples/webhook-listener.mjs --list`
-   in another terminal with the same `INBOX_DB` to inspect accepted IDs.
+From a repository checkout, their paths are:
+* `docs/static/examples/webhook-listener.py`
+* `docs/static/examples/webhook-listener.mjs`
 
-This is a single-subscription acceptance example, not a complete processor:
-it intentionally leaves inbox rows as `accepted`. Add a worker for your
-business action and completion reports. It requires signed payloads, accepts
-up to 1 MiB per request, and reads a pinned JWKS file only at startup. It checks
-future `iat` values with 60 seconds of clock tolerance; delayed authentic
-events remain acceptable and are deduplicated by ID. Protect the inbox as
-personal data, size its storage and retention, and add monitoring, key refresh,
-rate limits, backup, and worker recovery before production use. Keep TLS
-termination and the receiver-to-inbox path within your trusted deployment.
+#### Step-by-step setup:
+
+1. **Configure your shared secret and start the listener:**
+   Choose a shared secret (you will supply this same secret when registering the subscription in the Consent Portal):
+
+   * **Using Python:**
+     ```bash
+     export SHARED_SECRET="$(openssl rand -hex 32)"
+     echo "Your Shared Secret: ${SHARED_SECRET}"
+
+     python3 docs/static/examples/webhook-listener.py
+     ```
+
+   * **Using Node.js:**
+     ```bash
+     export SHARED_SECRET="$(openssl rand -hex 32)"
+     echo "Your Shared Secret: ${SHARED_SECRET}"
+
+     node docs/static/examples/webhook-listener.mjs
+     ```
+
+   By default, the listener starts on `http://127.0.0.1:8443/dpdp/events` (customize `PORT`, `HOST`, or `CALLBACK_PATH` via environment variables if desired). Expose the endpoint at a reachable address matching your subscription's `callbackUrl`.
+
+2. **Register the subscription:**
+   In the Consent Portal, register the subscription with your matching `callbackUrl` and the shared secret printed above. Identity Server immediately sends a verification request, which the listener logs and approves with HTTP 200.
+
+3. **Observe live event deliveries in your terminal:**
+   Whenever an event occurs on your subscribed topics, Identity Server delivers the event to your callback URL. The listener verifies the HMAC-SHA256 signature, pretty-prints the decoded event payload directly to the console, and responds with HTTP `202 Accepted`.
+
+Production receivers should persist incoming events to a durable inbox or message queue, deduplicate by `Delivery-Id`, verify tenant JWS signatures against Identity Server's JWKS endpoint, and acknowledge HTTP 202 before delegating work to asynchronous business workers.
 
 ## 5. Register a subscription
 
 ### Register a webhook subscription
 
 In the Consent Portal, open **Event Notifications → Subscriptions** and select
-**Register Subscription**. Choose an active topic, a purpose filter, `webhook`
-delivery, the callback URL, and a shared secret. Save the secret in the webhook
+**Register Subscription**. Choose the subscribed topics (between 1 and 100 unique active topics),
+a purpose filter, `webhook` delivery, the callback URL, and a shared secret. Save the secret in the webhook
 receiver's secret store before submitting the form.
 
 Purpose filters behave as follows:
@@ -499,18 +456,20 @@ Purpose filters behave as follows:
 | `all_except` | Events containing at least one purpose that is not listed. |
 
 `specific` and `all_except` require at least one purpose. Purpose matching is
-case-insensitive. A tenant and group cannot mix webhook and poll subscriptions
-for the same topic. Duplicate or overlapping webhook subscriptions using the
-same callback URL are also rejected.
+case-insensitive. A subscription containing `user.account.delete` or `user.data.change`
+requires the `all` purpose filter. Topics are fixed at creation. A tenant and group cannot
+mix webhook and poll subscriptions for the same topic. Duplicate or overlapping webhook
+subscriptions using the same callback URL are also rejected. Referenced topics cannot
+be deregistered while any subscription referencing them is active, pending, or stale.
 
-To register a webhook through the API:
+To register a webhook subscription through the API:
 
 ```sh
 curl --request POST "${API_BASE}/subscriptions" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}" \
   --header "Content-Type: application/json" \
   --data '{
-    "topic": "consent-status-changed",
+    "topics": ["consent.update", "consent.revoke"],
     "filter": {
       "type": "specific",
       "purposes": ["account-management"]
@@ -548,7 +507,7 @@ curl --request POST "${API_BASE}/subscriptions" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}" \
   --header "Content-Type: application/json" \
   --data '{
-    "topic": "consent-status-changed",
+    "topics": ["consent-status-changed"],
     "filter": {
       "type": "all",
       "purposes": []

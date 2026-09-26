@@ -642,32 +642,36 @@ separate event instead of representing the original action.
 
 Before registering a subscription, follow the
 [sample listener startup steps](event-notification-guide.md#run-the-sample-listener)
-with `EXPECTED_TOPIC=user.data.change` and the same tenant/group as this tryout.
+to start the reference listener.
+You can run either the **Python** reference listener (requires **Python 3.9+**, Python 3.10+ recommended)
+or the **Node.js** reference listener (requires **Node.js 18+**);
+both use standard libraries with zero external dependencies and log all payloads and verification challenges directly to the console.
 Enable lifecycle publishing and the user-lifecycle event handler in the
 [runtime configuration](configuration-guide.md#9-configure-event-notifications).
-Use HTTPS, or the explicitly documented isolated LAN overrides. These steps
-give you a verified, durable inbox instead of an endpoint that merely logs
-requests and returns success.
+Use HTTPS, or the explicitly documented isolated LAN overrides.
 
 Use a disposable receiver that is reachable from Identity Server. The same
 callback URL must:
 
-- answer the verification `GET` with HTTP `200` and the exact
-  `hub.challenge` value; and
+- answer the verification `POST` with HTTP `200` and the exact
+  `challenge` value as plain text; and
 - accept the event-delivery `POST` and retain the raw body and
   `event-signature` header for verification.
 
-During subscription verification, Identity Server sends a request equivalent
-to:
+During subscription verification, Identity Server sends an HTTP POST request to your configured callback URL (in this tryout, our example listener uses the path `/dpdp/events`, but any path matching your `callbackUrl` can be used):
 
 ```http
-GET /dpdp/events?hub.mode=subscribe&hub.topic=user.data.change&hub.challenge=3b3f5ebc1f HTTP/1.1
+POST /dpdp/events HTTP/1.1
 Host: receiver.example.com
-```
+Content-Type: application/json
 
-This singleton tryout uses GET verification. Multi-topic subscriptions use one JSON
-verification POST containing the complete topic array; see
-[webhook verification](event-notification-guide.md#respond-to-verification).
+{
+  "type": "subscription.verification",
+  "subscriptionId": "sub-12345",
+  "topics": ["user.data.change"],
+  "challenge": "3b3f5ebc1f"
+}
+```
 
 The receiver must return the challenge itself, not a JSON wrapper:
 
@@ -701,7 +705,7 @@ curl -X POST \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "topic": "user.data.change",
+    "topics": ["user.data.change"],
     "filter": {
       "type": "all"
     },
@@ -720,7 +724,7 @@ Representative response while callback verification is pending:
   "subscriptionId": "54fba1f0-88c2-49d6-aec5-e91c8a1e1bdf",
   "orgId": "example.com",
   "groupId": "example.com",
-  "topic": "user.data.change",
+  "topics": ["user.data.change"],
   "filter": {
     "type": "all"
   },
@@ -738,9 +742,8 @@ The response deliberately omits `sharedSecret`. Retain the value supplied in
 the request. After a successful challenge exchange, fetching the subscription
 shows `status` as `active` (displayed as `ACTIVE` in the portal).
 
-If using the sample listener, now set `EXPECTED_SUBSCRIPTION_ID` to the created
-ID and restart the listener using the same shared secret and inbox database.
-Its initial verification-only mode deliberately does not accept events.
+The running sample listener automatically verifies the challenge and logs it to your console.
+It continues running to receive subsequent event deliveries.
 
 #### Trigger and inspect the event
 
@@ -750,12 +753,11 @@ Its initial verification-only mode deliberately does not accept events.
 3. Find the new `user.data.change` event and open it.
 4. Inspect its payload and subscription-specific delivery records.
 5. Open the subscription details to inspect its event and delivery history.
-6. Confirm that the receiver obtained a signed webhook delivery and that its
-   verified envelope was committed to the inbox. Use the sample's `--list`
-   command to inspect the accepted delivery ID.
+6. Confirm that the listener terminal displays the incoming signed webhook delivery with the verified
+   HMAC-SHA256 signature and decoded event payload.
 7. Confirm the portal delivery state is `delivered`. This proves HTTP
-   acceptance only; the sample does not perform a business operation or submit
-   completion evidence. Implement those in the downstream worker as explained
+   acceptance only; the sample listener logs the payload for developer inspection and does not perform
+   a business operation or submit completion evidence. Implement those in a downstream worker as explained
    in [receiver responsibilities](event-notification-guide.md#acceptance-retries-and-processing-responsibilities).
 
 The DPDP lifecycle publisher constructs the following payload and passes it to

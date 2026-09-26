@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -423,14 +422,44 @@ public class SubscriptionServiceReadAndDeleteTest {
         verify(subscriptionDAO, never()).updateSubscriptionStatus(any(Connection.class), eq("sub-1"), eq("org-1"), eq("active"));
     }
 
+    private static byte[] bodyBytesOf(HttpRequest request) {
+        if (!request.bodyPublisher().isPresent()) {
+            return new byte[0];
+        }
+        java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
+        java.util.concurrent.CompletableFuture<byte[]> body = new java.util.concurrent.CompletableFuture<>();
+        request.bodyPublisher().get().subscribe(new java.util.concurrent.Flow.Subscriber<java.nio.ByteBuffer>() {
+            public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
+                subscription.request(Long.MAX_VALUE);
+            }
+            public void onNext(java.nio.ByteBuffer buffer) {
+                byte[] chunk = new byte[buffer.remaining()];
+                buffer.get(chunk);
+                bytes.write(chunk, 0, chunk.length);
+            }
+            public void onError(Throwable error) {
+                body.completeExceptionally(error);
+            }
+            public void onComplete() {
+                body.complete(bytes.toByteArray());
+            }
+        });
+        return body.join();
+    }
+
     private void installSuccessfulVerificationClient() throws Exception {
         installVerificationClient(request -> {
-            String query = request.uri().getQuery();
-            String encoded = Arrays.stream(query.split("&"))
-                    .filter(part -> part.startsWith("hub.challenge="))
-                    .findFirst().get().substring("hub.challenge=".length());
-            return new ByteArrayInputStream(URLDecoder.decode(encoded, StandardCharsets.UTF_8)
-                    .getBytes(StandardCharsets.UTF_8));
+            try {
+                assertEquals(request.method(), "POST");
+                assertEquals(request.headers().firstValue("Content-Type").orElse(null), "application/json");
+                com.fasterxml.jackson.databind.JsonNode json =
+                        new com.fasterxml.jackson.databind.ObjectMapper().readTree(bodyBytesOf(request));
+                assertEquals(json.get("type").asText(), "subscription.verification");
+                String challenge = json.get("challenge").asText();
+                return new ByteArrayInputStream(challenge.getBytes(StandardCharsets.UTF_8));
+            } catch (Exception e) {
+                throw new AssertionError("Failed to extract challenge from verification request", e);
+            }
         });
     }
 
@@ -480,28 +509,9 @@ public class SubscriptionServiceReadAndDeleteTest {
             requests.incrementAndGet();
             assertEquals(request.method(), "POST");
             assertEquals(request.headers().firstValue("Content-Type").get(), "application/json");
-            java.io.ByteArrayOutputStream bytes = new java.io.ByteArrayOutputStream();
-            java.util.concurrent.CompletableFuture<byte[]> body = new java.util.concurrent.CompletableFuture<>();
-            request.bodyPublisher().get().subscribe(new java.util.concurrent.Flow.Subscriber<java.nio.ByteBuffer>() {
-                public void onSubscribe(java.util.concurrent.Flow.Subscription subscription) {
-                    subscription.request(Long.MAX_VALUE);
-                }
-                public void onNext(java.nio.ByteBuffer buffer) {
-                    byte[] chunk = new byte[buffer.remaining()];
-                    buffer.get(chunk);
-                    bytes.write(chunk, 0, chunk.length);
-                }
-                public void onError(Throwable error) {
-                    body.completeExceptionally(error);
-                }
-
-                public void onComplete() {
-                    body.complete(bytes.toByteArray());
-                }
-            });
             try {
                 com.fasterxml.jackson.databind.JsonNode json =
-                        new com.fasterxml.jackson.databind.ObjectMapper().readTree(body.join());
+                        new com.fasterxml.jackson.databind.ObjectMapper().readTree(bodyBytesOf(request));
                 assertEquals(json.get("type").asText(), "subscription.verification");
                 assertEquals(json.get("subscriptionId").asText(), "sub-1");
                 assertEquals(json.get("topics").size(), 100);

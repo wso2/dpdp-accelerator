@@ -270,6 +270,62 @@ public class SubscriptionServiceImplTest {
         }
 
         @Test
+        public void testCreateSingleTopicLifecycleSubscriptionWithSpecificFilterRejectsWith422() {
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.SPECIFIC, Collections.singletonList("marketing"));
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.POLL, null, "secret123");
+
+                EventNotificationServiceException ex = org.testng.Assert.expectThrows(
+                                EventNotificationServiceException.class,
+                                () -> subscriptionService.createMultiTopicSubscription("org1", "group1",
+                                                "sub-name", Collections.singletonList("user.data.change"), filter, delivery));
+                assertEquals(ex.getStatusCode(), 422);
+                assertEquals(ex.getDescription(), "Subscriptions containing user lifecycle topics require the all purpose filter.");
+        }
+
+        @Test
+        public void testCreateSingleTopicUserAccountDeleteWithExceptFilterRejectsWith422() {
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.EXCEPT, Collections.singletonList("marketing"));
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.POLL, null, "secret123");
+
+                EventNotificationServiceException ex = org.testng.Assert.expectThrows(
+                                EventNotificationServiceException.class,
+                                () -> subscriptionService.createMultiTopicSubscription("org1", "group1",
+                                                "sub-name", Collections.singletonList("user.account.delete"), filter, delivery));
+                assertEquals(ex.getStatusCode(), 422);
+                assertEquals(ex.getDescription(), "Subscriptions containing user lifecycle topics require the all purpose filter.");
+        }
+
+        @Test
+        public void testCreateMultiTopicLifecycleSubscriptionWithSpecificFilterRejectsWith422() {
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.SPECIFIC, Collections.singletonList("marketing"));
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.POLL, null, "secret123");
+
+                EventNotificationServiceException ex = org.testng.Assert.expectThrows(
+                                EventNotificationServiceException.class,
+                                () -> subscriptionService.createMultiTopicSubscription("org1", "group1",
+                                                "sub-name", java.util.Arrays.asList("consent.update", "user.data.change"), filter, delivery));
+                assertEquals(ex.getStatusCode(), 422);
+                assertEquals(ex.getDescription(), "Subscriptions containing user lifecycle topics require the all purpose filter.");
+        }
+
+        @Test
+        public void testCreateLifecycleSubscriptionWithAllFilterSucceeds() {
+                Topic topic = new Topic("t1", "org1", "user.data.change", "desc", "active");
+                Map<String, Topic> resolved = new HashMap<>();
+                resolved.put("user.data.change", topic);
+                when(topicDAO.getTopicsByOrgAndNames(any(Connection.class), eq("org1"), any())).thenReturn(resolved);
+                doNothing().when(subscriptionDAO).addSubscription(any(Connection.class), any(Subscription.class));
+
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.ALL, Collections.emptyList());
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.POLL, null, "secret123");
+
+                SubscriptionDTO result = subscriptionService.createMultiTopicSubscription("org1", "group1",
+                                "sub-name", Collections.singletonList("user.data.change"), filter, delivery);
+                assertNotNull(result);
+                assertEquals(result.getStatus(), SubscriptionStatus.ACTIVE);
+        }
+
+        @Test
         public void testCreateSubscriptionTopicDeregisteredUnderLockReturns409() throws Exception {
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
