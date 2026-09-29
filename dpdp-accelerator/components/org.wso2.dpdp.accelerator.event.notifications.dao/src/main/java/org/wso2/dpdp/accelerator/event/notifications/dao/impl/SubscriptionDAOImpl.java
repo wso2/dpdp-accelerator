@@ -75,6 +75,21 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         return configurationService;
     }
 
+    /**
+     * Maximum time in seconds that the {@code SELECT … FOR UPDATE} issued by
+     * {@link #lockSubscriptionForVerification} is allowed to wait for the row
+     * lock before throwing {@link java.sql.SQLTimeoutException}.
+     *
+     * <p>
+     * This bounds the worst-case stall inside the pending-subscription
+     * recovery tick to 3 s per locked row. It is deliberately not
+     * TOML-configurable because a lock wait consistently exceeding 3 s
+     * indicates a dead or slow connection holding the lock — a root cause
+     * that requires operational intervention rather than a longer timeout.
+     * </p>
+     */
+    private static final int LOCK_SUBSCRIPTION_QUERY_TIMEOUT_SECONDS = 3;
+
     private EventNotificationCommonDBQueries getQueries(Connection conn) {
         return EventNotificationQueryFactory.getQueryProvider(conn);
     }
@@ -156,8 +171,10 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 }
 
             }
-            // Constraint checks here under the topic row lock are mirrored by the fast-fail pre-check in
-            // SubscriptionServiceImpl.createMultiTopicSubscription; keep both gates in sync.
+            // Constraint checks here under the topic row lock are mirrored by the fast-fail
+            // pre-check in
+            // SubscriptionServiceImpl.createMultiTopicSubscription; keep both gates in
+            // sync.
             if (getConfiguration().isEventNotificationSubscriptionConstraintChecksEnabled()) {
                 try (PreparedStatement lockPs = conn.prepareStatement(
                         queries.getLockSubscriptionsForTopicsQuery(topicIds.size()))) {
@@ -245,7 +262,8 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 if (msg.contains("UQ_SUB_ORG_ACTIVE_NAME")) {
                     throw new EventNotificationDuplicateResourceException(
                             String.format(EventNotificationCommonConstants.ERROR_SUBSCRIPTION_NAME_ALREADY_EXISTS,
-                                    subscription.getName()), e);
+                                    subscription.getName()),
+                            e);
                 }
                 throw new EventNotificationDuplicateResourceException(
                         EventNotificationCommonConstants.ERROR_DUPLICATE_SUBSCRIPTION, e);
@@ -284,6 +302,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         Objects.requireNonNull(conn, "Connection cannot be null.");
         try (PreparedStatement ps = conn.prepareStatement(
                 getQueries(conn).getLockSubscriptionForVerificationQuery())) {
+            ps.setQueryTimeout(LOCK_SUBSCRIPTION_QUERY_TIMEOUT_SECONDS);
             ps.setString(1, subscriptionId);
             ps.setString(2, orgId);
             ps.setString(3, expectedStatus);
@@ -614,6 +633,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         try (PreparedStatement ps = conn
                 .prepareStatement(getQueries(conn).getGetPendingSubscriptionsForRecoveryQuery())) {
             ps.setTimestamp(1, updatedBefore);
+            ps.setInt(2, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next() && list.size() < limit) {
                     Subscription sub = mapSubscription(rs);

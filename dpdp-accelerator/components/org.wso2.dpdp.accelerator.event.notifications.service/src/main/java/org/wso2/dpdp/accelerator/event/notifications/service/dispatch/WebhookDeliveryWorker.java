@@ -32,7 +32,6 @@ import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryDispatchContext;
 
 import java.net.http.HttpClient;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -43,8 +42,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.TimeUnit;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Batch driver for the webhook dispatch loop. One tick:
@@ -88,6 +86,36 @@ public class WebhookDeliveryWorker implements Runnable {
         NOT_SUPPORTED_FOR_POLL
     }
 
+    /**
+     * Fine-grained result from {@link #submitOne} so that {@link #submitBatch}
+     * can distinguish between three outcomes:
+     * <ul>
+     * <li>{@code QUEUED} — the task was handed to the executor; counts as forward
+     * progress.</li>
+     * <li>{@code CAPPED} — the subscription has already reached its per-subscription
+     * in-flight limit; the row is skipped but the pool may still have capacity for
+     * other subscriptions, so the batch loop should continue.</li>
+     * <li>{@code POOL_SATURATED} — the executor rejected the task (queue full);
+     * the loop must stop immediately.</li>
+     * </ul>
+     */
+    private enum SubmitStatus {
+        QUEUED,
+        CAPPED,
+        POOL_SATURATED
+    }
+
+    /** Carries the results of one {@link #submitBatch} call back to {@link #runTick}. */
+    private static final class BatchResult {
+        final int submitted;
+        final boolean poolSaturated;
+
+        BatchResult(int submitted, boolean poolSaturated) {
+            this.submitted = submitted;
+            this.poolSaturated = poolSaturated;
+        }
+    }
+
     private static final Log LOG = LogFactory.getLog(WebhookDeliveryWorker.class);
 
     private final DeliveryDAO deliveryDAO;
@@ -96,6 +124,18 @@ public class WebhookDeliveryWorker implements Runnable {
     private final DPDPConfigurationService configurationService;
 
     private final Set<String> tracked = ConcurrentHashMap.newKeySet();
+    /**
+     * Tracks how many deliveries for each subscription are currently in-flight
+     * (i.e. handed to the executor and not yet complete). The counter is
+     * incremented <em>before</em> the executor lambda starts (inside
+     * {@link #submitOne}) and decremented in a {@code finally} block inside the
+     * lambda so it is always released regardless of claim failure or exception.
+     *
+     * <p>Keys are never explicitly removed; a lingering zero-count entry is
+     * harmless and avoids the TOCTOU race that arises when a concurrent decrement
+     * sees the key disappear between {@code get} and {@code remove}.</p>
+     */
+    private final ConcurrentHashMap<String, AtomicInteger> perSubInFlight = new ConcurrentHashMap<>();
     private volatile boolean stopping;
 
     public WebhookDeliveryWorker(DeliveryDAO deliveryDAO, Executor executor) {
@@ -186,7 +226,7 @@ public class WebhookDeliveryWorker implements Runnable {
             if (budget <= 0) {
                 break;
             }
-            int fetchLimit = budget + totalSubmitted;
+            int fetchLimit = budget + seenThisTick.size();
             List<WebhookDeliveryDispatchContext> pending = fetch(fetchLimit, false);
             if (pending.isEmpty()) {
                 break;
@@ -209,10 +249,13 @@ public class WebhookDeliveryWorker implements Runnable {
                 break;
             }
 
-            int submitted = submitBatch(fresh, false, null);
-            totalSubmitted += submitted;
+            BatchResult result = submitBatch(fresh, false, null);
+            totalSubmitted += result.submitted;
 
-            if (submitted < fresh.size() || pending.size() < fetchLimit) {
+            // Stop if the pool is saturated — more rows exist but we have no capacity.
+            // Do NOT stop just because some rows were capped; other subscriptions may
+            // still have capacity in both the per-subscription limit and the pool.
+            if (result.poolSaturated || pending.size() < fetchLimit) {
                 break;
             }
         }
@@ -235,7 +278,7 @@ public class WebhookDeliveryWorker implements Runnable {
             return 0;
         }
         LOG.info("Reclaiming " + stuck.size() + " stuck in-flight webhook deliveries.");
-        return submitBatch(stuck, true, cutoff);
+        return submitBatch(stuck, true, cutoff).submitted;
     }
 
     /**
@@ -360,7 +403,7 @@ public class WebhookDeliveryWorker implements Runnable {
      * @param stuckCutoff the UPDATED_AT cutoff; only used when {@code isReclaim} is
      *                    true.
      */
-    private int submitBatch(List<WebhookDeliveryDispatchContext> contexts,
+    private BatchResult submitBatch(List<WebhookDeliveryDispatchContext> contexts,
             boolean isReclaim, java.sql.Timestamp stuckCutoff) {
         int submitted = 0;
         for (WebhookDeliveryDispatchContext ctx : contexts) {
@@ -371,19 +414,42 @@ public class WebhookDeliveryWorker implements Runnable {
             if (tracked.contains(id)) {
                 continue;
             }
-            if (!submitOne(ctx, isReclaim, stuckCutoff)) {
-                break;
+            SubmitStatus status = submitOne(ctx, isReclaim, stuckCutoff);
+            if (status == SubmitStatus.QUEUED) {
+                submitted++;
+            } else if (status == SubmitStatus.POOL_SATURATED) {
+                return new BatchResult(submitted, true);
             }
-            submitted++;
+            // CAPPED: skip this row but continue trying other subscriptions.
         }
-        return submitted;
+        return new BatchResult(submitted, false);
     }
 
-    private boolean submitOne(WebhookDeliveryDispatchContext ctx, boolean isReclaim,
+    private SubmitStatus submitOne(WebhookDeliveryDispatchContext ctx, boolean isReclaim,
             java.sql.Timestamp stuckCutoff) {
         String id = ctx.getDelivery().getDeliveryId();
+        String subscriptionId = ctx.getDelivery().getSubscriptionId();
+        int cap = getConfiguration().getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription();
+
+        // Per-subscription cap gate: increment before acquiring the tracker slot so
+        // the counter is always paired with a decrement in the executor finally block.
+        AtomicInteger counter = perSubInFlight.computeIfAbsent(subscriptionId, k -> new AtomicInteger(0));
+        int current = counter.getAndUpdate(v -> v < cap ? v + 1 : v);
+        if (current >= cap) {
+            // Counter was not incremented; this subscription is at its limit.
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Per-subscription cap reached for subscription ["
+                        + LogSanitizer.sanitize(subscriptionId) + "]; skipping delivery ["
+                        + LogSanitizer.sanitize(id) + "].");
+            }
+            return SubmitStatus.CAPPED;
+        }
+
+        // Counter incremented — must decrement in all exit paths below.
         if (!tracked.add(id)) {
-            return true;
+            // Already tracked by a concurrent tick; undo the counter increment.
+            counter.decrementAndGet();
+            return SubmitStatus.QUEUED;
         }
         try {
             executor.execute(() -> {
@@ -391,22 +457,25 @@ public class WebhookDeliveryWorker implements Runnable {
                     executeClaimed(ctx, isReclaim, stuckCutoff);
                 } finally {
                     tracked.remove(id);
+                    counter.decrementAndGet();
                 }
             });
-            return true;
+            return SubmitStatus.QUEUED;
         } catch (RejectedExecutionException e) {
             tracked.remove(id);
+            counter.decrementAndGet();
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Delivery worker pool saturated; backing off delivery ["
                         + LogSanitizer.sanitize(id) + "].");
             }
-            return false;
+            return SubmitStatus.POOL_SATURATED;
         } catch (RuntimeException e) {
             tracked.remove(id);
+            counter.decrementAndGet();
             LOG.error("Failed to submit WebhookDeliveryTask for delivery ["
                     + LogSanitizer.sanitize(id) + "]: "
                     + LogSanitizer.sanitize(e.getMessage()), e);
-            return false;
+            return SubmitStatus.POOL_SATURATED;
         }
     }
 
