@@ -218,6 +218,14 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
+    public int getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION
+                : configParser.getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription();
+    }
+
+    @Override
     public int getEventNotificationPendingSubscriptionRecoveryIntervalSeconds() {
 
         return configParser == null

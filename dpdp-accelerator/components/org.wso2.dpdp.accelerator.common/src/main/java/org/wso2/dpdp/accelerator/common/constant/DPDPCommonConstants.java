@@ -91,6 +91,8 @@ public final class DPDPCommonConstants {
             "EventNotifications.DeliveryWorkerMaxBatchesPerRun";
     public static final String EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS =
             "EventNotifications.DeliveryWorkerMaxRunSeconds";
+    public static final String EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION =
+            "EventNotifications.DeliveryWorkerMaxConcurrentPerSubscription";
     public static final String EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_INTERVAL_SECONDS =
             "EventNotifications.PendingSubscriptionRecoveryIntervalSeconds";
     public static final String EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_BATCH_SIZE =
@@ -131,6 +133,7 @@ public final class DPDPCommonConstants {
     public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_POLL_SECONDS = 5;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_BATCHES_PER_RUN = 10;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS = 4;
+    public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION = 2;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_STUCK_INFLIGHT_THRESHOLD_SECONDS = 60;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_MAX_VERIFICATION_RESPONSE_BODY_BYTES = 4096;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_THRESHOLD_SECONDS = 60;

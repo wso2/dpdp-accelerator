@@ -87,6 +87,10 @@ public class WebhookDeliveryWorkerTest {
                 when(configurationService.getEventNotificationDeliveryWorkerMaxBatchesPerRun()).thenReturn(10);
                 when(configurationService.getEventNotificationDeliveryWorkerMaxRunSeconds()).thenReturn(4);
                 when(configurationService.getEventNotificationStuckInFlightThresholdSeconds()).thenReturn(10);
+                // Default to effectively unlimited per-subscription cap so existing tests
+                // are not affected by the noisy-neighbour guard.
+                when(configurationService.getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription())
+                        .thenReturn(Integer.MAX_VALUE);
         }
 
         @org.testng.annotations.AfterMethod
