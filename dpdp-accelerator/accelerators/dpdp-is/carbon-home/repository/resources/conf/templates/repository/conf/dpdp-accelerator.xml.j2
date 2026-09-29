@@ -80,6 +80,11 @@
         {% endif %}
     </Complaints>
     <EventNotifications>
+        {% if dpdp_accelerator.event_notifications.encrypt_shared_secret is defined %}
+        <EncryptSharedSecret>{{dpdp_accelerator.event_notifications.encrypt_shared_secret}}</EncryptSharedSecret>
+        {% else %}
+        <EncryptSharedSecret>false</EncryptSharedSecret>
+        {% endif %}
         {% if dpdp_accelerator.event_notifications.webhook.thread_pool_size is defined %}
         <ThreadPoolSize>{{dpdp_accelerator.event_notifications.webhook.thread_pool_size}}</ThreadPoolSize>
         {% else %}

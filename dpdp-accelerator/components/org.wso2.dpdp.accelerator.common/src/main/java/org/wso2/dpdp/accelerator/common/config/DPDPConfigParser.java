@@ -340,6 +340,12 @@ public final class DPDPConfigParser {
                 DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_MAX_SUBSCRIPTION_TOPICS);
     }
 
+    public boolean isEventNotificationEncryptSharedSecret() {
+
+        return getValidatedBoolean(DPDPCommonConstants.EVENT_NOTIFICATIONS_ENCRYPT_SHARED_SECRET,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_ENCRYPT_SHARED_SECRET);
+    }
+
     public boolean isEventNotificationPollingRequestHmacValidationEnabled() {
 
         return getValidatedBoolean(

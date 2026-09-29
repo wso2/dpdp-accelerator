@@ -18,7 +18,11 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.dao.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
+import org.wso2.dpdp.accelerator.common.exception.DPDPSystemException;
+import org.wso2.dpdp.accelerator.common.util.CryptoUtils;
 import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.PollStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDaoException;
@@ -50,6 +54,8 @@ import java.util.Optional;
 import java.util.Set;
 
 public class DeliveryDAOImpl implements DeliveryDAO {
+
+    private static final Log LOG = LogFactory.getLog(DeliveryDAOImpl.class);
 
     private DPDPConfigurationService configurationService;
 
@@ -188,7 +194,12 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             ps.setInt(1, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(mapDispatchContext(rs));
+                    String deliveryId = rs.getString(EventNotificationDBColumns.DELIVERY_ID);
+                    try {
+                        list.add(mapDispatchContext(rs));
+                    } catch (EventNotificationDaoException e) {
+                        LOG.error("Skipping delivery [" + deliveryId + "] due to decryption failure: " + e.getMessage(), e);
+                    }
                 }
             }
             return list;
@@ -208,7 +219,12 @@ public class DeliveryDAOImpl implements DeliveryDAO {
             ps.setInt(2, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
-                    list.add(mapDispatchContext(rs));
+                    String deliveryId = rs.getString(EventNotificationDBColumns.DELIVERY_ID);
+                    try {
+                        list.add(mapDispatchContext(rs));
+                    } catch (EventNotificationDaoException e) {
+                        LOG.error("Skipping delivery [" + deliveryId + "] due to decryption failure: " + e.getMessage(), e);
+                    }
                 }
             }
             return list;
@@ -230,12 +246,18 @@ public class DeliveryDAOImpl implements DeliveryDAO {
                 rs.getTimestamp(EventNotificationDBColumns.CREATED_AT),
                 rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
                 rs.getTimestamp(EventNotificationDBColumns.DELIVERED_AT));
+        String plainSecret;
+        try {
+            plainSecret = CryptoUtils.decrypt(rs.getString(EventNotificationDBColumns.SHARED_SECRET));
+        } catch (DPDPSystemException e) {
+            throw new EventNotificationDaoException("Error occurred while decrypting webhook shared secret", e);
+        }
         return new WebhookDeliveryDispatchContext(
                 delivery,
                 rs.getString(EventNotificationDBColumns.ORG_ID),
                 rs.getString(EventNotificationDBColumns.GROUP_ID),
                 rs.getString(EventNotificationDBColumns.CALLBACK_URL),
-                rs.getString(EventNotificationDBColumns.SHARED_SECRET),
+                plainSecret,
                 rs.getString(EventNotificationDBColumns.PAYLOAD),
                 rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT),
                 rs.getString(EventNotificationDBColumns.TOPIC_NAME));

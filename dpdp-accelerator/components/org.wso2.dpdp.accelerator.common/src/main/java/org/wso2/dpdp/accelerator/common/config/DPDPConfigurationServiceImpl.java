@@ -280,6 +280,13 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
+    public boolean isEventNotificationEncryptSharedSecret() {
+
+        return configParser == null ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_ENCRYPT_SHARED_SECRET
+                : configParser.isEventNotificationEncryptSharedSecret();
+    }
+
+    @Override
     public boolean isEventNotificationPollingRequestHmacValidationEnabled() {
 
         return configParser == null

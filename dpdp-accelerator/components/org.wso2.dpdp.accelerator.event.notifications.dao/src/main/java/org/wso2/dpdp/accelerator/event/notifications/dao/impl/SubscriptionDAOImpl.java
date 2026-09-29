@@ -18,6 +18,8 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.dao.impl;
 
+import org.wso2.dpdp.accelerator.common.exception.DPDPSystemException;
+import org.wso2.dpdp.accelerator.common.util.CryptoUtils;
 import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
@@ -187,7 +189,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 ps.setString(6, subscription.getPurposeSetHash());
                 ps.setString(7, subscription.getDeliveryMode());
                 ps.setString(8, subscription.getCallbackUrl());
-                ps.setString(9, subscription.getSharedSecret());
+                ps.setString(9, CryptoUtils.encrypt(subscription.getSharedSecret()));
                 ps.setString(10, subscription.getStatus());
                 ps.executeUpdate();
                 try (PreparedStatement topicPs = conn.prepareStatement(queries.getAddSubscriptionTopicQuery())) {
@@ -225,6 +227,11 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 throw new EventNotificationDuplicateResourceException(
                         EventNotificationCommonConstants.ERROR_DUPLICATE_SUBSCRIPTION, e);
             }
+            throw new EventNotificationDaoException(
+                    String.format(EventNotificationCommonConstants.ERROR_ADDING_SUBSCRIPTION,
+                            subscription.getSubscriptionId()),
+                    e);
+        } catch (DPDPSystemException e) {
             throw new EventNotificationDaoException(
                     String.format(EventNotificationCommonConstants.ERROR_ADDING_SUBSCRIPTION,
                             subscription.getSubscriptionId()),
@@ -664,7 +671,11 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         subscription.setPurposeSetHash(rs.getString(EventNotificationDBColumns.PURPOSE_SET_HASH));
         subscription.setDeliveryMode(rs.getString(EventNotificationDBColumns.DELIVERY_MODE));
         subscription.setCallbackUrl(rs.getString(EventNotificationDBColumns.CALLBACK_URL));
-        subscription.setSharedSecret(rs.getString(EventNotificationDBColumns.SHARED_SECRET));
+        try {
+            subscription.setSharedSecret(CryptoUtils.decrypt(rs.getString(EventNotificationDBColumns.SHARED_SECRET)));
+        } catch (DPDPSystemException e) {
+            throw new EventNotificationDaoException("Error occurred while decrypting subscription shared secret", e);
+        }
         subscription.setStatus(rs.getString(EventNotificationDBColumns.STATUS));
         subscription.setCreatedAt(rs.getTimestamp(EventNotificationDBColumns.CREATED_AT));
         subscription.setUpdatedAt(rs.getTimestamp(EventNotificationDBColumns.UPDATED_AT));

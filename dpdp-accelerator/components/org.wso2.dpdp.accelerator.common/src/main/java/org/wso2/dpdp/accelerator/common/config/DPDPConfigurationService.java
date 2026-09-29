@@ -93,6 +93,8 @@ public interface DPDPConfigurationService {
 
     int getEventNotificationMaxSubscriptionTopics();
 
+    boolean isEventNotificationEncryptSharedSecret();
+
     boolean isEventNotificationPollingRequestHmacValidationEnabled();
 
     boolean isConsentHistoryEnabled();

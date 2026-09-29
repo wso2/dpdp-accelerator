@@ -38,6 +38,14 @@
             <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.wso2.carbon</groupId>
+            <artifactId>org.wso2.carbon.core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.wso2.carbon.crypto</groupId>
+            <artifactId>org.wso2.carbon.crypto.api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.apache.ws.commons.axiom.wso2</groupId>
             <artifactId>axiom</artifactId>
         </dependency>
@@ -153,6 +161,8 @@
                             org.apache.commons.logging;version="${commons.logging.imp.pkg.version.range}",
                             org.apache.axiom.*;version="${axiom.imp.pkg.version.range}",
                             org.wso2.carbon.utils;version="${carbon.kernel.imp.pkg.version.range}",
+                            org.wso2.carbon.core.util;version="${carbon.kernel.imp.pkg.version.range}",
+                            org.wso2.carbon.crypto.api;version="${carbon.crypto.imp.pkg.version.range}",
                             org.wso2.securevault;version="${securevault.version}",
                             org.wso2.securevault.commons;version="${securevault.version}",
                             java.net.http,

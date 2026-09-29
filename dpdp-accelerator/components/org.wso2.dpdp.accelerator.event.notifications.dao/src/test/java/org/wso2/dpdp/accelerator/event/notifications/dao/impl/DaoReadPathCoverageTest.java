@@ -6,6 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager;
+import org.wso2.dpdp.accelerator.common.util.CryptoUtils;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
@@ -125,6 +126,25 @@ public class DaoReadPathCoverageTest {
         org.testng.Assert.assertTrue(deliveries.listEventDeliveries(connection, "org", "", 10, 0, null).isEmpty());
         org.testng.Assert.assertTrue(new SubscriptionDAOImpl()
                 .getPurposesBySubscriptionIds(connection, "org", Collections.emptyList()).isEmpty());
+    }
+
+    @Test
+    public void loadDispatchContextsSkipsRowsWithDecryptionFailures() throws Exception {
+        CryptoUtils.setTestModeEnabled(false);
+        when(resultSet.next()).thenReturn(true, true, false);
+        when(resultSet.getString(org.wso2.dpdp.accelerator.event.notifications.dao.constants.EventNotificationDBColumns.DELIVERY_ID))
+                .thenReturn("del-fail", "del-ok");
+        when(resultSet.getString(org.wso2.dpdp.accelerator.event.notifications.dao.constants.EventNotificationDBColumns.SHARED_SECRET))
+                .thenReturn("dpdp_test_enc:bad-secret", "plain-secret");
+
+        DeliveryDAOImpl deliveries = new DeliveryDAOImpl();
+        setConfiguration(deliveries);
+        java.util.List<org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryDispatchContext> result =
+                deliveries.getPendingWebhookDispatchContexts(connection, 10);
+
+        org.testng.Assert.assertEquals(result.size(), 1);
+        org.testng.Assert.assertEquals(result.get(0).getDelivery().getDeliveryId(), "del-ok");
+        org.testng.Assert.assertEquals(result.get(0).getSharedSecret(), "plain-secret");
     }
 
     private void setConfiguration(DeliveryDAOImpl dao) throws Exception {

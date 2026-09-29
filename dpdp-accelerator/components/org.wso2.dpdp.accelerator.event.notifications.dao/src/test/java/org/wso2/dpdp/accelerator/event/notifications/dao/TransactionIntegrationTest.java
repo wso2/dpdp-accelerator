@@ -6,15 +6,17 @@
 package org.wso2.dpdp.accelerator.event.notifications.dao;
 
 import org.h2.tools.RunScript;
-import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.dpdp.accelerator.common.util.CryptoUtils;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.PurposeFilterMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.PollStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.SubscriptionStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
+import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDaoException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException;
 import org.wso2.dpdp.accelerator.event.notifications.dao.impl.DeliveryDAOImpl;
 import org.wso2.dpdp.accelerator.event.notifications.dao.impl.EventDAOImpl;
@@ -56,6 +58,7 @@ public class TransactionIntegrationTest {
 
     @BeforeMethod
     public void setUp() throws Exception {
+        CryptoUtils.setTestModeEnabled(true);
         databaseName = "enf_" + System.nanoTime();
         connection = DriverManager.getConnection("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1");
         RunScript.execute(connection, new StringReader(
@@ -68,7 +71,7 @@ public class TransactionIntegrationTest {
                         + "NAME VARCHAR(225) NOT NULL, "
                         + "GROUP_ID VARCHAR(128) NOT NULL, PURPOSE_FILTER_MODE VARCHAR(32) NOT NULL, "
                         + "PURPOSE_SET_HASH VARCHAR(64) NOT NULL, DELIVERY_MODE VARCHAR(32) NOT NULL, CALLBACK_URL VARCHAR(512), "
-                        + "SHARED_SECRET VARCHAR(512), STATUS VARCHAR(32) NOT NULL, CREATED_AT TIMESTAMP NOT NULL, UPDATED_AT TIMESTAMP NOT NULL, "
+                        + "SHARED_SECRET VARCHAR(2048), STATUS VARCHAR(32) NOT NULL, CREATED_AT TIMESTAMP NOT NULL, UPDATED_AT TIMESTAMP NOT NULL, "
                         + "ACTIVE_NAME VARCHAR(225) GENERATED ALWAYS AS (CASE WHEN STATUS <> 'deleted' THEN LOWER(NAME) ELSE NULL END));"
                         + "CREATE UNIQUE INDEX UQ_SUB_ORG_ACTIVE_NAME ON SUBSCRIPTION(ORG_ID, ACTIVE_NAME);"
                         + "CREATE TABLE SUBSCRIPTION_TOPIC (ORG_ID VARCHAR(128), SUBSCRIPTION_ID VARCHAR(64), TOPIC_ID VARCHAR(64), PRIMARY KEY(SUBSCRIPTION_ID, TOPIC_ID));"
@@ -90,6 +93,8 @@ public class TransactionIntegrationTest {
 
     @AfterMethod
     public void tearDown() throws Exception {
+        CryptoUtils.setEncryptionEnabled(null);
+        CryptoUtils.setTestModeEnabled(false);
         if (connection != null && !connection.isClosed()) {
             connection.close();
         }
@@ -131,17 +136,125 @@ public class TransactionIntegrationTest {
         subscription.setCreatedAt(new Timestamp(System.currentTimeMillis()));
         subscription.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
 
-        new SubscriptionDAOImpl().addSubscription(connection, subscription);
+        SubscriptionDAOImpl subscriptionDAO = new SubscriptionDAOImpl();
+        subscriptionDAO.addSubscription(connection, subscription);
         try (PreparedStatement ps = connection.prepareStatement(
-                "SELECT PURPOSE_FILTER_MODE, DELIVERY_MODE, STATUS FROM SUBSCRIPTION WHERE SUBSCRIPTION_ID = ?")) {
+                "SELECT PURPOSE_FILTER_MODE, DELIVERY_MODE, STATUS, SHARED_SECRET FROM SUBSCRIPTION "
+                        + "WHERE SUBSCRIPTION_ID = ?")) {
             ps.setString(1, "sub-1");
             try (ResultSet rs = ps.executeQuery()) {
                 assertTrue(rs.next());
                 assertEquals(rs.getString(1), PurposeFilterMode.ALL.getValue());
                 assertEquals(rs.getString(2), DeliveryMode.WEBHOOK.getValue());
                 assertEquals(rs.getString(3), SubscriptionStatus.PENDING.getValue());
+                assertEquals(rs.getString(4), "secret");
             }
         }
+        Subscription retrieved = subscriptionDAO.getSubscriptionById(connection, "sub-1", "org-1").get();
+        assertEquals(retrieved.getSharedSecret(), "secret");
+
+        // Now test with encryption enabled
+        CryptoUtils.setEncryptionEnabled(true);
+        topicDAO.addTopic(connection, new Topic("topic-2", "org-1", "users", "", TopicStatus.ACTIVE.getValue()));
+        Subscription encSub = new Subscription();
+        encSub.setSubscriptionId("sub-enc");
+        encSub.setName("sub-enc-name");
+        encSub.setOrgId("org-1");
+        encSub.setGroupId("group-1");
+        encSub.setTopicIds(Collections.singletonList("topic-2"));
+        encSub.setPurposeFilterMode("ALL");
+        encSub.setPurposes(Collections.singletonList("marketing"));
+        encSub.setDeliveryMode("POLL");
+        encSub.setSharedSecret("secret");
+        encSub.setStatus("ACTIVE");
+        encSub.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        encSub.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        subscriptionDAO.addSubscription(connection, encSub);
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT SHARED_SECRET FROM SUBSCRIPTION WHERE SUBSCRIPTION_ID = ?")) {
+            ps.setString(1, "sub-enc");
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next());
+                String storedSecret = rs.getString(1);
+                assertNotEquals(storedSecret, "secret");
+                assertTrue(storedSecret.startsWith("dpdp_test_enc:"));
+            }
+        }
+        Subscription retrievedEnc = subscriptionDAO.getSubscriptionById(connection, "sub-enc", "org-1").get();
+        assertEquals(retrievedEnc.getSharedSecret(), "secret");
+    }
+
+    @Test
+    public void subscriptionSharedSecretDecryptionFailureThrowsDaoException() throws Exception {
+        TopicDAOImpl topicDAO = new TopicDAOImpl();
+        topicDAO.addTopic(connection, new Topic("topic-sec-fail", "org-1", "accounts", "",
+                TopicStatus.ACTIVE.getValue()));
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionId("sub-sec-fail");
+        subscription.setName("sub-sec-fail-name");
+        subscription.setOrgId("org-1");
+        subscription.setGroupId("group-1");
+        subscription.setTopicIds(Collections.singletonList("topic-sec-fail"));
+        subscription.setPurposeFilterMode("ALL");
+        subscription.setPurposes(Collections.emptyList());
+        subscription.setDeliveryMode("WEBHOOK");
+        subscription.setCallbackUrl("https://example.com/callback");
+        subscription.setSharedSecret("secret");
+        subscription.setStatus("ACTIVE");
+        subscription.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        subscription.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        SubscriptionDAOImpl subscriptionDAO = new SubscriptionDAOImpl();
+        subscriptionDAO.addSubscription(connection, subscription);
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE SUBSCRIPTION SET SHARED_SECRET = ? WHERE SUBSCRIPTION_ID = ?")) {
+            ps.setString(1, "dpdp_test_enc:corrupted_ciphertext_not_valid");
+            ps.setString(2, "sub-sec-fail");
+            assertEquals(ps.executeUpdate(), 1);
+        }
+
+        expectThrows(EventNotificationDaoException.class, () ->
+                subscriptionDAO.getSubscriptionById(connection, "sub-sec-fail", "org-1"));
+    }
+
+    @Test
+    public void webhookDeliveryDispatchContextDecryptionFailureThrowsDaoException() throws Exception {
+        Timestamp now = new Timestamp(System.currentTimeMillis());
+        new TopicDAOImpl().addTopic(connection,
+                new Topic("topic-ctx-fail", "org-1", "accounts", "", TopicStatus.ACTIVE.getValue()));
+        new EventDAOImpl().addEvent(connection,
+                new Event("event-ctx-fail", "org-1", "group-1", "topic-ctx-fail", "{}", now));
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionId("sub-ctx-fail");
+        subscription.setName("sub-ctx-fail-name");
+        subscription.setOrgId("org-1");
+        subscription.setGroupId("group-1");
+        subscription.setTopicIds(Collections.singletonList("topic-ctx-fail"));
+        subscription.setPurposeFilterMode("ALL");
+        subscription.setPurposes(Collections.emptyList());
+        subscription.setDeliveryMode("WEBHOOK");
+        subscription.setCallbackUrl("https://example.com/callback");
+        subscription.setSharedSecret("secret");
+        subscription.setStatus("ACTIVE");
+        subscription.setCreatedAt(now);
+        subscription.setUpdatedAt(now);
+        new SubscriptionDAOImpl().addSubscription(connection, subscription);
+
+        DeliveryDAOImpl deliveryDAO = new DeliveryDAOImpl();
+        deliveryDAO.addWebhookDelivery(connection, new WebhookDelivery("delivery-ctx-fail", "org-1", "sub-ctx-fail",
+                "event-ctx-fail", "pending", 0, null, now, now, null));
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "UPDATE SUBSCRIPTION SET SHARED_SECRET = ? WHERE SUBSCRIPTION_ID = ?")) {
+            ps.setString(1, "dpdp_test_enc:corrupted_ciphertext_not_valid");
+            ps.setString(2, "sub-ctx-fail");
+            assertEquals(ps.executeUpdate(), 1);
+        }
+
+        expectThrows(EventNotificationDaoException.class, () ->
+                deliveryDAO.getWebhookDeliveryDispatchContext(connection, "org-1", "sub-ctx-fail", "delivery-ctx-fail"));
     }
 
     @Test

@@ -355,6 +355,12 @@
                 <scope>provided</scope>
             </dependency>
             <dependency>
+                <groupId>org.wso2.carbon.crypto</groupId>
+                <artifactId>org.wso2.carbon.crypto.api</artifactId>
+                <version>${carbon.crypto.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
                 <groupId>org.wso2.carbon</groupId>
                 <artifactId>org.wso2.carbon.user.core</artifactId>
                 <version>${carbon.user.core.version}</version>
@@ -595,6 +601,7 @@
         <carbon.kernel.version>4.12.34</carbon.kernel.version>
         <carbon.user.core.version>4.12.34</carbon.user.core.version>
         <carbon.user.api.version>4.12.34</carbon.user.api.version>
+        <carbon.crypto.version>1.2.3</carbon.crypto.version>
         <carbon.tenant.common.version>4.14.4</carbon.tenant.common.version>
         <carbon.identity.application.common.version>7.10.156</carbon.identity.application.common.version>
         <carbon.identity.core.version>7.10.156</carbon.identity.core.version>
@@ -609,6 +616,7 @@
         <!-- Bounded Import-Package ranges for the Carbon/Identity properties above, grouped by
              release train, so an incompatible future version fails fast instead of resolving. -->
         <carbon.kernel.imp.pkg.version.range>[4.12.0, 5.0.0)</carbon.kernel.imp.pkg.version.range>
+        <carbon.crypto.imp.pkg.version.range>[1.2.0, 2.0.0)</carbon.crypto.imp.pkg.version.range>
         <!-- org.wso2.carbon.user.api ships in a 4.12.34 bundle but exports its one package at the
              package's own, independent version (1.0.1) - verified against the real jar's manifest,
              not the bundle version, after this mismatch broke OSGi resolution once before. -->

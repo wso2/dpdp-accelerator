@@ -111,6 +111,9 @@ public final class DPDPCommonConstants {
             "EventNotifications.Polling.RequestHmacValidationEnabled";
     public static final String EVENT_NOTIFICATIONS_MAX_SUBSCRIPTION_TOPICS =
             "EventNotifications.Subscription.MaxTopics";
+    public static final String EVENT_NOTIFICATIONS_ENCRYPT_SHARED_SECRET =
+            "EventNotifications.EncryptSharedSecret";
+    public static final boolean DEFAULT_EVENT_NOTIFICATIONS_ENCRYPT_SHARED_SECRET = false;
 
     public static final int DEFAULT_EVENT_NOTIFICATIONS_THREAD_POOL_SIZE = 4;
     public static final long DEFAULT_EVENT_NOTIFICATIONS_BASE_BACKOFF_SECONDS = 5L;

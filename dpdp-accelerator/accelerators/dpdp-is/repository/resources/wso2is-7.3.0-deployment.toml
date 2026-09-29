@@ -436,6 +436,11 @@ email_notifications_enabled = false
 # every tenant on create/update. Set false to manage system topics manually instead.
 system_topics_auto_create_enabled = true
 
+# Controls whether webhook/subscription shared secrets are encrypted at rest using WSO2 Carbon's
+# primary keystore. Defaults to false (plaintext storage). Set to true to enable encryption.
+# Note: DPDP shared secrets are strictly encrypted, never hashed.
+encrypt_shared_secret = false
+
 [dpdp_accelerator.event_notifications.payload_signing]
 enabled = true
 audience = "dpdp-event-notifications"

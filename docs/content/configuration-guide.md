@@ -452,6 +452,7 @@ Restart Identity Server after changing these runtime settings.
 ```toml
 [dpdp_accelerator.event_notifications]
 system_topics_auto_create_enabled = true
+encrypt_shared_secret = false
 
 [dpdp_accelerator.event_notifications.payload_signing]
 enabled = true
@@ -485,9 +486,17 @@ worker_shutdown_timeout_seconds = 5
 ```
 
 `system_topics_auto_create_enabled` controls whether the five predefined topics
-are reconciled for each tenant. `lifecycle_events.publishing_enabled` controls
-whether matching consent and user lifecycle actions automatically publish
-events to those topics; it defaults to `true`. Topic creation and lifecycle
+are reconciled for each tenant. `encrypt_shared_secret` controls whether webhook
+and poll subscription shared secrets are encrypted at rest using WSO2 Carbon's
+primary keystore; it defaults to `false` (plaintext storage). When enabled (`true`),
+secrets are reversibly encrypted prior to database persistence and decrypted on
+retrieval. Note that DPDP shared secrets are strictly encrypted rather than hashed,
+because webhook HMAC signature generation and verification delivery require
+reversible plaintext.
+
+`lifecycle_events.publishing_enabled` controls whether matching consent and user
+lifecycle actions automatically publish events to those topics; it defaults to `true`.
+Topic creation and lifecycle
 publication are independent settings: a topic can exist while automatic
 publication is disabled. The `user.data.change` and `user.account.delete`
 publishers also require the `dpdpUserLifecycleEventHandler` subscription shown
@@ -522,8 +531,9 @@ the production restrictions after testing; do not expose the sample's plain
 HTTP port directly to the Internet.
 
 These are server-wide runtime settings. Subscription `sharedSecret` values
-remain per-subscription data and are not placed in `dpdp-accelerator.xml`.
-The shipped `wso2is-7.3.0-deployment.toml` is the source of truth for defaults;
+remain per-subscription credentials; their at-rest encryption in the database
+is controlled by `encrypt_shared_secret`. The shipped
+`wso2is-7.3.0-deployment.toml` is the source of truth for defaults;
 see the [Event Notification Guide](event-notification-guide.md) for the
 security and operational meaning of the polling, signing, verification, and
 delivery settings.

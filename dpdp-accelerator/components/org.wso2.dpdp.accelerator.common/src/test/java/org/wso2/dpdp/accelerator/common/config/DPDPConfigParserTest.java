@@ -207,6 +207,37 @@ public class DPDPConfigParserTest {
         assertEquals(parser.getEventNotificationPollingDefaultMaxEvents(), 15);
         assertEquals(parser.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(parser.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(!parser.isEventNotificationEncryptSharedSecret());
+    }
+
+    @Test
+    public void parsesEventNotificationEncryptSharedSecretValues() throws Exception {
+
+        DPDPConfigParser parser = DPDPConfigParser.getInstance();
+        Field configurationField = DPDPConfigParser.class.getDeclaredField("configuration");
+        configurationField.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> values = (Map<String, Object>) configurationField.get(parser);
+        Map<String, Object> backup = new HashMap<>(values);
+        try {
+            values.remove("EventNotifications.EncryptSharedSecret");
+            assertTrue(!parser.isEventNotificationEncryptSharedSecret());
+
+            values.put("EventNotifications.EncryptSharedSecret", "false");
+            assertTrue(!parser.isEventNotificationEncryptSharedSecret());
+
+            values.put("EventNotifications.EncryptSharedSecret", "true");
+            assertTrue(parser.isEventNotificationEncryptSharedSecret());
+
+            values.put("EventNotifications.EncryptSharedSecret", "TRUE");
+            assertTrue(parser.isEventNotificationEncryptSharedSecret());
+
+            values.put("EventNotifications.EncryptSharedSecret", "invalid");
+            expectThrows(IllegalStateException.class, parser::isEventNotificationEncryptSharedSecret);
+        } finally {
+            values.clear();
+            values.putAll(backup);
+        }
     }
 
     @Test
@@ -249,6 +280,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 15);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(service.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(!service.isEventNotificationEncryptSharedSecret());
     }
 
     @Test
@@ -286,6 +318,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 20);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 100);
         assertTrue(!service.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(!service.isEventNotificationEncryptSharedSecret());
     }
 
     @Test

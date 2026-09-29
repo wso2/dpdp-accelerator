@@ -522,6 +522,9 @@ curl --request POST "${API_BASE}/subscriptions" \
 Retain the returned `subscriptionId` and the supplied shared secret. Both are
 required when polling for deliveries.
 
+> **Note on Shared Secret Storage at Rest:**  
+> By default, subscription `sharedSecret` values are stored in plaintext (`[dpdp_accelerator.event_notifications] encrypt_shared_secret = false` in `deployment.toml`). To enable reversible encryption at rest using WSO2 Carbon's primary keystore (via Carbon `CryptoUtil`), set `encrypt_shared_secret = true`. DPDP shared secrets are strictly encrypted rather than hashed, because webhook HMAC signature generation and delivery verification require reversible plaintext.
+
 ## 6. Publish an event
 
 For tenants where the five predefined lifecycle topics exist, events are
