@@ -449,7 +449,7 @@ public class WebhookDeliveryWorker implements Runnable {
         if (!tracked.add(id)) {
             // Already tracked by a concurrent tick; undo the counter increment.
             counter.decrementAndGet();
-            return SubmitStatus.QUEUED;
+            return SubmitStatus.CAPPED;
         }
         try {
             executor.execute(() -> {
