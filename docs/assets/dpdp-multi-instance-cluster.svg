@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="560" viewBox="0 0 1160 560" role="img" aria-labelledby="title desc">
+  <title id="title">DPDP Accelerator Multi-Instance Background Job Architecture</title>
+  <desc id="desc">Two WSO2 Identity Server instances running independent background jobs with atomic DB-level claims on a shared database, scaling cluster throughput without leader election or dedicated cluster coordinators.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#5B6B76"/>
+    </marker>
+    <marker id="arrow-claim1" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#0284C7"/>
+    </marker>
+    <marker id="arrow-claim2" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#D97706"/>
+    </marker>
+    <marker id="arrow-dispatch" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#059669"/>
+    </marker>
+    <style>
+      .node-title { font: 700 15px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #0F172A; }
+      .node-subtitle { font: 600 12.5px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #475569; }
+      .node-text { font: 400 12px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #334155; }
+      .node-mono { font: 600 11.5px 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace; fill: #0F172A; }
+      .badge-label { font: 700 11px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; text-anchor: middle; }
+      .tag { font: 700 11px 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; fill: #FFFFFF; text-anchor: middle; }
+    </style>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1160" height="560" rx="12" fill="#FAFAF8" stroke="#E2E8F0" stroke-width="1.5"/>
+
+  <!-- LEFT CARD: IS Node 1 -->
+  <g transform="translate(30, 30)">
+    <rect width="420" height="230" rx="10" fill="#FFFFFF" stroke="#BAE6FD" stroke-width="2"/>
+    <rect x="0" y="0" width="420" height="38" rx="10" fill="#F0F9FF"/>
+    <rect x="12" y="10" width="70" height="18" rx="4" fill="#0284C7"/>
+    <text x="47" y="23" class="tag">NODE 1</text>
+    <text x="92" y="24" class="node-title">WSO2 Identity Server (Instance A)</text>
+
+    <!-- Internal workers -->
+    <g transform="translate(16, 50)">
+      <rect width="388" height="52" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+      <circle cx="15" cy="18" r="6" fill="#0284C7"/>
+      <text x="30" y="21" class="node-title" style="font-size:13px;">Webhook Delivery Worker</text>
+      <text x="30" y="40" class="node-text">Local timer (every 5s) &#8226; batch_size = 50 &#8226; pool = 4</text>
+    </g>
+
+    <g transform="translate(16, 112)">
+      <rect width="388" height="52" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+      <circle cx="15" cy="18" r="6" fill="#0284C7"/>
+      <text x="30" y="21" class="node-title" style="font-size:13px;">Consent Expiry Sweep</text>
+      <text x="30" y="40" class="node-text">Local timer (daily / interval) &#8226; batch_size = 100</text>
+    </g>
+
+    <!-- Outbound Dispatch indicator -->
+    <g transform="translate(16, 174)">
+      <rect width="388" height="42" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+      <text x="12" y="26" class="node-text" style="fill:#047857; font-weight:600;">Independent HTTP Dispatch &#8594; Webhook Receivers</text>
+    </g>
+  </g>
+
+  <!-- RIGHT CARD: IS Node 2 -->
+  <g transform="translate(710, 30)">
+    <rect width="420" height="230" rx="10" fill="#FFFFFF" stroke="#FDE68A" stroke-width="2"/>
+    <rect x="0" y="0" width="420" height="38" rx="10" fill="#FEF3C7"/>
+    <rect x="12" y="10" width="70" height="18" rx="4" fill="#D97706"/>
+    <text x="47" y="23" class="tag">NODE 2</text>
+    <text x="92" y="24" class="node-title">WSO2 Identity Server (Instance B)</text>
+
+    <!-- Internal workers -->
+    <g transform="translate(16, 50)">
+      <rect width="388" height="52" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+      <circle cx="15" cy="18" r="6" fill="#D97706"/>
+      <text x="30" y="21" class="node-title" style="font-size:13px;">Webhook Delivery Worker</text>
+      <text x="30" y="40" class="node-text">Local timer (every 5s) &#8226; batch_size = 50 &#8226; pool = 4</text>
+    </g>
+
+    <g transform="translate(16, 112)">
+      <rect width="388" height="52" rx="6" fill="#F8FAFC" stroke="#E2E8F0" stroke-width="1"/>
+      <circle cx="15" cy="18" r="6" fill="#D97706"/>
+      <text x="30" y="21" class="node-title" style="font-size:13px;">Consent Expiry Sweep</text>
+      <text x="30" y="40" class="node-text">Local timer (daily / interval) &#8226; batch_size = 100</text>
+    </g>
+
+    <!-- Outbound Dispatch indicator -->
+    <g transform="translate(16, 174)">
+      <rect width="388" height="42" rx="6" fill="#ECFDF5" stroke="#A7F3D0" stroke-width="1"/>
+      <text x="12" y="26" class="node-text" style="fill:#047857; font-weight:600;">Independent HTTP Dispatch &#8594; Webhook Receivers</text>
+    </g>
+  </g>
+
+  <!-- Central Badge: Throughput multiplier -->
+  <g transform="translate(470, 100)">
+    <rect width="220" height="90" rx="8" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="110" y="26" class="node-title" style="font-size:13px;" text-anchor="middle">Cluster Sizing (2 Nodes)</text>
+    <text x="110" y="48" class="node-text" text-anchor="middle">&#8226; Webhook drain: <tspan font-weight="700">100 / 5s</tspan> (2 &#215; 50)</text>
+    <text x="110" y="66" class="node-text" text-anchor="middle">&#8226; Worker threads: <tspan font-weight="700">8 pool</tspan> (2 &#215; 4)</text>
+    <text x="110" y="82" class="node-text" text-anchor="middle" fill="#047857">&#8226; Safe: 0 duplicate dispatches</text>
+  </g>
+
+  <!-- Connective Arrows Down to Shared Database -->
+  <!-- Left Arrow (Node 1 claim) -->
+  <path d="M 240 260 L 240 315 L 425 345 L 425 386" stroke="#0284C7" stroke-width="2.5" fill="none" marker-end="url(#arrow-claim1)"/>
+  <rect x="235" y="318" width="180" height="24" rx="4" fill="#E0F2FE" stroke="#BAE6FD" stroke-width="1"/>
+  <text x="325" y="334" class="badge-label" fill="#0369A1">Node 1: Claims 1st (wins)</text>
+
+  <!-- Right Arrow (Node 2 claim) -->
+  <path d="M 920 260 L 920 315 L 735 345 L 735 386" stroke="#D97706" stroke-width="2.5" fill="none" marker-end="url(#arrow-claim2)"/>
+  <rect x="740" y="318" width="190" height="24" rx="4" fill="#FEF3C7" stroke="#FDE68A" stroke-width="1"/>
+  <text x="835" y="334" class="badge-label" fill="#B45309">Node 2: Competing claim (0 rows)</text>
+
+  <!-- MIDDLE BOTTOM CARD: Shared Database -->
+  <g transform="translate(260, 390)">
+    <rect width="640" height="145" rx="10" fill="#FFFFFF" stroke="#43596A" stroke-width="2"/>
+    <rect x="0" y="0" width="640" height="34" rx="10" fill="#43596A"/>
+    <text x="320" y="23" class="node-title" style="fill:#FFFFFF;" text-anchor="middle">Shared Database (WSO2DPDP_DB)</text>
+
+    <!-- Claim Mechanism Box 1: Webhook -->
+    <g transform="translate(18, 44)">
+      <rect width="295" height="88" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+      <text x="12" y="20" class="node-title" style="font-size:12px; fill:#0F172A;">Webhook Delivery Row Claim</text>
+      <text x="12" y="38" class="node-mono" style="font-size:10.5px; fill:#0284C7;">UPDATE WEBHOOK_DELIVERY</text>
+      <text x="12" y="54" class="node-mono" style="font-size:10.5px; fill:#0284C7;">SET STATUS='in_flight'</text>
+      <text x="12" y="70" class="node-mono" style="font-size:10.5px; fill:#475569;">WHERE STATUS='pending' ...</text>
+    </g>
+
+    <!-- Claim Mechanism Box 2: Expiry -->
+    <g transform="translate(327, 44)">
+      <rect width="295" height="88" rx="6" fill="#F8FAFC" stroke="#CBD5E1" stroke-width="1"/>
+      <text x="12" y="20" class="node-title" style="font-size:12px; fill:#0F172A;">Consent Expiry Row Claim</text>
+      <text x="12" y="38" class="node-mono" style="font-size:10.5px; fill:#059669;">DELETE FROM EXPIRY_TRACKER</text>
+      <text x="12" y="54" class="node-mono" style="font-size:10.5px; fill:#475569;">WHERE CONSENT_ID=? AND</text>
+      <text x="12" y="70" class="node-mono" style="font-size:10.5px; fill:#475569;">EXPIRY_TIME &lt;= now</text>
+    </g>
+  </g>
+</svg>

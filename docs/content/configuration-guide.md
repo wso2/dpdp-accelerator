@@ -527,3 +527,29 @@ The shipped `wso2is-7.3.0-deployment.toml` is the source of truth for defaults;
 see the [Event Notification Guide](event-notification-guide.md) for the
 security and operational meaning of the polling, signing, verification, and
 delivery settings.
+
+## 10. Multi-node clustering and background jobs
+
+When Identity Server is deployed across multiple nodes in an active-active cluster, the accelerator's background jobs—the **consent-expiry sweep** and the **webhook delivery worker**—run concurrently across all instances without requiring dedicated clustering setup.
+
+![Multi-instance background job architecture across two Identity Server nodes](../assets/dpdp-multi-instance-cluster.svg)
+
+### Independent node execution (No leader election)
+
+- **Independent local timers:** Each node runs its own background scheduler on its own timer. There is no leader election, cluster coordinator, or concept of a single "active" node. Every node actively processes work in parallel.
+- **Zero clustering setup:** The accelerator requires no complex clustering configuration, cluster heartbeat flags, or coordination plugins. All nodes simply connect to the same shared database (`WSO2DPDP_DB`).
+
+### Concurrency and safe claiming
+
+To prevent duplicate processing across competing nodes, both jobs rely on atomic, row-level database claims:
+
+- **Webhook deliveries:** Before dispatching an HTTP request, a worker issues a conditional database update to flip the delivery row from `pending` to `in_flight`. If multiple nodes select the same delivery simultaneously, only the first node's update succeeds (affecting 1 row); all competing nodes receive 0 affected rows and safely move on without duplicating the HTTP call.
+- **Consent expirations:** When processing an expired consent, a node conditionally deletes the corresponding tracker record. Only the single node that successfully claims the row proceeds to write the audit and lifecycle records within that transaction.
+
+### Sizing and throughput scaling
+
+All background worker settings in `deployment.toml` are **per-instance limits, not cluster-wide totals**:
+
+- **Throughput scales linearly (`N × value`):** If you configure `delivery_worker_batch_size = 50` and `delivery_worker_poll_seconds = 5`, a 3-node cluster will drain up to 3 × 50 = 150 deliveries every 5 seconds.
+- **Worker pool sizing:** Setting `thread_pool_size = 4` allocates 4 HTTP delivery threads on *each* node (12 concurrent HTTP dispatches across a 3-node cluster).
+- Sizing decisions should account for total cluster capacity and the capacity of the target database and downstream webhook receivers.
