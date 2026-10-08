@@ -225,7 +225,7 @@ export default function SubscriptionRegisterDialog({
         }}
       >
         <IconButton
-          aria-label={t('subscriptions.topicUi.close', 'Close registration')}
+          aria-label={t('subscriptions.topicUi.close', 'Close dialog')}
           disabled={loading || selectionBusy}
           onClick={onClose}
           sx={{ position: 'absolute', top: 1, right: 1 }}
@@ -240,12 +240,12 @@ export default function SubscriptionRegisterDialog({
               fontSize: { xs: '1.25rem', sm: '1.375rem' },
             }}
           >
-            {t('subscriptions.dialog.registerTitle', 'Register Subscription')}
+            {t('subscriptions.dialog.registerTitle', 'Create Subscription')}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {t(
               'subscriptions.dialog.registerSubtitle',
-              'Configure a new event notification subscription and delivery mode',
+              'Create and configure a new event notification subscription and delivery mode',
             )}
           </Typography>
         </Stack>
@@ -541,8 +541,8 @@ export default function SubscriptionRegisterDialog({
             disabled={loading || selectionBusy || selectedTopics.length === 0}
           >
             {loading && <CircularProgress size={16} color="inherit" sx={{ mr: 1 }} />}
-            {!loading && t('subscriptions.dialog.registerSubmit', 'Register Subscription')}
-            {loading && t('subscriptions.dialog.registering', 'Registering...')}
+            {!loading && t('subscriptions.dialog.registerSubmit', 'Create Subscription')}
+            {loading && t('subscriptions.dialog.registering', 'Creating...')}
           </Button>
         </DialogActions>
       </Box>

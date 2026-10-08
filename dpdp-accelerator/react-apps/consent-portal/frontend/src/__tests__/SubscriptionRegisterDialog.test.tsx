@@ -70,7 +70,7 @@ describe('SubscriptionRegisterDialog', () => {
     )
 
     // Register button is disabled initially because no topics are selected
-    expect(screen.getByRole('button', { name: 'Register Subscription' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Create Subscription' })).toBeDisabled()
 
     // Select category and topic
     fireEvent.mouseDown(screen.getByRole('combobox', { name: /Topic Category/i }))
@@ -82,8 +82,8 @@ describe('SubscriptionRegisterDialog', () => {
     fireEvent.click(await screen.findByRole('option', { name: 'consent.update' }))
 
     // Now Register button is enabled, but name is still blank
-    expect(screen.getByRole('button', { name: 'Register Subscription' })).toBeEnabled()
-    fireEvent.click(screen.getByRole('button', { name: 'Register Subscription' }))
+    expect(screen.getByRole('button', { name: 'Create Subscription' })).toBeEnabled()
+    fireEvent.click(screen.getByRole('button', { name: 'Create Subscription' }))
     expect(await screen.findByText('Subscription name is required.')).toBeInTheDocument()
 
     // Fill in name
@@ -99,7 +99,7 @@ describe('SubscriptionRegisterDialog', () => {
     // Generate shared secret
     fireEvent.click(screen.getByRole('button', { name: /Generate new secret/i }))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Register Subscription' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create Subscription' }))
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -157,7 +157,7 @@ describe('SubscriptionRegisterDialog', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Generate new secret/i }))
 
-    fireEvent.click(screen.getByRole('button', { name: 'Register Subscription' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create Subscription' }))
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
     expect(onSubmit).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -217,7 +217,7 @@ describe('SubscriptionRegisterDialog', () => {
         target: { value: 'https://receiver.example/callback' },
       })
       fireEvent.click(screen.getByRole('button', { name: /Generate new secret/i }))
-      fireEvent.click(screen.getByRole('button', { name: 'Register Subscription' }))
+      fireEvent.click(screen.getByRole('button', { name: 'Create Subscription' }))
 
       await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
       expect(onSubmit).toHaveBeenCalledWith(
@@ -301,7 +301,7 @@ describe('SubscriptionRegisterDialog', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Generate new secret/i }))
 
-    const submitButton = screen.getByRole('button', { name: 'Register Subscription' })
+    const submitButton = screen.getByRole('button', { name: 'Create Subscription' })
     fireEvent.submit(submitButton.closest('form')!)
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
@@ -382,7 +382,7 @@ describe('SubscriptionRegisterDialog', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /Generate new secret/i }))
 
-    const submitButton = screen.getByRole('button', { name: 'Register Subscription' })
+    const submitButton = screen.getByRole('button', { name: 'Create Subscription' })
     fireEvent.submit(submitButton.closest('form')!)
 
     await waitFor(() => expect(onSubmit).toHaveBeenCalledTimes(1))
