@@ -53,10 +53,10 @@ function getFiltersFromSearchParams(
 ): ConsentRegistryFiltersModel {
   const stateParam = searchParams.get('state') ?? ''
   const relationParam = searchParams.get('relation') ?? ''
-  const state = isConsentState(stateParam)
-    ? (stateParam as ConsentState)
-    : isPendingView
-      ? 'PENDING'
+  const state = isPendingView
+    ? 'PENDING'
+    : isConsentState(stateParam)
+      ? (stateParam as ConsentState)
       : DEFAULT_FILTERS.state
   const urlRelation = isConsentRelation(relationParam) ? relationParam : DEFAULT_FILTERS.relation
 

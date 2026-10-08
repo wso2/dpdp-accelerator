@@ -301,6 +301,19 @@ describe('ConsentRegistryPage', () => {
     })
   })
 
+  it('forces state to PENDING in pending view even if a valid non-pending state is in the URL', async () => {
+    mockConsentSearch([])
+
+    renderConsentRegistryPage(createQueryClient(), '/consents?view=pending&state=ACTIVE')
+
+    await screen.findByRole('heading', { name: 'My Pending Consents' })
+    expect(screen.getByRole('combobox', { name: 'State' })).toHaveAttribute('aria-disabled', 'true')
+    expect(consentsApi.fetchMyConsents.mock.calls[0]?.[0]).toMatchObject({
+      state: 'PENDING',
+      relation: 'ANY',
+    })
+  })
+
   it('filters pending view by Managed relation', async () => {
     mockConsentSearch([])
 
