@@ -30,7 +30,8 @@ import {
 import { Ban, CircleCheckBig } from '@wso2/oxygen-ui-icons-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
+import DetailBackButton from '../../components/layout/main-layout/DetailBackButton'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
 import useAuthorization from '../auth/useAuthorization'
 import ConsentApprovalDialog from './components/ConsentApprovalDialog'
@@ -65,13 +66,18 @@ interface ConsentDetailsPageProps {
   variant?: 'self' | 'admin'
 }
 
-function ConsentDetailsLoading(): React.JSX.Element {
+function ConsentDetailsLoading({
+  backPath = '/consents',
+}: {
+  backPath?: string
+}): React.JSX.Element {
   return (
     <Box
       component="main"
       sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 3 }}
     >
       <Stack spacing={1}>
+        <DetailBackButton to={backPath} />
         <HeaderBreadcrumbs />
         <Skeleton variant="text" width={220} height={48} />
       </Stack>
@@ -96,7 +102,6 @@ function ConsentDetailsLoading(): React.JSX.Element {
 function ConsentDetailsPage({ variant = 'self' }: ConsentDetailsPageProps): React.JSX.Element {
   const { t } = useTranslation('common')
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const selfConsentDetailQuery = useConsentDetailQuery(variant === 'self' ? id : undefined)
   const adminConsentDetailQuery = useAdminConsentDetailQuery(variant === 'admin' ? id : undefined)
@@ -129,12 +134,11 @@ function ConsentDetailsPage({ variant = 'self' }: ConsentDetailsPageProps): Reac
         component="main"
         sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 2 }}
       >
+        <Stack spacing={1}>
+          <DetailBackButton to={backPath} />
+          <HeaderBreadcrumbs />
+        </Stack>
         <Typography variant="h5">{t('consentRegistry.details.notFound')}</Typography>
-        <Box>
-          <Button variant="outlined" onClick={() => navigate(backPath)}>
-            {t('consentRegistry.details.back')}
-          </Button>
-        </Box>
       </Box>
     )
   }
@@ -169,7 +173,7 @@ function ConsentDetailsPage({ variant = 'self' }: ConsentDetailsPageProps): Reac
   }
 
   if (consentDetailQuery.isLoading) {
-    return <ConsentDetailsLoading />
+    return <ConsentDetailsLoading backPath={backPath} />
   }
 
   if (consentDetailQuery.isError || !detail) {
@@ -178,12 +182,11 @@ function ConsentDetailsPage({ variant = 'self' }: ConsentDetailsPageProps): Reac
         component="main"
         sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 2 }}
       >
+        <Stack spacing={1}>
+          <DetailBackButton to={backPath} />
+          <HeaderBreadcrumbs />
+        </Stack>
         <Typography color="error.main">{t('consentRegistry.messages.loadFailed')}</Typography>
-        <Box>
-          <Button variant="outlined" onClick={() => navigate(backPath)}>
-            {t('consentRegistry.details.back')}
-          </Button>
-        </Box>
       </Box>
     )
   }
@@ -200,6 +203,7 @@ function ConsentDetailsPage({ variant = 'self' }: ConsentDetailsPageProps): Reac
         spacing={2}
       >
         <Stack spacing={1} minWidth={0}>
+          <DetailBackButton to={backPath} />
           <HeaderBreadcrumbs />
           <Typography variant="h4" fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
             {t('consentRegistry.details.title')}

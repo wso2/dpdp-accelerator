@@ -40,20 +40,12 @@ import {
   Tooltip,
   Typography,
 } from '@wso2/oxygen-ui'
-import {
-  ArrowLeft,
-  Clock3,
-  Code2,
-  Copy,
-  Eye,
-  Layers,
-  Tag,
-  Users,
-} from '@wso2/oxygen-ui-icons-react'
+import { Clock3, Code2, Copy, Eye, Layers, Tag, Users } from '@wso2/oxygen-ui-icons-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import CopyableText from '../../components/CopyableText'
+import DetailBackButton from '../../components/layout/main-layout/DetailBackButton'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
 import type { EventRecord } from '../../types/event'
 import { formatEpochTimestamp } from '../../utils/dateTime'
@@ -75,7 +67,6 @@ function formatJsonPayload(payload?: string): string {
 export default function EventDetailsPage(): React.JSX.Element {
   const { t } = useTranslation('common')
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
 
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(10)
@@ -110,7 +101,10 @@ export default function EventDetailsPage(): React.JSX.Element {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={3}>
-          <HeaderBreadcrumbs />
+          <Stack spacing={1}>
+            <DetailBackButton to="/events" />
+            <HeaderBreadcrumbs />
+          </Stack>
           <Skeleton width={300} height={48} />
           <Skeleton variant="rounded" height={200} />
           <Skeleton variant="rounded" height={220} />
@@ -124,16 +118,11 @@ export default function EventDetailsPage(): React.JSX.Element {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={3}>
-          <HeaderBreadcrumbs />
+          <Stack spacing={1}>
+            <DetailBackButton to="/events" />
+            <HeaderBreadcrumbs />
+          </Stack>
           <Alert severity="error">{t('events.details.loadFailed')}</Alert>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/events')}
-            sx={{ width: 'fit-content' }}
-          >
-            {t('events.details.backToEvents')}
-          </Button>
         </Stack>
       </Box>
     )
@@ -194,7 +183,10 @@ export default function EventDetailsPage(): React.JSX.Element {
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
-        <HeaderBreadcrumbs />
+        <Stack spacing={1}>
+          <DetailBackButton to="/events" />
+          <HeaderBreadcrumbs />
+        </Stack>
 
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
@@ -212,14 +204,6 @@ export default function EventDetailsPage(): React.JSX.Element {
               {displayTopic} • {formatEpochTimestamp(event.occurredAt)}
             </Typography>
           </Stack>
-
-          <Button
-            variant="outlined"
-            startIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/events')}
-          >
-            {t('events.details.backToEvents')}
-          </Button>
         </Stack>
 
         {/* Section 1: Summary Metadata */}

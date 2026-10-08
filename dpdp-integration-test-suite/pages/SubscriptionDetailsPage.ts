@@ -36,7 +36,7 @@ export class SubscriptionDetailsPage {
   readonly verificationFailedToast: Locator
 
   constructor(private readonly page: Page) {
-    this.backButton = page.getByRole('button', { name: 'Back to Subscriptions' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     this.loadFailedAlert = page.getByText('Unable to load subscription details.')
     this.verifyButton = page.getByRole('button', { name: 'Re-verify webhook' })
     this.deleteButton = page.getByRole('button', { name: 'Delete subscription' })

@@ -59,11 +59,9 @@
         <dependency>
             <groupId>org.wso2.carbon</groupId>
             <artifactId>org.wso2.carbon.utils</artifactId>
-            <scope>test</scope>
-            <!-- carbon.utils's test-scope transitive deps pull in the vanilla
-                 org.ops4j.pax.logging:pax-logging-api, a different artifact from WSO2's own fork
-                 with an incompatible same-named PaxLogger class - can throw NoSuchMethodError at
-                 test time. Excluded; nothing here needs it. -->
+            <!-- carbon.utils's transitive deps pull in the vanilla org.ops4j.pax.logging:pax-logging-api,
+                 a different artifact from WSO2's own fork with an incompatible same-named PaxLogger
+                 class - can throw NoSuchMethodError at test time. Excluded; nothing here needs it. -->
             <exclusions>
                 <exclusion>
                     <groupId>org.ops4j.pax.logging</groupId>
@@ -81,22 +79,23 @@
             <artifactId>org.wso2.securevault</artifactId>
             <scope>test</scope>
             <!-- Same pax-logging clash as carbon.utils above, plus a second axiom copy
-                 (axiom-api/axiom-impl) redundant with the axiom dependency below. -->
+                 (axiom-api/axiom-impl) redundant with the axiom dependency above, and ancient
+                 commons-lang 1.0 pulled in via commons-cli. -->
             <exclusions>
                 <exclusion>
                     <groupId>org.ops4j.pax.logging</groupId>
                     <artifactId>pax-logging-api</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-lang</groupId>
+                    <artifactId>commons-lang</artifactId>
+                </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.wso2.carbon</groupId>
-            <artifactId>org.wso2.carbon.utils</artifactId>
         </dependency>
         <dependency>
             <groupId>org.wso2.carbon.identity.framework</groupId>
             <artifactId>org.wso2.carbon.identity.event</artifactId>
-            <!-- Same pax-logging clash as org.wso2.carbon.utils below. -->
+            <!-- Same pax-logging clash as org.wso2.carbon.utils above. -->
             <exclusions>
                 <exclusion>
                     <groupId>org.ops4j.pax.logging</groupId>

@@ -43,7 +43,7 @@ export class ComplaintCaseDetailPage {
   readonly resolveCancelButton: Locator
 
   constructor(private readonly page: Page) {
-    this.backButton = page.getByRole('button', { name: 'Back to queue' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     this.notFoundHeading = page.getByRole('heading', { name: 'Complaint not found' })
     this.resolvedLockedBanner = page.getByText(/This complaint has been resolved and is now locked\./)
     this.activityTab = page.getByRole('tab', { name: 'Activity' })

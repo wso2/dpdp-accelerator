@@ -55,7 +55,7 @@ export class ConsentDetailPage {
   ) {
     this.loadFailedMessage = page.getByText('Unable to load consents right now.')
     this.notFoundMessage = page.getByText('Consent record not found')
-    this.backButton = page.getByRole('button', { name: 'Back to Registry' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     this.purposesSection = page
       .locator('.MuiCard-root')
       .filter({ has: page.getByRole('heading', { name: 'Consent Purposes' }) })

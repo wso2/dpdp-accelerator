@@ -19,7 +19,6 @@
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -32,7 +31,8 @@ import {
 } from '@wso2/oxygen-ui'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import DetailBackButton from '../../components/layout/main-layout/DetailBackButton'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
 import { formatEpochTimestamp } from '../../utils/dateTime'
 import ComplaintActivityFeed from '../complaints/components/ComplaintActivityFeed'
@@ -77,6 +77,7 @@ function ComplaintCaseDetailLoading(): React.JSX.Element {
       sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 3 }}
     >
       <Stack spacing={1}>
+        <DetailBackButton to="/complaint-management" />
         <HeaderBreadcrumbs />
         <Skeleton variant="text" width={220} height={48} />
       </Stack>
@@ -101,7 +102,6 @@ function ComplaintCaseDetailLoading(): React.JSX.Element {
 function ComplaintCaseDetailPage(): React.JSX.Element {
   const { t } = useTranslation('common')
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const detailQuery = useManagedComplaintDetailQuery(id)
   const sendMessageMutation = useSendManagedComplaintMessageMutation()
   const [activeTab, setActiveTab] = useState<'activity' | 'attachments'>('activity')
@@ -117,12 +117,11 @@ function ComplaintCaseDetailPage(): React.JSX.Element {
         component="main"
         sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 2 }}
       >
+        <Stack spacing={1}>
+          <DetailBackButton to="/complaint-management" />
+          <HeaderBreadcrumbs />
+        </Stack>
         <Typography variant="h5">{t('complaints.management.case.notFound')}</Typography>
-        <Box>
-          <Button variant="outlined" onClick={() => navigate('/complaint-management')}>
-            {t('complaints.management.case.back')}
-          </Button>
-        </Box>
       </Box>
     )
   }
@@ -137,6 +136,7 @@ function ComplaintCaseDetailPage(): React.JSX.Element {
       sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 3 }}
     >
       <Stack spacing={1}>
+        <DetailBackButton to="/complaint-management" />
         <HeaderBreadcrumbs currentLabel={complaint.referenceId} />
         <Typography variant="h4" fontWeight={700}>
           {complaint.referenceId}
