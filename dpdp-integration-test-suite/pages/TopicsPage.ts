@@ -24,10 +24,7 @@ export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50] as const
 
 /**
  * TopicsPage.tsx at /events/topics - Event Notification Topics list, filters, and pagination.
- * TopicTable.tsx has no data-testid anywhere in the feature; topicId cells
- * render through CopyableText, which truncates the *visible* text but keeps the full id as the
- * inner span's aria-label - rowByTopicId matches on that, never on the (possibly truncated)
- * visible text.
+ * TopicTable.tsx renders topic name, description, and status; rows are matched by name via rowByName().
  */
 export class TopicsPage {
   readonly heading: Locator
@@ -116,11 +113,6 @@ export class TopicsPage {
   /** Matches on the topic's exact, untruncated name - TopicTable.tsx never truncates this column. */
   rowByName(name: string): Locator {
     return this.rows.filter({ has: this.page.getByText(name, { exact: true }) })
-  }
-
-  /** Matches on the full topicId via CopyableText's aria-label, independent of visible truncation. */
-  rowByTopicId(topicId: string): Locator {
-    return this.rows.filter({ has: this.page.locator(`[aria-label="${topicId}"]`) })
   }
 
   /** aria-label is always "Deregister topic" regardless of state (see TopicTable.tsx) - disabled/tooltip carry the rest. */
