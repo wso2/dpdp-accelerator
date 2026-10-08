@@ -296,8 +296,7 @@ export default function SubscriptionDetailsPage(): React.JSX.Element {
                   value: (
                     <Chip
                       size="small"
-                      color={isWebhook ? 'primary' : 'default'}
-                      variant={isWebhook ? 'filled' : 'outlined'}
+                      variant="outlined"
                       label={t(`subscriptions.deliveryMode.${deliveryMode}`, deliveryMode)}
                     />
                   ),
