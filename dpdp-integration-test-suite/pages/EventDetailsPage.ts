@@ -40,7 +40,7 @@ export class EventDetailsPage {
   readonly deliveriesNextPageButton: Locator
 
   constructor(private readonly page: Page) {
-    this.backButton = page.getByRole('button', { name: 'Back to Events' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     this.loadFailedAlert = page.getByText('Unable to load event details.')
     this.payloadBlock = page.locator('pre')
     this.copyPayloadButton = page.getByRole('button', { name: 'Copy Payload' })

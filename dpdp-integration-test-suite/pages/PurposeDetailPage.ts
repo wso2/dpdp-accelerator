@@ -42,7 +42,7 @@ export class PurposeDetailPage {
       .filter({ has: page.getByRole('heading', { name: 'Properties' }) })
       .getByRole('table')
     this.loadFailedMessage = page.getByText('Unable to load purposes right now.')
-    this.backButton = page.getByRole('button', { name: 'Back to purposes' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     // Only rendered for a persona holding PURPOSES_WRITE - see the identical `canWrite` gate in
     // ElementDetailsPage.tsx. "Delete", not "Delete Purpose" - that text belongs to the
     // confirmation dialog, see PurposeDeleteDialog. `.first()`: every Purpose has at least one

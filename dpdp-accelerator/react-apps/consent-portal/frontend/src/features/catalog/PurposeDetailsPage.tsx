@@ -52,6 +52,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link as RouterLink, useNavigate, useParams } from 'react-router-dom'
 import CopyableText from '../../components/CopyableText'
+import DetailBackButton from '../../components/layout/main-layout/DetailBackButton'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
 import { useCatalogText } from '../../i18n/catalogText'
 import { APIError } from '../../utils/apiClient'
@@ -95,7 +96,10 @@ function PurposeDetailsPage(): React.JSX.Element {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={3}>
-          <HeaderBreadcrumbs />
+          <Stack spacing={1}>
+            <DetailBackButton to="/purposes" />
+            <HeaderBreadcrumbs />
+          </Stack>
           <Skeleton width={300} height={48} />
           <Skeleton variant="rounded" height={190} />
           <Skeleton variant="rounded" height={220} />
@@ -109,12 +113,11 @@ function PurposeDetailsPage(): React.JSX.Element {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={2}>
+          <Stack spacing={1}>
+            <DetailBackButton to="/purposes" />
+            <HeaderBreadcrumbs />
+          </Stack>
           <Typography color="error.main">{t('catalog.purposes.loadFailed')}</Typography>
-          <Box>
-            <Button variant="outlined" onClick={() => navigate('/purposes')}>
-              {t('catalog.purposes.back')}
-            </Button>
-          </Box>
         </Stack>
       </Box>
     )
@@ -170,13 +173,14 @@ function PurposeDetailsPage(): React.JSX.Element {
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
+        <Stack spacing={1}>
+          <DetailBackButton to="/purposes" />
+          <HeaderBreadcrumbs currentLabel={detail.name} />
+        </Stack>
         <Stack direction="row" justifyContent="space-between" alignItems="flex-start" spacing={2}>
-          <Stack spacing={1} minWidth={0}>
-            <HeaderBreadcrumbs currentLabel={detail.name} />
-            <Typography variant="h4" fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
-              {detail.name}
-            </Typography>
-          </Stack>
+          <Typography variant="h4" fontWeight={700} sx={{ overflowWrap: 'anywhere' }}>
+            {detail.name}
+          </Typography>
           {canWrite ? (
             <Button
               variant="outlined"

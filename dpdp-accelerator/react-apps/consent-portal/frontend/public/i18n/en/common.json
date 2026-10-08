@@ -1,4 +1,7 @@
 {
+  "common": {
+    "back": "Back"
+  },
   "app": {
     "title": "Consent Portal"
   },
