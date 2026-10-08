@@ -181,11 +181,6 @@ export default function EventDetailsPage(): React.JSX.Element {
                 {t('events.details.metadataTitle')}
               </Typography>
             }
-            subheader={
-              <Typography variant="body2" color="text.secondary">
-                {t('events.details.metadataSubtitle')}
-              </Typography>
-            }
           />
           <Divider />
           <CardContent>
@@ -199,11 +194,6 @@ export default function EventDetailsPage(): React.JSX.Element {
             title={
               <Typography variant="h6" fontWeight={600}>
                 {t('events.details.deliveriesTitle')}
-              </Typography>
-            }
-            subheader={
-              <Typography variant="body2" color="text.secondary">
-                {t('events.details.deliveriesSubtitle')}
               </Typography>
             }
           />

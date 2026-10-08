@@ -106,9 +106,6 @@ export default function EventDetailsModal({
               <Typography variant="h6" fontWeight={700}>
                 {t('events.details.historyTitle')}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                {t('events.details.historySubtitle')}
-              </Typography>
             </Box>
           </Stack>
           <Stack direction="row" spacing={1} alignItems="center">

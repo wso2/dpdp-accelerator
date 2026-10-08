@@ -270,11 +270,6 @@ export default function SubscriptionDetailsPage(): React.JSX.Element {
                 {t('subscriptions.details.configTitle')}
               </Typography>
             }
-            subheader={
-              <Typography variant="body2" color="text.secondary">
-                {t('subscriptions.details.configSubtitle')}
-              </Typography>
-            }
           />
           <Divider />
           <CardContent sx={{ p: 3 }}>
@@ -336,11 +331,6 @@ export default function SubscriptionDetailsPage(): React.JSX.Element {
             title={
               <Typography variant="h6" fontWeight={700}>
                 {t('subscriptions.details.eventsTitle')}
-              </Typography>
-            }
-            subheader={
-              <Typography variant="body2" color="text.secondary">
-                {t('subscriptions.details.eventsSubtitle')}
               </Typography>
             }
           />
