@@ -286,21 +286,73 @@ describe('ConsentRegistryPage', () => {
     })
   })
 
-  it('keeps the dedicated pending view filters locked and relation-wide', async () => {
+  it('keeps state locked to pending but allows relation filtering in pending view', async () => {
     mockConsentSearch([])
 
     renderConsentRegistryPage(createQueryClient(), '/consents?view=pending&state=PENDING')
 
     await screen.findByRole('heading', { name: 'My Pending Consents' })
     expect(screen.getByRole('combobox', { name: 'State' })).toHaveAttribute('aria-disabled', 'true')
-    expect(screen.getByRole('combobox', { name: 'Relation' })).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    )
+    expect(screen.getByRole('combobox', { name: 'Relation' })).not.toHaveAttribute('aria-disabled')
+    expect(screen.getByRole('combobox', { name: 'Relation' })).toHaveTextContent('All')
     expect(consentsApi.fetchMyConsents.mock.calls[0]?.[0]).toMatchObject({
       state: 'PENDING',
       relation: 'ANY',
     })
+  })
+
+  it('filters pending view by Managed relation', async () => {
+    mockConsentSearch([])
+
+    renderConsentRegistryPage(
+      createQueryClient(),
+      '/consents?view=pending&state=PENDING&relation=AUTHORIZER',
+    )
+
+    await screen.findByRole('heading', { name: 'My Pending Consents' })
+    expect(screen.getByRole('combobox', { name: 'Relation' })).toHaveTextContent('Managed')
+    expect(consentsApi.fetchMyConsents.mock.calls[0]?.[0]).toMatchObject({
+      state: 'PENDING',
+      relation: 'AUTHORIZER',
+    })
+  })
+
+  it('filters pending view by Personal relation', async () => {
+    mockConsentSearch([])
+
+    renderConsentRegistryPage(
+      createQueryClient(),
+      '/consents?view=pending&state=PENDING&relation=SUBJECT',
+    )
+
+    await screen.findByRole('heading', { name: 'My Pending Consents' })
+    expect(screen.getByRole('combobox', { name: 'Relation' })).toHaveTextContent('Personal')
+    expect(consentsApi.fetchMyConsents.mock.calls[0]?.[0]).toMatchObject({
+      state: 'PENDING',
+      relation: 'SUBJECT',
+    })
+  })
+
+  it('resets relation to default while preserving pending state on clear in pending view', async () => {
+    mockConsentSearch([])
+
+    renderConsentRegistryPage(
+      createQueryClient(),
+      '/consents?view=pending&state=PENDING&relation=AUTHORIZER&serviceId=test-service',
+    )
+
+    await screen.findByRole('heading', { name: 'My Pending Consents' })
+    const clearButton = screen.getByRole('button', { name: 'Clear all filters' })
+    fireEvent.click(clearButton)
+
+    await waitFor(() =>
+      expect(consentsApi.fetchMyConsents).toHaveBeenLastCalledWith(
+        expect.objectContaining({
+          state: 'PENDING',
+          relation: 'ANY',
+        }),
+      ),
+    )
   })
 
   it('ignores the removed CREATED status in the URL', async () => {

@@ -53,13 +53,17 @@ function getFiltersFromSearchParams(
 ): ConsentRegistryFiltersModel {
   const stateParam = searchParams.get('state') ?? ''
   const relationParam = searchParams.get('relation') ?? ''
-  const state = isConsentState(stateParam) ? (stateParam as ConsentState) : DEFAULT_FILTERS.state
+  const state = isConsentState(stateParam)
+    ? (stateParam as ConsentState)
+    : isPendingView
+      ? 'PENDING'
+      : DEFAULT_FILTERS.state
   const urlRelation = isConsentRelation(relationParam) ? relationParam : DEFAULT_FILTERS.relation
 
   return {
     state,
     serviceId: searchParams.get('serviceId') ?? DEFAULT_FILTERS.serviceId,
-    relation: isPendingView ? 'ANY' : urlRelation,
+    relation: urlRelation,
     createdAfter: searchParams.get('createdAfter') ?? DEFAULT_FILTERS.createdAfter,
     createdBefore: searchParams.get('createdBefore') ?? DEFAULT_FILTERS.createdBefore,
   }
@@ -162,7 +166,9 @@ function ConsentRegistryPage(): React.JSX.Element {
           filters={filters}
           isPendingView={isPendingView}
           onFilterChange={(nextFilters) => updateParams(nextFilters)}
-          onClear={() => updateParams(DEFAULT_FILTERS)}
+          onClear={() =>
+            updateParams(isPendingView ? { ...DEFAULT_FILTERS, state: 'PENDING' } : DEFAULT_FILTERS)
+          }
         />
 
         <ConsentRegistryTable
