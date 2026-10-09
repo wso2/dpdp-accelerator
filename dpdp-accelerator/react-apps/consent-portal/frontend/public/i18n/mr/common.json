@@ -463,7 +463,8 @@
       "resolved": {
         "note": "या तक्रारीचे निराकरण झाले आहे."
       },
-      "submittedOnLabel": "सादर केले आहे"
+      "submittedOnLabel": "सादर केले आहे",
+      "categoryLabel": "श्रेणी"
     },
     "submit": {
       "title": "तक्रार नोंदवा",

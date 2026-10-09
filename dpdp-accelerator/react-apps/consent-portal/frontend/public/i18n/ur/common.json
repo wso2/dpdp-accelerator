@@ -463,7 +463,8 @@
       "resolved": {
         "note": "یہ شکایت حل کر دی گئی ہے۔"
       },
-      "submittedOnLabel": "جمع کرایا گیا"
+      "submittedOnLabel": "جمع کرایا گیا",
+      "categoryLabel": "زمرہ"
     },
     "submit": {
       "title": "شکایت درج کریں",

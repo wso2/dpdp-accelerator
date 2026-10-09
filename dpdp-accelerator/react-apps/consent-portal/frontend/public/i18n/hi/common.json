@@ -463,7 +463,8 @@
       "resolved": {
         "note": "इस शिकायत का समाधान कर दिया गया है।"
       },
-      "submittedOnLabel": "दाखिल किया गया"
+      "submittedOnLabel": "दाखिल किया गया",
+      "categoryLabel": "श्रेणी"
     },
     "submit": {
       "title": "शिकायत दर्ज करें",

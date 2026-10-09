@@ -463,7 +463,8 @@
       "resolved": {
         "note": "هي شڪايت حل ٿي چڪي آهي."
       },
-      "submittedOnLabel": "جمع ڪرايل"
+      "submittedOnLabel": "جمع ڪرايل",
+      "categoryLabel": "زمرو"
     },
     "submit": {
       "title": "هڪ شڪايت جمع ڪرايو",

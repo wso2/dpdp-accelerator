@@ -463,7 +463,8 @@
       "resolved": {
         "note": "This complaint has been resolved. If you're not satisfied with the outcome, send a message below to reopen it for review."
       },
-      "submittedOnLabel": "Submitted on"
+      "submittedOnLabel": "Submitted on",
+      "categoryLabel": "Category"
     },
     "submit": {
       "title": "Submit a complaint",

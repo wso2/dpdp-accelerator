@@ -463,7 +463,8 @@
       "resolved": {
         "note": "આ ફરિયાદનો ઉકેલ આવી ગયો છે."
       },
-      "submittedOnLabel": "રજૂ કરેલ છે"
+      "submittedOnLabel": "રજૂ કરેલ છે",
+      "categoryLabel": "શ્રેણી"
     },
     "submit": {
       "title": "ફરિયાદ નોંધાવો",

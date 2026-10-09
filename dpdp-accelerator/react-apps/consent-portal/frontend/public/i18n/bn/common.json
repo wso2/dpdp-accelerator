@@ -463,7 +463,8 @@
       "resolved": {
         "note": "এই অভিযোগটি মীমাংসা করা হয়েছে।"
       },
-      "submittedOnLabel": "জমা দেওয়া হয়েছে"
+      "submittedOnLabel": "জমা দেওয়া হয়েছে",
+      "categoryLabel": "বিভাগ"
     },
     "submit": {
       "title": "একটি অভিযোগ জমা দিন",

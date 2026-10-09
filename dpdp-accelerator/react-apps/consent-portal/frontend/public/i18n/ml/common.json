@@ -463,7 +463,8 @@
       "resolved": {
         "note": "ഈ പരാതി പരിഹരിച്ചു."
       },
-      "submittedOnLabel": "സമർപ്പിച്ചത്"
+      "submittedOnLabel": "സമർപ്പിച്ചത്",
+      "categoryLabel": "വിഭാഗം"
     },
     "submit": {
       "title": "പരാതി നൽകുക",

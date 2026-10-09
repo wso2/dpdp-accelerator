@@ -463,7 +463,8 @@
       "resolved": {
         "note": "बे अजतखौ सुस्रांनाय जाबाय।"
       },
-      "submittedOnLabel": "दाखिल खालामजाथाय"
+      "submittedOnLabel": "दाखिल खालामजाथाय",
+      "categoryLabel": "विभाग"
     },
     "submit": {
       "title": "अजत गथाय",
