@@ -420,8 +420,10 @@ public class EventNotificationCommonDBQueries {
                 +
                 "CALLBACK_URL, SHARED_SECRET, STATUS, CREATED_AT, UPDATED_AT " +
                 "FROM SUBSCRIPTION WHERE STATUS = " + SQL_SUBSCRIPTION_PENDING + " AND DELIVERY_MODE = "
-                + SQL_WEBHOOK_MODE + " AND UPDATED_AT <= ?";
+                + SQL_WEBHOOK_MODE + " AND UPDATED_AT <= ?"
+                + " ORDER BY UPDATED_AT ASC, SUBSCRIPTION_ID ASC LIMIT ?";
     }
+
 
     /**
      * Updates a poll delivery status directly by delivery ID.

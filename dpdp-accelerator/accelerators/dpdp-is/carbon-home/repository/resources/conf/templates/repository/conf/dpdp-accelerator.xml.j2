@@ -120,10 +120,20 @@
         {% else %}
         <DeliveryWorkerPollSeconds>5</DeliveryWorkerPollSeconds>
         {% endif %}
+        {% if dpdp_accelerator.event_notifications.webhook.delivery_worker_max_batches_per_run is defined %}
+        <DeliveryWorkerMaxBatchesPerRun>{{dpdp_accelerator.event_notifications.webhook.delivery_worker_max_batches_per_run}}</DeliveryWorkerMaxBatchesPerRun>
+        {% else %}
+        <DeliveryWorkerMaxBatchesPerRun>10</DeliveryWorkerMaxBatchesPerRun>
+        {% endif %}
+        {% if dpdp_accelerator.event_notifications.webhook.delivery_worker_max_run_seconds is defined %}
+        <DeliveryWorkerMaxRunSeconds>{{dpdp_accelerator.event_notifications.webhook.delivery_worker_max_run_seconds}}</DeliveryWorkerMaxRunSeconds>
+        {% else %}
+        <DeliveryWorkerMaxRunSeconds>4</DeliveryWorkerMaxRunSeconds>
+        {% endif %}
         {% if dpdp_accelerator.event_notifications.webhook.stuck_inflight_threshold_seconds is defined %}
         <StuckInFlightThresholdSeconds>{{dpdp_accelerator.event_notifications.webhook.stuck_inflight_threshold_seconds}}</StuckInFlightThresholdSeconds>
         {% else %}
-        <StuckInFlightThresholdSeconds>10</StuckInFlightThresholdSeconds>
+        <StuckInFlightThresholdSeconds>60</StuckInFlightThresholdSeconds>
         {% endif %}
         {% if dpdp_accelerator.event_notifications.webhook.max_verification_response_body_bytes is defined %}
         <MaxVerificationResponseBodyBytes>{{dpdp_accelerator.event_notifications.webhook.max_verification_response_body_bytes}}</MaxVerificationResponseBodyBytes>
@@ -149,6 +159,16 @@
         <PendingSubscriptionRecoveryBatchSize>{{dpdp_accelerator.event_notifications.webhook.pending_subscription_recovery_batch_size}}</PendingSubscriptionRecoveryBatchSize>
         {% else %}
         <PendingSubscriptionRecoveryBatchSize>20</PendingSubscriptionRecoveryBatchSize>
+        {% endif %}
+        {% if dpdp_accelerator.event_notifications.webhook.pending_subscription_recovery_max_batches_per_run is defined %}
+        <PendingSubscriptionRecoveryMaxBatchesPerRun>{{dpdp_accelerator.event_notifications.webhook.pending_subscription_recovery_max_batches_per_run}}</PendingSubscriptionRecoveryMaxBatchesPerRun>
+        {% else %}
+        <PendingSubscriptionRecoveryMaxBatchesPerRun>10</PendingSubscriptionRecoveryMaxBatchesPerRun>
+        {% endif %}
+        {% if dpdp_accelerator.event_notifications.webhook.pending_subscription_recovery_max_run_seconds is defined %}
+        <PendingSubscriptionRecoveryMaxRunSeconds>{{dpdp_accelerator.event_notifications.webhook.pending_subscription_recovery_max_run_seconds}}</PendingSubscriptionRecoveryMaxRunSeconds>
+        {% else %}
+        <PendingSubscriptionRecoveryMaxRunSeconds>25</PendingSubscriptionRecoveryMaxRunSeconds>
         {% endif %}
         {% if dpdp_accelerator.event_notifications.webhook.worker_shutdown_timeout_seconds is defined %}
         <WorkerShutdownTimeoutSeconds>{{dpdp_accelerator.event_notifications.webhook.worker_shutdown_timeout_seconds}}</WorkerShutdownTimeoutSeconds>

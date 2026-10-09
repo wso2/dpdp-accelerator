@@ -56,6 +56,19 @@ import java.util.Set;
 
 public class SubscriptionDAOImpl implements SubscriptionDAO {
 
+    /**
+     * Maximum time in seconds that the {@code SELECT … FOR UPDATE} issued by
+     * {@link #lockSubscriptionForVerification} is allowed to wait for the row
+     * lock before throwing {@link java.sql.SQLTimeoutException}.
+     *
+     * <p>This bounds the worst-case stall inside the pending-subscription
+     * recovery tick to 3 s per locked row.  It is deliberately not
+     * TOML-configurable because a lock wait consistently exceeding 3 s
+     * indicates a dead or slow connection holding the lock — a root cause
+     * that requires operational intervention rather than a longer timeout.</p>
+     */
+    private static final int LOCK_SUBSCRIPTION_QUERY_TIMEOUT_SECONDS = 3;
+
     private EventNotificationCommonDBQueries getQueries(Connection conn) {
         return EventNotificationQueryFactory.getQueryProvider(conn);
     }
@@ -259,6 +272,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         Objects.requireNonNull(conn, "Connection cannot be null.");
         try (PreparedStatement ps = conn.prepareStatement(
                 getQueries(conn).getLockSubscriptionForVerificationQuery())) {
+            ps.setQueryTimeout(LOCK_SUBSCRIPTION_QUERY_TIMEOUT_SECONDS);
             ps.setString(1, subscriptionId);
             ps.setString(2, orgId);
             ps.setString(3, expectedStatus);
@@ -589,6 +603,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         try (PreparedStatement ps = conn
                 .prepareStatement(getQueries(conn).getGetPendingSubscriptionsForRecoveryQuery())) {
             ps.setTimestamp(1, updatedBefore);
+            ps.setInt(2, limit);
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next() && list.size() < limit) {
                     Subscription sub = mapSubscription(rs);
