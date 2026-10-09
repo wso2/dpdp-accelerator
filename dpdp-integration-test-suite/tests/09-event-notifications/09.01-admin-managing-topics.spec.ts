@@ -33,7 +33,7 @@ import { uniqueMarker } from '../../utils/testData'
  */
 test.describe('Admin managing Topics', () => {
   test.describe('Creating Topics', () => {
-    test('09.01.01 - Creates a user topic through the Register Topic dialog', async ({ browser }) => {
+    test('09.01.01 - Creates a user topic through the Create Topic dialog', async ({ browser }) => {
       const page = await loginAsConsentAdmin(browser)
       try {
         const topicsPage = new TopicsPage(page)

@@ -18,7 +18,7 @@
 
 import { type Locator, type Page } from '@playwright/test'
 
-/** TopicRegisterDialog.tsx, opened from TopicsPage's "Register Topic" button. */
+/** TopicRegisterDialog.tsx, opened from TopicsPage's "Create Topic" button. */
 export class TopicRegisterDialog {
   readonly root: Locator
   readonly nameField: Locator
@@ -31,8 +31,8 @@ export class TopicRegisterDialog {
     this.root = page.getByRole('dialog')
     this.nameField = this.root.getByLabel('Topic Name')
     this.descriptionField = this.root.getByLabel('Description')
-    // Matches both "Register Topic" (idle) and "Registering..." (loading) states via the stable prefix.
-    this.submitButton = this.root.getByRole('button', { name: /^Register/ })
+    // Matches both "Create Topic" (idle) and "Creating..." (loading) states via the stable prefix.
+    this.submitButton = this.root.getByRole('button', { name: /^Create/ })
     this.cancelButton = this.root.getByRole('button', { name: 'Cancel' })
     this.nameRequiredError = this.root.getByText('Topic name is required.')
   }

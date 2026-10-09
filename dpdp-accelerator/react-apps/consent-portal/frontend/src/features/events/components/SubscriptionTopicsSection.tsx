@@ -35,7 +35,6 @@ export default function SubscriptionTopicsSection({ topics }: Props): React.JSX.
     <SubscriptionChipListSection
       title={title}
       count={topics.length}
-      subtitle={t('subscriptions.details.topicsSubtitle')}
       searchLabel={t('subscriptions.topicUi.searchAssociated')}
       noMatchesLabel={t('subscriptions.topicUi.noMatches')}
       items={topics}

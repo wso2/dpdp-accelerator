@@ -600,23 +600,23 @@
       "description": "Description",
       "status": "Status",
       "actions": "Actions",
-      "empty": "No registered topics found."
+      "empty": "No topics found."
     },
     "actions": {
-      "register": "Register Topic",
+      "register": "Create Topic",
       "delete": "Deregister topic",
       "alreadyDeregistered": "This topic is already deregistered"
     },
     "dialog": {
-      "registerTitle": "Register Topic",
-      "registerSubtitle": "Register a new event notification topic for your organization",
+      "registerTitle": "Create Topic",
+      "registerSubtitle": "Create a new event notification topic for your organization",
       "nameLabel": "Topic Name",
       "namePlaceholder": "e.g. consent.revoke",
       "nameRequired": "Topic name is required.",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Optional description of the topic purpose",
-      "registering": "Registering...",
-      "registerSubmit": "Register Topic"
+      "registering": "Creating...",
+      "registerSubmit": "Create Topic"
     },
     "deleteModal": {
       "title": "Confirm Deregistration",
@@ -629,7 +629,7 @@
     "topicUi": {
       "selectionLimit": "This selection exceeds the {{max}}-topic limit. Narrow your search or clear some selected topics. No selections were changed.",
       "subscribedCount": "Subscribed Topics",
-      "close": "Close registration",
+      "close": "Close dialog",
       "topics": "Topics",
       "delivery": "Delivery",
       "chooseTopics": "Step 1 of 2 — choose topics",
@@ -718,7 +718,7 @@
       "empty": "No subscriptions found."
     },
     "actions": {
-      "register": "Register Subscription",
+      "register": "Create Subscription",
       "view": "View Details",
       "verify": "Re-verify webhook",
       "delete": "Delete subscription",
@@ -727,8 +727,8 @@
       "close": "Close"
     },
     "dialog": {
-      "registerTitle": "Register Subscription",
-      "registerSubtitle": "Configure a new event notification subscription and delivery mode",
+      "registerTitle": "Create Subscription",
+      "registerSubtitle": "Create and configure a new event notification subscription and delivery mode",
       "nameLabel": "Subscription Name",
       "namePlaceholder": "e.g. Orders Notification Webhook",
       "nameRequired": "Subscription name is required.",
@@ -752,8 +752,8 @@
       "secretRequired": "Shared secret is required.",
       "secretHelper": "Used to sign webhook payloads or authenticate poll requests",
       "generateSecret": "Generate new secret",
-      "registering": "Registering...",
-      "registerSubmit": "Register Subscription"
+      "registering": "Creating...",
+      "registerSubmit": "Create Subscription"
     },
     "deleteModal": {
       "title": "Confirm Subscription Deletion",

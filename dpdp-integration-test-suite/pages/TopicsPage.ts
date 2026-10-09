@@ -24,10 +24,7 @@ export const ROWS_PER_PAGE_OPTIONS = [10, 20, 50] as const
 
 /**
  * TopicsPage.tsx at /events/topics - Event Notification Topics list, filters, and pagination.
- * TopicTable.tsx has no data-testid anywhere in the feature; topicId cells
- * render through CopyableText, which truncates the *visible* text but keeps the full id as the
- * inner span's aria-label - rowByTopicId matches on that, never on the (possibly truncated)
- * visible text.
+ * TopicTable.tsx renders topic name, description, and status; rows are matched by name via rowByName().
  */
 export class TopicsPage {
   readonly heading: Locator
@@ -50,13 +47,13 @@ export class TopicsPage {
     // this collide with every row's "Deregister topic" button ("Deregister topic" contains
     // "register Topic" as a substring), which only ever surfaces once the table has rows, i.e.
     // never on a truly empty environment - see 09.01.01's regression history.
-    this.registerButton = page.getByRole('button', { name: 'Register Topic', exact: true })
+    this.registerButton = page.getByRole('button', { name: 'Create Topic', exact: true })
     this.table = page.getByRole('table', { name: 'Topics management table' })
     this.searchInput = page.getByPlaceholder('Search by topic name, ID, or description')
     this.statusFilter = page.getByRole('combobox', { name: 'Status' })
     this.searchButton = page.getByRole('button', { name: 'Search' })
     this.clearFiltersButton = page.getByRole('button', { name: 'Clear filters' })
-    this.emptyState = page.getByText('No registered topics found.')
+    this.emptyState = page.getByText('No topics found.')
     this.loadFailedAlert = page.getByText('Unable to load topics right now.')
     this.retryButton = page.getByRole('button', { name: 'Try again' })
     this.rowsPerPageSelect = page.getByRole('combobox', { name: 'Rows per page' })
@@ -116,11 +113,6 @@ export class TopicsPage {
   /** Matches on the topic's exact, untruncated name - TopicTable.tsx never truncates this column. */
   rowByName(name: string): Locator {
     return this.rows.filter({ has: this.page.getByText(name, { exact: true }) })
-  }
-
-  /** Matches on the full topicId via CopyableText's aria-label, independent of visible truncation. */
-  rowByTopicId(topicId: string): Locator {
-    return this.rows.filter({ has: this.page.locator(`[aria-label="${topicId}"]`) })
   }
 
   /** aria-label is always "Deregister topic" regardless of state (see TopicTable.tsx) - disabled/tooltip carry the rest. */
