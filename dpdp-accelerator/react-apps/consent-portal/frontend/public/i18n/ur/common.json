@@ -585,7 +585,8 @@
     "loadFailed": "ابھی موضوعات لوڈ کرنے سے قاصر ہیں۔",
     "status": {
       "active": "فعال",
-      "deregistered": "ڈی رجسٹرڈ"
+      "deregistered": "ڈی رجسٹرڈ",
+      "deleted": "ڈی رجسٹرڈ"
     },
     "filters": {
       "searchPlaceholder": "موضوع کے نام یا تفصیل کے ذریعے تلاش کریں",
@@ -606,7 +607,8 @@
     "actions": {
       "register": "موضوع تخلیق کریں",
       "delete": "موضوع کو ڈی رجسٹر کریں",
-      "alreadyDeregistered": "یہ موضوع پہلے ہی ڈی رجسٹرڈ ہے۔"
+      "alreadyDeregistered": "یہ موضوع پہلے ہی ڈی رجسٹرڈ ہے۔",
+      "alreadyDeleted": "یہ موضوع پہلے ہی ڈی رجسٹرڈ ہے۔"
     },
     "dialog": {
       "registerTitle": "موضوع تخلیق کریں",

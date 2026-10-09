@@ -585,7 +585,8 @@
     "loadFailed": "अभी विषय लोड करने में असमर्थ।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "डी-रजिस्टर किया गया"
+      "deregistered": "डी-रजिस्टर किया गया",
+      "deleted": "डी-रजिस्टर किया गया"
     },
     "filters": {
       "searchPlaceholder": "विषय नाम या विवरण द्वारा खोजें",
@@ -606,7 +607,8 @@
     "actions": {
       "register": "विषय बनाएं",
       "delete": "विषय को डी-रजिस्टर करें",
-      "alreadyDeregistered": "यह विषय पहले ही अपंजीकृत हो चुका है"
+      "alreadyDeregistered": "यह विषय पहले ही अपंजीकृत हो चुका है",
+      "alreadyDeleted": "यह विषय पहले ही अपंजीकृत हो चुका है"
     },
     "dialog": {
       "registerTitle": "विषय बनाएं",

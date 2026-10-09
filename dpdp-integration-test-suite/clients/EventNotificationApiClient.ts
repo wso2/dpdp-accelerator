@@ -40,7 +40,7 @@ import type { AuthHeaders } from '../utils/authStorage'
 // case-insensitively against both the value string and the Java enum name, so a request can send
 // "POLL"/"ACTIVE" and still be accepted - but never assert an uppercase value against something
 // the server itself returned.
-export const TOPIC_STATUSES = ['active', 'deregistered'] as const
+export const TOPIC_STATUSES = ['active', 'deleted'] as const
 export type TopicStatus = (typeof TOPIC_STATUSES)[number]
 
 export const SUBSCRIPTION_STATUSES = ['pending', 'active', 'stale', 'deleted'] as const

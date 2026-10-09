@@ -141,28 +141,28 @@ test.describe('Admin managing Topics', () => {
     })
   })
 
-  test.describe('Deregistering Topics', () => {
-    test('09.01.05 - Deregisters a user-created topic with no active subscriptions', async ({
+  test.describe('Deleting Topics', () => {
+    test('09.01.05 - Deletes a user-created topic with no active subscriptions', async ({
       browser,
       consentAdminEventApi,
     }) => {
-      const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'deregister-me')
+      const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'delete-me')
       const page = await loginAsConsentAdmin(browser)
       try {
         const topicsPage = new TopicsPage(page)
         await topicsPage.goto()
         await topicsPage.search(topic.name)
-        await topicsPage.deregisterTopicByName(topic.name)
+        await topicsPage.deleteTopicByName(topic.name)
         await new TopicDeleteDialog(page).confirm()
 
         await topicsPage.search(topic.name)
-        await topicsPage.filterByStatus('Deregistered')
+        await topicsPage.filterByStatus('Deleted')
         await expect(topicsPage.rowByName(topic.name)).toBeVisible()
 
-        // The audit row remains readable by id after deregistration.
-        const getResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DEREGISTERED' })
+        // The audit row remains readable by id after deletion.
+        const getResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DELETED' })
         const { items } = (await getResponse.json()) as { items: { topicId: string; status: string }[] }
-        expect(items.some((t) => t.topicId === topic.topicId && t.status.toUpperCase() === 'DEREGISTERED')).toBe(
+        expect(items.some((t) => t.topicId === topic.topicId && t.status.toUpperCase() === 'DELETED')).toBe(
           true,
         )
       } finally {

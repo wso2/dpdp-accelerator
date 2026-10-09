@@ -78,12 +78,12 @@ public class TopicHandlerTest {
 
     @Test
     public void testDeleteTopic() {
-        TopicDTO dto = new TopicDTO("t1", "user-consent", "desc", "deregistered");
+        TopicDTO dto = new TopicDTO("t1", "user-consent", "desc", "deleted");
         when(topicService.deleteTopic("org1", "t1")).thenReturn(dto);
 
         TopicDTO response = topicHandler.deleteTopic("org1", "t1");
         assertNotNull(response);
         assertEquals(response.getTopicId(), "t1");
-        assertEquals(response.getStatus(), "deregistered");
+        assertEquals(response.getStatus(), "deleted");
     }
 }
