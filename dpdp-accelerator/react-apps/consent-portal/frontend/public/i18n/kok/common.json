@@ -584,7 +584,8 @@
     "loadFailed": "सध्या विशय लोड करपाक शकना.",
     "status": {
       "active": "सक्रीय",
-      "deregistered": "काडून उडयलें"
+      "deregistered": "काडून उडयलें",
+      "deleted": "काडून उडयलें"
     },
     "filters": {
       "searchPlaceholder": "विशेयाचें नांव, आयडी वा वर्णना प्रमाण सोद करात",
@@ -605,7 +606,8 @@
     "actions": {
       "register": "विषय नोंद करात",
       "delete": "विषय काडून उडोवप",
-      "alreadyDeregistered": "हो विशय पयलींच नोंदणी रद्द केलां"
+      "alreadyDeregistered": "हो विशय पयलींच नोंदणी रद्द केलां",
+      "alreadyDeleted": "हो विशय पयलींच नोंदणी रद्द केलां"
     },
     "dialog": {
       "registerTitle": "विषय नोंद करात",

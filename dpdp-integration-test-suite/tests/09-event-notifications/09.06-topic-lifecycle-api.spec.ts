@@ -25,7 +25,7 @@ import { seedActiveTopicViaApi, seedPollSubscriptionViaApi } from '../../utils/e
  * deregister (08.01), but nothing in the UI can reach these rules.
  */
 test.describe('Topic lifecycle rules', () => {
-  test('09.06.01 - A topic with a live subscription cannot be deregistered', async ({
+  test('09.06.01 - A topic with a live subscription cannot be deleted', async ({
     consentAdminEventApi,
   }) => {
     const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'has-subscription')
@@ -42,27 +42,27 @@ test.describe('Topic lifecycle rules', () => {
     expect(stillThere?.status.toUpperCase()).toBe('ACTIVE')
   })
 
-  test('09.06.02 - Deregistering the same topic twice does not mutate it again', async ({
+  test('09.06.02 - Deleting the same topic twice does not mutate it again', async ({
     consentAdminEventApi,
   }) => {
-    const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'double-deregister')
+    const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'double-delete')
     const first = await consentAdminEventApi.deleteTopic(topic.topicId)
     expect(first.status()).toBe(200)
 
     const second = await consentAdminEventApi.deleteTopic(topic.topicId)
     expect(second.status()).toBe(404)
 
-    const listResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DEREGISTERED' })
+    const listResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DELETED' })
     const { items } = (await listResponse.json()) as { items: { topicId: string }[] }
     expect(items.filter((t) => t.topicId === topic.topicId)).toHaveLength(1)
   })
 
-  test('09.06.03 - Re-registering a previously deregistered topic name creates a new topic', async ({
+  test('09.06.03 - Re-registering a previously deleted topic name creates a new topic', async ({
     consentAdminEventApi,
   }) => {
     const original = await seedActiveTopicViaApi(consentAdminEventApi, 'reused-name')
-    const deregisterResponse = await consentAdminEventApi.deleteTopic(original.topicId)
-    expect(deregisterResponse.status()).toBe(200)
+    const deleteResponse = await consentAdminEventApi.deleteTopic(original.topicId)
+    expect(deleteResponse.status()).toBe(200)
 
     const recreateResponse = await consentAdminEventApi.createTopic({ name: original.name })
     expect(recreateResponse.status()).toBe(201)
@@ -74,18 +74,18 @@ test.describe('Topic lifecycle rules', () => {
     const { items } = (await listResponse.json()) as { items: { topicId: string; status: string }[] }
     const oldRow = items.find((t) => t.topicId === original.topicId)
     const newRow = items.find((t) => t.topicId === recreated.topicId)
-    expect(oldRow?.status.toUpperCase()).toBe('DEREGISTERED')
+    expect(oldRow?.status.toUpperCase()).toBe('DELETED')
     expect(newRow?.status.toUpperCase()).toBe('ACTIVE')
   })
 
-  test('09.06.04 - Any topic linked to a multi-topic subscription cannot be deregistered until the subscription is deleted', async ({
+  test('09.06.04 - Any topic linked to a multi-topic subscription cannot be deleted until the subscription is deleted', async ({
     consentAdminEventApi,
   }) => {
     const topicA = await seedActiveTopicViaApi(consentAdminEventApi, 'multi-sub-guard-a')
     const topicB = await seedActiveTopicViaApi(consentAdminEventApi, 'multi-sub-guard-b')
     const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, [topicA.name, topicB.name])
 
-    // Both topics are blocked from deregistration while the multi-topic subscription is live
+    // Both topics are blocked from deletion while the multi-topic subscription is live
     const deleteA = await consentAdminEventApi.deleteTopic(topicA.topicId)
     expect(deleteA.status()).toBe(409)
     expect((await deleteA.json()).description).toContain('has active subscriptions')
@@ -98,7 +98,7 @@ test.describe('Topic lifecycle rules', () => {
     const deleteSubResponse = await consentAdminEventApi.deleteSubscription(subscription.subscriptionId)
     expect(deleteSubResponse.status()).toBe(200)
 
-    // Now both topics can be safely deregistered
+    // Now both topics can be safely deleted
     const retryDeleteA = await consentAdminEventApi.deleteTopic(topicA.topicId)
     expect(retryDeleteA.status()).toBe(200)
 

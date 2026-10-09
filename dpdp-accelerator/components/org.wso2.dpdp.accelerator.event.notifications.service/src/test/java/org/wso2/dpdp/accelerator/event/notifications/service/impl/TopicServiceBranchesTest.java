@@ -70,7 +70,14 @@ public class TopicServiceBranchesTest {
     }
 
     @Test(expectedExceptions = org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class)
-    public void deleteDeregisteredTopicIsRejected() {
+    public void deleteDeletedTopicIsRejected() {
+        Topic topic = new Topic("t", "org", "topic", null, "deleted", Initiator.USER.getValue());
+        when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
+        service.deleteTopic("org", "t");
+    }
+
+    @Test(expectedExceptions = org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class)
+    public void deleteLegacyDeregisteredTopicIsRejected() {
         Topic topic = new Topic("t", "org", "topic", null, "deregistered", Initiator.USER.getValue());
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
         service.deleteTopic("org", "t");
@@ -80,7 +87,7 @@ public class TopicServiceBranchesTest {
     public void deleteFalseUpdateIsRejected() {
         Topic topic = new Topic("t", "org", "topic", null, "active", Initiator.USER.getValue());
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
-        when(dao.deregisterTopicAtomic(any(Connection.class), eq("t"), eq("org"))).thenReturn(false);
+        when(dao.deleteTopicAtomic(any(Connection.class), eq("t"), eq("org"))).thenReturn(false);
         service.deleteTopic("org", "t");
     }
 

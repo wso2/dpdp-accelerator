@@ -27,7 +27,7 @@ import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotif
  */
 public enum TopicStatus {
     ACTIVE("active"),
-    DEREGISTERED("deregistered");
+    DELETED("deleted");
 
     private final String value;
 
@@ -49,6 +49,9 @@ public enum TopicStatus {
             if (status.value.equalsIgnoreCase(value.trim()) || status.name().equalsIgnoreCase(value.trim())) {
                 return status;
             }
+        }
+        if ("deregistered".equalsIgnoreCase(value.trim())) {
+            return DELETED;
         }
         throw new IllegalArgumentException(
                 String.format(EventNotificationCommonConstants.ERROR_UNKNOWN_ENUM_VALUE, "TopicStatus", value));

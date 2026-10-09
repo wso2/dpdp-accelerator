@@ -66,7 +66,8 @@ public class EventNotificationServiceConstants {
         public static final String TOPIC_ID_MISSING_ERROR_MSG = "Topic ID is required.";
         public static final String TOPIC_ALREADY_EXISTS_ERROR_MSG = "A topic with the specified name already exists for this organization.";
         public static final String FAILED_TO_CREATE_TOPIC_ERROR_MSG = "Failed to create topic in database.";
-        public static final String FAILED_TO_DEREGISTER_TOPIC_ERROR_MSG = "Failed to deregister topic.";
+        public static final String FAILED_TO_DELETE_TOPIC_ERROR_MSG = "Failed to delete topic.";
+        public static final String FAILED_TO_DEREGISTER_TOPIC_ERROR_MSG = FAILED_TO_DELETE_TOPIC_ERROR_MSG;
         public static final String ORG_ID_MISSING_ERROR_MSG = "Organization ID is required.";
         public static final String GROUP_ID_MISSING_ERROR_MSG = "Group ID is required.";
         public static final String SUBSCRIPTION_ID_MISSING_ERROR_MSG = "Subscription ID is required.";
@@ -95,10 +96,11 @@ public class EventNotificationServiceConstants {
         public static final String TOPIC_NOT_FOUND_ERROR_MSG = "No topic exists with ID '%s' for this org.";
         public static final String SYSTEM_TOPIC_DELETE_FORBIDDEN_ERROR_MSG = "System topic '%s' is system-defined and cannot be deleted or deactivated.";
         public static final String SYSTEM_TOPIC_NAME_CONFLICT_ERROR_MSG = "Topic '%s' already exists but is not an active system topic.";
-        public static final String TOPIC_ALREADY_DEREGISTERED_ERROR_MSG = "Topic '%s' is already deregistered.";
+        public static final String TOPIC_ALREADY_DELETED_ERROR_MSG = "Topic '%s' is already deleted.";
+        public static final String TOPIC_ALREADY_DEREGISTERED_ERROR_MSG = TOPIC_ALREADY_DELETED_ERROR_MSG;
         public static final String SUBSCRIPTION_IN_FLIGHT_DELIVERIES_ERROR_MSG = "Subscription has pending or in-flight deliveries and cannot be deleted until they complete.";
         public static final String SUBSCRIPTION_CONCURRENT_MODIFICATION_ERROR_MSG = "Subscription status was modified concurrently by another operation.";
-        public static final String TOPIC_HAS_ACTIVE_SUBSCRIPTIONS_ERROR_MSG = "Topic '%s' has active subscriptions and cannot be deregistered. Delete or complete all subscriptions for this topic first.";
+        public static final String TOPIC_HAS_ACTIVE_SUBSCRIPTIONS_ERROR_MSG = "Topic '%s' has active subscriptions and cannot be deleted. Delete or complete all subscriptions for this topic first.";
         public static final String TOPIC_NOT_ACTIVE_ERROR_MSG = "Topic '%s' is not active and cannot accept new subscriptions.";
         public static final String TOPICS_NOT_ACTIVE_ERROR_MSG =
                 "One or more requested topics are not active and cannot accept new subscriptions.";

@@ -584,7 +584,8 @@
     "loadFailed": "अखन विषय लोड करब' मे असमर्थ।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "डी-रजिस्टर कएल गेल"
+      "deregistered": "डी-रजिस्टर कएल गेल",
+      "deleted": "डी-रजिस्टर कएल गेल"
     },
     "filters": {
       "searchPlaceholder": "विषय नाम, आईडी, या विवरण द्वारा खोजू",
@@ -605,7 +606,8 @@
     "actions": {
       "register": "विषय पंजीकृत करू",
       "delete": "विषय कें डी-रजिस्टर करू",
-      "alreadyDeregistered": "ई विषय पहिने सँ अपंजीकृत अछि"
+      "alreadyDeregistered": "ई विषय पहिने सँ अपंजीकृत अछि",
+      "alreadyDeleted": "ई विषय पहिने सँ अपंजीकृत अछि"
     },
     "dialog": {
       "registerTitle": "विषय पंजीकृत करू",

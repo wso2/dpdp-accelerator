@@ -38,7 +38,11 @@ public interface TopicDAO {
 
     boolean updateTopicStatus(Connection conn, String topicId, String orgId, TopicStatus status);
 
-    boolean deregisterTopicAtomic(Connection conn, String topicId, String orgId);
+    boolean deleteTopicAtomic(Connection conn, String topicId, String orgId);
+
+    default boolean deregisterTopicAtomic(Connection conn, String topicId, String orgId) {
+        return deleteTopicAtomic(conn, topicId, orgId);
+    }
 
     PaginatedDAOResult<Topic> listTopics(Connection conn, String orgId, String status, String search, int limit, int offset,
             String sort);

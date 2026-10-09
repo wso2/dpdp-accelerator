@@ -230,18 +230,19 @@ public class TopicServiceImpl implements TopicService {
                         409);
             }
 
-            if (TopicStatus.DEREGISTERED.getValue().equalsIgnoreCase(topic.getStatus())) {
+            if (TopicStatus.DELETED.getValue().equalsIgnoreCase(topic.getStatus())
+                    || "deregistered".equalsIgnoreCase(topic.getStatus())) {
                 throw new EventNotificationServiceException(
                         EventNotificationServiceConstants.ERROR_CODE_TOPIC_NOT_FOUND,
                         EventNotificationServiceConstants.ERROR_TITLE_TOPIC_NOT_FOUND,
-                        String.format(EventNotificationServiceConstants.TOPIC_ALREADY_DEREGISTERED_ERROR_MSG,
+                        String.format(EventNotificationServiceConstants.TOPIC_ALREADY_DELETED_ERROR_MSG,
                                 topicIdStr.trim()),
                         404);
             }
 
             boolean updated;
             try {
-                updated = topicDAO.deregisterTopicAtomic(conn, topic.getTopicId(), orgId.trim());
+                updated = topicDAO.deleteTopicAtomic(conn, topic.getTopicId(), orgId.trim());
             } catch (EventNotificationInvalidStateException e) {
                 throw new EventNotificationServiceException(
                         EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
@@ -254,12 +255,12 @@ public class TopicServiceImpl implements TopicService {
                 throw new EventNotificationServiceException(
                         EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
                         EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
-                        EventNotificationServiceConstants.FAILED_TO_DEREGISTER_TOPIC_ERROR_MSG,
+                        EventNotificationServiceConstants.FAILED_TO_DELETE_TOPIC_ERROR_MSG,
                         500);
             }
 
             return new TopicDTO(topic.getTopicId(), topic.getName(), topic.getDescription(),
-                    TopicStatus.DEREGISTERED.getValue(), topic.getInitiatedBy());
+                    TopicStatus.DELETED.getValue(), topic.getInitiatedBy());
         });
     }
 

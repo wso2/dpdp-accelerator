@@ -11,7 +11,7 @@ public enum TopicStatus {
   
   ACTIVE("active"),
   
-  DEREGISTERED("deregistered");
+  DELETED("deleted");
 
   private String value;
 
@@ -31,6 +31,9 @@ public enum TopicStatus {
       if (b.value.equals(value)) {
         return b;
       }
+    }
+    if ("deregistered".equals(value)) {
+      return DELETED;
     }
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }

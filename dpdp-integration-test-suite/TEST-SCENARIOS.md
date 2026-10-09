@@ -467,13 +467,13 @@ Mixed UI and API. Two server behaviours drive most of the test design: `groupId`
 | `09.01.02` | Leaving the topic name empty shows the required-field error and blocks submission | Blocked by **native** HTML constraint validation, so the component's own custom message is unreachable; asserts `validity.valid === false`, the observable outcome. |
 | `09.01.03` | Creating a topic whose name already exists is rejected case-insensitively | Rejected case-insensitively with the server's exact message; the API confirms only one row exists. |
 | `09.01.04` | Topic input is trimmed before persistence |  |
-| `09.01.05` | Deregisters a user-created topic with no active subscriptions |  |
+| `09.01.05` | Deletes a user-created topic with no active subscriptions |  |
 
 ### `09.02-admin-viewing-topics.spec.ts`
 
 | ID | Scenario | Notes |
 | --- | --- | --- |
-| `09.02.01` | The Topics list renders and paginates | Seeds one active topic. Deliberately not asserting a deregistered row - nothing here creates one. |
+| `09.02.01` | The Topics list renders and paginates | Seeds one active topic. Deliberately not asserting a deleted row - nothing here creates one. |
 | `09.02.02` | Searching by a partial topic name finds the matching row | Asserted with a filtered locator, never a loop over `rows.all()` - that snapshot approach flaked in CI twice. |
 
 ### `09.03-admin-viewing-subscriptions.spec.ts`
@@ -512,10 +512,10 @@ Server-side rules the Topics UI cannot reach.
 
 | ID | Scenario | Notes |
 | --- | --- | --- |
-| `09.06.01` | A topic with a live subscription cannot be deregistered | 409 "has active subscriptions"; the topic stays Active. |
-| `09.06.02` | Deregistering the same topic twice does not mutate it again |  |
-| `09.06.03` | Re-registering a previously deregistered topic name creates a new topic | A new topic id; the old row stays Deregistered. |
-| `09.06.04` | Any topic linked to a multi-topic subscription cannot be deregistered until the subscription is deleted | 409 "has active subscriptions" on all associated topics until subscription row is deleted. |
+| `09.06.01` | A topic with a live subscription cannot be deleted | 409 "has active subscriptions"; the topic stays Active. |
+| `09.06.02` | Deleting the same topic twice does not mutate it again |  |
+| `09.06.03` | Re-registering a previously deleted topic name creates a new topic | A new topic id; the old row stays Deleted. |
+| `09.06.04` | Any topic linked to a multi-topic subscription cannot be deleted until the subscription is deleted | 409 "has active subscriptions" on all associated topics until subscription row is deleted. |
 
 ### `09.07-subscription-lifecycle-api.spec.ts` · API-only
 
@@ -542,7 +542,7 @@ Register conflicts, re-verification, and delete guards.
 | --- | --- | --- |
 | `09.08.01` | Publishing an event creates matching delivery records atomically | Readable from the event side and the subscription side, with the payload marker intact. |
 | `09.08.02` | Publishing without a group-id header is rejected |  |
-| `09.08.03` | Publishing to an unknown or deregistered topic is rejected |  |
+| `09.08.03` | Publishing to an unknown or deleted topic is rejected |  |
 | `09.08.04` | A null or missing payload is rejected rather than treated as an empty object | 422 EN-4002 - not silently treated as `{}`. |
 | `09.08.05` | An ALL-filter subscription receives every event regardless of purposes | No/one/many purposes, exactly one delivery each. |
 | `09.08.06` | SPECIFIC purpose matching is case-insensitive and requires overlap | Overlapping purposes deliver; unrelated ones do not. |
