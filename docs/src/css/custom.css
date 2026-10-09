@@ -28,3 +28,21 @@
   --ifm-color-primary-lightest: #e3e6f8;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
+
+.scope-yes {
+  color: #7a9a82;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .scope-yes {
+  color: #a3c2a9;
+}
+
+.scope-no {
+  color: #b57a7a;
+  font-weight: 600;
+}
+
+[data-theme='dark'] .scope-no {
+  color: #d9a8a8;
+}

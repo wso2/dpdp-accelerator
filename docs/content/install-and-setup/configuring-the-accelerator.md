@@ -70,7 +70,7 @@ client_id = "DPDP_CONSENT_PORTAL"
 
 The accelerator can automatically provision a sample application for testing
 consent flows through the REST API. You can use this application with the
-[tryout flows](../try-out/consent.md).
+[Try Out flows](../try-out/consent.md).
 
 ```toml
 [dpdp_accelerator.consent_api_invoker]

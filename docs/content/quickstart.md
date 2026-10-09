@@ -231,7 +231,7 @@ Open `https://localhost:9443/consent-portal/` and sign in as the user holding
 
 ## Next steps
 
-- [Learn through real stories](learn/manage-api-access.md) — see how the main
+- [Learn through real stories](learn/managing-access.md) — see how the main
   features fit together from each participant's point of view
 - [Try Out](try-out/consent.md) — walk through the catalog, consent lifecycle,
   complaint, and event flows

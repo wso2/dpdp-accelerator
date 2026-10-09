@@ -137,7 +137,7 @@ back once it has finished processing, and the delivery then shows
 **Completed**. Deliveries can also arrive out of order, so processors should
 handle each one on its own.
 
-## Where to go next
+## Next Steps
 
 - [Try Out → Event Notifications](../try-out/event.md): run these flows yourself, step by
   step.

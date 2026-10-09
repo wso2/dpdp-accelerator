@@ -82,5 +82,5 @@ Grievance handling enforces strict role boundaries between complainants and inve
 
 ## Next Steps
 
-- **Hands-on Walkthrough:** Follow the step-by-step tryout guide in [Try Out: Complaints](../try-out/complaint.md).
+- **Hands-on Walkthrough:** Follow the step-by-step Try Out guide in [Try Out: Complaints](../try-out/complaint.md).
 - **Configuration & APIs:** Learn about statutory deadlines, attachment limits, and email notification templates in the [Developer Grievance Guide](../grievances-guide.md).

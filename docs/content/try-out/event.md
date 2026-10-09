@@ -1,4 +1,4 @@
-# Try out Event Notifications
+# Event Notifications
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
@@ -959,3 +959,8 @@ longer shows up in later polls. For the full request options, errors, and HMAC
 settings, see
 [Register a poll subscription](../event-notification-guide.md#register-a-poll-subscription)
 and [Poll event deliveries](../event-notification-guide.md#poll-event-deliveries).
+
+## Next Steps
+
+- [Learn: Event Notifications](../learn/event.md) — the concepts and example behind these flows.
+- [Event Notification Guide](../event-notification-guide.md) — the full reference for topics, subscriptions, receivers, signatures, and troubleshooting.

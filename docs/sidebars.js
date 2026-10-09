@@ -26,7 +26,8 @@ const sidebars = {
       type: 'category',
       label: 'Learn',
       items: [
-        { type: 'doc', id: 'learn/manage-api-access', label: 'Managing API Access' },
+        { type: 'doc', id: 'learn/introduction', label: 'Introduction' },
+        { type: 'doc', id: 'learn/managing-access', label: 'Managing Access' },
         { type: 'doc', id: 'learn/consent', label: 'Consent' },
         { type: 'doc', id: 'learn/complaint', label: 'Complaint' },
         { type: 'doc', id: 'learn/event', label: 'Event Notifications' },

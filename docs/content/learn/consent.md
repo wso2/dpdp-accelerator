@@ -241,7 +241,7 @@ enforcement — checking the consent's state, the purpose, and the specific
 elements selected — before processing the person's data, rather than
 assuming a prior approval still applies.
 
-## What's next?
+## Next Steps
 
 Now that you understand the consent lifecycle, try it yourself, or continue
 to see what happens after a consent is revoked:

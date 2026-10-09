@@ -2,7 +2,7 @@
 title: Complaints
 ---
 
-# Tryout Complaints Management
+# Complaint Management
 
 This guide walks you through submitting, managing, and resolving a grievance using both the **Consent Portal** and the **Complaints REST API**.
 
@@ -221,8 +221,8 @@ curl -X POST \
 
 ---
 
-## Related Guides
+## Next Steps
 
 - **[Learn: Complaints](../learn/complaint.md):** Story-based overview of grievance handling.
-- **[Try Out: All Flows](event.md):** End-to-end tryout guide covering consents and event notifications.
+- **[Try Out: All Flows](event.md):** End-to-end Try Out guide covering consents and event notifications.
 - **[Developer Guide: Grievances](../grievances-guide.md):** Full API specifications, attachment limits, and email template customization.
