@@ -257,7 +257,9 @@
       "addVersion": "ꯚꯔꯁꯟ ꯍꯥꯞꯄ",
       "reset": "ꯔꯤꯁꯦꯠ ꯇꯧ꯫",
       "search": "ꯁꯔꯆ",
-      "setLatest": "ꯂꯦꯇꯦꯁꯠ ꯑꯣꯏꯅ ꯁꯦꯠ ꯇꯧ꯫"
+      "setLatest": "ꯂꯦꯇꯦꯁꯠ ꯑꯣꯏꯅ ꯁꯦꯠ ꯇꯧ꯫",
+      "expandVersion": "ভার্সন {{version}}গী মচাকশিং ꯎꯠꯄꯥ",
+      "collapseVersion": "ভার্সন {{version}}গী মচাকশিং লোৎলু"
     },
     "fields": {
       "actions": "থবকশিং",
@@ -373,6 +375,7 @@
       "noProperties": "কষ্টম প্রোপার্টি লৈত্রে।",
       "noVersions": "ভার্সন লৈত্রে।",
       "versionsLoadFailed": "হージュিক ভার্সন ইতিহাস লোড তৌবা ঙমদ্রে।",
+      "versionElementsLoadFailed": "হージュিক ভার্সন অসিগী মচাকশিং লোড তৌবা ঙমদ্রে।",
       "setLatestFailed": "ꯃꯁꯤꯒꯤ ꯚꯔꯁꯟ ꯑꯁꯤ ꯂꯦꯇꯦꯁꯠ ꯑꯣꯏꯅ ꯁꯦꯠ ꯇꯧꯕ ꯌꯥꯔꯛꯇꯦ꯫ ꯑꯗꯣꯝꯅ ꯑꯃꯨꯛ ꯍꯟꯅ ꯍꯣꯠꯅꯕꯤꯌꯨ꯫"
     }
   },

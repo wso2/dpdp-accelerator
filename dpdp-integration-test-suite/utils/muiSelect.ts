@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import type { Locator, Page } from '@playwright/test'
+import { expect, type Locator, type Page } from '@playwright/test'
 
 /**
  * The portal's filter bars and dialogs use MUI's <Select>, which renders as a div with
@@ -31,6 +31,12 @@ export async function selectMuiOption(
   scope?: Locator,
 ): Promise<void> {
   const trigger = scope ? scope.locator(`#${selectId}`) : page.locator(`#${selectId}`)
-  await trigger.click()
-  await page.getByRole('option', { name: optionName, exact: true }).click()
+  const option = page.getByRole('option', { name: optionName, exact: true })
+
+  await expect(async () => {
+    if (!(await option.isVisible())) {
+      await trigger.click()
+    }
+    await option.click({ timeout: 2_000 })
+  }).toPass({ intervals: [250, 500, 1_000], timeout: 10_000 })
 }

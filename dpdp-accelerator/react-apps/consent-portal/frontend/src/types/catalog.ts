@@ -78,6 +78,11 @@ export interface PurposeVersionSummary {
   description?: string
 }
 
+export interface PurposeVersionDetail extends PurposeVersionSummary {
+  elements?: PurposeElement[]
+  properties?: Record<string, string>
+}
+
 export interface PurposeListResponse extends CursorPage {
   Purposes: PurposeSummary[]
 }

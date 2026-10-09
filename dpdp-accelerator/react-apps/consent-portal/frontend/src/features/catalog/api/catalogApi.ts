@@ -29,6 +29,7 @@ import type {
   PurposeVersionInput,
   PurposeVersionListResponse,
   PurposeVersionSummary,
+  PurposeVersionDetail,
 } from '../../../types/catalog'
 import { apiRequest, apiRequestNoContent } from '../../../utils/apiClient'
 import { escapeFilterValue } from '../../../utils/filterGrammar'
@@ -159,5 +160,15 @@ export function deletePurposeVersion(purposeId: string, versionId: string): Prom
   return apiRequestNoContent(
     `${CONSENT_MGT_V2}/purposes/${encodeURIComponent(purposeId)}/versions/${encodeURIComponent(versionId)}`,
     { method: 'DELETE' },
+  )
+}
+
+export function fetchPurposeVersion(
+  purposeId: string,
+  versionId: string,
+): Promise<PurposeVersionDetail> {
+  return apiRequest<PurposeVersionDetail>(
+    `${CONSENT_MGT_V2}/purposes/${encodeURIComponent(purposeId)}/versions/${encodeURIComponent(versionId)}`,
+    { method: 'GET' },
   )
 }

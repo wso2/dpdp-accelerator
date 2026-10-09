@@ -257,7 +257,9 @@
       "addVersion": "Add Version",
       "reset": "Reset",
       "search": "Search",
-      "setLatest": "Set as latest"
+      "setLatest": "Set as latest",
+      "expandVersion": "Show elements for version {{version}}",
+      "collapseVersion": "Hide elements for version {{version}}"
     },
     "fields": {
       "actions": "Actions",
@@ -373,6 +375,7 @@
       "noProperties": "No custom properties.",
       "noVersions": "No versions are available.",
       "versionsLoadFailed": "Unable to load version history right now.",
+      "versionElementsLoadFailed": "Unable to load elements for this version right now.",
       "setLatestFailed": "Unable to set this version as the latest. Please try again."
     }
   },
