@@ -125,7 +125,6 @@ function ConsentRegistryFilters({
 
         <FormControl
           size="small"
-          disabled={isPendingView}
           sx={{ width: { xs: '100%', sm: 200 }, height: MAIN_FILTER_HEIGHT, flexShrink: 0 }}
         >
           <InputLabel id="consent-relation-label">

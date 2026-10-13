@@ -36,6 +36,7 @@ import type {
   PurposeVersionInput,
   PurposeVersionListResponse,
   PurposeVersionSummary,
+  PurposeVersionDetail,
 } from '../../../types/catalog'
 import {
   createElement,
@@ -48,6 +49,7 @@ import {
   fetchElements,
   fetchPurpose,
   fetchPurposes,
+  fetchPurposeVersion,
   fetchPurposeVersions,
   setLatestPurposeVersion,
 } from '../api/catalogApi'
@@ -141,6 +143,18 @@ export function usePurposeVersionsQuery(
     queryKey: ['purpose', purposeId, 'versions'],
     queryFn: () => fetchPurposeVersions(String(purposeId), { limit: CATALOG_VERSIONS_PAGE_SIZE }),
     enabled: Boolean(purposeId),
+  })
+}
+
+export function usePurposeVersionQuery(
+  purposeId?: string,
+  versionId?: string,
+  enabled: boolean = true,
+): UseQueryResult<PurposeVersionDetail> {
+  return useQuery({
+    queryKey: ['purpose', purposeId, 'version', versionId],
+    queryFn: () => fetchPurposeVersion(String(purposeId), String(versionId)),
+    enabled: Boolean(purposeId) && Boolean(versionId) && enabled,
   })
 }
 

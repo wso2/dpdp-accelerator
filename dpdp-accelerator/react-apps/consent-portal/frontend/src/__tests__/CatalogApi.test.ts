@@ -168,6 +168,31 @@ describe('catalog API', () => {
     expect(versions.Versions).toHaveLength(1)
   })
 
+  it('reads a specific purpose version including elements', async () => {
+    respondWith({
+      id: 'cc689174',
+      version: '1.0.0',
+      description: 'Marketing comms',
+      elements: [
+        {
+          id: 'e123',
+          name: 'email',
+          displayName: 'Email',
+          mandatory: true,
+        },
+      ],
+      properties: { retention: '30' },
+    })
+
+    const version = await catalogApi.fetchPurposeVersion('690eb7ef', 'cc689174')
+
+    expect(requestedUrl().pathname).toBe(`${CONSENT_MGT_V2}/purposes/690eb7ef/versions/cc689174`)
+    expect(version.version).toBe('1.0.0')
+    expect(version.elements).toHaveLength(1)
+    expect(version.elements?.[0].mandatory).toBe(true)
+    expect(version.properties).toEqual({ retention: '30' })
+  })
+
   it('combines name and type into the purpose filter grammar', () => {
     expect(catalogApi.buildPurposeFilter('ui', '')).toBe('name co "ui"')
     expect(catalogApi.buildPurposeFilter('', 'Marketing')).toBe('type eq "Marketing"')
@@ -305,6 +330,7 @@ describe('catalog API', () => {
       'fetchElement',
       'fetchElements',
       'fetchPurpose',
+      'fetchPurposeVersion',
       'fetchPurposeVersions',
       'fetchPurposes',
       'setLatestPurposeVersion',
