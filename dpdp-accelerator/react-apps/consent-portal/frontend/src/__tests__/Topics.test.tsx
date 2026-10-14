@@ -22,12 +22,12 @@ import { isTopicStatus } from '../types/topic'
 describe('Topics domain helpers', () => {
   it('validates topic status strings correctly', () => {
     expect(isTopicStatus('ACTIVE')).toBe(true)
-    expect(isTopicStatus('DEREGISTERED')).toBe(true)
+    expect(isTopicStatus('DELETED')).toBe(true)
     expect(isTopicStatus('UNKNOWN')).toBe(false)
   })
 
-  it('maps ACTIVE and DEREGISTERED status colors', () => {
+  it('maps ACTIVE and DELETED status colors', () => {
     expect(isTopicStatus('ACTIVE')).toBe(true)
-    expect(isTopicStatus('DEREGISTERED')).toBe(true)
+    expect(isTopicStatus('DELETED')).toBe(true)
   })
 })

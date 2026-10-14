@@ -584,7 +584,8 @@
     "loadFailed": "विषयाः भारयितुं न शक्यन्ते।",
     "status": {
       "active": "सक्रिया",
-      "deregistered": "निरस्तम्"
+      "deregistered": "निरस्तम्",
+      "deleted": "निरस्तम्"
     },
     "filters": {
       "searchPlaceholder": "विषयस्य नाम, आईडी, अथवा विवरणम् द्वारा अन्वेषणम्",
@@ -605,7 +606,8 @@
     "actions": {
       "register": "विषयः पञ्जीकुरु",
       "delete": "विषयः निरस्तः",
-      "alreadyDeregistered": "एषः विषयः पूर्वमेव अपंजीकृतः।"
+      "alreadyDeregistered": "एषः विषयः पूर्वमेव अपंजीकृतः।",
+      "alreadyDeleted": "एषः विषयः पूर्वमेव अपंजीकृतः।"
     },
     "dialog": {
       "registerTitle": "विषयः पञ्जीकुरु",

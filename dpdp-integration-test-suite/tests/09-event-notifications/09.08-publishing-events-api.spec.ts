@@ -80,7 +80,7 @@ test.describe('Publisher publishing events', () => {
     expect(body.code).toBe('EN-4001')
   })
 
-  test('09.08.03 - Publishing to an unknown or deregistered topic is rejected', async ({ consentAdminEventApi }) => {
+  test('09.08.03 - Publishing to an unknown or deleted topic is rejected', async ({ consentAdminEventApi }) => {
     const groupId = uniqueMarker('group')
 
     const unknownResponse = await consentAdminEventApi.publishEvent(groupId, {
@@ -90,16 +90,16 @@ test.describe('Publisher publishing events', () => {
     expect(unknownResponse.status()).toBe(404)
     expect((await unknownResponse.json()).code).toBe('EN-4041')
 
-    const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'to-deregister')
-    const deregisterResponse = await consentAdminEventApi.deleteTopic(topic.topicId)
-    expect(deregisterResponse.status()).toBe(200)
+    const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'to-delete')
+    const deleteResponse = await consentAdminEventApi.deleteTopic(topic.topicId)
+    expect(deleteResponse.status()).toBe(200)
 
-    const deregisteredResponse = await consentAdminEventApi.publishEvent(groupId, {
+    const deletedResponse = await consentAdminEventApi.publishEvent(groupId, {
       topic: topic.name,
       payload: { ok: true },
     })
-    expect(deregisteredResponse.status()).toBe(404)
-    expect((await deregisteredResponse.json()).code).toBe('EN-4041')
+    expect(deletedResponse.status()).toBe(404)
+    expect((await deletedResponse.json()).code).toBe('EN-4041')
   })
 
   test('09.08.04 - A null or missing payload is rejected rather than treated as an empty object', async ({

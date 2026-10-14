@@ -584,7 +584,8 @@
     "loadFailed": "Unable to load topics right now.",
     "status": {
       "active": "Active",
-      "deregistered": "Deregistered"
+      "deleted": "Deleted",
+      "deregistered": "Deleted"
     },
     "filters": {
       "searchPlaceholder": "Search by topic name, ID, or description",
@@ -604,8 +605,9 @@
     },
     "actions": {
       "register": "Register Topic",
-      "delete": "Deregister topic",
-      "alreadyDeregistered": "This topic is already deregistered"
+      "delete": "Delete topic",
+      "alreadyDeleted": "This topic is already deleted",
+      "alreadyDeregistered": "This topic is already deleted"
     },
     "dialog": {
       "registerTitle": "Register Topic",
@@ -619,10 +621,10 @@
       "registerSubmit": "Register Topic"
     },
     "deleteModal": {
-      "title": "Confirm Deregistration",
-      "message": "Are you sure you want to deregister topic \"{{name}}\"?",
-      "note": "Deregistering a topic prevents new subscriptions and publication of events to this topic.",
-      "confirm": "Deregister Topic"
+      "title": "Confirm Topic Deletion",
+      "message": "Are you sure you want to delete topic \"{{name}}\"?",
+      "note": "Deleting a topic prevents new subscriptions and publication of events to this topic.",
+      "confirm": "Delete Topic"
     }
   },
   "subscriptions": {

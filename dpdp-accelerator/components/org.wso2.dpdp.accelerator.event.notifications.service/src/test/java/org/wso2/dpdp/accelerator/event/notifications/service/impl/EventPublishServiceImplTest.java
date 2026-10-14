@@ -636,7 +636,7 @@ public class EventPublishServiceImplTest {
     @Test
     public void publishEvent_topicNotActive_throws400() {
         when(topicDAO.getActiveTopicByOrgAndNameForUpdate(any(Connection.class), eq("org1"), eq("topic-a")))
-                .thenReturn(Optional.of(new Topic("topic-id-1", "org1", "topic-a", null, "deregistered")));
+                .thenReturn(Optional.of(new Topic("topic-id-1", "org1", "topic-a", null, "deleted")));
 
         try {
             publishService.publishEvent("org1", "g1", "topic-a", null, Collections.emptyMap());
@@ -649,7 +649,7 @@ public class EventPublishServiceImplTest {
     }
 
     @Test
-    public void publishEvent_topicDeregisteredBeforeInsert_throws400() {
+    public void publishEvent_topicDeletedBeforeInsert_throws400() {
         when(topicDAO.getActiveTopicByOrgAndNameForUpdate(any(Connection.class), eq("org1"), eq("topic-a")))
                 .thenReturn(Optional.of(new Topic("topic-id-1", "org1", "topic-a", null, "active")));
         when(eventDAO.addEvent(any(Connection.class), any())).thenReturn(false);

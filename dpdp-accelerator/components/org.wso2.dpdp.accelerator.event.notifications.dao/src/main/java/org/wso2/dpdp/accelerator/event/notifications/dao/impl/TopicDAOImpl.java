@@ -170,7 +170,7 @@ public class TopicDAOImpl implements TopicDAO {
     }
 
     @Override
-    public boolean deregisterTopicAtomic(Connection conn, String topicId, String orgId) {
+    public boolean deleteTopicAtomic(Connection conn, String topicId, String orgId) {
         Objects.requireNonNull(conn, "Connection cannot be null.");
         try {
             EventNotificationCommonDBQueries queries = getQueries(conn);
@@ -203,7 +203,7 @@ public class TopicDAOImpl implements TopicDAO {
 
             int updated;
             try (PreparedStatement ps = conn.prepareStatement(queries.getUpdateTopicStatusGuardedQuery())) {
-                    ps.setString(1, TopicStatus.DEREGISTERED.getValue());
+                    ps.setString(1, TopicStatus.DELETED.getValue());
                     ps.setString(2, topicId);
                     ps.setString(3, orgId);
                     ps.setString(4, TopicStatus.ACTIVE.getValue());
@@ -213,8 +213,13 @@ public class TopicDAOImpl implements TopicDAO {
             return updated > 0;
         } catch (SQLException e) {
             throw new EventNotificationDaoException(
-                    String.format(EventNotificationCommonConstants.ERROR_DEREGISTERING_TOPIC, topicId), e);
+                    String.format(EventNotificationCommonConstants.ERROR_DELETING_TOPIC, topicId), e);
         }
+    }
+
+    @Override
+    public boolean deregisterTopicAtomic(Connection conn, String topicId, String orgId) {
+        return deleteTopicAtomic(conn, topicId, orgId);
     }
 
     @Override

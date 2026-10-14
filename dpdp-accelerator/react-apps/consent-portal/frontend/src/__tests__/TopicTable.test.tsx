@@ -73,7 +73,7 @@ describe('TopicTable', () => {
     expect(screen.getByText('SYSTEM')).toBeInTheDocument()
     expect(screen.getByText('USER')).toBeInTheDocument()
 
-    const deleteButtons = screen.getAllByRole('button', { name: 'Deregister topic' })
+    const deleteButtons = screen.getAllByRole('button', { name: 'Delete topic' })
     expect(deleteButtons[0]).toBeDisabled()
     expect(deleteButtons[1]).toBeEnabled()
 

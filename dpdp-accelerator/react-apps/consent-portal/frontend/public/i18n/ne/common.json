@@ -584,7 +584,8 @@
     "loadFailed": "अहिले विषयहरू लोड गर्न असमर्थ।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "दर्ता रद्द गरियो"
+      "deregistered": "दर्ता रद्द गरियो",
+      "deleted": "दर्ता रद्द गरियो"
     },
     "filters": {
       "searchPlaceholder": "विषय नाम, ID, वा विवरण द्वारा खोज्नुहोस्",
@@ -605,7 +606,8 @@
     "actions": {
       "register": "विषय दर्ता गर्नुहोस्",
       "delete": "विषय दर्ता रद्द गर्नुहोस्",
-      "alreadyDeregistered": "यो विषय पहिले नै दर्ता रद्द गरिएको छ।"
+      "alreadyDeregistered": "यो विषय पहिले नै दर्ता रद्द गरिएको छ।",
+      "alreadyDeleted": "यो विषय पहिले नै दर्ता रद्द गरिएको छ।"
     },
     "dialog": {
       "registerTitle": "विषय दर्ता गर्नुहोस्",

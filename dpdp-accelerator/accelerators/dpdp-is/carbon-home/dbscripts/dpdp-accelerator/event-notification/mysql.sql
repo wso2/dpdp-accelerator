@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `TOPIC` (
   `ORG_ID` varchar(128) NOT NULL,
   `NAME` varchar(225) NOT NULL,
   `DESCRIPTION` varchar(255) DEFAULT NULL,
-  `STATUS` enum('active', 'deregistered') NOT NULL DEFAULT 'active',
+  `STATUS` enum('active', 'deleted') NOT NULL DEFAULT 'active',
   `INITIATED_BY` varchar(32) NOT NULL DEFAULT 'USER',
   `CREATED_AT` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `ACTIVE_NAME` varchar(225) GENERATED ALWAYS AS

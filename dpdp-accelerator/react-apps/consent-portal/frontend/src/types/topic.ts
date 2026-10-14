@@ -16,7 +16,7 @@
  * under the License.
  */
 
-export const TOPIC_STATUSES = ['ACTIVE', 'DEREGISTERED'] as const
+export const TOPIC_STATUSES = ['ACTIVE', 'DELETED'] as const
 
 export type TopicStatus = (typeof TOPIC_STATUSES)[number]
 

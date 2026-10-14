@@ -584,7 +584,8 @@
     "loadFailed": "હમણાં વિષયો લોડ કરવામાં અસમર્થ.",
     "status": {
       "active": "સક્રિય",
-      "deregistered": "ડિ-રજીસ્ટર થયું"
+      "deregistered": "ડિ-રજીસ્ટર થયું",
+      "deleted": "ડિ-રજીસ્ટર થયું"
     },
     "filters": {
       "searchPlaceholder": "વિષય નામ, ID અથવા વર્ણન દ્વારા શોધો",
@@ -605,7 +606,8 @@
     "actions": {
       "register": "વિષય રજીસ્ટર કરો",
       "delete": "વિષયને ડિ-રજીસ્ટર કરો",
-      "alreadyDeregistered": "આ વિષય પહેલેથી જ ડિ-રજિસ્ટર્ડ થઈ ગયો છે"
+      "alreadyDeregistered": "આ વિષય પહેલેથી જ ડિ-રજિસ્ટર્ડ થઈ ગયો છે",
+      "alreadyDeleted": "આ વિષય પહેલેથી જ ડિ-રજિસ્ટર્ડ થઈ ગયો છે"
     },
     "dialog": {
       "registerTitle": "વિષય રજીસ્ટર કરો",

@@ -35,7 +35,8 @@ public class EventNotificationCommonConstants {
     public static final String ERROR_GETTING_TOPIC_BY_ID = "Error getting topic by ID [%s]";
     public static final String ERROR_GETTING_TOPIC_BY_ORG_AND_NAME = "Error getting topic by org [%s] and name [%s]";
     public static final String ERROR_UPDATING_TOPIC_STATUS = "Error updating topic status for ID [%s]";
-    public static final String ERROR_DEREGISTERING_TOPIC = "Error deregistering topic [%s]";
+    public static final String ERROR_DELETING_TOPIC = "Error deleting topic [%s]";
+    public static final String ERROR_DEREGISTERING_TOPIC = ERROR_DELETING_TOPIC;
     public static final String ERROR_LISTING_TOPICS = "Error listing topics for org [%s]";
 
     public static final String ERROR_ADDING_SUBSCRIPTION = "Error adding subscription [%s]";
@@ -82,7 +83,7 @@ public class EventNotificationCommonConstants {
     public static final String ERROR_SUBSCRIPTION_NAME_ALREADY_EXISTS = "A subscription with the name '%s' already exists.";
     public static final String ERROR_SUBSCRIPTION_NAME_NULL_OR_EMPTY = "Subscription name must not be null or empty.";
     public static final String ERROR_DELIVERY_ACK_ALREADY_EXISTS = "Completion evidence already acknowledged for this delivery.";
-    public static final String ERROR_TOPIC_HAS_ACTIVE_SUBSCRIPTIONS = "Topic has active subscriptions and cannot be deregistered.";
+    public static final String ERROR_TOPIC_HAS_ACTIVE_SUBSCRIPTIONS = "Topic has active subscriptions and cannot be deleted.";
     public static final String ERROR_TOPIC_NOT_ACTIVE = "Topic is not active and cannot accept new subscriptions.";
     public static final String ERROR_TOPIC_NULL = "Topic must not be null.";
     public static final String ERROR_TOPIC_STATUS_NULL = "Topic status must not be null.";

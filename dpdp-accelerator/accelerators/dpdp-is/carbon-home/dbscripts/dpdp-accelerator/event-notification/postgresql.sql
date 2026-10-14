@@ -38,10 +38,10 @@ CREATE TABLE IF NOT EXISTS TOPIC (
   CREATED_AT   TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (TOPIC_ID),
   CONSTRAINT UQ_TOPIC_ORG_ID UNIQUE (ORG_ID, TOPIC_ID),
-  CONSTRAINT CHK_TOPIC_STATUS CHECK (STATUS IN ('active', 'deregistered'))
+  CONSTRAINT CHK_TOPIC_STATUS CHECK (STATUS IN ('active', 'deleted'))
 );
 -- Same rule as mysql.sql's generated ACTIVE_NAME key: one active topic per name per org,
--- case-insensitively, while deregistered topics keep their names.
+-- case-insensitively, while deleted topics keep their names.
 CREATE UNIQUE INDEX IF NOT EXISTS UQ_TOPIC_ORG_ACTIVE_NAME ON TOPIC (ORG_ID, LOWER(NAME)) WHERE STATUS = 'active';
 
 CREATE TABLE IF NOT EXISTS EVENT (

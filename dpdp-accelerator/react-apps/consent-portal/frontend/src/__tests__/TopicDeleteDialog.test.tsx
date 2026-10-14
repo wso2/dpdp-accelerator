@@ -65,10 +65,10 @@ describe('TopicDeleteDialog', () => {
     )
 
     // Accessible dialog name is strictly the title (does not conflate description)
-    const dialog = screen.getByRole('dialog', { name: 'Confirm Deregistration' })
+    const dialog = screen.getByRole('dialog', { name: 'Confirm Topic Deletion' })
     expect(dialog).toBeInTheDocument()
     expect(
-      screen.getByRole('heading', { level: 2, name: 'Confirm Deregistration' }),
+      screen.getByRole('heading', { level: 2, name: 'Confirm Topic Deletion' }),
     ).toBeInTheDocument()
     expect(screen.queryByRole('heading', { level: 6 })).not.toBeInTheDocument()
 
@@ -76,11 +76,11 @@ describe('TopicDeleteDialog', () => {
     const describedById = dialog.getAttribute('aria-describedby')
     expect(describedById).toBeTruthy()
     expect(document.getElementById(describedById ?? '')).toHaveTextContent(
-      /Are you sure you want to deregister topic/i,
+      /Are you sure you want to delete topic/i,
     )
 
-    // Confirm Deregistration title is present
-    expect(screen.getByText('Confirm Deregistration')).toBeInTheDocument()
+    // Confirm Topic Deletion title is present
+    expect(screen.getByText('Confirm Topic Deletion')).toBeInTheDocument()
 
     // "Consent ID:" must NOT be rendered
     expect(screen.queryByText(/Consent ID/i)).not.toBeInTheDocument()
@@ -90,15 +90,15 @@ describe('TopicDeleteDialog', () => {
     expect(nameElement).toBeInTheDocument()
     expect(nameElement).toHaveStyle({ fontWeight: 700 })
 
-    // Note says deregistration prevents new subscriptions and publication
+    // Note says deletion prevents new subscriptions and publication
     expect(
       screen.getByText(
-        'Deregistering a topic prevents new subscriptions and publication of events to this topic.',
+        'Deleting a topic prevents new subscriptions and publication of events to this topic.',
       ),
     ).toBeInTheDocument()
 
     // Confirm button triggers onConfirm
-    fireEvent.click(screen.getByRole('button', { name: /deregister topic/i }))
+    fireEvent.click(screen.getByRole('button', { name: /delete topic/i }))
     expect(onConfirm).toHaveBeenCalledTimes(1)
 
     // Cancel button triggers onClose

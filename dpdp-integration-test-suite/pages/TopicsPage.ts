@@ -86,7 +86,7 @@ export class TopicsPage {
   }
 
   /** Fires immediately on selection - TopicFilters.tsx applies status without a separate Search click. */
-  async filterByStatus(label: 'All Statuses' | 'Active' | 'Deregistered'): Promise<void> {
+  async filterByStatus(label: 'All Statuses' | 'Active' | 'Deleted' | 'Deregistered'): Promise<void> {
     await this.statusFilter.click()
     await this.page.getByRole('option', { name: label, exact: true }).click()
   }
@@ -123,12 +123,20 @@ export class TopicsPage {
     return this.rows.filter({ has: this.page.locator(`[aria-label="${topicId}"]`) })
   }
 
-  /** aria-label is always "Deregister topic" regardless of state (see TopicTable.tsx) - disabled/tooltip carry the rest. */
+  /** aria-label is always "Delete topic" regardless of state (see TopicTable.tsx) - disabled/tooltip carry the rest. */
   deregisterButton(row: Locator): Locator {
-    return row.getByRole('button', { name: 'Deregister topic' })
+    return row.getByRole('button', { name: 'Delete topic' })
+  }
+
+  deleteButton(row: Locator): Locator {
+    return this.deregisterButton(row)
   }
 
   async deregisterTopicByName(name: string): Promise<void> {
     await this.deregisterButton(this.rowByName(name)).click()
+  }
+
+  async deleteTopicByName(name: string): Promise<void> {
+    await this.deregisterTopicByName(name)
   }
 }
