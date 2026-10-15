@@ -66,6 +66,9 @@ function ComplaintSlaIndicator({
       color={SLA_CHIP_COLOR[state]}
       icon={SLA_ICON[state]}
       label={label}
+      // MUI's outlined small chip gives the icon a 2px left margin but the label 7px of right
+      // padding; match them so the content sits centred.
+      sx={{ '& .MuiChip-icon': { ml: 0.875 } }}
       // Tooltips are hover-only, so screen readers get the due date in the name instead.
       aria-label={`${label}, ${dueDate}`}
     />
