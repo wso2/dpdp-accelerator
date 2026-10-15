@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700"  role="img" aria-label="Sign-in sequence: User, Consent Portal, WSO2 IS, identity provider" font-family="Arial, Helvetica, sans-serif">
+  <defs>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#57606a"/></marker>
+    <marker id="ahE" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0078d4"/></marker>
+  </defs>
+  <rect width="900" height="700" fill="#ffffff"/>
+  <g font-size="14" font-weight="bold" text-anchor="middle">
+    <rect x="30" y="16" width="140" height="44" rx="8" fill="#eef1f4" stroke="#57606a"/><text x="100" y="43" fill="#1f2328">User (browser)</text>
+    <rect x="250" y="16" width="140" height="44" rx="8" fill="#eef1f4" stroke="#57606a"/><text x="320" y="43" fill="#1f2328">Consent Portal</text>
+    <rect x="490" y="16" width="140" height="44" rx="8" fill="#fff1e6" stroke="#ff7300"/><text x="560" y="43" fill="#1f2328">WSO2 IS</text>
+    <rect x="720" y="16" width="160" height="44" rx="8" fill="#e6f2fb" stroke="#0078d4"/><text x="800" y="43" fill="#1f2328">Identity provider</text>
+  </g>
+  <g stroke="#b6bec7" stroke-dasharray="4 4">
+    <line x1="100" y1="60" x2="100" y2="680"/><line x1="320" y1="60" x2="320" y2="680"/>
+    <line x1="560" y1="60" x2="560" y2="680"/><line x1="800" y1="60" x2="800" y2="680"/>
+  </g>
+  <g font-size="13" fill="#1f2328" text-anchor="middle">
+    <line x1="100" y1="104" x2="316" y2="104" stroke="#57606a" stroke-width="1.5" marker-end="url(#ah)"/>
+    <text x="210" y="96">1. Open /consent-portal</text>
+    <line x1="320" y1="150" x2="556" y2="150" stroke="#57606a" stroke-width="1.5" marker-end="url(#ah)"/>
+    <text x="440" y="142">2. /oauth2/authorize (PKCE)</text>
+    <line x1="560" y1="196" x2="104" y2="196" stroke="#57606a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+    <text x="330" y="188">3. Login page: user chooses the IdP</text>
+    <line x1="560" y1="242" x2="796" y2="242" stroke="#0078d4" stroke-width="1.5" marker-end="url(#ahE)"/>
+    <text x="680" y="234">4. /authorize</text>
+    <text x="680" y="262" font-size="12" fill="#0078d4">scope = openid + IdP scopes</text>
+    <line x1="100" y1="296" x2="796" y2="296" stroke="#0078d4" stroke-width="1.5" marker-end="url(#ahE)"/>
+    <text x="210" y="288">5. Signs in with existing account</text>
+    <line x1="800" y1="342" x2="564" y2="342" stroke="#0078d4" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ahE)"/>
+    <text x="680" y="334">6. /commonauth?code=…</text>
+    <line x1="560" y1="388" x2="796" y2="388" stroke="#0078d4" stroke-width="1.5" marker-end="url(#ahE)"/>
+    <text x="680" y="380">7. /token (client secret)</text>
+    <line x1="800" y1="434" x2="564" y2="434" stroke="#0078d4" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ahE)"/>
+    <text x="680" y="426">8. ID token</text>
+    <text x="680" y="452" font-size="12" fill="#0078d4">username claim, groups claim</text>
+    <rect x="400" y="472" width="320" height="50" rx="6" fill="#fff1e6" stroke="#ff7300"/>
+    <text x="560" y="493">9. Identify the user (no IS account)</text>
+    <text x="560" y="511" font-size="12" fill="#57606a">user ID = Subject Attribute</text>
+    <rect x="400" y="532" width="320" height="50" rx="6" fill="#fff1e6" stroke="#ff7300"/>
+    <text x="560" y="553">10. Map IdP groups → roles</text>
+    <text x="560" y="571" font-size="12" fill="#57606a">dpdp-consent-user / -admin / -dpo</text>
+    <line x1="560" y1="616" x2="324" y2="616" stroke="#57606a" stroke-width="1.5" stroke-dasharray="6 4" marker-end="url(#ah)"/>
+    <text x="440" y="608">11. Tokens: IdP username, role scopes</text>
+    <line x1="320" y1="662" x2="556" y2="662" stroke="#57606a" stroke-width="1.5" marker-end="url(#ah)"/>
+    <text x="440" y="654">12. Consent APIs with access token</text>
+  </g>
+</svg>

@@ -42,9 +42,14 @@ Learn how a Data Principal can raise a complaint and how an organization can man
 
 Learn how connected systems are notified when important changes occur, such as consent being updated or revoked, or user data changing.
 
+### Federated Login
+
+Learn how users can sign in to the Consent Portal with their existing accounts from an identity provider such as Microsoft Entra ID or Asgardeo, and how their groups determine their DPDP roles.
+
 ## Next Steps
 
 - [Managing Access](managing-access.md) — roles, permissions, and direct API access.
 - [Consent](consent.md) — the consent lifecycle, from defining a purpose to withdrawing consent.
 - [Complaint](complaint.md) — how grievances are raised, tracked, and resolved.
 - [Event Notifications](event.md) — how connected systems stay informed of important changes.
+- [Federated Login](federated-login/introduction.md) — sign-in with existing identity provider accounts.

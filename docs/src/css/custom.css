@@ -46,3 +46,61 @@
 [data-theme='dark'] .scope-no {
   color: #d9a8a8;
 }
+
+/* Captioned figures. Screenshots carry an explicit width so that every one is shown at the same
+   zoom, whatever its crop. */
+.doc-figure {
+  margin: 0 0 var(--ifm-paragraph-margin-bottom);
+  text-align: center;
+}
+
+.doc-figure img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.doc-figure--diagram img {
+  border: none;
+  box-shadow: none;
+}
+
+.doc-figure figcaption {
+  margin-top: 0.6rem;
+  font-size: 0.875rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.doc-figure p {
+  margin: 0;
+}
+
+/* Steps on the federated login pages mix text, tables and screenshots, which makes every list
+   loose. Tighten the spacing inside those steps so related content reads as one step. */
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li > p {
+  margin-bottom: 0.5rem;
+}
+
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li > .doc-figure {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li > table,
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li > .theme-admonition {
+  margin-bottom: 0.75rem;
+}
+
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li > :last-child {
+  margin-bottom: 0;
+}
+
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li > :first-child {
+  margin-top: 0;
+}
+
+html[class*='docs-doc-id-learn/federated-login/'] .markdown li + li {
+  margin-top: 0.5rem;
+}

@@ -31,6 +31,15 @@ const sidebars = {
         { type: 'doc', id: 'learn/consent', label: 'Consent' },
         { type: 'doc', id: 'learn/complaint', label: 'Complaint' },
         { type: 'doc', id: 'learn/event', label: 'Event Notifications' },
+        {
+          type: 'category',
+          label: 'Federated Login',
+          items: [
+            { type: 'doc', id: 'learn/federated-login/introduction', label: 'Overview' },
+            { type: 'doc', id: 'learn/federated-login/entra-id', label: 'Add Microsoft Entra ID Login' },
+            { type: 'doc', id: 'learn/federated-login/asgardeo', label: 'Add Asgardeo Login' },
+          ],
+        },
       ],
     },
     {
