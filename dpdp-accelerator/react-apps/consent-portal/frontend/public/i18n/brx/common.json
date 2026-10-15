@@ -330,6 +330,7 @@
         "typeLabel": "रोखोम",
         "versionLabel": "भार्जन",
         "elementsLabel": "बाहागोफोर",
+        "elementRequirementLabel": "गोनांथार: {{name}}",
         "typeRequired": "टाइप खालामनाया गोनां।",
         "typeHelp": "थांखिनि रोखोम, बिदिन्थि महरै \"पलिचि\"।",
         "versionRequired": "रोखोमनि गोनांथि दं।",

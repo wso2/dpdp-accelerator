@@ -330,6 +330,7 @@
         "typeLabel": "തരം",
         "versionLabel": "പതിപ്പ്",
         "elementsLabel": "ഘടകങ്ങൾ",
+        "elementRequirementLabel": "നിർബന്ധം: {{name}}",
         "typeRequired": "ടൈപ്പ് ചെയ്യേണ്ടത് ആവശ്യമാണ്.",
         "typeHelp": "ഉദ്ദേശത്തിന്‍റെ തരം, ഉദാഹരണത്തിന് \"നയം\".",
         "versionRequired": "പതിപ്പ് ആവശ്യമാണ്.",

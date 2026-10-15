@@ -330,6 +330,7 @@
         "typeLabel": "قِسم",
         "versionLabel": "ورژن",
         "elementsLabel": "عَناصِر",
+        "elementRequirementLabel": "لازمی: {{name}}",
         "typeRequired": "ٹایپ چھُ ضروٗری۔",
         "typeHelp": "مقصدُک قٕسٕم، مِثالے \"پالیسی\"۔",
         "versionRequired": "ورجن چھُ ضروٗری۔",

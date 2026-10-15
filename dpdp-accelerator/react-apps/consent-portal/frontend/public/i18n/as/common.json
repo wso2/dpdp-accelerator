@@ -330,6 +330,7 @@
         "typeLabel": "প্ৰকাৰ",
         "versionLabel": "সংস্কৰণ",
         "elementsLabel": "উপাদানসমূহ",
+        "elementRequirementLabel": "বাধ্যতামূলক: {{name}}",
         "typeRequired": "টাইপ কৰাটো প্ৰয়োজনীয়।",
         "typeHelp": "উদ্দেশ্যৰ ধৰণ, যেনে \"নীতি\"।",
         "versionRequired": "সংস্কৰণৰ প্ৰয়োজন।",

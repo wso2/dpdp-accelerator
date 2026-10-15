@@ -330,6 +330,7 @@
         "typeLabel": "قسم",
         "versionLabel": "ورزن",
         "elementsLabel": "عنصر",
+        "elementRequirementLabel": "لازمی: {{name}}",
         "typeRequired": "टाइप जी ज़रूरत आहे।",
         "typeHelp": "मक़्सद जो क़िस्म, मिसाल तौर \"पॉलिसी\"।",
         "versionRequired": "वर्ज़न जी ज़रूरत आहे।",

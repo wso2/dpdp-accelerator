@@ -330,6 +330,7 @@
         "typeLabel": "प्रकार",
         "versionLabel": "संस्करण",
         "elementsLabel": "तत्व सभ",
+        "elementRequirementLabel": "अनिवार्य: {{name}}",
         "typeRequired": "टाइप करब आवश्यक अछि।",
         "typeHelp": "उद्देश्यक प्रकार, जेना \"नीति\"।",
         "versionRequired": "संस्करणक आवश्यकता अछि।",

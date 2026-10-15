@@ -330,6 +330,7 @@
         "typeLabel": "ᱴᱟᱭᱤᱯ",
         "versionLabel": "ᱵᱷᱚᱨᱥᱚᱱ",
         "elementsLabel": "ᱮᱞᱤᱢᱮᱱᱴ ᱠᱚ",
+        "elementRequirementLabel": "ᱞᱟᱹᱠᱛᱤᱭᱟᱱᱟᱜ: {{name}}",
         "typeRequired": "ᱞᱮᱠᱟ ᱞᱟᱹᱠᱛᱤᱜᱼᱟ ᱾",
         "typeHelp": "ᱡᱚᱥ ᱨᱮᱭᱟᱜ ᱞᱮᱠᱟ, ᱡᱮᱞᱮᱠᱟ \"ᱯᱚᱞᱤᱥᱤ\" ᱾",
         "versionRequired": "ᱟᱹᱨᱩ ᱞᱟᱹᱠᱛᱤ ᱢᱮᱱᱟᱜᱼᱟ ᱾",

@@ -330,6 +330,7 @@
         "typeLabel": "प्रकार",
         "versionLabel": "आवृत्ती",
         "elementsLabel": "घटक",
+        "elementRequirementLabel": "अनिवार्य: {{name}}",
         "typeRequired": "प्रकार गरजेचो आसा.",
         "typeHelp": "उद्देश्याचो प्रकार, देखीक \"पॉलिसी\".",
         "versionRequired": "आवृत्तीची गरज आसा.",

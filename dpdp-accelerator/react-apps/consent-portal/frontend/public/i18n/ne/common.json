@@ -330,6 +330,7 @@
         "typeLabel": "प्रकार",
         "versionLabel": "संस्करण",
         "elementsLabel": "तत्वहरू",
+        "elementRequirementLabel": "अनिवार्य: {{name}}",
         "typeRequired": "प्रकार आवश्यक छ।",
         "typeHelp": "उद्देश्यको प्रकार, उदाहरणका लागि \"नीति\"।",
         "versionRequired": "संस्करण आवश्यक छ।",

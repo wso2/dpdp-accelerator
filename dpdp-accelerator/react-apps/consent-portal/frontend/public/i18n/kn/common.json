@@ -330,6 +330,7 @@
         "typeLabel": "ಪ್ರಕಾರ",
         "versionLabel": "ಆವೃತ್ತಿ",
         "elementsLabel": "ಅಂಶಗಳು",
+        "elementRequirementLabel": "ಕಡ್ಡಾಯ: {{name}}",
         "typeRequired": "ವಿಧವು ಅಗತ್ಯವಿದೆ.",
         "typeHelp": "ಉದ್ದೇಶದ ಪ್ರಕಾರ, ಉದಾಹರಣೆಗೆ \"ನೀತಿ\".",
         "versionRequired": "ಆವೃತ್ತಿ ಅಗತ್ಯವಿದೆ.",

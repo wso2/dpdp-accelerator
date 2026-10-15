@@ -330,6 +330,7 @@
         "typeLabel": "প্রকার",
         "versionLabel": "সংস্করণ",
         "elementsLabel": "উপাদানসমূহ",
+        "elementRequirementLabel": "বাধ্যতামূলক: {{name}}",
         "typeRequired": "টাইপ করা আবশ্যক।",
         "typeHelp": "উদ্দেশ্যের ধরন, যেমন \"নীতি\"।",
         "versionRequired": "সংস্করণ প্রয়োজন।",

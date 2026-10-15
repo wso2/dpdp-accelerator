@@ -330,6 +330,7 @@
         "typeLabel": "মখাল",
         "versionLabel": "ভার্সন",
         "elementsLabel": "মচাকশিং",
+        "elementRequirementLabel": "মথৌ তাবা: {{name}}",
         "typeRequired": "ꯇꯥꯏꯞ ꯑꯁꯤ ꯃꯊꯧ ꯇꯥꯏ꯫",
         "typeHelp": "ꯄꯔꯄꯁ ꯑꯁꯤꯒꯤ ꯇꯥꯏꯞ, ꯈꯨꯗꯝ ꯑꯣꯏꯅ \"ꯄꯣꯂꯤꯁꯤ\"꯫",
         "versionRequired": "ꯚꯔꯁꯟ ꯃꯊꯧ ꯇꯥꯏ꯫",

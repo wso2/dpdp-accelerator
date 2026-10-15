@@ -330,6 +330,7 @@
         "typeLabel": "ପ୍ରକାର",
         "versionLabel": "ସଂସ୍କରଣ",
         "elementsLabel": "ଉପାଦାନଗୁଡ଼ିକ",
+        "elementRequirementLabel": "ବାଧ୍ୟତାମୂଳକ: {{name}}",
         "typeRequired": "ଟାଇପ୍ କରିବା ଆବଶ୍ୟକ।",
         "typeHelp": "ଉଦ୍ଦେଶ୍ୟର ପ୍ରକାର, ଉଦାହରଣ ସ୍ୱରୂପ \"ନୀତି\"।",
         "versionRequired": "ସଂସ୍କରଣ ଆବଶ୍ୟକ।",

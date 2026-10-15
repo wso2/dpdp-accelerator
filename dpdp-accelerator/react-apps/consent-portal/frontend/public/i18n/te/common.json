@@ -330,6 +330,7 @@
         "typeLabel": "రకం",
         "versionLabel": "వెర్షన్",
         "elementsLabel": "అంశాలు",
+        "elementRequirementLabel": "తప్పనిసరి: {{name}}",
         "typeRequired": "టైప్ అవసరం.",
         "typeHelp": "ఉద్దేశం యొక్క రకం, ఉదాహరణకు \"పాలసీ\".",
         "versionRequired": "వెర్షన్ అవసరం.",

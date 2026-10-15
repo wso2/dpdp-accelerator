@@ -330,6 +330,7 @@
         "typeLabel": "قسم",
         "versionLabel": "ورژن",
         "elementsLabel": "عناصر",
+        "elementRequirementLabel": "لازمی: {{name}}",
         "typeRequired": "ٹائپ کرنا ضروری ہے۔",
         "typeHelp": "مقصد کی قسم، مثلاً \"پالیسی\"۔",
         "versionRequired": "ورژن درکار ہے۔",

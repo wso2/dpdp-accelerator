@@ -330,6 +330,7 @@
         "typeLabel": "પ્રકાર",
         "versionLabel": "સંસ્કરણ",
         "elementsLabel": "ઘટકો",
+        "elementRequirementLabel": "અનિવાર્ય: {{name}}",
         "typeRequired": "પ્રકાર જરૂરી છે.",
         "typeHelp": "હેતુનો પ્રકાર, દા.ત. \"નીતિ\".",
         "versionRequired": "સંસ્કરણ જરૂરી છે.",

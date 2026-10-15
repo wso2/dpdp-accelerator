@@ -330,6 +330,7 @@
         "typeLabel": "Type",
         "versionLabel": "Version",
         "elementsLabel": "Elements",
+        "elementRequirementLabel": "Mandatory: {{name}}",
         "typeRequired": "Type is required.",
         "typeHelp": "Type of the purpose, e.g. \"Policy\".",
         "versionRequired": "Version is required.",

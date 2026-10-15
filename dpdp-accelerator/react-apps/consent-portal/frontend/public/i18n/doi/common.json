@@ -330,6 +330,7 @@
         "typeLabel": "प्रकार",
         "versionLabel": "वर्ज़न",
         "elementsLabel": "तत्व",
+        "elementRequirementLabel": "अनिवार्य: {{name}}",
         "typeRequired": "टाइप करना लाजमी ऐ।",
         "typeHelp": "उद्देश्य दी किसम, जिʼयां \"नीति\"।",
         "versionRequired": "सरूप दी लोड़ ऐ।",

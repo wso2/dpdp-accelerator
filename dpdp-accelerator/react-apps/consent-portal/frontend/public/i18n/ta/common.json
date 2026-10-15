@@ -330,6 +330,7 @@
         "typeLabel": "வகை",
         "versionLabel": "பதிப்பு",
         "elementsLabel": "கூறுகள்",
+        "elementRequirementLabel": "கட்டாயம்: {{name}}",
         "typeRequired": "வகைப்படுத்தல் அவசியம்.",
         "typeHelp": "நோக்கத்தின் வகையைத் தட்டச்சு செய்யவும், எ.கா.\"கொள்கை\".",
         "versionRequired": "பதிப்பு தேவைப்படுகிறது.",

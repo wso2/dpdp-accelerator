@@ -330,6 +330,7 @@
         "typeLabel": "ਕਿਸਮ",
         "versionLabel": "ਸੰਸਕਰਣ",
         "elementsLabel": "ਤੱਤ",
+        "elementRequirementLabel": "ਲਾਜ਼ਮੀ: {{name}}",
         "typeRequired": "ਟਾਈਪ ਕਰਨ ਦੀ ਲੋੜ ਹੈ।",
         "typeHelp": "ਮਕਸਦ ਦੀ ਕਿਸਮ, ਜਿਵੇਂ ਕਿ \"ਪਾਲਿਸੀ\"।",
         "versionRequired": "ਸੰਸਕਰਣ ਦੀ ਲੋੜ ਹੈ।",
