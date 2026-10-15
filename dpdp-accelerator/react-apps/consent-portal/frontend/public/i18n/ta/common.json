@@ -463,7 +463,8 @@
       "resolved": {
         "note": "இந்தப் புகார் தீர்க்கப்பட்டது."
       },
-      "submittedOnLabel": "சமர்ப்பிக்கப்பட்டது"
+      "submittedOnLabel": "சமர்ப்பிக்கப்பட்டது",
+      "categoryLabel": "வகை"
     },
     "submit": {
       "title": "புகாரைச் சமர்ப்பி",

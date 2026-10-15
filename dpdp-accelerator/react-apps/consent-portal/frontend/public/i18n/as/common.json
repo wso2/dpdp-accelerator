@@ -463,7 +463,8 @@
       "resolved": {
         "note": "এই অভিযোগটো সমাধান কৰা হৈছে।"
       },
-      "submittedOnLabel": "দাখিল কৰা হৈছে"
+      "submittedOnLabel": "দাখিল কৰা হৈছে",
+      "categoryLabel": "শ্ৰেণী"
     },
     "submit": {
       "title": "এটা অভিযোগ দাখিল কৰক",

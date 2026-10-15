@@ -150,9 +150,19 @@ function ComplaintCaseDetailPage(): React.JSX.Element {
       <Card sx={{ boxShadow: 1 }}>
         <CardHeader
           title={
-            <Typography variant="h6" fontWeight={700}>
-              {t(`complaints.categories.${complaint.category}`)}
-            </Typography>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={600}
+                sx={{ display: 'block', textTransform: 'uppercase' }}
+              >
+                {t('complaints.detail.categoryLabel')}
+              </Typography>
+              <Typography variant="h6" fontWeight={700}>
+                {t(`complaints.categories.${complaint.category}`)}
+              </Typography>
+            </Box>
           }
           sx={{ pb: 1 }}
         />

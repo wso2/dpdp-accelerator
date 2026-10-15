@@ -463,7 +463,8 @@
       "resolved": {
         "note": "ਇਹ ਸ਼ਿਕਾਇਤ ਹੱਲ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ।"
       },
-      "submittedOnLabel": "ਦਰਜ ਕੀਤਾ ਗਿਆ"
+      "submittedOnLabel": "ਦਰਜ ਕੀਤਾ ਗਿਆ",
+      "categoryLabel": "ਸ਼੍ਰੇਣੀ"
     },
     "submit": {
       "title": "ਸ਼ਿਕਾਇਤ ਦਰਜ ਕਰੋ",

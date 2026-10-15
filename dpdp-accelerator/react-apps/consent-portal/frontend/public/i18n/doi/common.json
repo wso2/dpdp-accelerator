@@ -463,7 +463,8 @@
       "resolved": {
         "note": "एह् शिकायत हल होई गेदी ऐ।"
       },
-      "submittedOnLabel": "जमा कीती गई"
+      "submittedOnLabel": "जमा कीती गई",
+      "categoryLabel": "श्रेणी"
     },
     "submit": {
       "title": "इक शिकायत जमा करो",

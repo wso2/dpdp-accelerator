@@ -463,7 +463,8 @@
       "resolved": {
         "note": "अयं आक्षेपः समाहितः अस्ति।"
       },
-      "submittedOnLabel": "प्रस्तुतम्"
+      "submittedOnLabel": "प्रस्तुतम्",
+      "categoryLabel": "वर्गः"
     },
     "submit": {
       "title": "आक्षेपं समर्पयन्तु",

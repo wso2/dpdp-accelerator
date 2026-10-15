@@ -463,7 +463,8 @@
       "resolved": {
         "note": "ಈ ದೂರನ್ನು ಪರಿಹರಿಸಲಾಗಿದೆ."
       },
-      "submittedOnLabel": "ಸಲ್ಲಿಸಲಾಗಿದೆ"
+      "submittedOnLabel": "ಸಲ್ಲಿಸಲಾಗಿದೆ",
+      "categoryLabel": "ವರ್ಗ"
     },
     "submit": {
       "title": "ದೂರು ಸಲ್ಲಿಸಿ",

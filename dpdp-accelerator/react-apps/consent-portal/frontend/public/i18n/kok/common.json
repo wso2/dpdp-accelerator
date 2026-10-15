@@ -463,7 +463,8 @@
       "resolved": {
         "note": "हे कागाळीची सोडवणूक जाल्या."
       },
-      "submittedOnLabel": "सादर केल्लें"
+      "submittedOnLabel": "सादर केल्लें",
+      "categoryLabel": "वर्ग"
     },
     "submit": {
       "title": "कागाळ नोंद करात",

@@ -463,7 +463,8 @@
       "resolved": {
         "note": "यो उजुरी समाधान गरिएको छ।"
       },
-      "submittedOnLabel": "पेश गरिएको"
+      "submittedOnLabel": "पेश गरिएको",
+      "categoryLabel": "वर्ग"
     },
     "submit": {
       "title": "उजुरी दर्ता गर्नुहोस्",

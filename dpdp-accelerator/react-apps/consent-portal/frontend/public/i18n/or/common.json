@@ -463,7 +463,8 @@
       "resolved": {
         "note": "ଏହି ଅଭିଯୋଗର ସମାଧାନ ହୋଇଛି."
       },
-      "submittedOnLabel": "ଦାଖଲ କରାଯାଇଛି"
+      "submittedOnLabel": "ଦାଖଲ କରାଯାଇଛି",
+      "categoryLabel": "ବର୍ଗ"
     },
     "submit": {
       "title": "ଏକ ଅଭିଯୋଗ ଦାଖଲ କରନ୍ତୁ",

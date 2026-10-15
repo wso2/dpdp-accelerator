@@ -463,7 +463,8 @@
       "resolved": {
         "note": "ఈ ఫిర్యాదు పరిష్కరించబడింది."
       },
-      "submittedOnLabel": "సమర్పించబడింది"
+      "submittedOnLabel": "సమర్పించబడింది",
+      "categoryLabel": "కేటగిరీ"
     },
     "submit": {
       "title": "ఫిర్యాదు సమర్పించండి",
