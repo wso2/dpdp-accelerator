@@ -36,6 +36,7 @@ Output: `dpdp-accelerator/accelerators/dpdp-is/target/wso2-dpdpiam-accelerator-<
 | Frontend (Vitest) | `cd dpdp-accelerator/react-apps/consent-portal/frontend && npm test` |
 | Single frontend test | `npm test -- src/__tests__/SomeThing.test.tsx` |
 | Frontend lint / format | `npm run lint` / `npm run format:check` |
+| Cookie consent SDK (Node test runner, not in CI) | `cd dpdp-accelerator/sdks/cookie-consent/node && npm test`, and the same in `../browser` |
 | E2E (Playwright, needs a deployed IS) | `cd dpdp-integration-test-suite && ./run-e2e.sh [tests/03-consents]` |
 
 CI splits into four workflows. `.github/workflows/pr-build.yml` builds the Java and frontend
@@ -144,6 +145,10 @@ Adding a new internal webapp requires two edits, not one: a `<module>` in
 - **`accelerators/dpdp-is/`** — packages every module above into `carbon-home/`, assembles the
   distributable zip, and ships `bin/merge.sh` + `bin/configure.sh` for installing over an
   `IS_HOME`.
+- **`sdks/cookie-consent/`** — libraries for customer websites, not part of the Maven build or the
+  zip. `browser/` is the loader every SDK serves, `spec/` the contract an SDK must meet (browser
+  API, visitor cookie, consent shape in IS), `node/` the Node/Express SDK. An SDK for another
+  language goes beside `node/` and reuses `browser/`; see `sdks/cookie-consent/README.md`.
 
 Registering a new module: add it to `dpdp-accelerator/pom.xml`'s `<modules>`, and copy its built
 artifact into the distribution via the antrun `create-solution` execution in

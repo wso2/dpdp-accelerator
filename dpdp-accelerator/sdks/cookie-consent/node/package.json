@@ -1,0 +1,31 @@
+{
+  "name": "@wso2-dpdp/cookie-consent",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cookie consent for websites backed by the WSO2 DPDP Accelerator: Express router, browser loader and vanilla-cookieconsent.",
+  "license": "Apache-2.0",
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "browser",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test",
+    "prepack": "node -e \"require('fs').cpSync('../browser', 'browser', { recursive: true, filter: (f) => !/[\\\\/](test|package\\.json)$/.test(f) })\"",
+    "postpack": "node -e \"require('fs').rmSync('browser', { recursive: true, force: true })\"",
+    "verify:is": "node ../spec/verify-is-api.mjs"
+  },
+  "peerDependencies": {
+    "express": "^4.18.0"
+  },
+  "devDependencies": {
+    "express": "^4.21.2"
+  },
+  "dependencies": {
+    "vanilla-cookieconsent": "3.1.0"
+  }
+}
