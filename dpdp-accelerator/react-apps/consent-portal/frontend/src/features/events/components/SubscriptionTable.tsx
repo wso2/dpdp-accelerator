@@ -184,8 +184,7 @@ export default function SubscriptionTable({
                     >
                       <Chip
                         size="small"
-                        color={isWebhook ? 'primary' : 'default'}
-                        variant={isWebhook ? 'filled' : 'outlined'}
+                        variant="outlined"
                         label={t(`subscriptions.deliveryMode.${deliveryMode}`, deliveryMode)}
                       />
                     </Tooltip>

@@ -54,7 +54,7 @@ export class SubscriptionRegisterDialog {
   readonly secretRequiredError: Locator
 
   constructor(private readonly page: Page) {
-    this.root = page.getByRole('dialog', { name: 'Register Subscription' })
+    this.root = page.getByRole('dialog', { name: 'Create Subscription' })
     this.nameField = this.root.getByLabel('Subscription Name')
     this.categorySelect = this.root.getByRole('combobox', { name: 'Topic Category' })
     this.topicsInput = this.root.getByLabel('Topics')
@@ -71,7 +71,7 @@ export class SubscriptionRegisterDialog {
     this.callbackUrlField = this.root.getByLabel('Webhook Callback URL')
     this.sharedSecretField = this.root.getByLabel('Shared Secret')
     this.generateSecretButton = this.root.getByRole('button', { name: 'Generate new secret' })
-    this.submitButton = this.root.getByRole('button', { name: /^Register/ })
+    this.submitButton = this.root.getByRole('button', { name: /^Create/ })
     this.cancelButton = this.root.getByRole('button', { name: 'Cancel' })
     this.nameRequiredError = this.root.getByText('Subscription name is required.')
     this.topicRequiredError = this.root.getByText('Topic is required.')

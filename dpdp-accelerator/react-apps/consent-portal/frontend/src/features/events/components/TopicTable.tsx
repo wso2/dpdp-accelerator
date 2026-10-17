@@ -35,7 +35,6 @@ import {
 } from '@wso2/oxygen-ui'
 import { Trash2 } from '@wso2/oxygen-ui-icons-react'
 import { useTranslation } from 'react-i18next'
-import CopyableText from '../../../components/CopyableText'
 import CursorPaginationFooter from '../../../components/CursorPaginationFooter'
 import type { TopicRecord } from '../../../types/topic'
 
@@ -107,7 +106,6 @@ export default function TopicTable({
           >
             <TableRow>
               <TableCell>{t('topics.table.name')}</TableCell>
-              <TableCell>{t('topics.table.topicId')}</TableCell>
               <TableCell>{t('topics.table.description')}</TableCell>
               <TableCell>{t('topics.table.status')}</TableCell>
               {canWrite ? <TableCell align="right">{t('topics.table.actions')}</TableCell> : null}
@@ -116,7 +114,7 @@ export default function TopicTable({
           <TableBody>
             {rows.length === 0 && !isLoading ? (
               <TableRow>
-                <TableCell colSpan={canWrite ? 5 : 4} align="center" sx={{ py: 4 }}>
+                <TableCell colSpan={canWrite ? 4 : 3} align="center" sx={{ py: 4 }}>
                   <Typography color="text.secondary">{t('topics.table.empty')}</Typography>
                 </TableCell>
               </TableRow>
@@ -142,9 +140,6 @@ export default function TopicTable({
                       </Typography>
                       <Chip size="small" variant="outlined" label={initiator} />
                     </Stack>
-                  </TableCell>
-                  <TableCell>
-                    <CopyableText value={topic.topicId} truncateAt={14} monospace />
                   </TableCell>
                   <TableCell>
                     <Typography

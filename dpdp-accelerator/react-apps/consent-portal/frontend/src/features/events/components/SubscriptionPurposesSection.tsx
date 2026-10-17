@@ -38,7 +38,6 @@ export default function SubscriptionPurposesSection({
     <SubscriptionChipListSection
       title={t('subscriptions.details.purposesTitle')}
       count={purposes.length}
-      subtitle={t('subscriptions.details.purposesSubtitle')}
       searchLabel={t('subscriptions.details.searchPurposes')}
       noMatchesLabel={t('subscriptions.details.noPurposes')}
       items={purposes}

@@ -29,10 +29,6 @@ import { EventDetailsModal } from './EventDetailsModal'
 export class EventDetailsPage {
   readonly backButton: Locator
   readonly loadFailedAlert: Locator
-  readonly payloadBlock: Locator
-  readonly copyPayloadButton: Locator
-  readonly copyPayloadSuccessToast: Locator
-  readonly copyPayloadFailedToast: Locator
   readonly deliveriesTable: Locator
   readonly noDeliveriesHeading: Locator
   readonly noDeliveriesMessage: Locator
@@ -42,10 +38,6 @@ export class EventDetailsPage {
   constructor(private readonly page: Page) {
     this.backButton = page.getByRole('button', { name: 'Back to Events' })
     this.loadFailedAlert = page.getByText('Unable to load event details.')
-    this.payloadBlock = page.locator('pre')
-    this.copyPayloadButton = page.getByRole('button', { name: 'Copy Payload' })
-    this.copyPayloadSuccessToast = page.getByText('Payload copied to clipboard.')
-    this.copyPayloadFailedToast = page.getByText('Failed to copy payload to clipboard.')
     this.deliveriesTable = page.getByRole('table', { name: 'Downstream Subscriber Deliveries' })
     this.noDeliveriesHeading = page.getByText('No Deliveries Generated')
     this.noDeliveriesMessage = page.getByText('No active subscriptions matched this topic when the event occurred.')
@@ -59,10 +51,6 @@ export class EventDetailsPage {
 
   async goBack(): Promise<void> {
     await this.backButton.click()
-  }
-
-  async copyPayload(): Promise<void> {
-    await this.copyPayloadButton.click()
   }
 
   /** DetailGrid.tsx: a label Typography followed immediately by its value Typography, both children of the same Stack. */
