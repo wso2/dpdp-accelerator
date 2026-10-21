@@ -421,6 +421,27 @@ public final class DPDPConfigParser {
                 DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_BACKGROUND_WORKER_INITIAL_DELAY_SECONDS);
     }
 
+    public int getEventNotificationDeliveryWorkerMaxBatchesPerRun() {
+
+        return getPositiveInt(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_BATCHES_PER_RUN,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_BATCHES_PER_RUN);
+    }
+
+    public int getEventNotificationDeliveryWorkerMaxRunSeconds() {
+
+        return getPositiveInt(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS);
+    }
+
+    public int getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription() {
+
+        return getPositiveInt(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION);
+    }
+
     public int getEventNotificationPendingSubscriptionRecoveryIntervalSeconds() {
 
         return getPositiveInt(
@@ -432,6 +453,20 @@ public final class DPDPConfigParser {
 
         return getPositiveInt(DPDPCommonConstants.EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_BATCH_SIZE,
                 DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_BATCH_SIZE);
+    }
+
+    public int getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun() {
+
+        return getPositiveInt(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_BATCHES_PER_RUN,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_BATCHES_PER_RUN);
+    }
+
+    public int getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds() {
+
+        return getPositiveInt(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_RUN_SECONDS,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_RUN_SECONDS);
     }
 
     public int getEventNotificationWorkerShutdownTimeoutSeconds() {

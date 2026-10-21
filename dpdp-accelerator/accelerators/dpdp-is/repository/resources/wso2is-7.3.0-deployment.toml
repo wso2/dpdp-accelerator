@@ -469,12 +469,16 @@ allowed_callback_ports = "-1,80,443,8443"
 allow_private_network_callback_targets = false
 delivery_worker_batch_size = 50
 delivery_worker_poll_seconds = 5
-stuck_inflight_threshold_seconds = 10
+delivery_worker_max_batches_per_run = 10
+delivery_worker_max_run_seconds = 4
+stuck_inflight_threshold_seconds = 60
 max_verification_response_body_bytes = 4096
 pending_subscription_recovery_threshold_seconds = 60
 background_worker_initial_delay_seconds = 10
 pending_subscription_recovery_interval_seconds = 30
 pending_subscription_recovery_batch_size = 20
+pending_subscription_recovery_max_batches_per_run = 10
+pending_subscription_recovery_max_run_seconds = 25
 worker_shutdown_timeout_seconds = 5
 
 # Controls the capture (identity.extensions) and read APIs (consent.mgt.extensions.endpoint)

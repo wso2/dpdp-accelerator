@@ -81,12 +81,16 @@ public class DPDPConfigParserTest {
                 + "<AllowPrivateNetworkCallbackTargets>true</AllowPrivateNetworkCallbackTargets>"
                 + "<DeliveryWorkerBatchSize>25</DeliveryWorkerBatchSize>"
                 + "<DeliveryWorkerPollSeconds>9</DeliveryWorkerPollSeconds>"
+                + "<DeliveryWorkerMaxBatchesPerRun>12</DeliveryWorkerMaxBatchesPerRun>"
+                + "<DeliveryWorkerMaxRunSeconds>3</DeliveryWorkerMaxRunSeconds>"
                 + "<StuckInFlightThresholdSeconds>15</StuckInFlightThresholdSeconds>"
                 + "<MaxVerificationResponseBodyBytes>8192</MaxVerificationResponseBodyBytes>"
                 + "<PendingSubscriptionRecoveryThresholdSeconds>90</PendingSubscriptionRecoveryThresholdSeconds>"
                 + "<BackgroundWorkerInitialDelaySeconds>11</BackgroundWorkerInitialDelaySeconds>"
                 + "<PendingSubscriptionRecoveryIntervalSeconds>31</PendingSubscriptionRecoveryIntervalSeconds>"
                 + "<PendingSubscriptionRecoveryBatchSize>21</PendingSubscriptionRecoveryBatchSize>"
+                + "<PendingSubscriptionRecoveryMaxBatchesPerRun>15</PendingSubscriptionRecoveryMaxBatchesPerRun>"
+                + "<PendingSubscriptionRecoveryMaxRunSeconds>22</PendingSubscriptionRecoveryMaxRunSeconds>"
                 + "<WorkerShutdownTimeoutSeconds>6</WorkerShutdownTimeoutSeconds>"
                 + "<PayloadSigning><Enabled>false</Enabled>"
                 + "<Audience>custom-event-audience</Audience></PayloadSigning>"
@@ -194,12 +198,16 @@ public class DPDPConfigParserTest {
         assertTrue(parser.isEventNotificationPrivateNetworkCallbackTargetsAllowed());
         assertEquals(parser.getEventNotificationDeliveryWorkerBatchSize(), 25);
         assertEquals(parser.getEventNotificationDeliveryWorkerPollSeconds(), 9);
+        assertEquals(parser.getEventNotificationDeliveryWorkerMaxBatchesPerRun(), 12);
+        assertEquals(parser.getEventNotificationDeliveryWorkerMaxRunSeconds(), 3);
         assertEquals(parser.getEventNotificationStuckInFlightThresholdSeconds(), 15);
         assertEquals(parser.getEventNotificationMaxVerificationResponseBodyBytes(), 8192);
         assertEquals(parser.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds(), 90);
         assertEquals(parser.getEventNotificationBackgroundWorkerInitialDelaySeconds(), 11);
         assertEquals(parser.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds(), 31);
         assertEquals(parser.getEventNotificationPendingSubscriptionRecoveryBatchSize(), 21);
+        assertEquals(parser.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun(), 15);
+        assertEquals(parser.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds(), 22);
         assertEquals(parser.getEventNotificationWorkerShutdownTimeoutSeconds(), 6);
         assertTrue(!parser.isEventNotificationPayloadSigningEnabled());
         assertEquals(parser.getEventNotificationPayloadSigningAudience(), "custom-event-audience");
@@ -236,12 +244,16 @@ public class DPDPConfigParserTest {
         assertTrue(service.isEventNotificationPrivateNetworkCallbackTargetsAllowed());
         assertEquals(service.getEventNotificationDeliveryWorkerBatchSize(), 25);
         assertEquals(service.getEventNotificationDeliveryWorkerPollSeconds(), 9);
+        assertEquals(service.getEventNotificationDeliveryWorkerMaxBatchesPerRun(), 12);
+        assertEquals(service.getEventNotificationDeliveryWorkerMaxRunSeconds(), 3);
         assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 15);
         assertEquals(service.getEventNotificationMaxVerificationResponseBodyBytes(), 8192);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds(), 90);
         assertEquals(service.getEventNotificationBackgroundWorkerInitialDelaySeconds(), 11);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds(), 31);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryBatchSize(), 21);
+        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun(), 15);
+        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds(), 22);
         assertEquals(service.getEventNotificationWorkerShutdownTimeoutSeconds(), 6);
         assertTrue(!service.isEventNotificationPayloadSigningEnabled());
         assertEquals(service.getEventNotificationPayloadSigningAudience(), "custom-event-audience");
@@ -273,12 +285,16 @@ public class DPDPConfigParserTest {
         assertTrue(!service.isEventNotificationPrivateNetworkCallbackTargetsAllowed());
         assertEquals(service.getEventNotificationDeliveryWorkerBatchSize(), 50);
         assertEquals(service.getEventNotificationDeliveryWorkerPollSeconds(), 5);
-        assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 10);
+        assertEquals(service.getEventNotificationDeliveryWorkerMaxBatchesPerRun(), 10);
+        assertEquals(service.getEventNotificationDeliveryWorkerMaxRunSeconds(), 4);
+        assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 60);
         assertEquals(service.getEventNotificationMaxVerificationResponseBodyBytes(), 4096);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds(), 60);
         assertEquals(service.getEventNotificationBackgroundWorkerInitialDelaySeconds(), 10);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds(), 30);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryBatchSize(), 20);
+        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun(), 10);
+        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds(), 25);
         assertEquals(service.getEventNotificationWorkerShutdownTimeoutSeconds(), 5);
         assertTrue(service.isEventNotificationPayloadSigningEnabled());
         assertEquals(service.getEventNotificationPayloadSigningAudience(), "dpdp-event-notifications");

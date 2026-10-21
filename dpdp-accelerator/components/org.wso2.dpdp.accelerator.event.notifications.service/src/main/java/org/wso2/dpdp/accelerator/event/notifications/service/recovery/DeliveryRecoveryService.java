@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.SubscriptionStatus;
 import org.wso2.dpdp.accelerator.event.notifications.dao.DeliveryDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.SubscriptionDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.Subscription;
@@ -31,7 +32,10 @@ import org.wso2.dpdp.accelerator.event.notifications.service.constants.EventNoti
 import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.WebhookDeliveryWorker;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -59,6 +63,7 @@ public class DeliveryRecoveryService {
     private ScheduledExecutorService scheduler;
     private ExecutorService workerPool;
     private WebhookDeliveryWorker webhookDeliveryWorker;
+    private volatile boolean stopping;
 
     public DeliveryRecoveryService() {
     }
@@ -74,10 +79,12 @@ public class DeliveryRecoveryService {
 
     protected void activate() {
         int stuckThresholdSeconds = configurationService.getEventNotificationStuckInFlightThresholdSeconds();
-        if (stuckThresholdSeconds <= EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS) {
-            throw new IllegalStateException("Event notification stuck in-flight threshold must be greater than "
+        int minStuckThreshold = (int) EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS + 5;
+        if (stuckThresholdSeconds < minStuckThreshold) {
+            throw new IllegalStateException("Event notification stuck in-flight threshold must be at least "
+                    + minStuckThreshold + " seconds to provide a safety margin over the "
                     + EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS
-                    + " seconds so an active webhook request cannot be reclaimed.");
+                    + " second HTTP timeout, so an active webhook request cannot be reclaimed.");
         }
         int verificationRecoveryThresholdSeconds =
                 configurationService.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds();
@@ -121,6 +128,10 @@ public class DeliveryRecoveryService {
     }
 
     protected void deactivate() {
+        this.stopping = true;
+        if (this.webhookDeliveryWorker != null) {
+            this.webhookDeliveryWorker.stop();
+        }
         int shutdownTimeoutSeconds = configurationService.getEventNotificationWorkerShutdownTimeoutSeconds();
         shutdownGracefully("delivery-recovery-scheduler", scheduler, shutdownTimeoutSeconds);
         shutdownGracefully("webhook-delivery-worker-pool", workerPool, shutdownTimeoutSeconds);
@@ -164,6 +175,9 @@ public class DeliveryRecoveryService {
     private class PendingDeliveryRecoveryTask implements Runnable {
         @Override
         public void run() {
+            if (stopping) {
+                return;
+            }
             try {
                 recoverPendingSubscriptions();
             } catch (Exception e) {
@@ -173,32 +187,95 @@ public class DeliveryRecoveryService {
         }
 
         private void recoverPendingSubscriptions() {
+            long startNanos = System.nanoTime();
             Timestamp threshold = new Timestamp(System.currentTimeMillis()
                     - configurationService.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds()
                     * 1000L);
             int batchSize = configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize();
-            List<Subscription> pendingSubs;
-            try {
-                pendingSubs = DatabaseUtils.executeInTransaction(conn ->
-                        subscriptionDAO.getPendingSubscriptionsForRecovery(conn, threshold, batchSize));
-            } catch (RuntimeException e) {
-                LOG.error("Failed to fetch pending subscriptions for recovery: "
-                        + LogSanitizer.sanitize(e.getMessage()), e);
-                return;
-            }
-            for (Subscription sub : pendingSubs) {
-                if (sub.getCallbackUrl() != null && !sub.getCallbackUrl().trim().isEmpty()) {
-                    try {
-                        subscriptionService.retryVerification(sub.getOrgId(), sub.getSubscriptionId());
-                        LOG.info("Recovered and re-verified pending subscription ["
-                                + LogSanitizer.sanitize(sub.getSubscriptionId()) + "].");
-                    } catch (Exception e) {
-                        if (LOG.isDebugEnabled()) {
-                            LOG.debug("Recovery retry verification for subscription ["
-                                    + LogSanitizer.sanitize(sub.getSubscriptionId()) + "] deferred: "
-                                    + LogSanitizer.sanitize(e.getMessage()));
-                        }
+            int maxBatches = configurationService.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun();
+            long maxRunNanos = TimeUnit.SECONDS.toNanos(
+                    configurationService.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds());
+            Set<String> seen = new HashSet<>();
+
+            for (int batch = 0; batch < maxBatches; batch++) {
+                if (stopping || (System.nanoTime() - startNanos) >= maxRunNanos) {
+                    break;
+                }
+                int limit = batchSize + seen.size();
+                List<Subscription> pendingSubs;
+                try {
+                    pendingSubs = DatabaseUtils.executeInTransaction(conn ->
+                            subscriptionDAO.getPendingSubscriptionsForRecovery(conn, threshold, limit));
+                } catch (RuntimeException e) {
+                    LOG.error("Failed to fetch pending subscriptions for recovery: "
+                            + LogSanitizer.sanitize(e.getMessage()), e);
+                    return;
+                }
+                if (pendingSubs == null || pendingSubs.isEmpty()) {
+                    break;
+                }
+
+                List<Subscription> fresh = new ArrayList<>();
+                for (Subscription sub : pendingSubs) {
+                    if (sub != null && sub.getSubscriptionId() != null && seen.add(sub.getSubscriptionId())) {
+                        fresh.add(sub);
                     }
+                }
+
+                if (fresh.isEmpty()) {
+                    break;
+                }
+
+                for (Subscription sub : fresh) {
+                    if (stopping || (System.nanoTime() - startNanos) >= maxRunNanos) {
+                        break;
+                    }
+                    boolean success = recoverOne(sub);
+                    if (!success) {
+                        touchPending(sub);
+                    }
+                }
+
+                if (pendingSubs.size() < limit) {
+                    break;
+                }
+            }
+        }
+
+        private boolean recoverOne(Subscription sub) {
+            if (sub.getCallbackUrl() == null || sub.getCallbackUrl().trim().isEmpty()) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Pending subscription [" + LogSanitizer.sanitize(sub.getSubscriptionId())
+                            + "] has blank callback URL; touching timestamp to avoid busy-spin.");
+                }
+                return false;
+            }
+            try {
+                subscriptionService.retryVerification(sub.getOrgId(), sub.getSubscriptionId());
+                LOG.info("Recovered and re-verified pending subscription ["
+                        + LogSanitizer.sanitize(sub.getSubscriptionId()) + "].");
+                return true;
+            } catch (Exception e) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Recovery retry verification for subscription ["
+                            + LogSanitizer.sanitize(sub.getSubscriptionId()) + "] deferred: "
+                            + LogSanitizer.sanitize(e.getMessage()));
+                }
+                return false;
+            }
+        }
+
+        private void touchPending(Subscription sub) {
+            try {
+                DatabaseUtils.executeInTransaction(conn ->
+                        subscriptionDAO.updateSubscriptionStatus(conn, sub.getSubscriptionId(),
+                                sub.getOrgId(), SubscriptionStatus.PENDING.getValue(),
+                                SubscriptionStatus.PENDING.getValue()));
+            } catch (Exception e) {
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Failed to touch pending subscription ["
+                            + LogSanitizer.sanitize(sub.getSubscriptionId()) + "]: "
+                            + LogSanitizer.sanitize(e.getMessage()));
                 }
             }
         }
