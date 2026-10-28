@@ -179,7 +179,7 @@ public class TopicServiceImpl implements TopicService {
                                     + ") for organization '" + sanitizedOrgId + "'.");
                         }
                     } catch (Exception e) {
-                        LOG.error("Failed to reconcile system topic '" + defaultTopic.getName()
+                        LOG.error("Failed to verify and provision system topic '" + defaultTopic.getName()
                                 + "' for organization: " + sanitizedOrgId, e);
                     }
                 }
@@ -187,10 +187,10 @@ public class TopicServiceImpl implements TopicService {
         }
 
         if (promotedCount == 0 && newlyProvisionedCount == 0) {
-            LOG.info("System topic startup reconciliation completed: "
+            LOG.info("System topic startup verification completed: "
                     + "all existing organizations have up-to-date system topics.");
         } else {
-            LOG.info("System topic startup reconciliation completed: " + promotedCount
+            LOG.info("System topic startup verification and provisioning completed: " + promotedCount
                     + " topic(s) promoted to system, " + newlyProvisionedCount
                     + " missing topic(s) provisioned across " + incompleteOrgsCount + " organization(s).");
         }

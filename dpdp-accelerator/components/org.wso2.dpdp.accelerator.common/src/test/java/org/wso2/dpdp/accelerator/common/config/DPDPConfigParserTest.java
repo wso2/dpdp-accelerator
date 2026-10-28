@@ -249,7 +249,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 15);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(service.isEventNotificationPollingRequestHmacValidationEnabled());
-        assertTrue(service.isEventNotificationSystemTopicsReconcileOnStartupEnabled());
+        assertTrue(service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
     }
 
     @Test
@@ -287,7 +287,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 20);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 100);
         assertTrue(!service.isEventNotificationPollingRequestHmacValidationEnabled());
-        assertTrue(service.isEventNotificationSystemTopicsReconcileOnStartupEnabled());
+        assertTrue(service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
     }
 
     @Test
@@ -367,11 +367,11 @@ public class DPDPConfigParserTest {
                     service::isEventNotificationPrivateNetworkCallbackTargetsAllowed);
             values.put("EventNotifications.PayloadSigning.Enabled", "bad");
             expectThrows(IllegalStateException.class, service::isEventNotificationPayloadSigningEnabled);
-            values.put("EventNotifications.SystemTopics.ReconcileOnStartupEnabled", "false");
-            assertTrue(!service.isEventNotificationSystemTopicsReconcileOnStartupEnabled());
-            values.put("EventNotifications.SystemTopics.ReconcileOnStartupEnabled", "bad");
+            values.put("EventNotifications.SystemTopics.VerifyOnStartupEnabled", "false");
+            assertTrue(!service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
+            values.put("EventNotifications.SystemTopics.VerifyOnStartupEnabled", "bad");
             expectThrows(IllegalStateException.class,
-                    service::isEventNotificationSystemTopicsReconcileOnStartupEnabled);
+                    service::isEventNotificationSystemTopicsVerifyOnStartupEnabled);
             values.put("EventNotifications.PendingSubscriptionRecoveryIntervalSeconds", "0");
             expectThrows(IllegalStateException.class,
                     service::getEventNotificationPendingSubscriptionRecoveryIntervalSeconds);

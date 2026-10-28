@@ -85,14 +85,14 @@ public final class EventNotificationTopicProvisioner {
                 DPDPIdentityExtensionDataHolder.getInstance().getConfigurationService();
         if (configService == null
                 || !configService.isEventNotificationSystemTopicsAutoCreateEnabled()
-                || !configService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()) {
-            LOG.debug("Skipping startup system topic reconciliation across existing tenants.");
+                || !configService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()) {
+            LOG.debug("Skipping startup system topic verification across existing tenants.");
             return;
         }
 
         TopicService topicService = DPDPIdentityExtensionDataHolder.getInstance().getTopicService();
         if (topicService == null) {
-            LOG.warn("TopicService is unavailable; skipping startup system topic reconciliation.");
+            LOG.warn("TopicService is unavailable; skipping startup system topic verification.");
             return;
         }
 

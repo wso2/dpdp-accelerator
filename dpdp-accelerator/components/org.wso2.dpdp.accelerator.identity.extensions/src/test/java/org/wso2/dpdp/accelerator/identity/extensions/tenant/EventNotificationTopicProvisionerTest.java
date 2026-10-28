@@ -89,7 +89,7 @@ public class EventNotificationTopicProvisionerTest {
     public void testReconcileExistingTenantSystemTopicsDelegatesWhenEnabled() {
 
         when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
-        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()).thenReturn(true);
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
@@ -100,7 +100,7 @@ public class EventNotificationTopicProvisionerTest {
     public void testReconcileExistingTenantSystemTopicsSkipsWhenAutoCreateDisabled() {
 
         when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(false);
-        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()).thenReturn(true);
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
@@ -108,10 +108,10 @@ public class EventNotificationTopicProvisionerTest {
     }
 
     @Test
-    public void testReconcileExistingTenantSystemTopicsSkipsWhenReconcileOnStartupDisabled() {
+    public void testReconcileExistingTenantSystemTopicsSkipsWhenVerifyOnStartupDisabled() {
 
         when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
-        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(false);
+        when(configurationService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()).thenReturn(false);
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
@@ -127,7 +127,7 @@ public class EventNotificationTopicProvisionerTest {
 
         DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(configurationService);
         when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
-        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()).thenReturn(true);
         DPDPIdentityExtensionDataHolder.getInstance().setTopicService(null);
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
     }

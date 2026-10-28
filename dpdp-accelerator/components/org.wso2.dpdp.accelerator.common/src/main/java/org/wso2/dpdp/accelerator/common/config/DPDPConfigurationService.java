@@ -79,7 +79,7 @@ public interface DPDPConfigurationService {
 
     boolean isEventNotificationSystemTopicsAutoCreateEnabled();
 
-    boolean isEventNotificationSystemTopicsReconcileOnStartupEnabled();
+    boolean isEventNotificationSystemTopicsVerifyOnStartupEnabled();
 
     boolean isEventNotificationLifecycleEventsPublishingEnabled();
 

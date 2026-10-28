@@ -231,11 +231,11 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
-    public boolean isEventNotificationSystemTopicsReconcileOnStartupEnabled() {
+    public boolean isEventNotificationSystemTopicsVerifyOnStartupEnabled() {
 
         return configParser == null
-                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SYSTEM_TOPICS_RECONCILE_ON_STARTUP_ENABLED
-                : configParser.isEventNotificationSystemTopicsReconcileOnStartupEnabled();
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SYSTEM_TOPICS_VERIFY_ON_STARTUP_ENABLED
+                : configParser.isEventNotificationSystemTopicsVerifyOnStartupEnabled();
     }
 
     @Override

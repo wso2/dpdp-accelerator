@@ -163,12 +163,14 @@
             {% else %}
             <AutoCreateEnabled>true</AutoCreateEnabled>
             {% endif %}
-            {% if dpdp_accelerator.event_notifications.system_topics.reconcile_on_startup_enabled is defined %}
-            <ReconcileOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics.reconcile_on_startup_enabled}}</ReconcileOnStartupEnabled>
-            {% elif dpdp_accelerator.event_notifications.reconcile_on_startup_enabled is defined %}
-            <ReconcileOnStartupEnabled>{{dpdp_accelerator.event_notifications.reconcile_on_startup_enabled}}</ReconcileOnStartupEnabled>
+            {% if dpdp_accelerator.event_notifications.system_topics.verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics.verify_on_startup_enabled}}</VerifyOnStartupEnabled>
+            {% elif dpdp_accelerator.event_notifications.system_topics_verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics_verify_on_startup_enabled}}</VerifyOnStartupEnabled>
+            {% elif dpdp_accelerator.event_notifications.verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.verify_on_startup_enabled}}</VerifyOnStartupEnabled>
             {% else %}
-            <ReconcileOnStartupEnabled>true</ReconcileOnStartupEnabled>
+            <VerifyOnStartupEnabled>true</VerifyOnStartupEnabled>
             {% endif %}
         </SystemTopics>
         <PayloadSigning>
