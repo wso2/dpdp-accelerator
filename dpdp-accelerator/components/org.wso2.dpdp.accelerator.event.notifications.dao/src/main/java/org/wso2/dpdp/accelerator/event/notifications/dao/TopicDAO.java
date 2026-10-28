@@ -57,9 +57,9 @@ public interface TopicDAO {
 
     /**
      * Promotes active non-system topics whose lowercased names match any of the given default system topic names
-     * to {@code INITIATED_BY = 'system'} across all organizations.
+     * to {@code INITIATED_BY = 'system'} across all organizations, returning the promoted topic details.
      */
-    int promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames);
+    List<Topic> promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames);
 
     /**
      * Returns organization IDs present in {@code TOPIC} that have fewer than {@code lowerTopicNames.size()}

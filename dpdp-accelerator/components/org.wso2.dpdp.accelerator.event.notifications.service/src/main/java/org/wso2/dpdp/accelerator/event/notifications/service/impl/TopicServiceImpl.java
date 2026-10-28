@@ -140,32 +140,65 @@ public class TopicServiceImpl implements TopicService {
             lowerDefaultTopicNames.add(defaultTopic.getName().toLowerCase(Locale.ROOT));
         }
 
+        List<Topic> promotedTopics = new ArrayList<>();
         List<String> incompleteOrgs = DatabaseUtils.executeInTransaction(conn -> {
-            int promoted = topicDAO.promoteUserTopicsToSystem(conn, lowerDefaultTopicNames);
-            if (promoted > 0) {
-                LOG.info("Promoted " + promoted
-                        + " user-created default topic(s) to system topics during startup reconciliation.");
+            List<Topic> promoted = topicDAO.promoteUserTopicsToSystem(conn, lowerDefaultTopicNames);
+            if (promoted != null) {
+                promotedTopics.addAll(promoted);
             }
             return topicDAO.getOrgsWithMissingSystemTopics(conn, lowerDefaultTopicNames);
         });
 
-        if (incompleteOrgs == null || incompleteOrgs.isEmpty()) {
-            return;
+        int promotedCount = promotedTopics.size();
+        for (Topic promoted : promotedTopics) {
+            LOG.info("Promoted user-created default topic '" + promoted.getName()
+                    + "' (ID: " + promoted.getTopicId()
+                    + ") for organization '" + sanitizeLog(promoted.getOrgId())
+                    + "' to system topic.");
         }
 
-        for (String orgId : incompleteOrgs) {
-            if (orgId == null || orgId.trim().isEmpty()) {
-                continue;
-            }
-            for (DefaultTopic defaultTopic : DefaultTopic.values()) {
-                try {
-                    ensureSystemTopic(orgId, defaultTopic.getName(), defaultTopic.getDescription());
-                } catch (Exception e) {
-                    LOG.error("Failed to reconcile system topic '" + defaultTopic.getName()
-                            + "' for organization: " + orgId.replaceAll("[\r\n]", ""), e);
+        int newlyProvisionedCount = 0;
+        int incompleteOrgsCount = 0;
+        if (incompleteOrgs != null) {
+            for (String orgId : incompleteOrgs) {
+                if (orgId == null || orgId.trim().isEmpty()) {
+                    continue;
+                }
+                incompleteOrgsCount++;
+                String sanitizedOrgId = sanitizeLog(orgId.trim());
+                for (DefaultTopic defaultTopic : DefaultTopic.values()) {
+                    try {
+                        boolean alreadyExists = DatabaseUtils.executeInTransaction(conn ->
+                                topicDAO.getTopicByOrgAndName(conn, orgId.trim(), defaultTopic.getName()).isPresent());
+                        if (!alreadyExists) {
+                            TopicDTO provisioned = ensureSystemTopic(orgId, defaultTopic.getName(),
+                                    defaultTopic.getDescription());
+                            newlyProvisionedCount++;
+                            LOG.info("Provisioned missing system topic '" + defaultTopic.getName()
+                                    + "' (ID: " + provisioned.getTopicId()
+                                    + ") for organization '" + sanitizedOrgId + "'.");
+                        }
+                    } catch (Exception e) {
+                        LOG.error("Failed to reconcile system topic '" + defaultTopic.getName()
+                                + "' for organization: " + sanitizedOrgId, e);
+                    }
                 }
             }
         }
+
+        if (promotedCount == 0 && newlyProvisionedCount == 0) {
+            LOG.info("System topic startup reconciliation completed: "
+                    + "all existing organizations have up-to-date system topics.");
+        } else {
+            LOG.info("System topic startup reconciliation completed: " + promotedCount
+                    + " topic(s) promoted to system, " + newlyProvisionedCount
+                    + " missing topic(s) provisioned across " + incompleteOrgsCount + " organization(s).");
+        }
+    }
+
+    private String sanitizeLog(String value) {
+
+        return value == null ? null : value.replaceAll("[\r\n]", "");
     }
 
     private TopicDTO recoverConcurrentlyCreatedSystemTopic(String orgId, String topicName) {

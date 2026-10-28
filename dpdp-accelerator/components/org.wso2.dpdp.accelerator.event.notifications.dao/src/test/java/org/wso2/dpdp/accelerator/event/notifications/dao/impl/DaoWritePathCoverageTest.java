@@ -152,9 +152,9 @@ public class DaoWritePathCoverageTest {
         TopicDAOImpl topicDao = new TopicDAOImpl();
         assertTrue(topicDao.addTopic(connection, new Topic("t-1", "org-1", "accounts", "desc", "active")));
         assertTrue(topicDao.updateTopicStatus(connection, "t-1", "org-1", TopicStatus.ACTIVE));
-        assertEquals(topicDao.promoteUserTopicsToSystem(connection, Arrays.asList("consent.create")), 1);
-        assertEquals(topicDao.promoteUserTopicsToSystem(connection, Collections.emptyList()), 0);
-        assertEquals(topicDao.promoteUserTopicsToSystem(connection, null), 0);
+        assertEquals(topicDao.promoteUserTopicsToSystem(connection, Arrays.asList("consent.create")).size(), 1);
+        assertTrue(topicDao.promoteUserTopicsToSystem(connection, Collections.emptyList()).isEmpty());
+        assertTrue(topicDao.promoteUserTopicsToSystem(connection, null).isEmpty());
         Subscription subscription = new Subscription();
         subscription.setSubscriptionId("s-1");
         subscription.setName("sub-write-coverage");
@@ -203,6 +203,7 @@ public class DaoWritePathCoverageTest {
         expectThrows(RuntimeException.class, () -> topics.addTopic(connection,
                 new Topic("t", "org", "name", "desc", "active")));
         expectThrows(RuntimeException.class, () -> topics.updateTopicStatus(connection, "t", "org", TopicStatus.ACTIVE));
+        when(resultSet.next()).thenReturn(true, false);
         expectThrows(RuntimeException.class,
                 () -> topics.promoteUserTopicsToSystem(connection, Arrays.asList("consent.create")));
         SubscriptionDAOImpl subscriptions = new SubscriptionDAOImpl();

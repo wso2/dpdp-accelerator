@@ -106,6 +106,8 @@ public class DaoReadPathCoverageTest {
         expectThrows(RuntimeException.class, () -> topics.listTopics(connection, "org", null, null, 20, 0, null));
         expectThrows(RuntimeException.class,
                 () -> topics.getOrgsWithMissingSystemTopics(connection, Collections.singletonList("consent.create")));
+        expectThrows(RuntimeException.class,
+                () -> topics.promoteUserTopicsToSystem(connection, Collections.singletonList("consent.create")));
 
         EventDAOImpl events = new EventDAOImpl();
         expectThrows(RuntimeException.class, () -> events.getEventById(connection, "event", "org"));

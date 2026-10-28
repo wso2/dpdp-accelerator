@@ -97,6 +97,13 @@ public class EventNotificationCommonDBQueries {
                 + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?")) + ")";
     }
 
+    public String getFindUserTopicsMatchingDefaultNamesQuery(int count) {
+        return "SELECT TOPIC_ID, ORG_ID, NAME, DESCRIPTION, STATUS, INITIATED_BY FROM TOPIC "
+                + "WHERE LOWER(STATUS) = " + SQL_TOPIC_ACTIVE
+                + " AND LOWER(INITIATED_BY) <> " + SQL_INITIATOR_SYSTEM
+                + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?")) + ")";
+    }
+
     public String getPromoteUserTopicsToSystemQuery(int count) {
         return "UPDATE TOPIC SET INITIATED_BY = " + SQL_INITIATOR_SYSTEM
                 + " WHERE LOWER(STATUS) = " + SQL_TOPIC_ACTIVE

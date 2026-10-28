@@ -324,19 +324,37 @@ public class TopicDAOImpl implements TopicDAO {
     }
 
     @Override
-    public int promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames) {
+    public List<Topic> promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames) {
         if (conn == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
+        List<Topic> promotedTopics = new ArrayList<>();
         if (lowerTopicNames == null || lowerTopicNames.isEmpty()) {
-            return 0;
+            return promotedTopics;
         }
-        try (PreparedStatement ps = conn.prepareStatement(
-                getQueries(conn).getPromoteUserTopicsToSystemQuery(lowerTopicNames.size()))) {
-            for (int i = 0; i < lowerTopicNames.size(); i++) {
-                ps.setString(i + 1, lowerTopicNames.get(i));
+        try {
+            EventNotificationCommonDBQueries queries = getQueries(conn);
+            try (PreparedStatement ps = conn.prepareStatement(
+                    queries.getFindUserTopicsMatchingDefaultNamesQuery(lowerTopicNames.size()))) {
+                for (int i = 0; i < lowerTopicNames.size(); i++) {
+                    ps.setString(i + 1, lowerTopicNames.get(i));
+                }
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        promotedTopics.add(mapTopic(rs));
+                    }
+                }
             }
-            return ps.executeUpdate();
+            if (!promotedTopics.isEmpty()) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        queries.getPromoteUserTopicsToSystemQuery(lowerTopicNames.size()))) {
+                    for (int i = 0; i < lowerTopicNames.size(); i++) {
+                        ps.setString(i + 1, lowerTopicNames.get(i));
+                    }
+                    ps.executeUpdate();
+                }
+            }
+            return promotedTopics;
         } catch (SQLException e) {
             throw new EventNotificationDaoException(
                     EventNotificationCommonConstants.ERROR_PROMOTING_USER_TOPICS_TO_SYSTEM, e);
