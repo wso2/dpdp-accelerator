@@ -159,6 +159,7 @@ public class TopicServiceImpl implements TopicService {
 
         int newlyProvisionedCount = 0;
         int incompleteOrgsCount = 0;
+        int failedCount = 0;
         if (incompleteOrgs != null) {
             for (String orgId : incompleteOrgs) {
                 if (orgId == null || orgId.trim().isEmpty()) {
@@ -179,6 +180,7 @@ public class TopicServiceImpl implements TopicService {
                                     + ") for organization '" + sanitizedOrgId + "'.");
                         }
                     } catch (Exception e) {
+                        failedCount++;
                         LOG.error("Failed to verify and provision system topic '" + defaultTopic.getName()
                                 + "' for organization: " + sanitizedOrgId, e);
                     }
@@ -186,7 +188,12 @@ public class TopicServiceImpl implements TopicService {
             }
         }
 
-        if (promotedCount == 0 && newlyProvisionedCount == 0) {
+        if (failedCount > 0) {
+            LOG.warn("System topic startup verification completed with errors: " + promotedCount
+                    + " topic(s) promoted to system, " + newlyProvisionedCount
+                    + " missing topic(s) provisioned, " + failedCount
+                    + " topic(s) failed across " + incompleteOrgsCount + " organization(s).");
+        } else if (promotedCount == 0 && newlyProvisionedCount == 0) {
             LOG.info("System topic startup verification completed: "
                     + "all existing organizations have up-to-date system topics.");
         } else {
