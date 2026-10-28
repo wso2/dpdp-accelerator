@@ -432,9 +432,11 @@ email_notifications_enabled = false
 
 # Event Notification Framework runtime settings.
 [dpdp_accelerator.event_notifications]
-# Automatically reconciles the DPDP system topics (consent.update, consent.revoke, etc.) for
-# every tenant on create/update. Set false to manage system topics manually instead.
+# Automatically creates the DPDP system topics (consent.update, consent.revoke, consent.create, etc.)
+# for every tenant on create/update. Set false to manage system topics manually instead.
 system_topics_auto_create_enabled = true
+# Verifies and provisions missing DPDP system topics across existing tenants at server startup.
+system_topics_verify_on_startup_enabled = true
 
 [dpdp_accelerator.event_notifications.payload_signing]
 enabled = true

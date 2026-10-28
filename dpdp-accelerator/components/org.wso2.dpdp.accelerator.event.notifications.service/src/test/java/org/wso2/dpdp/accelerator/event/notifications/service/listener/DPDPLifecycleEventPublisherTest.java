@@ -54,6 +54,17 @@ public class DPDPLifecycleEventPublisherTest {
     }
 
     @Test
+    public void onConsentCreatedPublishesToConsentCreateTopicWithPurposes() {
+
+        List<String> purposes = Arrays.asList("marketing", "analytics");
+
+        publisher.onConsentCreated("tenant.example", "consent-1", "ACTIVE", "jdoe", purposes);
+
+        verify(eventPublishService).publishEvent(eq("tenant.example"), eq("tenant.example"),
+                eq(DefaultTopic.CONSENT_CREATE.getName()), eq(purposes), any());
+    }
+
+    @Test
     public void onConsentUpdatedPublishesToConsentUpdateTopicWithPurposes() {
 
         List<String> purposes = Arrays.asList("marketing", "analytics");

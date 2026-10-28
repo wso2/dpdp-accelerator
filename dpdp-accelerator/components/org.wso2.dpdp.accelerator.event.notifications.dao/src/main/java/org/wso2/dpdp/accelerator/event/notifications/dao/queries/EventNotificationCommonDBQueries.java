@@ -20,6 +20,7 @@ package org.wso2.dpdp.accelerator.event.notifications.dao.queries;
 
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.Initiator;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.PollStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.SubscriptionStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
@@ -32,6 +33,7 @@ import java.util.Collections;
 public class EventNotificationCommonDBQueries {
 
     protected static final String SQL_TOPIC_ACTIVE = "'" + TopicStatus.ACTIVE.getValue() + "'";
+    protected static final String SQL_INITIATOR_SYSTEM = "'" + Initiator.SYSTEM.getValue() + "'";
     protected static final String SQL_SUBSCRIPTION_ACTIVE = "'" + SubscriptionStatus.ACTIVE.getValue() + "'";
     protected static final String SQL_SUBSCRIPTION_PENDING = "'" + SubscriptionStatus.PENDING.getValue() + "'";
     protected static final String SQL_SUBSCRIPTION_STALE = "'" + SubscriptionStatus.STALE.getValue() + "'";
@@ -91,6 +93,28 @@ public class EventNotificationCommonDBQueries {
         return "SELECT TOPIC_ID, ORG_ID, NAME, DESCRIPTION, STATUS, INITIATED_BY FROM TOPIC "
                 + "WHERE ORG_ID = ? AND LOWER(STATUS) = " + SQL_TOPIC_ACTIVE
                 + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?")) + ")";
+    }
+
+    public String getFindUserTopicsMatchingDefaultNamesQuery(int count) {
+        return "SELECT TOPIC_ID, ORG_ID, NAME, DESCRIPTION, STATUS, INITIATED_BY FROM TOPIC "
+                + "WHERE LOWER(STATUS) = " + SQL_TOPIC_ACTIVE
+                + " AND LOWER(INITIATED_BY) <> " + SQL_INITIATOR_SYSTEM
+                + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?")) + ")";
+    }
+
+    public String getPromoteUserTopicsToSystemQuery(int count) {
+        return "UPDATE TOPIC SET INITIATED_BY = " + SQL_INITIATOR_SYSTEM
+                + " WHERE LOWER(STATUS) = " + SQL_TOPIC_ACTIVE
+                + " AND LOWER(INITIATED_BY) <> " + SQL_INITIATOR_SYSTEM
+                + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?")) + ")";
+    }
+
+    public String getFindOrgsWithMissingSystemTopicsQuery(int count) {
+        return "SELECT ORG_ID FROM TOPIC GROUP BY ORG_ID "
+                + "HAVING COUNT(DISTINCT CASE WHEN LOWER(STATUS) = " + SQL_TOPIC_ACTIVE
+                + " AND LOWER(INITIATED_BY) = " + SQL_INITIATOR_SYSTEM
+                + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?"))
+                + ") THEN LOWER(NAME) END) < ?";
     }
 
     // SUBSCRIPTION Queries

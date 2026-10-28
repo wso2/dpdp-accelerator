@@ -355,6 +355,7 @@ it('renders compact chips and searches associated topics in SubscriptionTopicsSe
 
 it('categorizes topics by checking SYSTEM status first before prefix', () => {
   // System topics check prefix
+  expect(getTopicCategory({ name: 'consent.create', initiatedBy: 'SYSTEM' })).toBe('consent')
   expect(getTopicCategory({ name: 'consent.update', initiatedBy: 'SYSTEM' })).toBe('consent')
   expect(getTopicCategory({ name: 'consent.custom', initiatedBy: 'SYSTEM' })).toBe('consent')
   expect(getTopicCategory({ name: 'user.data.change', initiatedBy: 'SYSTEM' })).toBe('user')

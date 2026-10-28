@@ -23,6 +23,7 @@ export const TOPIC_CATEGORIES = ['consent', 'user', 'custom'] as const
 export type TopicCategory = (typeof TOPIC_CATEGORIES)[number]
 
 const DEFAULT_SYSTEM_CONSENT_TOPICS = new Set([
+  'consent.create',
   'consent.update',
   'consent.revoke',
   'consent.expire',

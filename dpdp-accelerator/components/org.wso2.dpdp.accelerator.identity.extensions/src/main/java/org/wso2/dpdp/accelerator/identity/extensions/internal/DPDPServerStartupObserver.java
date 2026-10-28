@@ -24,6 +24,7 @@ import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.dpdp.accelerator.identity.extensions.tenant.DPDPIdentityExtensionTenantMgtListener;
+import org.wso2.dpdp.accelerator.identity.extensions.tenant.EventNotificationTopicProvisioner;
 
 /**
  * Provisions the DPDP Consent Portal for the super tenant only once the entire server - every
@@ -54,6 +55,12 @@ public class DPDPServerStartupObserver implements ServerStartupObserver {
 
     @Override
     public void completedServerStartup() {
+
+        try {
+            EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+        } catch (Exception e) {
+            LOG.error("Error reconciling DPDP system topics across existing tenants at startup.", e);
+        }
 
         try {
             TenantInfoBean superTenant = new TenantInfoBean();

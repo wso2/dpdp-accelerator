@@ -231,6 +231,14 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
+    public boolean isEventNotificationSystemTopicsVerifyOnStartupEnabled() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SYSTEM_TOPICS_VERIFY_ON_STARTUP_ENABLED
+                : configParser.isEventNotificationSystemTopicsVerifyOnStartupEnabled();
+    }
+
+    @Override
     public boolean isEventNotificationLifecycleEventsPublishingEnabled() {
 
         return configParser == null || configParser.isEventNotificationLifecycleEventsPublishingEnabled();

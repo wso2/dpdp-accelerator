@@ -48,6 +48,16 @@ public class DPDPLifecycleEventPublisher implements DPDPLifecycleEventListener {
     }
 
     @Override
+    public void onConsentCreated(String orgId, String consentId, String status, String actionBy,
+            List<String> purposes) {
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("consentId", consentId);
+        payload.put("currentStatus", status);
+        eventPublishService.publishEvent(orgId, orgId, DefaultTopic.CONSENT_CREATE.getName(), purposes, payload);
+    }
+
+    @Override
     public void onConsentUpdated(String orgId, String consentId, String previousStatus, String currentStatus,
             String actionBy, List<String> purposes) {
 
