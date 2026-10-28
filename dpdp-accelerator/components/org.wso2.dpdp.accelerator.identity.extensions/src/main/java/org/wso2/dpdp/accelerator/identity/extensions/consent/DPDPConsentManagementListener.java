@@ -36,21 +36,32 @@ import java.sql.Timestamp;
 import java.util.List;
 
 /**
- * Captures consent lifecycle events into {@code DPDP_CONSENT_STATUS_AUDIT}/{@code DPDP_CONSENT_HISTORY},
- * and - for update/revoke - notifies {@code DPDPLifecycleEventListener} so the Event Notification
- * Framework can fan them out. Snapshots are captured on the {@code post*} hooks, tagged with the
+ * Captures consent lifecycle events into
+ * {@code DPDP_CONSENT_STATUS_AUDIT}/{@code DPDP_CONSENT_HISTORY},
+ * and - for create/update/revoke - notifies {@code DPDPLifecycleEventListener}
+ * so the Event Notification
+ * Framework can fan them out. Snapshots are captured on the {@code post*}
+ * hooks, tagged with the
  * action that just ran.
  *
- * <p>Named after the IS extension point it implements ({@code ConsentManagementListener}), not
- * either of its jobs - same convention as {@code DPDPIdentityExtensionTenantMgtListener} for
+ * <p>
+ * Named after the IS extension point it implements
+ * ({@code ConsentManagementListener}), not
+ * either of its jobs - same convention as
+ * {@code DPDPIdentityExtensionTenantMgtListener} for
  * {@code TenantMgtListener}.
  *
- * <p>Also maintains {@code DPDP_CONSENT_EXPIRY_TRACKER} and, on every {@code pre*} hook, checks
+ * <p>
+ * Also maintains {@code DPDP_CONSENT_EXPIRY_TRACKER} and, on every {@code pre*}
+ * hook, checks
  * whether this consent already lapsed before the scheduled
- * {@link org.wso2.dpdp.accelerator.identity.extensions.consent.scheduler.ConsentExpiryJobScheduler} caught
+ * {@link org.wso2.dpdp.accelerator.identity.extensions.consent.scheduler.ConsentExpiryJobScheduler}
+ * caught
  * it - see {@link DPDPConsentExpiryReconciler}.
  *
- * <p>A capture or notification failure must never block the consent mutation, so every hook
+ * <p>
+ * A capture or notification failure must never block the consent mutation, so
+ * every hook
  * swallows and logs its own exceptions.
  */
 public class DPDPConsentManagementListener extends AbstractConsentManagementListener {
@@ -79,22 +90,29 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     @Override
     public void postAddConsent(ReceiptInput receiptInput, String tenantDomain) {
 
-        // receiptInput.getState() is null whenever the caller's request omits "state" - the REST
-        // layer's documented ACTIVE default is applied at the DB/schema level, never written back
-        // onto this object. Resolved from the request's own shape rather than a live read: a live
-        // read (getReceiptWithExtendedSchema) applies resolveConsentState()'s dynamic expiry check,
-        // which would misreport a consent created with an already-past expiryTime as EXPIRED
-        // instead of its true, as-persisted ACTIVE/PENDING creation state. REJECTED never hits this
+        // receiptInput.getState() is null whenever the caller's request omits "state" -
+        // the REST
+        // layer's documented ACTIVE default is applied at the DB/schema level, never
+        // written back
+        // onto this object. Resolved from the request's own shape rather than a live
+        // read: a live
+        // read (getReceiptWithExtendedSchema) applies resolveConsentState()'s dynamic
+        // expiry check,
+        // which would misreport a consent created with an already-past expiryTime as
+        // EXPIRED
+        // instead of its true, as-persisted ACTIVE/PENDING creation state. REJECTED
+        // never hits this
         // fallback - it requires an explicit, non-null "state" in the request.
-        String currentStatus = receiptInput.getState();
-        if (currentStatus == null) {
-            boolean hasAuthorizations = receiptInput.getAuthorizations() != null
-                    && !receiptInput.getAuthorizations().isEmpty();
-            currentStatus = hasAuthorizations ? PENDING_STATUS : ACTIVE_STATUS;
-        }
+        String currentStatus = receiptInput.getState() != null
+                ? receiptInput.getState()
+                : (receiptInput.getAuthorizations() != null && !receiptInput.getAuthorizations().isEmpty()
+                        ? PENDING_STATUS
+                        : ACTIVE_STATUS);
         recordStatusAudit(receiptInput.getConsentReceiptId(), tenantDomain, null, currentStatus, ActionType.CREATE);
-        captureSnapshot(receiptInput.getConsentReceiptId(), tenantDomain, ActionType.CREATE);
+        Receipt receipt = captureSnapshot(receiptInput.getConsentReceiptId(), tenantDomain, ActionType.CREATE);
         trackExpiry(receiptInput.getConsentReceiptId(), tenantDomain, receiptInput.getExpiryTime());
+        DPDPLifecycleEventUtil.notify(l -> l.onConsentCreated(tenantDomain, receiptInput.getConsentReceiptId(),
+                currentStatus, getActionBy(), DPDPConsentSnapshotBuilder.resolvePurposes(receipt)));
     }
 
     @Override
@@ -107,10 +125,13 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     @Override
     public void postUpdateConsent(ReceiptUpdateInput updateInput, String tenantDomain) {
 
-        // Unlike revoke/delete, an update's outcome status isn't fixed in advance - pushing the
+        // Unlike revoke/delete, an update's outcome status isn't fixed in advance -
+        // pushing the
         // expiry into the past or future can flip the resolved state (see
-        // DPDPConsentExpiryReconciler), so the current status is re-read live here, same as
-        // postAuthorizeConsent already does, instead of assuming it matches the pre-mutation value.
+        // DPDPConsentExpiryReconciler), so the current status is re-read live here,
+        // same as
+        // postAuthorizeConsent already does, instead of assuming it matches the
+        // pre-mutation value.
         String consentId = updateInput.getConsentReceiptId();
         String previousStatus = takePreviousStatus();
         try {
@@ -126,8 +147,10 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
             LOG.error("Error reading the post-update state for consent: " + LogSanitizer.sanitize(consentId), e);
         }
 
-        // isClearExpiry() and getExpiryTime() are the two distinct signals an update can carry -
-        // neither set means this update didn't touch expiry at all, so the tracker is left alone.
+        // isClearExpiry() and getExpiryTime() are the two distinct signals an update
+        // can carry -
+        // neither set means this update didn't touch expiry at all, so the tracker is
+        // left alone.
         if (updateInput.isClearExpiry()) {
             untrackExpiry(consentId, tenantDomain);
         } else if (updateInput.getExpiryTime() != null) {
@@ -163,11 +186,14 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     @Override
     public void postDeleteConsent(String receiptId, String tenantDomain) {
 
-        // The receipt row is gone by now - DELETED is an accelerator-defined status, not one
+        // The receipt row is gone by now - DELETED is an accelerator-defined status,
+        // not one
         // carbon-consent-management itself ever stores.
         recordStatusAudit(receiptId, tenantDomain, takePreviousStatus(), DELETED_STATUS, ActionType.DELETE);
-        // Kept for symmetry - delete has no reachable path through any REST API IS ships today,
-        // so postRevokeConsent above is the cleanup path this actually depends on in practice.
+        // Kept for symmetry - delete has no reachable path through any REST API IS
+        // ships today,
+        // so postRevokeConsent above is the cleanup path this actually depends on in
+        // practice.
         untrackExpiry(receiptId, tenantDomain);
     }
 
@@ -181,8 +207,10 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     @Override
     public void postAuthorizeConsent(String consentId, String userId, String authStatus, String tenantDomain) {
 
-        // authStatus is the per-authorization status (e.g. APPROVED/REJECTED), not necessarily
-        // the consent's own recomputed overall state, so the current status is re-read live.
+        // authStatus is the per-authorization status (e.g. APPROVED/REJECTED), not
+        // necessarily
+        // the consent's own recomputed overall state, so the current status is re-read
+        // live.
         String previousStatus = takePreviousStatus();
         try {
             PrivilegedConsentManager consentManager = DPDPIdentityExtensionDataHolder.getInstance()
@@ -194,9 +222,12 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
             captureSnapshotFromReceipt(tenantDomain, consentId, actionType, consentManager, receipt);
 
             // An authorizer revoking their own authorization is still a revocation from the
-            // Event Notification Framework's perspective - fired on the dedicated consent.revoke
-            // topic, same as a direct revokeReceipt() call. Approve/reject are ordinary state
-            // transitions, covered by consent.update (its topic description already says "state
+            // Event Notification Framework's perspective - fired on the dedicated
+            // consent.revoke
+            // topic, same as a direct revokeReceipt() call. Approve/reject are ordinary
+            // state
+            // transitions, covered by consent.update (its topic description already says
+            // "state
             // transition notifications").
             if (actionType == ActionType.AUTHORIZE_REVOKE) {
                 DPDPLifecycleEventUtil.notify(l -> l.onConsentRevoked(tenantDomain, consentId, previousStatus,
@@ -206,9 +237,12 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
                         currentStatus, getActionBy(), DPDPConsentSnapshotBuilder.resolvePurposes(receipt)));
             }
 
-            // REJECTED/REVOKED can never resolve to EXPIRED (see DPDPConsentExpiryReconciler) -
-            // only ACTIVE/PENDING are worth tracking. Re-checked on every call, so a consent that
-            // moves back to ACTIVE/PENDING later (e.g. a rejected authorization gets re-approved)
+            // REJECTED/REVOKED can never resolve to EXPIRED (see
+            // DPDPConsentExpiryReconciler) -
+            // only ACTIVE/PENDING are worth tracking. Re-checked on every call, so a
+            // consent that
+            // moves back to ACTIVE/PENDING later (e.g. a rejected authorization gets
+            // re-approved)
             // becomes trackable again at that point.
             if (ACTIVE_STATUS.equals(currentStatus) || PENDING_STATUS.equals(currentStatus)) {
                 trackExpiry(consentId, tenantDomain, receipt.getExpiryTime());
@@ -221,9 +255,12 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     }
 
     /**
-     * {@code authStatus} matches {@link ConsentAuthorization.AuthorizationStatus}'s names
-     * (APPROVED/REJECTED/REVOKED) - anything else defaults to APPROVE rather than throwing, since
-     * this is invoked from a listener hook that must never let a mutation-blocking exception
+     * {@code authStatus} matches {@link ConsentAuthorization.AuthorizationStatus}'s
+     * names
+     * (APPROVED/REJECTED/REVOKED) - anything else defaults to APPROVE rather than
+     * throwing, since
+     * this is invoked from a listener hook that must never let a mutation-blocking
+     * exception
      * escape.
      */
     private static ActionType mapAuthorizeActionType(String authStatus) {
@@ -238,13 +275,17 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     }
 
     /**
-     * Reads and remembers the consent's status before a mutation that changes it, purely so the
-     * corresponding {@code post*} hook can report the correct {@code previousStatus} on its
-     * status-audit row - the snapshot itself is captured after the mutation completes (see
+     * Reads and remembers the consent's status before a mutation that changes it,
+     * purely so the
+     * corresponding {@code post*} hook can report the correct
+     * {@code previousStatus} on its
+     * status-audit row - the snapshot itself is captured after the mutation
+     * completes (see
      * {@link #captureSnapshot}), not here.
      */
     private void capturePreviousStatus(String consentId) {
 
+        PREVIOUS_STATUS.remove();
         try {
             Receipt receipt = DPDPIdentityExtensionDataHolder.getInstance().getPrivilegedConsentManager()
                     .getReceiptWithExtendedSchema(consentId);
@@ -255,8 +296,10 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     }
 
     /**
-     * Captures a fresh, post-mutation snapshot and returns the {@link Receipt} it fetched, so
-     * callers needing purposes for the lifecycle notification can reuse it instead of a second
+     * Captures a fresh, post-mutation snapshot and returns the {@link Receipt} it
+     * fetched, so
+     * callers needing purposes for the lifecycle notification can reuse it instead
+     * of a second
      * fetch. {@code null} if the fetch/capture failed (already logged here).
      */
     private Receipt captureSnapshot(String consentId, String tenantDomain, ActionType actionType) {
@@ -276,9 +319,12 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     }
 
     /**
-     * Shared by {@code postAuthorizeConsent} and {@code postUpdateConsent} - both already have the
-     * receipt in hand from resolving the current status, so it's reused here instead of a second,
-     * redundant fetch. Caught separately from the caller's own try block so a snapshot failure
+     * Shared by {@code postAuthorizeConsent} and {@code postUpdateConsent} - both
+     * already have the
+     * receipt in hand from resolving the current status, so it's reused here
+     * instead of a second,
+     * redundant fetch. Caught separately from the caller's own try block so a
+     * snapshot failure
      * can't also skip the expiry tracking that follows it there.
      */
     private void captureSnapshotFromReceipt(String tenantDomain, String consentId, ActionType actionType,
@@ -294,12 +340,15 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     }
 
     /**
-     * Delete is the one action where the receipt row is gone immediately afterward, so this is
-     * the only chance to capture anything - previous-status tracking and the snapshot itself have
+     * Delete is the one action where the receipt row is gone immediately afterward,
+     * so this is
+     * the only chance to capture anything - previous-status tracking and the
+     * snapshot itself have
      * to share this single pre-mutation read.
      */
     private void capturePreDeleteSnapshot(String consentId, String tenantDomain) {
 
+        PREVIOUS_STATUS.remove();
         try {
             PrivilegedConsentManager consentManager = DPDPIdentityExtensionDataHolder.getInstance()
                     .getPrivilegedConsentManager();
