@@ -300,32 +300,31 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
      * fetched, so
      * callers needing purposes for the lifecycle notification can reuse it instead
      * of a second
-     * fetch. {@code null} if the fetch/capture failed (already logged here).
+     * fetch. {@code null} if the receipt fetch failed (already logged here).
      */
     private Receipt captureSnapshot(String consentId, String tenantDomain, ActionType actionType) {
 
+        PrivilegedConsentManager consentManager;
+        Receipt receipt;
         try {
-            PrivilegedConsentManager consentManager = DPDPIdentityExtensionDataHolder.getInstance()
-                    .getPrivilegedConsentManager();
-            Receipt receipt = consentManager.getReceiptWithExtendedSchema(consentId);
-            List<ConsentAuthorization> authorizations = consentManager.getConsentAuthorizations(consentId);
-            storeSnapshot(tenantDomain, consentId, actionType, receipt, authorizations);
-            return receipt;
+            consentManager = DPDPIdentityExtensionDataHolder.getInstance().getPrivilegedConsentManager();
+            receipt = consentManager.getReceiptWithExtendedSchema(consentId);
         } catch (Exception e) {
-            LOG.error("Error capturing a '" + actionType + "' consent history snapshot for consent: "
-                    + LogSanitizer.sanitize(consentId), e);
+            LOG.error("Error reading receipt for consent: " + LogSanitizer.sanitize(consentId), e);
             return null;
         }
+
+        captureSnapshotFromReceipt(tenantDomain, consentId, actionType, consentManager, receipt);
+        return receipt;
     }
 
     /**
-     * Shared by {@code postAuthorizeConsent} and {@code postUpdateConsent} - both
-     * already have the
-     * receipt in hand from resolving the current status, so it's reused here
-     * instead of a second,
+     * Shared by {@code captureSnapshot}, {@code postAuthorizeConsent}, and
+     * {@code postUpdateConsent} - each already has the receipt in hand from resolving
+     * the current status or initial fetch, so it's reused here instead of a second,
      * redundant fetch. Caught separately from the caller's own try block so a
-     * snapshot failure
-     * can't also skip the expiry tracking that follows it there.
+     * snapshot failure can't also skip the expiry tracking or lifecycle notification
+     * that follows it there.
      */
     private void captureSnapshotFromReceipt(String tenantDomain, String consentId, ActionType actionType,
             PrivilegedConsentManager consentManager, Receipt receipt) {
