@@ -21,6 +21,7 @@ package org.wso2.dpdp.accelerator.identity.extensions.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
 import org.wso2.dpdp.accelerator.identity.extensions.internal.DPDPIdentityExtensionDataHolder;
@@ -72,6 +73,30 @@ public final class EventNotificationTopicProvisioner {
             throw new StratosException("Failed to provision DPDP system topics " + failedTopics
                     + " for tenant: " + sanitizedOrgId, firstFailure);
         }
+    }
+
+    /**
+     * Reconciles default system topics across all existing organizations present in {@code WSO2DPDP_DB.TOPIC}
+     * at server startup when both {@code auto_create_enabled} and {@code reconcile_on_startup_enabled} are enabled.
+     */
+    public static void reconcileExistingTenantSystemTopics() {
+
+        DPDPConfigurationService configService =
+                DPDPIdentityExtensionDataHolder.getInstance().getConfigurationService();
+        if (configService == null
+                || !configService.isEventNotificationSystemTopicsAutoCreateEnabled()
+                || !configService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()) {
+            LOG.debug("Skipping startup system topic reconciliation across existing tenants.");
+            return;
+        }
+
+        TopicService topicService = DPDPIdentityExtensionDataHolder.getInstance().getTopicService();
+        if (topicService == null) {
+            LOG.warn("TopicService is unavailable; skipping startup system topic reconciliation.");
+            return;
+        }
+
+        topicService.reconcileSystemTopicsAcrossTenants();
     }
 
     private static String sanitize(String value) {

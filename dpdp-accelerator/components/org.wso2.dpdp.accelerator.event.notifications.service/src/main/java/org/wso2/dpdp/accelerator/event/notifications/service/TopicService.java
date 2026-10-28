@@ -26,6 +26,8 @@ public interface TopicService {
 
     TopicDTO ensureSystemTopic(String orgId, String name, String description);
 
+    void reconcileSystemTopicsAcrossTenants();
+
     PaginatedResult<TopicDTO> listTopics(String orgId, String status, String search, int limit, int offset,
             String sort);
 

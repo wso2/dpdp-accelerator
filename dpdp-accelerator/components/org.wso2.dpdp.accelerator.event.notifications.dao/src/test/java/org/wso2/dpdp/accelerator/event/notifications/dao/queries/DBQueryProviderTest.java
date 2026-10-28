@@ -32,6 +32,9 @@ public class DBQueryProviderTest {
                 instanceof EventNotificationMysqlDBQueries);
         Assert.assertTrue(EventNotificationQueryFactory.getQueryProvider("h2") instanceof EventNotificationH2DBQueries);
         Assert.assertTrue(EventNotificationQueryFactory.getQueryProvider() instanceof EventNotificationH2DBQueries);
+        EventNotificationCommonDBQueries common = new EventNotificationCommonDBQueries();
+        Assert.assertTrue(common.getPromoteUserTopicsToSystemQuery(2).contains("INITIATED_BY = 'system'"));
+        Assert.assertTrue(common.getFindOrgsWithMissingSystemTopicsQuery(2).contains("GROUP BY ORG_ID"));
     }
 
     @Test

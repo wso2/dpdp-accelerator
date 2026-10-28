@@ -249,6 +249,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 15);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(service.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(service.isEventNotificationSystemTopicsReconcileOnStartupEnabled());
     }
 
     @Test
@@ -286,6 +287,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 20);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 100);
         assertTrue(!service.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(service.isEventNotificationSystemTopicsReconcileOnStartupEnabled());
     }
 
     @Test
@@ -365,6 +367,11 @@ public class DPDPConfigParserTest {
                     service::isEventNotificationPrivateNetworkCallbackTargetsAllowed);
             values.put("EventNotifications.PayloadSigning.Enabled", "bad");
             expectThrows(IllegalStateException.class, service::isEventNotificationPayloadSigningEnabled);
+            values.put("EventNotifications.SystemTopics.ReconcileOnStartupEnabled", "false");
+            assertTrue(!service.isEventNotificationSystemTopicsReconcileOnStartupEnabled());
+            values.put("EventNotifications.SystemTopics.ReconcileOnStartupEnabled", "bad");
+            expectThrows(IllegalStateException.class,
+                    service::isEventNotificationSystemTopicsReconcileOnStartupEnabled);
             values.put("EventNotifications.PendingSubscriptionRecoveryIntervalSeconds", "0");
             expectThrows(IllegalStateException.class,
                     service::getEventNotificationPendingSubscriptionRecoveryIntervalSeconds);

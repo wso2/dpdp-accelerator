@@ -323,6 +323,53 @@ public class TopicDAOImpl implements TopicDAO {
         return result;
     }
 
+    @Override
+    public int promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames) {
+        if (conn == null) {
+            throw new IllegalArgumentException("Connection cannot be null.");
+        }
+        if (lowerTopicNames == null || lowerTopicNames.isEmpty()) {
+            return 0;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(
+                getQueries(conn).getPromoteUserTopicsToSystemQuery(lowerTopicNames.size()))) {
+            for (int i = 0; i < lowerTopicNames.size(); i++) {
+                ps.setString(i + 1, lowerTopicNames.get(i));
+            }
+            return ps.executeUpdate();
+        } catch (SQLException e) {
+            throw new EventNotificationDaoException(
+                    EventNotificationCommonConstants.ERROR_PROMOTING_USER_TOPICS_TO_SYSTEM, e);
+        }
+    }
+
+    @Override
+    public List<String> getOrgsWithMissingSystemTopics(Connection conn, List<String> lowerTopicNames) {
+        if (conn == null) {
+            throw new IllegalArgumentException("Connection cannot be null.");
+        }
+        List<String> orgIds = new ArrayList<>();
+        if (lowerTopicNames == null || lowerTopicNames.isEmpty()) {
+            return orgIds;
+        }
+        try (PreparedStatement ps = conn.prepareStatement(
+                getQueries(conn).getFindOrgsWithMissingSystemTopicsQuery(lowerTopicNames.size()))) {
+            for (int i = 0; i < lowerTopicNames.size(); i++) {
+                ps.setString(i + 1, lowerTopicNames.get(i));
+            }
+            ps.setInt(lowerTopicNames.size() + 1, lowerTopicNames.size());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    orgIds.add(rs.getString(EventNotificationDBColumns.ORG_ID));
+                }
+            }
+        } catch (SQLException e) {
+            throw new EventNotificationDaoException(
+                    EventNotificationCommonConstants.ERROR_FINDING_ORGS_WITH_MISSING_SYSTEM_TOPICS, e);
+        }
+        return orgIds;
+    }
+
     private Topic mapTopic(ResultSet rs) throws SQLException {
         return new Topic(
                 rs.getString(EventNotificationDBColumns.TOPIC_ID),

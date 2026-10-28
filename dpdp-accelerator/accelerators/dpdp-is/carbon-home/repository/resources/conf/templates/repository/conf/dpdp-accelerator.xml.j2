@@ -156,10 +156,19 @@
         <WorkerShutdownTimeoutSeconds>5</WorkerShutdownTimeoutSeconds>
         {% endif %}
         <SystemTopics>
-            {% if dpdp_accelerator.event_notifications.system_topics_auto_create_enabled is defined %}
+            {% if dpdp_accelerator.event_notifications.system_topics.auto_create_enabled is defined %}
+            <AutoCreateEnabled>{{dpdp_accelerator.event_notifications.system_topics.auto_create_enabled}}</AutoCreateEnabled>
+            {% elif dpdp_accelerator.event_notifications.system_topics_auto_create_enabled is defined %}
             <AutoCreateEnabled>{{dpdp_accelerator.event_notifications.system_topics_auto_create_enabled}}</AutoCreateEnabled>
             {% else %}
             <AutoCreateEnabled>true</AutoCreateEnabled>
+            {% endif %}
+            {% if dpdp_accelerator.event_notifications.system_topics.reconcile_on_startup_enabled is defined %}
+            <ReconcileOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics.reconcile_on_startup_enabled}}</ReconcileOnStartupEnabled>
+            {% elif dpdp_accelerator.event_notifications.reconcile_on_startup_enabled is defined %}
+            <ReconcileOnStartupEnabled>{{dpdp_accelerator.event_notifications.reconcile_on_startup_enabled}}</ReconcileOnStartupEnabled>
+            {% else %}
+            <ReconcileOnStartupEnabled>true</ReconcileOnStartupEnabled>
             {% endif %}
         </SystemTopics>
         <PayloadSigning>

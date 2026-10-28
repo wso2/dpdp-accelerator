@@ -291,6 +291,13 @@ public final class DPDPConfigParser {
                 .map(Boolean::parseBoolean).orElse(true);
     }
 
+    public boolean isEventNotificationSystemTopicsReconcileOnStartupEnabled() {
+
+        return getValidatedBoolean(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_SYSTEM_TOPICS_RECONCILE_ON_STARTUP_ENABLED,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SYSTEM_TOPICS_RECONCILE_ON_STARTUP_ENABLED);
+    }
+
     public boolean isEventNotificationLifecycleEventsPublishingEnabled() {
 
         return getConfigurationAsString(DPDPCommonConstants.EVENT_NOTIFICATIONS_LIFECYCLE_EVENTS_PUBLISHING_ENABLED)

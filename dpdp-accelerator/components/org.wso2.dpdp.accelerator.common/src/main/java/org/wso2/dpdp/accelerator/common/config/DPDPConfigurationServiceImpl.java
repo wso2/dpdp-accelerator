@@ -231,6 +231,14 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
+    public boolean isEventNotificationSystemTopicsReconcileOnStartupEnabled() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SYSTEM_TOPICS_RECONCILE_ON_STARTUP_ENABLED
+                : configParser.isEventNotificationSystemTopicsReconcileOnStartupEnabled();
+    }
+
+    @Override
     public boolean isEventNotificationLifecycleEventsPublishingEnabled() {
 
         return configParser == null || configParser.isEventNotificationLifecycleEventsPublishingEnabled();

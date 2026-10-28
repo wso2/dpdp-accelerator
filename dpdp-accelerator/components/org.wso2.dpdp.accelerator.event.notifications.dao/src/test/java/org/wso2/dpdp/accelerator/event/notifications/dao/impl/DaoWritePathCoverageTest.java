@@ -152,6 +152,9 @@ public class DaoWritePathCoverageTest {
         TopicDAOImpl topicDao = new TopicDAOImpl();
         assertTrue(topicDao.addTopic(connection, new Topic("t-1", "org-1", "accounts", "desc", "active")));
         assertTrue(topicDao.updateTopicStatus(connection, "t-1", "org-1", TopicStatus.ACTIVE));
+        assertEquals(topicDao.promoteUserTopicsToSystem(connection, Arrays.asList("consent.create")), 1);
+        assertEquals(topicDao.promoteUserTopicsToSystem(connection, Collections.emptyList()), 0);
+        assertEquals(topicDao.promoteUserTopicsToSystem(connection, null), 0);
         Subscription subscription = new Subscription();
         subscription.setSubscriptionId("s-1");
         subscription.setName("sub-write-coverage");
@@ -200,6 +203,8 @@ public class DaoWritePathCoverageTest {
         expectThrows(RuntimeException.class, () -> topics.addTopic(connection,
                 new Topic("t", "org", "name", "desc", "active")));
         expectThrows(RuntimeException.class, () -> topics.updateTopicStatus(connection, "t", "org", TopicStatus.ACTIVE));
+        expectThrows(RuntimeException.class,
+                () -> topics.promoteUserTopicsToSystem(connection, Arrays.asList("consent.create")));
         SubscriptionDAOImpl subscriptions = new SubscriptionDAOImpl();
         expectThrows(RuntimeException.class, () -> subscriptions.updateSubscriptionStatus(connection, "s", "org", "active"));
         expectThrows(RuntimeException.class, () -> subscriptions.updateSubscriptionStatus(connection, "s", "org", "pending", "active"));
@@ -221,6 +226,10 @@ public class DaoWritePathCoverageTest {
         assertTrue(topics.updateTopicStatus(connection, "t", "org", TopicStatus.ACTIVE));
         expectThrows(IllegalArgumentException.class,
                 () -> topics.getTopicByOrgAndName(null, "org", "name"));
+        expectThrows(IllegalArgumentException.class,
+                () -> topics.promoteUserTopicsToSystem(null, Arrays.asList("consent.create")));
+        expectThrows(IllegalArgumentException.class,
+                () -> topics.getOrgsWithMissingSystemTopics(null, Arrays.asList("consent.create")));
 
         SubscriptionDAOImpl subscriptions = new SubscriptionDAOImpl();
         assertTrue(subscriptions.updateSubscriptionStatus(connection, "s", "org", "active"));

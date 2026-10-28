@@ -54,4 +54,16 @@ public interface TopicDAO {
      * missing names are the caller's responsibility to detect via a set-difference.
      */
     Map<String, Topic> getTopicsByOrgAndNames(Connection conn, String orgId, List<String> lowerNames);
+
+    /**
+     * Promotes active non-system topics whose lowercased names match any of the given default system topic names
+     * to {@code INITIATED_BY = 'system'} across all organizations.
+     */
+    int promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames);
+
+    /**
+     * Returns organization IDs present in {@code TOPIC} that have fewer than {@code lowerTopicNames.size()}
+     * active system topics matching the given lowercased default system topic names.
+     */
+    List<String> getOrgsWithMissingSystemTopics(Connection conn, List<String> lowerTopicNames);
 }

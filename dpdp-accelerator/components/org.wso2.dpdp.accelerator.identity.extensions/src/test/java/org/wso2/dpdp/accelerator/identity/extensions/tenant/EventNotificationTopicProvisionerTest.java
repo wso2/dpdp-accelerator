@@ -23,14 +23,17 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
 import org.wso2.dpdp.accelerator.identity.extensions.internal.DPDPIdentityExtensionDataHolder;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.fail;
@@ -40,11 +43,15 @@ public class EventNotificationTopicProvisionerTest {
     @Mock
     private TopicService topicService;
 
+    @Mock
+    private DPDPConfigurationService configurationService;
+
     @BeforeMethod
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
         DPDPIdentityExtensionDataHolder.getInstance().setTopicService(topicService);
+        DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(configurationService);
     }
 
     @Test
@@ -76,5 +83,52 @@ public class EventNotificationTopicProvisionerTest {
 
         verify(topicService, times(DefaultTopic.values().length))
                 .ensureSystemTopic(anyString(), anyString(), anyString());
+    }
+
+    @Test
+    public void testReconcileExistingTenantSystemTopicsDelegatesWhenEnabled() {
+
+        when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(true);
+
+        EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+
+        verify(topicService).reconcileSystemTopicsAcrossTenants();
+    }
+
+    @Test
+    public void testReconcileExistingTenantSystemTopicsSkipsWhenAutoCreateDisabled() {
+
+        when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(false);
+        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(true);
+
+        EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants();
+    }
+
+    @Test
+    public void testReconcileExistingTenantSystemTopicsSkipsWhenReconcileOnStartupDisabled() {
+
+        when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(false);
+
+        EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants();
+    }
+
+    @Test
+    public void testReconcileExistingTenantSystemTopicsSkipsWhenServicesNull() {
+
+        DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(null);
+        EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants();
+
+        DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(configurationService);
+        when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsReconcileOnStartupEnabled()).thenReturn(true);
+        DPDPIdentityExtensionDataHolder.getInstance().setTopicService(null);
+        EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
     }
 }

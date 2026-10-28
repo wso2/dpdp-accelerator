@@ -18,7 +18,10 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.service.impl;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.Initiator;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException;
@@ -35,10 +38,13 @@ import org.wso2.dpdp.accelerator.event.notifications.service.util.EventNotificat
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.UUID;
 
 public class TopicServiceImpl implements TopicService {
+
+    private static final Log LOG = LogFactory.getLog(TopicServiceImpl.class);
 
     private TopicDAO topicDAO;
 
@@ -124,6 +130,41 @@ public class TopicServiceImpl implements TopicService {
             });
         } catch (EventNotificationDuplicateResourceException e) {
             return recoverConcurrentlyCreatedSystemTopic(normalizedOrgId, normalizedName);
+        }
+    }
+
+    @Override
+    public void reconcileSystemTopicsAcrossTenants() {
+        List<String> lowerDefaultTopicNames = new ArrayList<>(DefaultTopic.values().length);
+        for (DefaultTopic defaultTopic : DefaultTopic.values()) {
+            lowerDefaultTopicNames.add(defaultTopic.getName().toLowerCase(Locale.ROOT));
+        }
+
+        List<String> incompleteOrgs = DatabaseUtils.executeInTransaction(conn -> {
+            int promoted = topicDAO.promoteUserTopicsToSystem(conn, lowerDefaultTopicNames);
+            if (promoted > 0) {
+                LOG.info("Promoted " + promoted
+                        + " user-created default topic(s) to system topics during startup reconciliation.");
+            }
+            return topicDAO.getOrgsWithMissingSystemTopics(conn, lowerDefaultTopicNames);
+        });
+
+        if (incompleteOrgs == null || incompleteOrgs.isEmpty()) {
+            return;
+        }
+
+        for (String orgId : incompleteOrgs) {
+            if (orgId == null || orgId.trim().isEmpty()) {
+                continue;
+            }
+            for (DefaultTopic defaultTopic : DefaultTopic.values()) {
+                try {
+                    ensureSystemTopic(orgId, defaultTopic.getName(), defaultTopic.getDescription());
+                } catch (Exception e) {
+                    LOG.error("Failed to reconcile system topic '" + defaultTopic.getName()
+                            + "' for organization: " + orgId.replaceAll("[\r\n]", ""), e);
+                }
+            }
         }
     }
 

@@ -61,6 +61,10 @@ public class DaoReadPathCoverageTest {
         topics.getTopicById(connection, "missing", "org");
         topics.getTopicByOrgAndName(connection, "org", "missing");
         topics.listTopics(connection, "org", null, null, 20, 0, null);
+        when(resultSet.next()).thenReturn(true, false);
+        topics.getOrgsWithMissingSystemTopics(connection, Collections.singletonList("consent.create"));
+        topics.getOrgsWithMissingSystemTopics(connection, Collections.emptyList());
+        topics.getOrgsWithMissingSystemTopics(connection, null);
 
         EventDAOImpl events = new EventDAOImpl();
         events.getEventById(connection, "missing", "org");
@@ -100,6 +104,8 @@ public class DaoReadPathCoverageTest {
         expectThrows(RuntimeException.class, () -> topics.getTopicById(connection, "topic", "org"));
         expectThrows(RuntimeException.class, () -> topics.getTopicByOrgAndName(connection, "org", "name"));
         expectThrows(RuntimeException.class, () -> topics.listTopics(connection, "org", null, null, 20, 0, null));
+        expectThrows(RuntimeException.class,
+                () -> topics.getOrgsWithMissingSystemTopics(connection, Collections.singletonList("consent.create")));
 
         EventDAOImpl events = new EventDAOImpl();
         expectThrows(RuntimeException.class, () -> events.getEventById(connection, "event", "org"));
