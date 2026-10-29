@@ -542,6 +542,7 @@ public class SubscriptionServiceImplTest {
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
         public void testCreateWebhookSubscriptionSameCallbackFailsWithConflict() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -562,6 +563,7 @@ public class SubscriptionServiceImplTest {
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
         public void testCreatePollSubscriptionWhenWebhookExistsFailsWithConflict() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -581,6 +583,7 @@ public class SubscriptionServiceImplTest {
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
         public void testCreateWebhookSubscriptionWhenPollExistsFailsWithConflict() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -593,6 +596,63 @@ public class SubscriptionServiceImplTest {
                 FilterDTO filter = new FilterDTO(PurposeFilterMode.ALL, Collections.emptyList());
                 DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.WEBHOOK,
                                 "https://93.184.216.34:443/callback", "secret2");
+
+                subscriptionService.createMultiTopicSubscription("org1", null,
+                                "sub-name", Collections.singletonList("user-consent"), filter, delivery);
+        }
+
+        @Test
+        public void testCreatePollSubscriptionWhenWebhookExistsSucceedsWhenConstraintChecksDisabled() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(false);
+                Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
+                Map<String, Topic> resolved = new HashMap<>();
+                resolved.put("user-consent", topic);
+                when(topicDAO.getTopicsByOrgAndNames(any(Connection.class), eq("org1"), any())).thenReturn(resolved);
+                doNothing().when(subscriptionDAO).addSubscription(any(Connection.class), any(Subscription.class));
+
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.ALL, Collections.emptyList());
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.POLL, null, "secret2");
+
+                SubscriptionDTO created = subscriptionService.createMultiTopicSubscription("org1", null,
+                                "sub-name", Collections.singletonList("user-consent"), filter, delivery);
+                assertNotNull(created);
+                assertEquals(created.getName(), "sub-name");
+                verify(subscriptionDAO, never()).getLiveSubscriptionsByOrgAndTopics(any(Connection.class), any(), any());
+        }
+
+        @Test
+        public void testCreateWebhookSubscriptionSameCallbackSucceedsWhenConstraintChecksDisabled() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(false);
+                Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
+                Map<String, Topic> resolved = new HashMap<>();
+                resolved.put("user-consent", topic);
+                when(topicDAO.getTopicsByOrgAndNames(any(Connection.class), eq("org1"), any())).thenReturn(resolved);
+                doNothing().when(subscriptionDAO).addSubscription(any(Connection.class), any(Subscription.class));
+
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.ALL, Collections.emptyList());
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.WEBHOOK,
+                                "https://93.184.216.34:443/callback1", "secret2");
+
+                SubscriptionDTO created = subscriptionService.createMultiTopicSubscription("org1", null,
+                                "sub-name", Collections.singletonList("user-consent"), filter, delivery);
+                assertNotNull(created);
+                assertEquals(created.getName(), "sub-name");
+                verify(subscriptionDAO, never()).getLiveSubscriptionsByOrgAndTopics(any(Connection.class), any(), any());
+        }
+
+        @Test(expectedExceptions = EventNotificationServiceException.class)
+        public void testCreateSubscriptionDuplicateActiveNameFailsEvenWhenConstraintChecksDisabled() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(false);
+                Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
+                Map<String, Topic> resolved = new HashMap<>();
+                resolved.put("user-consent", topic);
+                when(topicDAO.getTopicsByOrgAndNames(any(Connection.class), eq("org1"), any())).thenReturn(resolved);
+                doThrow(new org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException(
+                                "Subscription name already exists")).when(subscriptionDAO)
+                                .addSubscription(any(Connection.class), any(Subscription.class));
+
+                FilterDTO filter = new FilterDTO(PurposeFilterMode.ALL, Collections.emptyList());
+                DeliveryConfigDTO delivery = new DeliveryConfigDTO(DeliveryMode.POLL, null, "secret2");
 
                 subscriptionService.createMultiTopicSubscription("org1", null,
                                 "sub-name", Collections.singletonList("user-consent"), filter, delivery);

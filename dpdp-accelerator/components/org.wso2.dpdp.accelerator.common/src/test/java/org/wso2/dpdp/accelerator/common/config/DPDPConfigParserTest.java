@@ -38,9 +38,12 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.Assert.expectThrows;
 
 /**
- * Writes a real {@code dpdp-accelerator.xml} to a temp "carbon config dir" and parses it for
- * real - {@link DPDPConfigParser} is a singleton read once per JVM, so this class exercises
- * both the configured-value and default-fallback paths from the same instance rather than
+ * Writes a real {@code dpdp-accelerator.xml} to a temp "carbon config dir" and
+ * parses it for
+ * real - {@link DPDPConfigParser} is a singleton read once per JVM, so this
+ * class exercises
+ * both the configured-value and default-fallback paths from the same instance
+ * rather than
  * trying to re-initialize it under different content.
  */
 public class DPDPConfigParserTest {
@@ -50,8 +53,7 @@ public class DPDPConfigParserTest {
     private static final long CUSTOM_ATTACHMENT_MAX_SIZE_BYTES = 2048L;
     private static final int CUSTOM_ATTACHMENT_MAX_FILES_PER_UPLOAD = 3;
     private static final String CUSTOM_DATASOURCE_NAME = "jdbc/CustomDPDPDataSource";
-    private static final Set<Integer> CUSTOM_ALLOWED_CALLBACK_PORTS =
-            new HashSet<>(Arrays.asList(80, 9443));
+    private static final Set<Integer> CUSTOM_ALLOWED_CALLBACK_PORTS = new HashSet<>(Arrays.asList(80, 9443));
 
     @BeforeClass
     public void writeConfigFileAndSetCarbonConfigDir() throws IOException {
@@ -250,6 +252,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(service.isEventNotificationPollingRequestHmacValidationEnabled());
         assertTrue(service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
+        assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
     }
 
     @Test
@@ -288,6 +291,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 100);
         assertTrue(!service.isEventNotificationPollingRequestHmacValidationEnabled());
         assertTrue(service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
+        assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
     }
 
     @Test
@@ -325,37 +329,37 @@ public class DPDPConfigParserTest {
             assertEquals(service.getComplaintsAttachmentMaxSizeBytes(), 2048L);
             assertEquals(service.getComplaintsAttachmentMaxFilesPerUpload(), 3);
             assertEquals(service.getEventNotificationThreadPoolSize(), 8);
-        assertEquals(service.getEventNotificationBaseBackoffSeconds(), 12L);
-        assertEquals(service.getEventNotificationMaxRetries(), 3);
-        assertTrue(!service.isEventNotificationHttpCallbackUrlAllowed());
-        assertEquals(service.getEventNotificationAllowedCallbackPorts(), CUSTOM_ALLOWED_CALLBACK_PORTS);
-        assertTrue(service.isEventNotificationPrivateNetworkCallbackTargetsAllowed());
-        assertEquals(service.getEventNotificationDeliveryWorkerBatchSize(), 10);
-        assertEquals(service.getEventNotificationDeliveryWorkerPollSeconds(), 2);
-        assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 0);
-        assertEquals(service.getEventNotificationMaxVerificationResponseBodyBytes(), 2048);
-        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds(), 0);
-        assertEquals(service.getEventNotificationBackgroundWorkerInitialDelaySeconds(), 0);
-        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds(), 30);
-        assertEquals(service.getEventNotificationPendingSubscriptionRecoveryBatchSize(), 20);
-        assertEquals(service.getEventNotificationWorkerShutdownTimeoutSeconds(), 5);
-        assertTrue(!service.isEventNotificationPayloadSigningEnabled());
-        assertEquals(service.getEventNotificationPayloadSigningAudience(), "configured-audience");
+            assertEquals(service.getEventNotificationBaseBackoffSeconds(), 12L);
+            assertEquals(service.getEventNotificationMaxRetries(), 3);
+            assertTrue(!service.isEventNotificationHttpCallbackUrlAllowed());
+            assertEquals(service.getEventNotificationAllowedCallbackPorts(), CUSTOM_ALLOWED_CALLBACK_PORTS);
+            assertTrue(service.isEventNotificationPrivateNetworkCallbackTargetsAllowed());
+            assertEquals(service.getEventNotificationDeliveryWorkerBatchSize(), 10);
+            assertEquals(service.getEventNotificationDeliveryWorkerPollSeconds(), 2);
+            assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 0);
+            assertEquals(service.getEventNotificationMaxVerificationResponseBodyBytes(), 2048);
+            assertEquals(service.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds(), 0);
+            assertEquals(service.getEventNotificationBackgroundWorkerInitialDelaySeconds(), 0);
+            assertEquals(service.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds(), 30);
+            assertEquals(service.getEventNotificationPendingSubscriptionRecoveryBatchSize(), 20);
+            assertEquals(service.getEventNotificationWorkerShutdownTimeoutSeconds(), 5);
+            assertTrue(!service.isEventNotificationPayloadSigningEnabled());
+            assertEquals(service.getEventNotificationPayloadSigningAudience(), "configured-audience");
 
-        values.put("Complaints.StatutoryDuePeriodDays", "0");
-        expectThrows(IllegalStateException.class, service::getComplaintsStatutoryDuePeriodDays);
-        values.put("Complaints.StatutoryDuePeriodDays", String.valueOf(CUSTOM_STATUTORY_DUE_PERIOD_DAYS));
+            values.put("Complaints.StatutoryDuePeriodDays", "0");
+            expectThrows(IllegalStateException.class, service::getComplaintsStatutoryDuePeriodDays);
+            values.put("Complaints.StatutoryDuePeriodDays", String.valueOf(CUSTOM_STATUTORY_DUE_PERIOD_DAYS));
 
-        values.put("Complaints.AttachmentMaxSizeBytes", "-1");
-        expectThrows(IllegalStateException.class, service::getComplaintsAttachmentMaxSizeBytes);
-        values.put("Complaints.AttachmentMaxSizeBytes", "2048");
+            values.put("Complaints.AttachmentMaxSizeBytes", "-1");
+            expectThrows(IllegalStateException.class, service::getComplaintsAttachmentMaxSizeBytes);
+            values.put("Complaints.AttachmentMaxSizeBytes", "2048");
 
-        values.put("Complaints.AttachmentMaxFilesPerUpload", "0");
-        expectThrows(IllegalStateException.class, service::getComplaintsAttachmentMaxFilesPerUpload);
-        values.put("Complaints.AttachmentMaxFilesPerUpload", "3");
+            values.put("Complaints.AttachmentMaxFilesPerUpload", "0");
+            expectThrows(IllegalStateException.class, service::getComplaintsAttachmentMaxFilesPerUpload);
+            values.put("Complaints.AttachmentMaxFilesPerUpload", "3");
 
-        values.put("EventNotifications.ThreadPoolSize", "0");
-        expectThrows(IllegalStateException.class, service::getEventNotificationThreadPoolSize);
+            values.put("EventNotifications.ThreadPoolSize", "0");
+            expectThrows(IllegalStateException.class, service::getEventNotificationThreadPoolSize);
             values.put("EventNotifications.ThreadPoolSize", "bad");
             expectThrows(IllegalStateException.class, service::getEventNotificationThreadPoolSize);
             values.put("EventNotifications.AllowHttpCallbackUrl", "bad");
@@ -372,6 +376,13 @@ public class DPDPConfigParserTest {
             values.put("EventNotifications.SystemTopics.VerifyOnStartupEnabled", "bad");
             expectThrows(IllegalStateException.class,
                     service::isEventNotificationSystemTopicsVerifyOnStartupEnabled);
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecks", "true");
+            assertTrue(service.isEventNotificationSubscriptionConstraintChecksEnabled());
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecks", "false");
+            assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecks", "bad");
+            expectThrows(IllegalStateException.class,
+                    service::isEventNotificationSubscriptionConstraintChecksEnabled);
             values.put("EventNotifications.PendingSubscriptionRecoveryIntervalSeconds", "0");
             expectThrows(IllegalStateException.class,
                     service::getEventNotificationPendingSubscriptionRecoveryIntervalSeconds);
