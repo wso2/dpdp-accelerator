@@ -98,6 +98,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         subscription.setDeliveryMode(newDelMode.getValue());
         subscription.setStatus(newStatus.getValue());
         Set<String> newSet = PurposeOverlapUtils.canonicalize(subscription.getPurposes());
+        subscription.setPurposes(new ArrayList<>(newSet));
         String purposeSetHash = PurposeOverlapUtils.computePurposeSetHash(newMode, subscription.getPurposes());
         subscription.setPurposeSetHash(purposeSetHash);
 
@@ -219,10 +220,10 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                     topicPs.executeBatch();
                 }
 
-                if (subscription.getPurposes() != null && !subscription.getPurposes().isEmpty()) {
+                if (newSet != null && !newSet.isEmpty()) {
                     try (PreparedStatement purposePs = conn
                             .prepareStatement(queries.getAddSubscriptionPurposesQuery())) {
-                        for (String purpose : subscription.getPurposes()) {
+                        for (String purpose : newSet) {
                             purposePs.setString(1, subscription.getSubscriptionId());
                             purposePs.setString(2, subscription.getOrgId());
                             purposePs.setString(3, purpose.trim());

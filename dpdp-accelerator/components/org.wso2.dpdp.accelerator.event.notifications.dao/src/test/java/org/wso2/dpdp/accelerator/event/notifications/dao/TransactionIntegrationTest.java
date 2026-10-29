@@ -161,6 +161,41 @@ public class TransactionIntegrationTest {
     }
 
     @Test
+    public void addSubscriptionWithDuplicateAndMixedCasePurposesSucceeds() throws Exception {
+        TopicDAOImpl topics = new TopicDAOImpl();
+        topics.addTopic(connection, new Topic("topic-dup-purposes", "org-1", "dup-p", "", TopicStatus.ACTIVE.getValue()));
+        connection.commit();
+
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionId("sub-dup-p");
+        subscription.setName("sub-dup-p-name");
+        subscription.setOrgId("org-1");
+        subscription.setGroupId("group-1");
+        subscription.setTopicIds(Collections.singletonList("topic-dup-purposes"));
+        subscription.setPurposeFilterMode("SPECIFIC");
+        subscription.setPurposes(java.util.Arrays.asList("profile", "ACCOUNT", "account"));
+        subscription.setDeliveryMode("WEBHOOK");
+        subscription.setCallbackUrl("https://example.com/callback");
+        subscription.setSharedSecret("secret");
+        subscription.setStatus("PENDING");
+
+        new SubscriptionDAOImpl().addSubscription(connection, subscription);
+        connection.commit();
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT PURPOSE_NAME FROM SUBSCRIPTION_PURPOSE WHERE SUBSCRIPTION_ID = ? ORDER BY PURPOSE_NAME")) {
+            ps.setString(1, "sub-dup-p");
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next());
+                assertEquals(rs.getString(1), "account");
+                assertTrue(rs.next());
+                assertEquals(rs.getString(1), "profile");
+                assertFalse(rs.next());
+            }
+        }
+    }
+
+    @Test
     public void manualRetryCanBePreparedRepeatedlyWheneverFailed() throws Exception {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         new TopicDAOImpl().addTopic(connection,
