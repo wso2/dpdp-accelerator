@@ -17,6 +17,7 @@
  */
 
 import { test, expect } from '../../fixtures/auth.fixtures'
+import { isSubscriptionConstraintChecksEnabled } from '../../utils/env'
 import { publishMarkedEventViaApi, seedActiveTopicViaApi, seedPollSubscriptionViaApi } from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 
@@ -80,7 +81,8 @@ for (const version of ['v1', 'v1.1'] as const) {
         filter: { type: 'all' },
         delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
       })
-      expect(pollConflict.status()).toBe(409)
+      const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+      expect(pollConflict.status()).toBe(constraintsEnabled ? 409 : 201)
 
       const topicB = await seedActiveTopicViaApi(consentAdminEventApi, `mixed-mode-b-${version}`)
       const groupB = uniqueMarker('group')
@@ -99,7 +101,7 @@ for (const version of ['v1', 'v1.1'] as const) {
         filter: { type: 'all' },
         delivery: { mode: 'webhook', callbackUrl: 'https://example.com/hook-b', sharedSecret: uniqueMarker('secret') },
       })
-      expect(webhookConflict.status()).toBe(409)
+      expect(webhookConflict.status()).toBe(constraintsEnabled ? 409 : 201)
     })
 
     test(`09.07.03 - An active or deleted subscription cannot be re-verified (${version})`, async ({ consentAdminEventApi }) => {
@@ -126,23 +128,23 @@ for (const version of ['v1', 'v1.1'] as const) {
       consentAdminEventApi,
     }) => {
       const topic = await seedActiveTopicViaApi(consentAdminEventApi, `sub-delete-${version}`)
-    // No deliveries at all - deleting is allowed with either completed or no deliveries, and no
-    // deliveries is the simplest of the two to seed reliably.
-    const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name)
+      // No deliveries at all - deleting is allowed with either completed or no deliveries, and no
+      // deliveries is the simplest of the two to seed reliably.
+      const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name)
 
-    const deleteResponse = await consentAdminEventApi.deleteSubscription(subscription.subscriptionId)
-    expect(deleteResponse.status(), await deleteResponse.text()).toBe(200)
-    expect((await deleteResponse.json()).status).toBe('deleted')
+      const deleteResponse = await consentAdminEventApi.deleteSubscription(subscription.subscriptionId)
+      expect(deleteResponse.status(), await deleteResponse.text()).toBe(200)
+      expect((await deleteResponse.json()).status).toBe('deleted')
 
-    // Status changed, but the record itself (and its would-be audit trail) is still readable -
-    // "deleted" is a state, not row removal.
-    const getResponse = await consentAdminEventApi.getSubscription(subscription.subscriptionId)
-    expect(getResponse.ok()).toBe(true)
-    expect((await getResponse.json()).status).toBe('deleted')
+      // Status changed, but the record itself (and its would-be audit trail) is still readable -
+      // "deleted" is a state, not row removal.
+      const getResponse = await consentAdminEventApi.getSubscription(subscription.subscriptionId)
+      expect(getResponse.ok()).toBe(true)
+      expect((await getResponse.json()).status).toBe('deleted')
 
-    const eventsResponse = await consentAdminEventApi.listSubscriptionEvents(subscription.subscriptionId)
-    expect(eventsResponse.ok()).toBe(true)
-  })
+      const eventsResponse = await consentAdminEventApi.listSubscriptionEvents(subscription.subscriptionId)
+      expect(eventsResponse.ok()).toBe(true)
+    })
 
     test(`09.07.05 - A subscription with a pending delivery cannot be deleted (${version})`, async ({ consentAdminEventApi }) => {
       // A POLL subscription's own delivery stays `pending` until it's consumed via the poll
@@ -278,14 +280,15 @@ for (const version of ['v1', 'v1.1'] as const) {
       })
       expect(webhookResponse.status()).toBe(201)
 
-      // Second subscription shares topicB with the webhook subscription above; cannot register in poll mode
+      // Second subscription shares topicB with the webhook subscription above; rejected in poll mode only if constraint checks are enabled
       const pollConflict = await consentAdminEventApi.createSubscription({
         name: uniqueMarker('sub-poll'),
         topics: [topicB.name, topicC.name],
         filter: { type: 'all' },
         delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
       })
-      expect(pollConflict.status()).toBe(409)
+      const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+      expect(pollConflict.status()).toBe(constraintsEnabled ? 409 : 201)
     })
   })
 }

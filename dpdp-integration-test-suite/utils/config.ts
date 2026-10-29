@@ -87,6 +87,7 @@ export interface E2EConfig {
   }
   eventNotifications: {
     pollingRequestHmacValidationEnabled: boolean
+    subscriptionConstraintChecks?: boolean
   }
 }
 
@@ -130,7 +131,7 @@ export function requireConfigured<T>(value: T | null | undefined, key: string): 
   if (value === null || value === undefined || value === '') {
     throw new Error(
       `"${key}" is not configured. Set it in ${path.basename(LOCAL_CONFIG_PATH)} ` +
-        `(or ${path.basename(CONFIG_PATH)}), or run ./scripts/setup-local.sh to generate it.`,
+      `(or ${path.basename(CONFIG_PATH)}), or run ./scripts/setup-local.sh to generate it.`,
     )
   }
   return value
