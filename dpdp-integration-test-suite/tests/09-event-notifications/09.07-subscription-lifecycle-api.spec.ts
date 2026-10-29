@@ -17,6 +17,7 @@
  */
 
 import { test, expect } from '../../fixtures/auth.fixtures'
+import { isSubscriptionConstraintChecksEnabled } from '../../utils/env'
 import { publishMarkedEventViaApi, seedActiveTopicViaApi, seedPollSubscriptionViaApi } from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 
@@ -54,7 +55,8 @@ test.describe('Subscription lifecycle rules', () => {
       filter: { type: 'specific', purposes: ['profile', 'ACCOUNT', 'account'] },
       delivery: { mode: 'webhook', callbackUrl: callbackUrl.toLowerCase(), sharedSecret: uniqueMarker('secret') },
     })
-    expect(duplicate.status()).toBe(409)
+    const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+    expect(duplicate.status()).toBe(constraintsEnabled ? 409 : 201)
   })
 
   test('09.07.02 - The same tenant/group/topic cannot mix webhook and poll delivery modes', async ({
@@ -77,7 +79,8 @@ test.describe('Subscription lifecycle rules', () => {
       filter: { type: 'all' },
       delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
     })
-    expect(pollConflict.status()).toBe(409)
+    const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+    expect(pollConflict.status()).toBe(constraintsEnabled ? 409 : 201)
 
     const topicB = await seedActiveTopicViaApi(consentAdminEventApi, 'mixed-mode-b')
     const groupB = uniqueMarker('group')
@@ -96,7 +99,7 @@ test.describe('Subscription lifecycle rules', () => {
       filter: { type: 'all' },
       delivery: { mode: 'webhook', callbackUrl: 'https://example.com/hook-b', sharedSecret: uniqueMarker('secret') },
     })
-    expect(webhookConflict.status()).toBe(409)
+    expect(webhookConflict.status()).toBe(constraintsEnabled ? 409 : 201)
   })
 
 
@@ -272,13 +275,14 @@ test.describe('Subscription lifecycle rules', () => {
     })
     expect(webhookResponse.status()).toBe(201)
 
-    // Second subscription shares topicB with the webhook subscription above; cannot register in poll mode
+    // Second subscription shares topicB with the webhook subscription above; rejected in poll mode only if constraint checks are enabled
     const pollConflict = await consentAdminEventApi.createSubscription({
       name: uniqueMarker('sub-poll'),
       topics: [topicB.name, topicC.name],
       filter: { type: 'all' },
       delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
     })
-    expect(pollConflict.status()).toBe(409)
+    const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+    expect(pollConflict.status()).toBe(constraintsEnabled ? 409 : 201)
   })
 })

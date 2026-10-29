@@ -280,6 +280,14 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
+    public boolean isEventNotificationSubscriptionConstraintChecksEnabled() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SUBSCRIPTION_CONSTRAINT_CHECKS
+                : configParser.isEventNotificationSubscriptionConstraintChecksEnabled();
+    }
+
+    @Override
     public boolean isEventNotificationPollingRequestHmacValidationEnabled() {
 
         return configParser == null

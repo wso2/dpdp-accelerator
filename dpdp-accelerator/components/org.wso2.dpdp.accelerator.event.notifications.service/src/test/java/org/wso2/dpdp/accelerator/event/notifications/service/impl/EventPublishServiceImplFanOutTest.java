@@ -21,6 +21,7 @@ import org.wso2.dpdp.accelerator.event.notifications.dao.EventDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.SubscriptionDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.TopicDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.Event;
+import org.wso2.dpdp.accelerator.event.notifications.dao.model.PollDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.Subscription;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.Topic;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
@@ -163,6 +164,24 @@ public class EventPublishServiceImplFanOutTest {
                 () -> publish(Collections.emptyList()));
 
         assertEquals(exception.getStatusCode(), 500);
+    }
+
+    @Test
+    public void multipleActivePollSubscriptionsOnSameTopicCreateIndependentPollDeliveries() {
+        Subscription sub1 = subscription("sub-1", "g1", "poll", PurposeFilterMode.ALL.getValue(), null, "active");
+        Subscription sub2 = subscription("sub-2", "g1", "poll", PurposeFilterMode.ALL.getValue(), null, "active");
+        when(subscriptionDAO.getActiveSubscriptionsForFanOut(connection, "org1", "topic-1"))
+                .thenReturn(Arrays.asList(sub1, sub2));
+        when(deliveryDAO.addPollDelivery(any(Connection.class), any(PollDelivery.class))).thenReturn(true);
+
+        publish(Collections.emptyList());
+
+        ArgumentCaptor<PollDelivery> captor = ArgumentCaptor.forClass(PollDelivery.class);
+        verify(deliveryDAO, times(2)).addPollDelivery(eq(connection), captor.capture());
+        List<PollDelivery> deliveries = captor.getAllValues();
+        assertEquals(deliveries.size(), 2);
+        assertEquals(deliveries.get(0).getSubscriptionId(), "sub-1");
+        assertEquals(deliveries.get(1).getSubscriptionId(), "sub-2");
     }
 
     private Event publish(List<String> purposes) {

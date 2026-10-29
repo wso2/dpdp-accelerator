@@ -161,6 +161,41 @@ public class TransactionIntegrationTest {
     }
 
     @Test
+    public void addSubscriptionWithDuplicateAndMixedCasePurposesSucceeds() throws Exception {
+        TopicDAOImpl topics = new TopicDAOImpl();
+        topics.addTopic(connection, new Topic("topic-dup-purposes", "org-1", "dup-p", "", TopicStatus.ACTIVE.getValue()));
+        connection.commit();
+
+        Subscription subscription = new Subscription();
+        subscription.setSubscriptionId("sub-dup-p");
+        subscription.setName("sub-dup-p-name");
+        subscription.setOrgId("org-1");
+        subscription.setGroupId("group-1");
+        subscription.setTopicIds(Collections.singletonList("topic-dup-purposes"));
+        subscription.setPurposeFilterMode("SPECIFIC");
+        subscription.setPurposes(java.util.Arrays.asList("profile", "ACCOUNT", "account"));
+        subscription.setDeliveryMode("WEBHOOK");
+        subscription.setCallbackUrl("https://example.com/callback");
+        subscription.setSharedSecret("secret");
+        subscription.setStatus("PENDING");
+
+        new SubscriptionDAOImpl().addSubscription(connection, subscription);
+        connection.commit();
+
+        try (PreparedStatement ps = connection.prepareStatement(
+                "SELECT PURPOSE_NAME FROM SUBSCRIPTION_PURPOSE WHERE SUBSCRIPTION_ID = ? ORDER BY PURPOSE_NAME")) {
+            ps.setString(1, "sub-dup-p");
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next());
+                assertEquals(rs.getString(1), "account");
+                assertTrue(rs.next());
+                assertEquals(rs.getString(1), "profile");
+                assertFalse(rs.next());
+            }
+        }
+    }
+
+    @Test
     public void manualRetryCanBePreparedRepeatedlyWheneverFailed() throws Exception {
         Timestamp now = new Timestamp(System.currentTimeMillis());
         new TopicDAOImpl().addTopic(connection,
@@ -301,8 +336,14 @@ public class TransactionIntegrationTest {
         CountDownLatch start = new CountDownLatch(1);
         ExecutorService executor = Executors.newFixedThreadPool(2);
         try {
-            Future<Boolean> first = executor.submit(() -> createMultiTopicWhenReady(start, "sub-a", false));
-            Future<Boolean> second = executor.submit(() -> createMultiTopicWhenReady(start, "sub-b", true));
+            org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService config =
+                    org.mockito.Mockito.mock(org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService.class);
+            org.mockito.Mockito.when(config.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
+            SubscriptionDAOImpl subscriptionDAO = new SubscriptionDAOImpl(config);
+            Future<Boolean> first = executor.submit(() -> createMultiTopicWhenReady(start, "sub-a", false,
+                    subscriptionDAO, "topic-a", "topic-b"));
+            Future<Boolean> second = executor.submit(() -> createMultiTopicWhenReady(start, "sub-b", true,
+                    subscriptionDAO, "topic-a", "topic-b"));
             start.countDown();
             assertTrue(first.get(5, TimeUnit.SECONDS) ^ second.get(5, TimeUnit.SECONDS));
             try (Statement statement = connection.createStatement();
@@ -315,7 +356,35 @@ public class TransactionIntegrationTest {
         }
     }
 
-    private boolean createMultiTopicWhenReady(CountDownLatch start, String id, boolean reverse) throws Exception {
+    @Test(timeOut = 10000)
+    public void concurrentReversedTopicSetsAllowBothSubscriptionsWhenConstraintChecksDisabled() throws Exception {
+        TopicDAOImpl topics = new TopicDAOImpl();
+        topics.addTopic(connection, new Topic("topic-c", "org-1", "c", "", TopicStatus.ACTIVE.getValue()));
+        topics.addTopic(connection, new Topic("topic-d", "org-1", "d", "", TopicStatus.ACTIVE.getValue()));
+        connection.commit();
+        CountDownLatch start = new CountDownLatch(1);
+        ExecutorService executor = Executors.newFixedThreadPool(2);
+        try {
+            SubscriptionDAOImpl subscriptionDAO = new SubscriptionDAOImpl();
+            Future<Boolean> first = executor.submit(() -> createMultiTopicWhenReady(start, "sub-c", false,
+                    subscriptionDAO, "topic-c", "topic-d"));
+            Future<Boolean> second = executor.submit(() -> createMultiTopicWhenReady(start, "sub-d", true,
+                    subscriptionDAO, "topic-c", "topic-d"));
+            start.countDown();
+            assertTrue(first.get(5, TimeUnit.SECONDS) && second.get(5, TimeUnit.SECONDS));
+            try (Statement statement = connection.createStatement();
+                    ResultSet rows = statement.executeQuery(
+                            "SELECT COUNT(*) FROM SUBSCRIPTION_TOPIC WHERE SUBSCRIPTION_ID IN ('sub-c', 'sub-d')")) {
+                assertTrue(rows.next());
+                assertEquals(rows.getInt(1), 4, "Both subscriptions must commit their topic associations");
+            }
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
+    private boolean createMultiTopicWhenReady(CountDownLatch start, String id, boolean reverse,
+            SubscriptionDAOImpl subscriptionDAO, String firstTopic, String secondTopic) throws Exception {
         try (Connection conn = DriverManager.getConnection("jdbc:h2:mem:" + databaseName + ";DB_CLOSE_DELAY=-1")) {
             conn.setAutoCommit(false);
             start.await();
@@ -325,8 +394,8 @@ public class TransactionIntegrationTest {
             subscription.setName(id + "-name");
             subscription.setOrgId("org-1");
             subscription.setGroupId("group-1");
-            subscription.setTopicIds(reverse ? java.util.Arrays.asList("topic-b", "topic-a")
-                    : java.util.Arrays.asList("topic-a", "topic-b"));
+            subscription.setTopicIds(reverse ? java.util.Arrays.asList(secondTopic, firstTopic)
+                    : java.util.Arrays.asList(firstTopic, secondTopic));
             subscription.setPurposeFilterMode("ALL");
             subscription.setPurposes(Collections.emptyList());
             subscription.setDeliveryMode("POLL");
@@ -334,7 +403,7 @@ public class TransactionIntegrationTest {
             subscription.setCreatedAt(now);
             subscription.setUpdatedAt(now);
             try {
-                new SubscriptionDAOImpl().addSubscription(conn, subscription);
+                subscriptionDAO.addSubscription(conn, subscription);
                 conn.commit();
                 return true;
             } catch (EventNotificationDuplicateResourceException expected) {

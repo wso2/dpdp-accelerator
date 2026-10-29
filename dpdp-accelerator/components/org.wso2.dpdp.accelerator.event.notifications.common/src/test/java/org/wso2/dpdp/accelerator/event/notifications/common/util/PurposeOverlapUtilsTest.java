@@ -37,6 +37,20 @@ public class PurposeOverlapUtilsTest {
     }
 
     @Test
+    public void testCanonicalizeLocaleIndependence() {
+        java.util.Locale originalDefault = java.util.Locale.getDefault();
+        try {
+            java.util.Locale.setDefault(java.util.Locale.forLanguageTag("tr-TR"));
+            Set<String> canonical = PurposeOverlapUtils.canonicalize(Collections.singletonList("PROFILE"));
+            Assert.assertEquals(canonical.size(), 1);
+            Assert.assertTrue(canonical.contains("profile"),
+                    "PROFILE should canonicalize to standard ASCII 'profile' regardless of default locale");
+        } finally {
+            java.util.Locale.setDefault(originalDefault);
+        }
+    }
+
+    @Test
     public void testComputePurposeSetHash() {
         String hash1 = PurposeOverlapUtils.computePurposeSetHash(PurposeFilterMode.ALL, Arrays.asList("marketing"));
         Assert.assertEquals(hash1, "");

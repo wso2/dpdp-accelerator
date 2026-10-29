@@ -523,8 +523,8 @@ Register conflicts, re-verification, and delete guards.
 
 | ID | Scenario | Notes |
 | --- | --- | --- |
-| `09.07.01` | An overlapping subscription with equivalent purposes and callback URL is rejected | Same canonicalized callback URL and equivalent purposes (different case/order/duplicates). |
-| `09.07.02` | The same tenant/group/topic cannot mix webhook and poll delivery modes | Rejected in both orders. |
+| `09.07.01` | An overlapping subscription with equivalent purposes and callback URL is rejected | Same canonicalized callback URL and equivalent purposes (different case/order/duplicates) when constraint checks are enabled; 201 when disabled. |
+| `09.07.02` | The same tenant/group/topic cannot mix webhook and poll delivery modes | Rejected in both orders when constraint checks are enabled; 201 when disabled. |
 | `09.07.03` | An active or deleted subscription cannot be re-verified |  |
 | `09.07.04` | Deleting a subscription soft-deletes it while preserving its record | A soft delete: status becomes `deleted` but the record and its delivery list stay readable. |
 | `09.07.05` | A subscription with a pending delivery cannot be deleted | 409 EN-4090; the subscription stays active. |
@@ -532,7 +532,7 @@ Register conflicts, re-verification, and delete guards.
 | `09.07.07` | Registering with empty topics or duplicate topic names is rejected | 400 with descriptive error message. |
 | `09.07.08` | Registering with a non-existent or inactive topic is rejected | 404 with topic not active in organization error. |
 | `09.07.09` | Multi-topic subscriptions containing user lifecycle topics require the all purpose filter | 422 with lifecycle topic filter requirement error. |
-| `09.07.10` | Delivery mode conflict is rejected when any topic overlaps in the same group | 409 across shared topic associations. |
+| `09.07.10` | Delivery mode conflict is rejected when any topic overlaps in the same group | 409 across shared topic associations when constraint checks are enabled; 201 when disabled. |
 
 ### `09.08-publishing-events-api.spec.ts` · API-only
 

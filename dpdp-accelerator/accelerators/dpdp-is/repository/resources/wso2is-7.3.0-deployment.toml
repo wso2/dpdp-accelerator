@@ -451,6 +451,12 @@ default_max_events = 20
 max_events_limit = 100
 request_hmac_validation_enabled = false
 
+[dpdp_accelerator.event_notifications.subscription]
+# Enforces subscription conflict constraints (mixed delivery mode and overlapping purpose filter checks).
+# When false (default), multiple subscriptions can subscribe to the same topic with overlapping filters,
+# while active subscription name uniqueness is always preserved.
+subscription_constraint_checks = false
+
 # Webhook delivery: callback URL validation, delivery worker sizing, retry/backoff, and
 # subscription-verification behavior.
 [dpdp_accelerator.event_notifications.webhook]

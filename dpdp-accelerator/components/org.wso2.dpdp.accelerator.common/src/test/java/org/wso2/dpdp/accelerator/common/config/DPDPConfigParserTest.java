@@ -249,6 +249,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 15);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(service.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
     }
 
     @Test
@@ -286,6 +287,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingDefaultMaxEvents(), 20);
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 100);
         assertTrue(!service.isEventNotificationPollingRequestHmacValidationEnabled());
+        assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
     }
 
     @Test
@@ -365,6 +367,13 @@ public class DPDPConfigParserTest {
                     service::isEventNotificationPrivateNetworkCallbackTargetsAllowed);
             values.put("EventNotifications.PayloadSigning.Enabled", "bad");
             expectThrows(IllegalStateException.class, service::isEventNotificationPayloadSigningEnabled);
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecks", "true");
+            assertTrue(service.isEventNotificationSubscriptionConstraintChecksEnabled());
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecks", "false");
+            assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecks", "bad");
+            expectThrows(IllegalStateException.class,
+                    service::isEventNotificationSubscriptionConstraintChecksEnabled);
             values.put("EventNotifications.PendingSubscriptionRecoveryIntervalSeconds", "0");
             expectThrows(IllegalStateException.class,
                     service::getEventNotificationPendingSubscriptionRecoveryIntervalSeconds);

@@ -84,6 +84,9 @@ export interface E2EConfig {
   consentExpiry: {
     schedulerPollTimeoutMs: number | null
   }
+  eventNotifications?: {
+    subscriptionConstraintChecks?: boolean
+  }
 }
 
 const suiteRoot = path.resolve(import.meta.dirname, '..')
