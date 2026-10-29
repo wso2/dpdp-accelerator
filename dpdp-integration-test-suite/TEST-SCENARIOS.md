@@ -523,7 +523,7 @@ Register conflicts, re-verification, and delete guards.
 
 | ID | Scenario | Notes |
 | --- | --- | --- |
-| `09.07.01` | An overlapping subscription with equivalent purposes and callback URL is rejected | Same canonicalized callback URL and equivalent purposes (different case/order/duplicates). |
+| `09.07.01` | An overlapping subscription with equivalent purposes and callback URL is rejected | Same canonicalized callback URL and equivalent purposes (different case/order/duplicates) when constraint checks are enabled; 201 when disabled. |
 | `09.07.02` | The same tenant/group/topic cannot mix webhook and poll delivery modes | Rejected in both orders when constraint checks are enabled; 201 when disabled. |
 | `09.07.03` | An active or deleted subscription cannot be re-verified |  |
 | `09.07.04` | Deleting a subscription soft-deletes it while preserving its record | A soft delete: status becomes `deleted` but the record and its delivery list stay readable. |
