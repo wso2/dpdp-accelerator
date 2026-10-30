@@ -194,32 +194,28 @@ export default function EventDetailsPage(): React.JSX.Element {
   return (
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
-        <HeaderBreadcrumbs />
-
-        <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-between"
-          alignItems={{ xs: 'flex-start', sm: 'center' }}
-          spacing={2}
-        >
-          <Stack spacing={0.5}>
+        <Stack spacing={1}>
+          <HeaderBreadcrumbs currentLabel={event.eventId} />
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            spacing={2}
+          >
             <Stack direction="row" spacing={1.5} alignItems="center">
+              <Button
+                variant="outlined"
+                size="small"
+                startIcon={<ArrowLeft size={16} />}
+                onClick={() => navigate('/events')}
+              >
+                {t('events.details.backToEvents')}
+              </Button>
               <Typography variant="h4" fontWeight={700}>
-                {event.eventId}
+                {t('events.details.title')}
               </Typography>
             </Stack>
-            <Typography variant="body2" color="text.secondary">
-              {displayTopic} • {formatEpochTimestamp(event.occurredAt)}
-            </Typography>
           </Stack>
-
-          <Button
-            variant="outlined"
-            startIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/events')}
-          >
-            {t('events.details.backToEvents')}
-          </Button>
         </Stack>
 
         {/* Section 1: Summary Metadata */}

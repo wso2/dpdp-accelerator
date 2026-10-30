@@ -856,6 +856,7 @@
       "close": "बंद करू"
     },
     "details": {
+      "title": "घटना विवरण",
       "backToEvents": "घटना पर वापस",
       "loadFailed": "घटना विवरण लोड करब' मे असमर्थ।",
       "metadataTitle": "घटना मेटाडेटा",

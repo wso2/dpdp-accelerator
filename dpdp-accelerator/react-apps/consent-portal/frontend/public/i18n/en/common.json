@@ -856,6 +856,7 @@
       "close": "Close"
     },
     "details": {
+      "title": "Event details",
       "backToEvents": "Back to Events",
       "loadFailed": "Unable to load event details.",
       "metadataTitle": "Event Metadata",
