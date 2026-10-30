@@ -800,7 +800,9 @@
       "httpStatus": "HTTP Status",
       "timestamp": "Timestamp",
       "errorDetails": "Error Details",
-      "noAttempts": "No execution attempts recorded."
+      "noAttempts": "No execution attempts recorded.",
+      "collapseEvidence": "Collapse completion evidence",
+      "expandEvidence": "Expand completion evidence"
     }
   },
   "events": {

@@ -44,6 +44,7 @@ import {
   useSubscriptionEventHistoryQuery,
 } from '../hooks/useSubscriptionQueries'
 import { getSubscriptionStatusChipColor } from '../utils/subscriptionStatusChip'
+import CompletionEvidenceCard from './CompletionEvidenceCard'
 
 interface SubscriptionDeliveryHistoryModalProps {
   open: boolean
@@ -101,29 +102,12 @@ export default function SubscriptionDeliveryHistoryModal({
           <Alert severity="error">{t('subscriptions.deliveryHistory.loadFailed')}</Alert>
         ) : (
           <Stack spacing={2} sx={{ mt: 1 }}>
-            {historyData.completionStatus ? (
-              <Box
-                sx={{
-                  p: 2,
-                  borderRadius: 1,
-                  border: 1,
-                  borderColor: 'divider',
-                  bgcolor: 'background.paper',
-                }}
-              >
-                <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
-                  {t('subscriptions.deliveryHistory.completion')}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  <strong>
-                    {t(
-                      `events.status.${historyData.completionStatus.toLowerCase()}`,
-                      historyData.completionStatus,
-                    )}
-                  </strong>
-                  {historyData.completionEvidence ? ` — ${historyData.completionEvidence}` : ''}
-                </Typography>
-              </Box>
+            {(historyData.deliveryMode || 'webhook').toLowerCase() === 'webhook' ? (
+              <CompletionEvidenceCard
+                completionStatus={historyData.completionStatus}
+                completionEvidence={historyData.completionEvidence}
+                deliveryMode={historyData.deliveryMode}
+              />
             ) : null}
 
             {retryMutation.isError ? (

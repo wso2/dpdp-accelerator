@@ -23,11 +23,26 @@
        xsi:schemaLocation="
          http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
          http://cxf.apache.org/jaxrs http://cxf.apache.org/schemas/jaxrs.xsd">
-    <jaxrs:server id="dpdpEventNotifications" address="/">
+    
+    <jaxrs:server id="dpdpEventNotificationsV1" address="/v1">
         <jaxrs:serviceBeans>
-            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.SubscriptionEndpoint"/>
-            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.TopicEndpoint"/>
-            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.EventEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.SubscriptionEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.TopicEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.EventEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.DeliveryEndpoint"/>
+        </jaxrs:serviceBeans>
+        <jaxrs:providers>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.exception.EventNotificationExceptionMapper"/>
+            <bean class="com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider"/>
+        </jaxrs:providers>
+    </jaxrs:server>
+
+    <jaxrs:server id="dpdpEventNotificationsV1_1" address="/v1.1">
+        <jaxrs:serviceBeans>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.SubscriptionEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.TopicEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.EventEndpoint"/>
+            <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.DeliveryEndpoint"/>
         </jaxrs:serviceBeans>
         <jaxrs:providers>
             <bean class="org.wso2.dpdp.accelerator.event.notifications.endpoint.exception.EventNotificationExceptionMapper"/>

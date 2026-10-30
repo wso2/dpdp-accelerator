@@ -25,6 +25,8 @@
     "notifications:topics:write",
     "notifications:events:read",
     "notifications:events:write",
+    "notifications:events:poll",
+    "notifications:event-deliveries:complete",
     "consent:status-history:view:any",
     "consent:status-history:view:self",
     "consent:history:view:any",

@@ -800,7 +800,9 @@
       "httpStatus": "HTTP સ્થિતિ",
       "timestamp": "ટાઇમસ્ટેમ્પ",
       "errorDetails": "ભૂલ વિગતો",
-      "noAttempts": "કોઈ એક્ઝિક્યુશન પ્રયાસો નોંધાયા નથી."
+      "noAttempts": "કોઈ એક્ઝિક્યુશન પ્રયાસો નોંધાયા નથી.",
+      "collapseEvidence": "પૂર્ણતા પુરાવા સંકુચિત કરો",
+      "expandEvidence": "પૂર્ણતા પુરાવા વિસ્તૃત કરો"
     }
   },
   "events": {

@@ -48,4 +48,6 @@ public interface SubscriptionService {
 
     SubscriptionEventHistoryDTO retryDelivery(String orgId, String subscriptionId, String deliveryId);
 
+    SubscriptionEventHistoryDTO retryDelivery(String orgId, String deliveryId);
+
 }

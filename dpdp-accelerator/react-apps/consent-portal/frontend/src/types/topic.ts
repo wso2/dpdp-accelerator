@@ -33,6 +33,12 @@ export interface TopicRecord {
   subscriptionCount?: number
 }
 
+/** Response of the deregister action: only what the action changed. */
+export interface TopicStatusUpdate {
+  topicId: string
+  status: TopicStatus | string
+}
+
 export interface TopicListQueryParams {
   limit: number
   offset: number

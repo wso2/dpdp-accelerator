@@ -21,13 +21,13 @@ package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.testng.annotations.Test;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.EventCreateRequest;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Subscription;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.SubscriptionCreateRequest;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.SubscriptionPage;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.TopicCreateRequest;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.exception.EventNotificationExceptionMapper;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.EventNotificationDtoMapper;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.v1.EventNotificationDtoMapper;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.EventCreateRequest;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Subscription;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.SubscriptionCreateRequest;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.SubscriptionPage;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicCreateRequest;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventCreateDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventPollingResponseDTO;
@@ -204,15 +204,12 @@ public class DtoContractTest {
         for (String value : Arrays.asList("ALL", "SPECIFIC", "ALL_EXCEPT", "EXCEPT", "except", " all_except ", "", " ")) {
             error("{\"filter\":{\"type\":\"" + value + "\"}}", SubscriptionCreateRequest.class);
         }
-        for (String value : Arrays.asList("ACTIVE", " active ", "PENDING", "STALE", "DELETED", "", " ")) {
-            error("{\"status\":\"" + value + "\"}", SubscriptionCreateRequest.class);
-        }
     }
 
     @Test
     public void malformedRequestsKeepErrorCodes() throws Exception {
         for (String body : Arrays.asList("{\"unknown\":1}", "{\"delivery\":{\"mode\":\"invalid\"}}",
-                "{\"filter\":{\"type\":\"invalid\"}}", "{\"status\":\"invalid\"}",
+                "{\"filter\":{\"type\":\"invalid\"}}",
                 "{\"delivery\":{\"mode\":[]}}", "{\"filter\":{\"type\":{}}}",
                 "{\"delivery\":{\"mode\":42}}", "{\"filter\":{\"type\":true}}")) {
             JsonNode previous = error(body, SubscriptionDTO.class);

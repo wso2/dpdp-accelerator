@@ -70,9 +70,9 @@ public class EventNotificationExceptionMapperTest {
 
         assertNotNull(response);
         assertEquals(response.getStatus(), 409);
-        assertTrue(response.getEntity() instanceof org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error);
-        org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error entity =
-                (org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error) response.getEntity();
+        assertTrue(response.getEntity() instanceof org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Error);
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Error entity =
+                (org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Error) response.getEntity();
         assertEquals(entity.getCode(), "EN-4090");
         assertEquals(entity.getMessage(), "Topic already exists");
         assertEquals(entity.getDescription(), "Topic name conflict.");

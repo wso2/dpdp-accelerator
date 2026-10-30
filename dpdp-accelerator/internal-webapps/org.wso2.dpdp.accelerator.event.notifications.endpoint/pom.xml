@@ -132,6 +132,7 @@
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>generate-v1-dto</id>
                         <goals><goal>generate</goal></goals>
                         <configuration>
                             <skip>${dpdp.dto.codegen.skip}</skip>
@@ -143,7 +144,32 @@
                             <generateModelTests>false</generateModelTests>
                             <generateModelDocumentation>false</generateModelDocumentation>
                             <generateSupportingFiles>false</generateSupportingFiles>
-                            <modelPackage>org.wso2.dpdp.accelerator.event.notifications.endpoint.dto</modelPackage>
+                            <modelPackage>org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto</modelPackage>
+                            <typeMappings><typeMapping>URI=String</typeMapping></typeMappings>
+                            <configOptions>
+                                <sourceFolder>src/gen/java</sourceFolder>
+                                <useBeanValidation>false</useBeanValidation>
+                                <openApiNullable>false</openApiNullable>
+                                <containerDefaultToNull>true</containerDefaultToNull>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                            </configOptions>
+                            <output>${project.basedir}</output>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-v1_1-dto</id>
+                        <goals><goal>generate</goal></goals>
+                        <configuration>
+                            <skip>${dpdp.dto.codegen.skip}</skip>
+                            <inputSpec>${project.basedir}/src/main/resources/event-notifications-v1.1.yaml</inputSpec>
+                            <generatorName>jaxrs-cxf</generatorName>
+                            <generateApis>false</generateApis>
+                            <generateApiTests>false</generateApiTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <modelPackage>org.wso2.dpdp.accelerator.event.notifications.endpoint.v1_1.dto</modelPackage>
                             <typeMappings><typeMapping>URI=String</typeMapping></typeMappings>
                             <configOptions>
                                 <sourceFolder>src/gen/java</sourceFolder>
@@ -179,7 +205,7 @@
                             <directory>src/main/webapp</directory>
                         </resource>
                     </webResources>
-                    <warName>api#dpdp#event-notifications#v1</warName>
+                    <warName>api#dpdp#event-notifications</warName>
                     <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
                 </configuration>
             </plugin>
@@ -201,6 +227,8 @@
                         <exclude>**/*Constants.class</exclude>
                         <exclude>**/*ErrorCodes.class</exclude>
                         <exclude>**/endpoint/dto/**</exclude>
+                        <exclude>**/endpoint/v1/dto/**</exclude>
+                        <exclude>**/endpoint/v1_1/dto/**</exclude>
                     </excludes>
                 </configuration>
                 <executions>

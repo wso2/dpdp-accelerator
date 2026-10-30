@@ -800,7 +800,9 @@
       "httpStatus": "HTTP سٹیٹس",
       "timestamp": "ٹائم اسٹیمپ",
       "errorDetails": "ایرر کی تفصیلات",
-      "noAttempts": "ایگزیکیوشن کی کوئی کوشش ریکارڈ نہیں کی گئی۔"
+      "noAttempts": "ایگزیکیوشن کی کوئی کوشش ریکارڈ نہیں کی گئی۔",
+      "collapseEvidence": "تکمیل کا ثبوت سمیٹیں",
+      "expandEvidence": "تکمیل کا ثبوت پھیلائیں"
     }
   },
   "events": {

@@ -67,6 +67,13 @@ export interface SubscriptionRecord {
   message?: string
 }
 
+/** Response of the verify and delete actions: only what the action changed. */
+export interface SubscriptionStatusUpdate {
+  subscriptionId: string
+  status: SubscriptionStatus | string
+  updatedAt: number
+}
+
 export interface SubscriptionInput {
   name: string
   groupId?: string

@@ -89,9 +89,13 @@ final class DeliveryHistoryMapper {
         Optional<WebhookDeliveryAck> deliveryAck = deliveryAckDAO.getDeliveryAckByDeliveryId(conn, deliveryId, orgId);
         if (deliveryAck.isPresent()) {
             WebhookDeliveryAck ack = deliveryAck.get();
-            dto.setCompletionStatus(ack.getCompletionStatus() != null ? ack.getCompletionStatus()
-                    : DeliveryStatus.COMPLETED.getValue());
+            String compStatus = ack.getCompletionStatus() != null ? ack.getCompletionStatus()
+                    : DeliveryStatus.COMPLETED.getValue();
+            dto.setCompletionStatus(compStatus);
             dto.setCompletionEvidence(ack.getCompletionEvidence());
+            if (DeliveryStatus.COMPLETED.getValue().equalsIgnoreCase(compStatus)) {
+                dto.setCurrentStatus(DeliveryStatus.COMPLETED.getValue());
+            }
         }
 
         List<SubscriptionDeliveryAttemptDTO> attempts = new ArrayList<>();

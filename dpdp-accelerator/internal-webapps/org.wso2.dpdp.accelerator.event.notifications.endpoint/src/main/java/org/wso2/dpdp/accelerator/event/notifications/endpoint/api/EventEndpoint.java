@@ -18,117 +18,28 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 
-import org.wso2.dpdp.accelerator.common.util.DPDPTenantContext;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.EventCreateRequest;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.EventHandler;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.EventNotificationDtoMapper;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.EventPollingResponseDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDeliveryDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionEventHistoryDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.model.PaginatedResult;
 
 import java.util.function.Supplier;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
 /**
- * JAX-RS endpoint for event publication, delivery listing, and delivery audit history.
+ * Legacy compatibility wrapper pointing to {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.EventEndpoint}.
+ *
+ * @deprecated Use {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.EventEndpoint}
+ *             or {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.EventEndpoint}.
  */
-@Path("/events")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class EventEndpoint {
-
-    private final EventHandler eventHandler;
-    private final Supplier<String> organizationIdResolver;
+@Deprecated
+public class EventEndpoint extends org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.EventEndpoint {
 
     public EventEndpoint() {
-        this.eventHandler = new EventHandler();
-        this.organizationIdResolver = DPDPTenantContext::getOrganizationId;
+        super();
     }
 
     public EventEndpoint(EventHandler eventHandler) {
-        this(eventHandler, DPDPTenantContext::getOrganizationId);
+        super(eventHandler);
     }
 
-    EventEndpoint(EventHandler eventHandler, Supplier<String> organizationIdResolver) {
-        this.eventHandler = eventHandler;
-        this.organizationIdResolver = organizationIdResolver;
-    }
-
-    @POST
-    public Response publishEvent(
-            @HeaderParam(EventNotificationEndpointConstants.GROUP_ID_HEADER) String groupId,
-            EventCreateRequest request) {
-        EventDTO dto = eventHandler.publishEvent(organizationIdResolver.get(), groupId, EventNotificationDtoMapper.toService(request));
-        return Response.status(Response.Status.CREATED).entity(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @POST
-    @Path("/poll")
-    public Response pollEvents(
-            @HeaderParam(EventNotificationEndpointConstants.SUBSCRIPTION_ID_HEADER) String subscriptionId,
-            @HeaderParam(EventNotificationEndpointConstants.GROUP_ID_HEADER) String groupId,
-            @HeaderParam(EventNotificationEndpointConstants.EVENT_SIGNATURE_HEADER) String signature,
-            String requestBody) {
-        EventPollingResponseDTO response = eventHandler.pollEvents(organizationIdResolver.get(), groupId,
-                subscriptionId, requestBody, signature);
-        return Response.ok(EventNotificationDtoMapper.toApi(response)).build();
-    }
-
-    @GET
-    public Response listEvents(
-            @QueryParam("topic") String topic,
-            @QueryParam("status") String status,
-            @QueryParam("subscriptionId") String subscriptionId,
-            @QueryParam("purposes") String purposes,
-            @QueryParam("search") String search,
-            @QueryParam("limit") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_LIMIT_STR) int limit,
-            @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset) {
-        String orgId = organizationIdResolver.get();
-        PaginatedResult<EventDTO> result = subscriptionId == null || subscriptionId.trim().isEmpty()
-                ? eventHandler.searchEvents(orgId, topic, status, orgId, purposes, search, limit, offset)
-                : eventHandler.searchEvents(orgId, topic, status, orgId, subscriptionId,
-                        purposes, search, limit, offset);
-        return Response.ok(EventNotificationDtoMapper.events(result)).build();
-    }
-
-    @GET
-    @Path("/{deliveryId}/history")
-    public Response getDeliveryHistory(
-            @PathParam("deliveryId") String deliveryId) {
-        SubscriptionEventHistoryDTO dto = eventHandler.getDeliveryHistory(organizationIdResolver.get(), deliveryId);
-        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @GET
-    @Path("/{eventId}")
-    public Response getEvent(
-            @PathParam("eventId") String eventId) {
-        EventDTO dto = eventHandler.getEventById(organizationIdResolver.get(), eventId);
-        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @GET
-    @Path("/{eventId}/deliveries")
-    public Response getEventDeliveries(
-            @PathParam("eventId") String eventId,
-            @QueryParam("limit") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_LIMIT_STR) int limit,
-            @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset) {
-        PaginatedResult<SubscriptionDeliveryDTO> result = eventHandler.getEventDeliveries(
-                organizationIdResolver.get(), eventId, limit, offset);
-        return Response.ok(EventNotificationDtoMapper.deliveries(result)).build();
+    public EventEndpoint(EventHandler eventHandler, Supplier<String> organizationIdResolver) {
+        super(eventHandler, organizationIdResolver);
     }
 }

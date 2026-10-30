@@ -183,56 +183,70 @@ secure = "false"
 http_method = "all"
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/topics(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/topics(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "GET"
 scopes = ["notifications:topics:read"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/topics(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/topics(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "POST,DELETE"
 scopes = ["notifications:topics:write"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/subscriptions(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/subscriptions(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "GET"
 scopes = ["notifications:subscriptions:read"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/subscriptions(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/subscriptions(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "POST,DELETE"
 scopes = ["notifications:subscriptions:write"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/events/poll(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/events/poll(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "POST"
 scopes = ["notifications:events:poll"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/deliveries/([^/]+)/completion"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/deliveries/([^/]+)/completion"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "POST"
 scopes = ["notifications:event-deliveries:complete"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/events(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/deliveries/([^/]+)/retry"
+allowed_auth_handlers = ["OAuthAuthentication"]
+secure = "true"
+http_method = "POST"
+scopes = ["notifications:subscriptions:write"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/deliveries(.*)"
+allowed_auth_handlers = ["OAuthAuthentication"]
+secure = "true"
+http_method = "GET"
+scopes = ["notifications:subscriptions:read"]
+
+[[resource.access_control]]
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/events(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "GET"
 scopes = ["notifications:events:read"]
 
 [[resource.access_control]]
-context = "(.*)/api/dpdp/event-notifications/v1/events(.*)"
+context = "(.*)/api/dpdp/event-notifications/v1(\\.1)?/events(.*)"
 allowed_auth_handlers = ["OAuthAuthentication"]
 secure = "true"
 http_method = "POST"
@@ -282,7 +296,7 @@ custom_webapps = [
     "/consent-portal/",
     "/api/dpdp/consent-mgt/v1/",
     "/api/dpdp/complaints/v1/",
-    "/api/dpdp/event-notifications/v1/"
+    "/api/dpdp/event-notifications/"
 ]
 # ---- /me/complaints/* (Data Principal, :self scopes) ----
 [[resource.access_control]]

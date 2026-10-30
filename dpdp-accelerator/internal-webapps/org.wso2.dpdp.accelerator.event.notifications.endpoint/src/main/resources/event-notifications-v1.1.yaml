@@ -1,0 +1,1713 @@
+openapi: 3.0.3
+info:
+  title: DPDP Event Notification API
+  version: 1.1.0
+  description: >-
+    Tenant-isolated APIs for topic and subscription management, event
+    publication and inspection, polling delivery, and webhook completion.
+    Identity Server authenticates OAuth2 access tokens and enforces the scope
+    declared on each operation. Poll and completion requests additionally use
+    a subscription-secret HMAC in the event-signature header. The tenant is
+    selected by the tenant-qualified URL and is not supplied through an org-id
+    header.
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: https://{host}:{port}/t/{tenantDomain}/api/dpdp/event-notifications/v1.1
+    description: Secondary-tenant API
+    variables:
+      host:
+        default: localhost
+      port:
+        default: "9443"
+      tenantDomain:
+        default: example.com
+  - url: https://{host}:{port}/api/dpdp/event-notifications/v1.1
+    description: Super-tenant API
+    variables:
+      host:
+        default: localhost
+      port:
+        default: "9443"
+tags:
+  - name: Topics
+  - name: Subscriptions
+  - name: Events
+  - name: Deliveries
+  - name: Polling
+paths:
+  /topics:
+    post:
+      tags: [Topics]
+      summary: Create a topic
+      operationId: createTopic
+      security:
+        - OAuth2: ["notifications:topics:write"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TopicCreateRequest"
+            example:
+              name: consent-status-changed
+              description: Consent lifecycle changes
+      responses:
+        "201":
+          description: Topic created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Topic"
+              example:
+                topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
+                name: consent-status-changed
+                description: Consent lifecycle changes
+                status: active
+                initiatedBy: user
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: A topic with the same name already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4090
+                message: Topic already exists
+                description: A topic with the specified name already exists for this organization.
+        "500":
+          $ref: "#/components/responses/InternalError"
+    get:
+      tags: [Topics]
+      summary: List or search topics
+      operationId: listTopics
+      security:
+        - OAuth2: ["notifications:topics:read"]
+      parameters:
+        - $ref: "#/components/parameters/TopicStatus"
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+        - name: sort
+          in: query
+          description: Sort by creation time, name, or status; prefix with a minus sign for descending order.
+          schema:
+            type: string
+            pattern: "^-?(createdAt|name|status)$"
+            default: -createdAt
+      responses:
+        "200":
+          description: Topic page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicPage"
+              examples:
+                populated:
+                  value:
+                    items:
+                      - topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
+                        name: consent-status-changed
+                        description: Consent lifecycle changes
+                        status: active
+                        initiatedBy: system
+                    total: 1
+                empty:
+                  value:
+                    items: []
+                    total: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /topics/{topicId}:
+    delete:
+      tags: [Topics]
+      summary: Deregister a user-created topic
+      operationId: deleteTopic
+      security:
+        - OAuth2: ["notifications:topics:write"]
+      parameters:
+        - $ref: "#/components/parameters/TopicId"
+      responses:
+        "200":
+          description: Deregistered topic
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TopicStatusUpdate"
+              example:
+                topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
+                status: deregistered
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Topic is protected or still has active subscriptions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                activeSubscriptions:
+                  value:
+                    code: EN-4090
+                    message: In-flight deliveries exist
+                    description: The topic has active subscriptions and cannot be deregistered.
+                systemTopic:
+                  value:
+                    code: EN-4001
+                    message: Operation forbidden
+                    description: A system-defined topic cannot be deregistered.
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /subscriptions:
+    post:
+      tags: [Subscriptions]
+      summary: Create a webhook or poll subscription
+      operationId: createSubscription
+      security:
+        - OAuth2: ["notifications:subscriptions:write"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SubscriptionCreateRequest"
+            examples:
+              webhook:
+                value:
+                  name: Consent Webhook
+                  topics: [consent-status-changed]
+                  filter:
+                    type: specific
+                    purposes: [account-management]
+                  delivery:
+                    mode: webhook
+                    callbackUrl: https://processor.example/webhooks/consent
+                    sharedSecret: replace-with-a-strong-secret
+              multipleTopics:
+                value:
+                  name: Multi-Topic Webhook
+                  topics: [consent-status-changed, user.account.delete]
+                  filter:
+                    type: all
+                  delivery:
+                    mode: webhook
+                    callbackUrl: https://processor.example/webhooks/consent
+                    sharedSecret: replace-with-a-strong-secret
+              poll:
+                value:
+                  name: Consent Poller
+                  topics: [consent-status-changed]
+                  filter:
+                    type: all
+                    purposes: []
+                  delivery:
+                    mode: poll
+                    sharedSecret: replace-with-a-strong-secret
+      responses:
+        "201":
+          description: Subscription created; webhook subscriptions may initially be pending or stale
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+              examples:
+                webhook:
+                  value:
+                    subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                    name: Consent Webhook
+                    topics: [consent-status-changed]
+                    filter:
+                      type: specific
+                      purposes: [account-management]
+                    delivery:
+                      mode: webhook
+                      callbackUrl: https://processor.example/webhooks/consent
+                    status: pending
+                    createdAt: 1787651970000
+                    updatedAt: 1787651970000
+                poll:
+                  value:
+                    subscriptionId: ec2727d2-a335-409c-ac76-ed094f52fc7f
+                    name: Consent Poller
+                    topics: [consent-status-changed]
+                    filter:
+                      type: all
+                      purposes: []
+                    delivery:
+                      mode: poll
+                    status: active
+                    createdAt: 1787651970000
+                    updatedAt: 1787651970000
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Duplicate or mixed-delivery-mode subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                duplicate:
+                  value:
+                    code: EN-4090
+                    message: Duplicate subscription
+                    description: A subscription with the same parameters already exists.
+                mixedMode:
+                  value:
+                    code: EN-4090
+                    message: Invalid state
+                    description: A subscriber cannot use webhook and poll modes for the same topic.
+        "422":
+          description: A specific or all_except filter has no purposes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4002
+                message: Validation failed
+                description: filter.purposes must contain at least one entry for this filter type.
+        "500":
+          $ref: "#/components/responses/InternalError"
+    get:
+      tags: [Subscriptions]
+      summary: List or search subscriptions
+      operationId: listSubscriptions
+      security:
+        - OAuth2: ["notifications:subscriptions:read"]
+      parameters:
+        - name: status
+          in: query
+          description: >-
+            Filter by subscription status (active, pending, stale, or deleted).
+            Surrounding whitespace is trimmed and matching is case-insensitive.
+            Omit this parameter, pass a blank value, or use all to disable the status filter.
+            Other values are used as filters and may return no matches.
+            This normalization applies only to the query parameter; subscription creation
+            requires exact lowercase enum values.
+          schema:
+            type: string
+          example: active
+        - name: purposes
+          in: query
+          description: Comma-separated purposes
+          schema:
+            type: string
+        - name: search
+          in: query
+          description: Case-insensitive contains search across subscription fields, associated event IDs, and associated webhook or polling delivery IDs.
+          schema:
+            type: string
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+        - name: sort
+          in: query
+          schema:
+            type: string
+            pattern: "^-?(createdAt|updatedAt)$"
+            default: -updatedAt
+      responses:
+        "200":
+          description: Subscription page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionPage"
+              examples:
+                populated:
+                  value:
+                    items:
+                      - subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                        name: Consent Poller
+                        topics: [consent-status-changed]
+                        filter:
+                          type: all
+                          purposes: []
+                        delivery:
+                          mode: poll
+                        status: active
+                        createdAt: 1787651970000
+                        updatedAt: 1787651970000
+                    total: 1
+                empty:
+                  value:
+                    items: []
+                    total: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /subscriptions/{subscriptionId}:
+    get:
+      tags: [Subscriptions]
+      summary: Get a subscription
+      operationId: getSubscription
+      security:
+        - OAuth2: ["notifications:subscriptions:read"]
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+      responses:
+        "200":
+          description: Subscription details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Subscription"
+              example:
+                subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                name: Consent Webhook
+                topics: [consent-status-changed]
+                filter:
+                  type: all_except
+                  purposes: [marketing]
+                delivery:
+                  mode: webhook
+                  callbackUrl: https://processor.example/webhooks/consent
+                status: active
+                createdAt: 1787651970000
+                updatedAt: 1787651970000
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+    delete:
+      tags: [Subscriptions]
+      summary: Soft-delete a subscription
+      operationId: deleteSubscription
+      security:
+        - OAuth2: ["notifications:subscriptions:write"]
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+      responses:
+        "200":
+          description: Deleted subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionStatusUpdate"
+              example:
+                subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                status: deleted
+                updatedAt: 1787652970000
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Pending or in-flight deliveries prevent deletion
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4090
+                message: In-flight deliveries exist
+                description: Subscription has pending or in-flight deliveries and cannot be deleted.
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /subscriptions/{subscriptionId}/verify:
+    post:
+      tags: [Subscriptions]
+      summary: Retry webhook intent verification
+      operationId: retrySubscriptionVerification
+      security:
+        - OAuth2: ["notifications:subscriptions:write"]
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+      responses:
+        "200":
+          description: Verified subscription
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SubscriptionStatusUpdate"
+              example:
+                subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                status: active
+                updatedAt: 1787652970000
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Subscription cannot be verified in its current state
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4003
+                message: Invalid state
+                description: Only pending or stale webhook subscriptions can be re-verified.
+        "422":
+          description: Callback verification failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4220
+                message: Webhook verification failed
+                description: The callback did not return the expected challenge.
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /subscriptions/{subscriptionId}/deliveries:
+    get:
+      tags: [Subscriptions]
+      summary: List deliveries for a subscription
+      operationId: listSubscriptionEvents
+      security:
+        - OAuth2: ["notifications:subscriptions:read"]
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdPath"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Subscription delivery page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryPage"
+              examples:
+                populated:
+                  value:
+                    items:
+                      - deliveryId: f5f37c64-6130-4d44-9463-136c8bca4278
+                        eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                        topic: consent-status-changed
+                        currentStatus: delivered
+                        deliveryMode: webhook
+                        occurredAt: 1787651970000
+                    total: 1
+                empty:
+                  value:
+                    items: []
+                    total: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /events:
+    post:
+      tags: [Events]
+      summary: Publish an event
+      operationId: publishEvent
+      security:
+        - OAuth2: ["notifications:events:write"]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EventCreateRequest"
+            examples:
+              withPurposes:
+                value:
+                  topic: consent-status-changed
+                  purposes: [account-management]
+                  payload:
+                    consentId: c7c6b814-ef76-4eb4-9494-8af1b98a9ed1
+                    status: REVOKED
+              withoutPurposes:
+                value:
+                  topic: processor-notice
+                  payload:
+                    notice: Processing policy changed
+      responses:
+        "201":
+          description: Event persisted and fanned out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventCreateResponse"
+              example:
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
+                topic: consent-status-changed
+                payload: '{"consentId":"c7c6b814-ef76-4eb4-9494-8af1b98a9ed1","status":"REVOKED"}'
+                purposes: [account-management]
+                occurredAt: 1787651970000
+                createdAt: 1787651970000
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: Topic does not exist
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4041
+                message: Topic not found
+                description: No topic exists with the specified name for this organization.
+        "422":
+          description: Event payload is missing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4002
+                message: Validation failed
+                description: Event payload is required.
+        "500":
+          $ref: "#/components/responses/InternalError"
+    get:
+      tags: [Events]
+      summary: List or search events
+      operationId: listEvents
+      security:
+        - OAuth2: ["notifications:events:read"]
+      parameters:
+        - name: topic
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+        - name: subscriptionId
+          in: query
+          schema:
+            type: string
+        - name: purposes
+          in: query
+          schema:
+            type: string
+        - $ref: "#/components/parameters/Search"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Event page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EventPage"
+              examples:
+                populated:
+                  value:
+                    items:
+                      - eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                        topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
+                        topic: consent-status-changed
+                        payload: '{"status":"REVOKED"}'
+                        purposes: [account-management]
+                        occurredAt: 1787651970000
+                        createdAt: 1787651970000
+                        deliveriesCount: 2
+                    total: 1
+                empty:
+                  value:
+                    items: []
+                    total: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /events/{eventId}:
+    get:
+      tags: [Events]
+      summary: Get an event
+      operationId: getEvent
+      security:
+        - OAuth2: ["notifications:events:read"]
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+      responses:
+        "200":
+          description: Event details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+              example:
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
+                topic: consent-status-changed
+                payload: '{"status":"REVOKED"}'
+                purposes: [account-management]
+                occurredAt: 1787651970000
+                createdAt: 1787651970000
+                deliveriesCount: 2
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /events/{eventId}/deliveries:
+    get:
+      tags: [Events]
+      summary: List deliveries created for an event
+      operationId: getEventDeliveries
+      security:
+        - OAuth2: ["notifications:events:read"]
+      parameters:
+        - $ref: "#/components/parameters/EventId"
+        - $ref: "#/components/parameters/Limit"
+        - $ref: "#/components/parameters/Offset"
+      responses:
+        "200":
+          description: Event delivery page
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryPage"
+              examples:
+                populated:
+                  value:
+                    items:
+                      - deliveryId: f5f37c64-6130-4d44-9463-136c8bca4278
+                        eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                        subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                        topic: consent-status-changed
+                        currentStatus: pending
+                        deliveryMode: poll
+                        occurredAt: 1787651970000
+                    total: 1
+                empty:
+                  value:
+                    items: []
+                    total: 0
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /deliveries/{deliveryId}:
+    get:
+      tags: [Deliveries]
+      summary: Get delivery details
+      operationId: getDelivery
+      security:
+        - OAuth2: ["notifications:subscriptions:read"]
+        - OAuth2: ["notifications:events:read"]
+      parameters:
+        - $ref: "#/components/parameters/DeliveryId"
+      responses:
+        "200":
+          $ref: "#/components/responses/Delivery"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /deliveries/{deliveryId}/history:
+    get:
+      tags: [Deliveries]
+      summary: Get delivery attempt history
+      operationId: getDeliveryHistory
+      security:
+        - OAuth2: ["notifications:subscriptions:read"]
+        - OAuth2: ["notifications:events:read"]
+      parameters:
+        - $ref: "#/components/parameters/DeliveryId"
+      responses:
+        "200":
+          $ref: "#/components/responses/DeliveryHistory"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /deliveries/{deliveryId}/retry:
+    post:
+      tags: [Deliveries]
+      summary: Retry an exhausted webhook delivery
+      operationId: retryDelivery
+      security:
+        - OAuth2: ["notifications:subscriptions:write"]
+        - OAuth2: ["notifications:events:write"]
+      parameters:
+        - $ref: "#/components/parameters/DeliveryId"
+      responses:
+        "202":
+          description: Manual retry accepted and queued
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeliveryRetryResponse"
+              example:
+                deliveryId: f5f37c64-6130-4d44-9463-136c8bca4278
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                currentStatus: pending
+                manualRetryAvailable: false
+                nextRetryAt: 1787652975000
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          description: Delivery is not eligible for manual retry (must be in failed status with automatic retries exhausted)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /deliveries/{deliveryId}/completion:
+    post:
+      tags: [Deliveries]
+      summary: Submit completion evidence for a delivered webhook delivery
+      description: >-
+        event-signature is HMAC-SHA256 over
+        v1\ncompletion\n<deliveryId>\n<exact-request-body>. Completion is
+        supported only for webhook deliveries in the delivered state. Unknown
+        deliveries, group mismatches, missing secrets, and invalid signatures
+        return the same EN-4010 response.
+      operationId: completeDelivery
+      security:
+        - OAuth2: ["notifications:event-deliveries:complete"]
+      parameters:
+        - $ref: "#/components/parameters/DeliveryId"
+        - $ref: "#/components/parameters/EventSignature"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CompletionRequest"
+            examples:
+              completed:
+                value:
+                  completionStatus: completed
+                  completionEvidence: https://processor.example/evidence/receipt.pdf
+                  completedAt: 1787652970000
+              disputed:
+                value:
+                  completionStatus: disputed
+                  completionEvidence: https://processor.example/evidence/dispute-42
+      responses:
+        "204":
+          description: Completion recorded; response body is empty
+        "400":
+          description: Malformed completion or invalid evidence URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                missingStatus:
+                  value:
+                    code: EN-4001
+                    message: Malformed request
+                    description: completionStatus is required.
+                invalidEvidence:
+                  value:
+                    code: EN-4001
+                    message: Malformed request
+                    description: completionEvidence must be a valid HTTPS URL no longer than 512 characters.
+        "401":
+          description: Unknown delivery, wrong group, missing secret, or invalid contextual HMAC
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalidAuthentication:
+                  value:
+                    code: EN-4010
+                    message: Operation forbidden
+                    description: The event-signature is invalid.
+                crossDeliveryReplay:
+                  summary: A valid signature calculated for another delivery receives the same response
+                  value:
+                    code: EN-4010
+                    message: Operation forbidden
+                    description: The event-signature is invalid.
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "409":
+          description: Delivery is not delivered or completion already exists
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalidState:
+                  value:
+                    code: EN-4003
+                    message: Invalid state
+                    description: Completion can only be submitted for a delivered webhook delivery.
+                duplicate:
+                  value:
+                    code: EN-4090
+                    message: Resource already exists
+                    description: A completion report already exists for this delivery.
+        "500":
+          $ref: "#/components/responses/InternalError"
+  /events/poll:
+    post:
+      tags: [Polling]
+      summary: Acknowledge prior sets and retrieve pending poll deliveries
+      description: >-
+        The request body may be empty. When polling HMAC validation is enabled,
+        event-signature is HMAC-SHA256 over the exact body bytes. Empty and
+        whitespace-only bodies must be signed as sent. returnImmediately=false
+        is rejected because long polling is not supported.
+      operationId: pollEvents
+      security:
+        - OAuth2: ["notifications:events:poll"]
+      parameters:
+        - $ref: "#/components/parameters/SubscriptionIdHeader"
+        - $ref: "#/components/parameters/PollEventSignature"
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PollRequest"
+            examples:
+              firstPoll:
+                summary: Empty object using configured defaults
+                value: {}
+              acknowledgeAndReport:
+                value:
+                  maxEvents: 20
+                  returnImmediately: true
+                  ack: [f5f37c64-6130-4d44-9463-136c8bca4278]
+                  setErrs:
+                    9c8c75bd-c9a6-4645-b706-e89927ae12ea:
+                      err: authentication_failed
+                      description: Unable to verify the signed event
+              acknowledgeOnly:
+                value:
+                  maxEvents: 0
+                  returnImmediately: true
+                  ack: [f5f37c64-6130-4d44-9463-136c8bca4278]
+      responses:
+        "200":
+          description: Poll response; each sets value is a compact RS256 JWS
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PollResponse"
+              examples:
+                deliveries:
+                  value:
+                    moreAvailable: true
+                    sets:
+                      f5f37c64-6130-4d44-9463-136c8bca4278: <compact-RS256-JWS>
+                empty:
+                  value:
+                    moreAvailable: false
+                    sets: {}
+                acknowledgeOnlyMoreAvailable:
+                  value:
+                    moreAvailable: true
+                    sets: {}
+        "400":
+          description: Malformed body, overlapping ack/setErrs, invalid maxEvents, or unsupported long poll
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                overlap:
+                  value:
+                    code: EN-4001
+                    message: Malformed request
+                    description: A delivery cannot be present in both ack and setErrs.
+                longPoll:
+                  value:
+                    code: EN-4001
+                    message: Malformed request
+                    description: Long polling is not supported; returnImmediately must be true.
+                maxEvents:
+                  value:
+                    code: EN-4001
+                    message: Malformed request
+                    description: maxEvents must be between 0 and the configured limit.
+        "401":
+          description: OAuth authentication or poll HMAC failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              examples:
+                invalidHmac:
+                  value:
+                    code: EN-4010
+                    message: Operation forbidden
+                    description: The event-signature is invalid.
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          description: No active poll subscription matches the tenant, group, and subscription ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4040
+                message: Resource not found
+                description: No subscription exists with the specified ID for this organization.
+        "409":
+          description: Poll subscription has no shared secret
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+              example:
+                code: EN-4003
+                message: Invalid state
+                description: The polling subscription does not have a shared secret.
+        "500":
+          $ref: "#/components/responses/InternalError"
+components:
+  securitySchemes:
+    OAuth2:
+      type: oauth2
+      description: >-
+        Identity Server OAuth2. The token URL shown is for the super tenant.
+        For another tenant use
+        https://<host>:<port>/t/<tenant-domain>/oauth2/token.
+      flows:
+        clientCredentials:
+          tokenUrl: https://localhost:9443/oauth2/token
+          scopes:
+            notifications:topics:read: View event-notification topics
+            notifications:topics:write: Create and deregister topics
+            notifications:subscriptions:read: View subscriptions and their delivery history
+            notifications:subscriptions:write: Create, verify, and delete subscriptions
+            notifications:events:read: View events and delivery history
+            notifications:events:write: Publish events
+            notifications:events:poll: Poll event deliveries
+            notifications:event-deliveries:complete: Submit webhook completion evidence
+  parameters:
+    TopicId:
+      name: topicId
+      in: path
+      required: true
+      schema:
+        type: string
+    SubscriptionIdPath:
+      name: subscriptionId
+      in: path
+      required: true
+      schema:
+        type: string
+    SubscriptionIdHeader:
+      name: subscription-id
+      in: header
+      required: true
+      description: Poll subscription selected for HMAC verification and delivery retrieval
+      schema:
+        type: string
+    DeliveryId:
+      name: deliveryId
+      in: path
+      required: true
+      schema:
+        type: string
+    EventId:
+      name: eventId
+      in: path
+      required: true
+      schema:
+        type: string
+    EventSignature:
+      name: event-signature
+      in: header
+      required: true
+      description: sha256=<lowercase hexadecimal HMAC-SHA256>
+      schema:
+        type: string
+        pattern: "^sha256=[A-Fa-f0-9]{64}$"
+    PollEventSignature:
+      name: event-signature
+      in: header
+      required: false
+      description: >-
+        sha256=<lowercase hexadecimal HMAC-SHA256>. Required when polling
+        request HMAC validation is enabled.
+      schema:
+        type: string
+        pattern: "^sha256=[A-Fa-f0-9]{64}$"
+    TopicStatus:
+      name: status
+      in: query
+      schema:
+        $ref: "#/components/schemas/TopicStatus"
+    Search:
+      name: search
+      in: query
+      description: Case-insensitive contains search across event IDs, delivery IDs, group IDs, topic names, and configured event payload fields.
+      schema:
+        type: string
+    Limit:
+      name: limit
+      in: query
+      description: Values at or below zero use 20; values above 100 are clamped to 100.
+      schema:
+        type: integer
+        format: int32
+        default: 20
+    Offset:
+      name: offset
+      in: query
+      description: Negative values are normalized to zero.
+      schema:
+        type: integer
+        format: int32
+        default: 0
+  responses:
+    BadRequest:
+      description: Invalid parameter or malformed request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          examples:
+            invalidParameter:
+              value:
+                code: EN-00001
+                message: Invalid request parameter
+                description: A request parameter is invalid.
+            malformedJson:
+              value:
+                code: EN-00004
+                message: Malformed request payload
+                description: The request body could not be parsed.
+    Unauthorized:
+      description: Missing or invalid OAuth2 access token
+    Forbidden:
+      description: Authenticated token does not carry the operation's required scope
+    NotFound:
+      description: Tenant-scoped resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: EN-4040
+            message: Resource not found
+            description: No resource exists with the specified identifier for this organization.
+    InternalError:
+      description: Unexpected service failure
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+          example:
+            code: EN-5000
+            message: Internal error
+            description: An unexpected error occurred while processing the request.
+    Delivery:
+      description: Delivery details
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Delivery"
+          examples:
+            webhook:
+              value:
+                deliveryId: f5f37c64-6130-4d44-9463-136c8bca4278
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                topic: consent-status-changed
+                currentStatus: delivered
+                deliveryMode: webhook
+                occurredAt: 1787651970000
+                completionStatus: completed
+                completionEvidence: https://processor.example/evidence/receipt.pdf
+                manualRetryAvailable: false
+            poll:
+              value:
+                deliveryId: 9c8c75bd-c9a6-4645-b706-e89927ae12ea
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+                topic: consent-status-changed
+                currentStatus: acknowledged
+                deliveryMode: poll
+                occurredAt: 1787651970000
+                completionStatus: acknowledged
+                manualRetryAvailable: false
+    DeliveryHistory:
+      description: Delivery attempt history
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/DeliveryHistory"
+          examples:
+            webhook:
+              value:
+                deliveryId: f5f37c64-6130-4d44-9463-136c8bca4278
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                history:
+                  - attempt: 1
+                    status: delivered
+                    timestamp: 1787651975000
+                    httpStatus: 204
+            poll:
+              value:
+                deliveryId: 9c8c75bd-c9a6-4645-b706-e89927ae12ea
+                eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+                history:
+                  - attempt: 1
+                    status: acknowledged
+                    timestamp: 1787651980000
+  schemas:
+    Error:
+      type: object
+      x-class-extra-annotation: "@com.fasterxml.jackson.annotation.JsonInclude(com.fasterxml.jackson.annotation.JsonInclude.Include.NON_NULL)"
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          pattern: "^EN-[0-9]{4,5}$"
+        message:
+          type: string
+        description:
+          type: string
+    TopicStatus:
+      type: string
+      enum: [active, deregistered]
+    TopicCreateRequest:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          maxLength: 225
+        description:
+          type: string
+          maxLength: 255
+    Topic:
+      type: object
+      required: [name, topicId, status, initiatedBy]
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        topicId:
+          type: string
+        status:
+          $ref: "#/components/schemas/TopicStatus"
+        initiatedBy:
+          type: string
+          enum: [system, user]
+    TopicStatusUpdate:
+      type: object
+      description: Result of a topic status change such as deregistration.
+      required: [topicId, status]
+      properties:
+        topicId:
+          type: string
+        status:
+          $ref: "#/components/schemas/TopicStatus"
+    PurposeFilterMode:
+      type: string
+      description: Exact lowercase value required; case variants, surrounding whitespace, and aliases are not accepted.
+      enum: [all, all_except, specific]
+    Filter:
+      type: object
+      required: [type]
+      properties:
+        type:
+          $ref: "#/components/schemas/PurposeFilterMode"
+        purposes:
+          type: array
+          items:
+            type: string
+    DeliveryMode:
+      type: string
+      description: Exact lowercase value required; case variants, surrounding whitespace, and aliases are not accepted.
+      enum: [webhook, poll]
+    DeliveryConfigRequest:
+      type: object
+      required: [mode, sharedSecret]
+      properties:
+        mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        callbackUrl:
+          type: string
+          format: uri
+          description: Required for webhook and omitted for poll.
+        sharedSecret:
+          type: string
+          writeOnly: true
+    DeliveryConfig:
+      type: object
+      required: [mode]
+      properties:
+        mode:
+          $ref: "#/components/schemas/DeliveryMode"
+        callbackUrl:
+          type: string
+          format: uri
+        sharedSecret:
+          type: string
+          nullable: true
+          description: Shared secret used for payload signing or poll authentication. Present in subscription detail responses; omitted from list responses.
+    SubscriptionStatus:
+      type: string
+      description: Exact lowercase value required; case variants, surrounding whitespace, and aliases are not accepted.
+      enum: [active, pending, stale, deleted]
+    SubscriptionCreateRequest:
+      type: object
+      required: [delivery, name, topics]
+      description: Supply the unique topic names to subscribe to in the topics array.
+      properties:
+        name:
+          type: string
+          maxLength: 225
+          description: Unique display name for the subscription within the organization.
+        topics:
+          type: array
+          minItems: 1
+          maxItems: 100
+          description: Unique topic names; duplicates are rejected after normalization.
+          items:
+            type: string
+        filter:
+          $ref: "#/components/schemas/Filter"
+        delivery:
+          $ref: "#/components/schemas/DeliveryConfigRequest"
+    Subscription:
+      type: object
+      required: [subscriptionId, name, topics, filter, delivery, status]
+      properties:
+        subscriptionId:
+          type: string
+        name:
+          type: string
+          maxLength: 225
+          description: Unique display name for the subscription within the organization.
+        topics:
+          type: array
+          minItems: 1
+          maxItems: 100
+          description: Unique topic names in canonical stored form.
+          items:
+            type: string
+        filter:
+          $ref: "#/components/schemas/Filter"
+        delivery:
+          $ref: "#/components/schemas/DeliveryConfig"
+        status:
+          $ref: "#/components/schemas/SubscriptionStatus"
+        createdAt:
+          type: integer
+          format: int64
+          nullable: true
+        updatedAt:
+          type: integer
+          format: int64
+          nullable: true
+    SubscriptionStatusUpdate:
+      type: object
+      description: Result of a subscription status change such as verification or deletion.
+      required: [subscriptionId, status, updatedAt]
+      properties:
+        subscriptionId:
+          type: string
+        status:
+          $ref: "#/components/schemas/SubscriptionStatus"
+        updatedAt:
+          type: integer
+          format: int64
+    EventCreateRequest:
+      type: object
+      required: [topic, payload]
+      properties:
+        topic:
+          type: string
+        purposes:
+          type: array
+          items:
+            type: string
+        payload:
+          type: object
+          additionalProperties: true
+    EventCreateResponse:
+      type: object
+      required: [eventId, topicId, topic, payload]
+      properties:
+        eventId:
+          type: string
+        topicId:
+          type: string
+        topic:
+          type: string
+        payload:
+          type: string
+          description: Persisted event JSON serialized as a JSON string.
+        purposes:
+          type: array
+          nullable: true
+          items:
+            type: string
+        occurredAt:
+          type: integer
+          format: int64
+          nullable: true
+        createdAt:
+          type: integer
+          format: int64
+          nullable: true
+    Event:
+      type: object
+      required: [eventId, topicId, payload, deliveriesCount]
+      properties:
+        eventId:
+          type: string
+        topicId:
+          type: string
+        topic:
+          type: string
+          nullable: true
+        payload:
+          type: string
+          description: Persisted event JSON serialized as a JSON string.
+        purposes:
+          type: array
+          nullable: true
+          items:
+            type: string
+        occurredAt:
+          type: integer
+          format: int64
+          nullable: true
+        createdAt:
+          type: integer
+          format: int64
+          nullable: true
+        deliveriesCount:
+          type: integer
+          format: int32
+    Delivery:
+      type: object
+      required: [deliveryId, eventId, currentStatus, deliveryMode, occurredAt]
+      properties:
+        deliveryId:
+          type: string
+        eventId:
+          type: string
+        subscriptionId:
+          type: string
+          nullable: true
+        topic:
+          type: string
+          nullable: true
+        currentStatus:
+          type: string
+        deliveryMode:
+          $ref: "#/components/schemas/DeliveryMode"
+        occurredAt:
+          type: integer
+          format: int64
+        nextRetryAt:
+          type: integer
+          format: int64
+          nullable: true
+        completionStatus:
+          type: string
+          nullable: true
+        completionEvidence:
+          type: string
+          nullable: true
+        manualRetryAvailable:
+          type: boolean
+          default: false
+    DeliveryAttempt:
+      type: object
+      required: [attempt, status, timestamp]
+      properties:
+        attempt:
+          type: integer
+        status:
+          type: string
+        timestamp:
+          type: integer
+          format: int64
+        httpStatus:
+          type: integer
+          nullable: true
+        error:
+          type: string
+          nullable: true
+    DeliveryHistory:
+      type: object
+      description: Attempt history for a delivery
+      required: [deliveryId, history]
+      properties:
+        deliveryId:
+          type: string
+        eventId:
+          type: string
+          nullable: true
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/DeliveryAttempt"
+    DeliveryRetryResponse:
+      type: object
+      description: Acknowledgment that a manual retry has been accepted and queued
+      required: [deliveryId, eventId, currentStatus, manualRetryAvailable]
+      properties:
+        deliveryId:
+          type: string
+        eventId:
+          type: string
+        currentStatus:
+          type: string
+          example: pending
+        manualRetryAvailable:
+          type: boolean
+          example: false
+        nextRetryAt:
+          type: integer
+          format: int64
+          nullable: true
+          example: 1787652975000
+    PollSetError:
+      type: object
+      required: [err, description]
+      properties:
+        err:
+          type: string
+          maxLength: 64
+        description:
+          type: string
+          maxLength: 1024
+    PollRequest:
+      type: object
+      properties:
+        ack:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+        setErrs:
+          type: object
+          additionalProperties:
+            $ref: "#/components/schemas/PollSetError"
+        maxEvents:
+          type: integer
+          minimum: 0
+          description: Uses the configured default when omitted; the configured maximum defaults to 100.
+        returnImmediately:
+          type: boolean
+          description: Uses the configured default when omitted; false is unsupported.
+    PollResponse:
+      type: object
+      required: [moreAvailable, sets]
+      properties:
+        moreAvailable:
+          type: boolean
+        sets:
+          type: object
+          description: Map of deliveryId to compact RS256 JWS.
+          additionalProperties:
+            type: string
+    CompletionStatus:
+      type: string
+      enum: [completed, ack, disputed, partial]
+    CompletionRequest:
+      type: object
+      required: [completionStatus, completionEvidence]
+      properties:
+        completionStatus:
+          $ref: "#/components/schemas/CompletionStatus"
+        completionEvidence:
+          type: string
+          format: uri
+          maxLength: 512
+          description: Absolute HTTPS URL without credentials or a fragment.
+        completedAt:
+          type: integer
+          format: int64
+          minimum: 0
+    SignedEventEnvelope:
+      type: object
+      description: Object carried in the JWS payload claim for webhook and poll delivery.
+      required:
+        [
+          deliveryId,
+          eventId,
+          subscriptionId,
+          orgId,
+          groupId,
+          topic,
+          eventPayload,
+        ]
+      properties:
+        deliveryId:
+          type: string
+        eventId:
+          type: string
+        subscriptionId:
+          type: string
+        orgId:
+          type: string
+        groupId:
+          type: string
+        topic:
+          type: string
+        eventPayload:
+          type: object
+          additionalProperties: true
+      example:
+        deliveryId: f5f37c64-6130-4d44-9463-136c8bca4278
+        eventId: e7977d04-07f2-48f2-b480-647e88b5f1ba
+        subscriptionId: 70f63b63-7ec4-4e42-a956-fca89bfeb351
+        orgId: example.com
+        groupId: processor-1
+        topic: consent-status-changed
+        eventPayload:
+          consentId: c7c6b814-ef76-4eb4-9494-8af1b98a9ed1
+          status: REVOKED
+    JwsClaims:
+      type: object
+      description: >-
+        Decoded JWS claims. The iss value is the issuer configured by Identity
+        Server for the tenant. The protected header also contains alg=RS256,
+        typ=JWT, kid, and x5t#S256. The kid is resolved through the configured
+        Identity Server KeyIDProvider and must match an entry from the trusted
+        tenant JWKS endpoint.
+      required: [iss, sub, aud, iat, jti, txn, payloadHash, payload]
+      properties:
+        iss:
+          type: string
+          format: uri
+          example: https://is.example.com:9443/t/example.com/oauth2/token
+        sub:
+          type: string
+          example: processor-1
+        aud:
+          type: string
+          example: dpdp-event-notifications
+        iat:
+          type: integer
+          format: int64
+        jti:
+          type: string
+        txn:
+          type: string
+        payloadHash:
+          type: string
+        payload:
+          $ref: "#/components/schemas/SignedEventEnvelope"
+    TopicPage:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Topic"
+        total:
+          type: integer
+    SubscriptionPage:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Subscription"
+        total:
+          type: integer
+    EventPage:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Event"
+        total:
+          type: integer
+    DeliveryPage:
+      type: object
+      required: [items, total]
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Delivery"
+        total:
+          type: integer

@@ -141,8 +141,8 @@
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/consent-portal"/>
                                 <unzip src="../../internal-webapps/org.wso2.dpdp.accelerator.consent.mgt.extensions.endpoint/target/api#dpdp#consent-mgt#v1.war"
                                        dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#dpdp#consent-mgt#v1"/>
-                                <unzip src="../../internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/target/api#dpdp#event-notifications#v1.war"
-                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#dpdp#event-notifications#v1/"/>
+                                <unzip src="../../internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/target/api#dpdp#event-notifications.war"
+                                       dest="${project.basedir}/carbon-home/repository/deployment/server/webapps/api#dpdp#event-notifications/"/>
                                 <copy todir="${project.basedir}/carbon-home/repository/components/dropins">
                                     <fileset dir="../../components/org.wso2.dpdp.accelerator.identity.extensions/target"
                                               includes="org.wso2.dpdp.accelerator.identity.extensions-*.jar"/>

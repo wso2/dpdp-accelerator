@@ -18,125 +18,28 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 
-import org.wso2.dpdp.accelerator.common.util.DPDPTenantContext;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.SubscriptionCreateRequest;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.SubscriptionHandler;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.util.EventNotificationDtoMapper;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDeliveryDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionEventHistoryDTO;
-import org.wso2.dpdp.accelerator.event.notifications.service.model.PaginatedResult;
 
 import java.util.function.Supplier;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-@Path("/subscriptions")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class SubscriptionEndpoint {
-
-    private final SubscriptionHandler subscriptionHandler;
-    private final Supplier<String> organizationIdSupplier;
+/**
+ * Legacy compatibility wrapper pointing to {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.SubscriptionEndpoint}.
+ *
+ * @deprecated Use {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.SubscriptionEndpoint}
+ *             or {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.SubscriptionEndpoint}.
+ */
+@Deprecated
+public class SubscriptionEndpoint extends org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.SubscriptionEndpoint {
 
     public SubscriptionEndpoint() {
-        this.subscriptionHandler = new SubscriptionHandler();
-        this.organizationIdSupplier = DPDPTenantContext::getOrganizationId;
+        super();
     }
 
     public SubscriptionEndpoint(SubscriptionHandler subscriptionHandler) {
-        this.subscriptionHandler = subscriptionHandler;
-        this.organizationIdSupplier = DPDPTenantContext::getOrganizationId;
+        super(subscriptionHandler);
     }
 
     public SubscriptionEndpoint(SubscriptionHandler subscriptionHandler, Supplier<String> organizationIdSupplier) {
-        this.subscriptionHandler = subscriptionHandler;
-        this.organizationIdSupplier = organizationIdSupplier;
-    }
-
-    @POST
-    public Response createSubscription(SubscriptionCreateRequest request) {
-        String orgId = organizationIdSupplier.get();
-        SubscriptionDTO dto = subscriptionHandler.createSubscription(orgId, EventNotificationDtoMapper.toService(request));
-        return Response.status(Response.Status.CREATED).entity(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @GET
-    public Response listSubscriptions(
-            @QueryParam("status") String status,
-            @QueryParam("purposes") String purposes,
-            @QueryParam("search") String search,
-            @QueryParam("limit") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_LIMIT_STR) int limit,
-            @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset,
-            @QueryParam("sort") String sort) {
-        PaginatedResult<SubscriptionDTO> result = subscriptionHandler.listSubscriptions(
-                organizationIdSupplier.get(), status, purposes, search, limit, offset, sort);
-        return Response.ok(EventNotificationDtoMapper.subscriptions(result)).build();
-    }
-
-    @GET
-    @Path("/{subscriptionId}")
-    public Response getSubscription(
-            @PathParam("subscriptionId") String subscriptionId) {
-        SubscriptionDTO dto = subscriptionHandler.getSubscription(organizationIdSupplier.get(), subscriptionId);
-        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @DELETE
-    @Path("/{subscriptionId}")
-    public Response deleteSubscription(
-            @PathParam("subscriptionId") String subscriptionId) {
-        SubscriptionDTO dto = subscriptionHandler.deleteSubscription(organizationIdSupplier.get(), subscriptionId);
-        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @POST
-    @Path("/{subscriptionId}/verify")
-    public Response retryVerification(
-            @PathParam("subscriptionId") String subscriptionId) {
-        SubscriptionDTO dto = subscriptionHandler.retryVerification(organizationIdSupplier.get(), subscriptionId);
-        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @GET
-    @Path("/{subscriptionId}/events")
-    public Response listSubscriptionEvents(
-            @PathParam("subscriptionId") String subscriptionId,
-            @QueryParam("limit") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_LIMIT_STR) int limit,
-            @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset) {
-        PaginatedResult<SubscriptionDeliveryDTO> result = subscriptionHandler.listSubscriptionEvents(
-                organizationIdSupplier.get(), subscriptionId, limit, offset);
-        return Response.ok(EventNotificationDtoMapper.deliveries(result)).build();
-    }
-
-    @GET
-    @Path("/{subscriptionId}/events/{deliveryId}")
-    public Response getSubscriptionEventHistory(
-            @PathParam("subscriptionId") String subscriptionId,
-            @PathParam("deliveryId") String deliveryId) {
-        SubscriptionEventHistoryDTO dto = subscriptionHandler.getSubscriptionEventHistory(
-                organizationIdSupplier.get(), subscriptionId, deliveryId);
-        return Response.ok(EventNotificationDtoMapper.toApi(dto)).build();
-    }
-
-    @POST
-    @Path("/{subscriptionId}/events/{deliveryId}/retry")
-    public Response retryDelivery(
-            @PathParam("subscriptionId") String subscriptionId,
-            @PathParam("deliveryId") String deliveryId) {
-        SubscriptionEventHistoryDTO dto = subscriptionHandler.retryDelivery(
-                organizationIdSupplier.get(), subscriptionId, deliveryId);
-        return Response.status(Response.Status.ACCEPTED).entity(dto).build();
+        super(subscriptionHandler, organizationIdSupplier);
     }
 }

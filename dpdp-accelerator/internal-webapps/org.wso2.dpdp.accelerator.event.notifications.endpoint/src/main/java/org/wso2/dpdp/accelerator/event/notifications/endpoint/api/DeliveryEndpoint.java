@@ -15,55 +15,31 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.wso2.dpdp.accelerator.event.notifications.endpoint.api;
 
-import org.wso2.dpdp.accelerator.common.util.DPDPTenantContext;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointConstants;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.EventHandler;
 
 import java.util.function.Supplier;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.HeaderParam;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-
-/** Endpoint for externally submitted delivery completion reports. */
-@Path("/deliveries")
-@Consumes(MediaType.APPLICATION_JSON)
-@Produces(MediaType.APPLICATION_JSON)
-public class DeliveryEndpoint {
-
-    private final EventHandler eventHandler;
-    private final Supplier<String> organizationIdResolver;
+/**
+ * Legacy compatibility wrapper pointing to {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.DeliveryEndpoint}.
+ *
+ * @deprecated Use {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.DeliveryEndpoint}
+ *             or {@link org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.DeliveryEndpoint}.
+ */
+@Deprecated
+public class DeliveryEndpoint extends org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.DeliveryEndpoint {
 
     public DeliveryEndpoint() {
-        this.eventHandler = new EventHandler();
-        this.organizationIdResolver = DPDPTenantContext::getOrganizationId;
+        super();
     }
 
-    DeliveryEndpoint(EventHandler eventHandler) {
-        this(eventHandler, DPDPTenantContext::getOrganizationId);
+    public DeliveryEndpoint(EventHandler eventHandler) {
+        super(eventHandler);
     }
 
-    DeliveryEndpoint(EventHandler eventHandler, Supplier<String> organizationIdResolver) {
-        this.eventHandler = eventHandler;
-        this.organizationIdResolver = organizationIdResolver;
-    }
-
-    @POST
-    @Path("/{deliveryId}/completion")
-    public Response completeDelivery(
-            @PathParam("deliveryId") String deliveryId,
-            @HeaderParam(EventNotificationEndpointConstants.GROUP_ID_HEADER) String groupId,
-            @HeaderParam(EventNotificationEndpointConstants.EVENT_SIGNATURE_HEADER) String signature,
-            String requestBody) {
-        eventHandler.completeDelivery(organizationIdResolver.get(), groupId, deliveryId,
-                requestBody, signature);
-        return Response.noContent().build();
+    public DeliveryEndpoint(EventHandler eventHandler, Supplier<String> organizationIdResolver) {
+        super(eventHandler, organizationIdResolver);
     }
 }

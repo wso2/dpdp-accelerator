@@ -50,6 +50,8 @@ export const EVENT_SCOPES = {
   EVENT_TOPICS_WRITE: 'notifications:topics:write',
   EVENTS_READ: 'notifications:events:read',
   EVENTS_WRITE: 'notifications:events:write',
+  EVENTS_POLL: 'notifications:events:poll',
+  DELIVERIES_COMPLETE: 'notifications:event-deliveries:complete',
 } as const
 
 /**
