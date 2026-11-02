@@ -4,6 +4,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.SubscriptionEndpoint;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.TopicEndpoint;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.SubscriptionHandler;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.TopicHandler;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionDTO;
