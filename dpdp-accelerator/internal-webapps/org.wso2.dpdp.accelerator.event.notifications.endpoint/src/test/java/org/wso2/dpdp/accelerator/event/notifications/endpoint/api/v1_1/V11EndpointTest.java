@@ -245,6 +245,7 @@ public class V11EndpointTest {
         historyDto.setHistory(Collections.singletonList(
                 new SubscriptionDeliveryAttemptDTO(1, "DELIVERED", 100L, 200, null)));
 
+        when(eventHandler.getDelivery("org-1", "d1")).thenReturn(historyDto);
         when(eventHandler.getDeliveryHistory("org-1", "d1")).thenReturn(historyDto);
         when(subscriptionHandler.retryDelivery("org-1", "d1")).thenReturn(historyDto);
 

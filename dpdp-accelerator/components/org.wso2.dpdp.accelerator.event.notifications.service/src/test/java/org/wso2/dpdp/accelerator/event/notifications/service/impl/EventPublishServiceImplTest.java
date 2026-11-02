@@ -325,20 +325,47 @@ public class EventPublishServiceImplTest {
         verify(deliveryDAO).markWebhookDeliveryCompleted(any(Connection.class), eq("delivery-1"), eq("org1"));
     }
 
-    @Test(expectedExceptions = EventNotificationDaoException.class)
-    public void completeDelivery_whenMarkWebhookDeliveryCompletedFails_throwsDaoException() {
+    @Test
+    public void completeDelivery_whenMarkWebhookDeliveryCompletedFails_throwsConflictServiceException() {
         WebhookDelivery delivery = new WebhookDelivery("delivery-1", "subscription-1", "event-1", "delivered",
                 1, null, new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()), null);
         Subscription subscription = mock(Subscription.class);
         when(subscription.getGroupId()).thenReturn("Group-A");
         when(subscription.getSharedSecret()).thenReturn("shared-secret");
-        when(deliveryDAO.getWebhookDeliveryById(any(Connection.class), eq("delivery-1"), eq("org1"))).thenReturn(Optional.of(delivery));
-        when(subscriptionDAO.getSubscriptionById(any(Connection.class), eq("subscription-1"), eq("org1"))).thenReturn(Optional.of(subscription));
-        when(deliveryDAO.markWebhookDeliveryCompleted(any(Connection.class), eq("delivery-1"), eq("org1"))).thenReturn(false);
+        when(deliveryDAO.getWebhookDeliveryById(any(Connection.class), eq("delivery-1"), eq("org1")))
+                .thenReturn(Optional.of(delivery));
+        when(subscriptionDAO.getSubscriptionById(any(Connection.class), eq("subscription-1"), eq("org1")))
+                .thenReturn(Optional.of(subscription));
+        when(deliveryDAO.markWebhookDeliveryCompleted(any(Connection.class), eq("delivery-1"), eq("org1")))
+                .thenReturn(false);
         String body = "{\"completionStatus\":\"completed\",\"completionEvidence\":\"https://processor/evidence\"}";
         String signature = "sha256=" + HmacSigner.signCompletion("shared-secret", "delivery-1", body);
 
-        publishService.completeDelivery("org1", "group-a", "delivery-1", body, signature);
+        try {
+            publishService.completeDelivery("org1", "group-a", "delivery-1", body, signature);
+            fail("Expected EventNotificationServiceException");
+        } catch (EventNotificationServiceException e) {
+            assertEquals(e.getStatusCode(), 409);
+            assertEquals(e.getCode(), EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE);
+            assertEquals(e.getDescription(),
+                    EventNotificationServiceConstants.DELIVERY_COMPLETION_INVALID_STATE_ERROR_MSG);
+        }
+    }
+
+    @Test
+    public void completeDelivery_whenDaoThrowsException_translatesToServiceException() {
+        when(deliveryDAO.getWebhookDeliveryById(any(Connection.class), eq("delivery-1"), eq("org1")))
+                .thenThrow(new EventNotificationDaoException("DB failure"));
+
+        try {
+            publishService.completeDelivery("org1", "group-a", "delivery-1", "{}", "sha256=sig");
+            fail("Expected EventNotificationServiceException");
+        } catch (EventNotificationServiceException e) {
+            assertEquals(e.getStatusCode(), 500);
+            assertEquals(e.getCode(), EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR);
+            assertEquals(e.getDescription(),
+                    EventNotificationServiceConstants.FAILED_TO_COMPLETE_DELIVERY_ERROR_MSG);
+        }
     }
 
     @Test

@@ -35,6 +35,7 @@ import org.wso2.dpdp.accelerator.event.notifications.service.EventPublishService
 import org.wso2.dpdp.accelerator.event.notifications.service.SubscriptionService;
 import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
 import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.SignedEventPayloadFactory;
+import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.WebhookDeliveryWorker;
 import org.wso2.dpdp.accelerator.event.notifications.service.impl.EventPublishServiceImpl;
 import org.wso2.dpdp.accelerator.event.notifications.service.impl.SubscriptionServiceImpl;
 import org.wso2.dpdp.accelerator.event.notifications.service.impl.TopicServiceImpl;
@@ -85,7 +86,18 @@ public class EventNotificationServiceComponent {
         try {
             subscriptionService.start();
             deliveryRecoveryService.start();
-            subscriptionService.setManualRetryDispatcher(deliveryRecoveryService::submitManualRetry);
+            subscriptionService.setManualRetryDispatcher(new SubscriptionServiceImpl.ManualRetryDispatcher() {
+                @Override
+                public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId,
+                        String subscriptionId, String deliveryId) {
+                    return deliveryRecoveryService.submitManualRetry(orgId, subscriptionId, deliveryId);
+                }
+
+                @Override
+                public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String deliveryId) {
+                    return deliveryRecoveryService.submitManualRetry(orgId, deliveryId);
+                }
+            });
 
             topicServiceRegistration = context.getBundleContext().registerService(
                     TopicService.class, topicService, null);

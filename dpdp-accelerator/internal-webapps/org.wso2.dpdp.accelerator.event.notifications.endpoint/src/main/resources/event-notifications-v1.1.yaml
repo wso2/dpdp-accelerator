@@ -748,7 +748,6 @@ paths:
       operationId: getDelivery
       security:
         - OAuth2: ["notifications:subscriptions:read"]
-        - OAuth2: ["notifications:events:read"]
       parameters:
         - $ref: "#/components/parameters/DeliveryId"
       responses:
@@ -771,7 +770,6 @@ paths:
       operationId: getDeliveryHistory
       security:
         - OAuth2: ["notifications:subscriptions:read"]
-        - OAuth2: ["notifications:events:read"]
       parameters:
         - $ref: "#/components/parameters/DeliveryId"
       responses:
@@ -794,7 +792,6 @@ paths:
       operationId: retryDelivery
       security:
         - OAuth2: ["notifications:subscriptions:write"]
-        - OAuth2: ["notifications:events:write"]
       parameters:
         - $ref: "#/components/parameters/DeliveryId"
       responses:
@@ -1049,9 +1046,9 @@ components:
           scopes:
             notifications:topics:read: View event-notification topics
             notifications:topics:write: Create and deregister topics
-            notifications:subscriptions:read: View subscriptions and their delivery history
-            notifications:subscriptions:write: Create, verify, and delete subscriptions
-            notifications:events:read: View events and delivery history
+            notifications:subscriptions:read: View subscriptions, delivery details, and delivery history
+            notifications:subscriptions:write: Create, verify, and delete subscriptions, and retry deliveries
+            notifications:events:read: View events and event deliveries
             notifications:events:write: Publish events
             notifications:events:poll: Poll event deliveries
             notifications:event-deliveries:complete: Submit webhook completion evidence

@@ -48,9 +48,12 @@ import javax.sql.DataSource;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertFalse;
+import static org.testng.Assert.assertNull;
 
 public class DeliveryHistoryConsistencyTest {
 
@@ -210,6 +213,45 @@ public class DeliveryHistoryConsistencyTest {
         assertEquals(eventHistory.getHistory().get(0).getStatus(), "err");
         assertEquals(eventHistory.getHistory().get(0).getTimestamp(), 150L);
         assertEquals(eventHistory.getHistory().get(0).getError(), "INVALID_PAYLOAD: Failed to parse JSON body");
+    }
+
+    @Test
+    public void getDeliverySkipsWebhookAuditQueryAndOmitsHistory() {
+        SubscriptionDeliverySummary summary = summary("failed", "webhook");
+        prepareSummary(summary);
+        Timestamp retryAt = new Timestamp(999L);
+        when(deliveryDAO.getWebhookDeliveryById(any(Connection.class), eq(DELIVERY_ID), eq(ORG_ID)))
+                .thenReturn(Optional.of(new WebhookDelivery(DELIVERY_ID, SUBSCRIPTION_ID, "event-1", "failed", 10,
+                        retryAt, null, null, null)));
+        when(deliveryAckDAO.getDeliveryAckByDeliveryId(any(Connection.class), eq(DELIVERY_ID), eq(ORG_ID)))
+                .thenReturn(Optional.empty());
+
+        SubscriptionEventHistoryDTO delivery = eventService.getDelivery(ORG_ID, DELIVERY_ID);
+
+        assertEquals(delivery.getDeliveryId(), DELIVERY_ID);
+        assertEquals(delivery.getEventId(), "event-1");
+        assertEquals(delivery.getCurrentStatus(), "failed");
+        assertEquals(delivery.getNextRetryAt(), Long.valueOf(999L));
+        assertNull(delivery.getHistory());
+        verify(deliveryDAO, never()).getWebhookDeliveryAudits(any(Connection.class), any(), any());
+    }
+
+    @Test
+    public void getDeliveryForPollPopulatesCompletionDetailsWithoutHistory() {
+        SubscriptionDeliverySummary poll = summary("err", "poll");
+        prepareSummary(poll);
+        PollDelivery pollDelivery = new PollDelivery(DELIVERY_ID, ORG_ID, SUBSCRIPTION_ID, "event-1", "err",
+                "INVALID_PAYLOAD", "Failed to parse JSON body", new Timestamp(100), new Timestamp(150));
+        when(deliveryDAO.getPollDeliveryById(any(Connection.class), eq(DELIVERY_ID), eq(ORG_ID)))
+                .thenReturn(Optional.of(pollDelivery));
+
+        SubscriptionEventHistoryDTO delivery = eventService.getDelivery(ORG_ID, DELIVERY_ID);
+
+        assertEquals(delivery.getDeliveryId(), DELIVERY_ID);
+        assertEquals(delivery.getCurrentStatus(), "err");
+        assertEquals(delivery.getCompletionStatus(), "err");
+        assertEquals(delivery.getCompletionEvidence(), "INVALID_PAYLOAD: Failed to parse JSON body");
+        assertNull(delivery.getHistory());
     }
 
     private void prepareSummary(SubscriptionDeliverySummary summary) {

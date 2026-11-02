@@ -26,6 +26,7 @@ import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.util.HTTPClientUtils;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
 import org.wso2.dpdp.accelerator.event.notifications.dao.DeliveryDAO;
+import org.wso2.dpdp.accelerator.event.notifications.dao.model.SubscriptionDeliverySummary;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryDispatchContext;
 
@@ -300,6 +301,62 @@ public class WebhookDeliveryWorkerTest {
 
         assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE);
         verify(deliveryDAO, never()).claimWebhookDelivery(any(Connection.class), anyString());
+    }
+
+    @Test
+    public void testManualRetryByDeliveryIdAcceptsWebhookDelivery() {
+        SubscriptionDeliverySummary summary = new SubscriptionDeliverySummary();
+        summary.setDeliveryId("manual-1");
+        summary.setSubscriptionId("sub-1");
+        summary.setDeliveryMode("webhook");
+
+        WebhookDeliveryDispatchContext dispatchContext = context("manual-1", 6);
+        when(configurationService.getEventNotificationMaxRetries()).thenReturn(5);
+        when(deliveryDAO.getOrgDeliveryById(any(Connection.class), eq("org-1"), eq("manual-1")))
+                .thenReturn(Optional.of(summary));
+        when(deliveryDAO.getWebhookDeliveryDispatchContext(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("manual-1"))).thenReturn(Optional.of(dispatchContext));
+        when(deliveryDAO.prepareManualRetry(any(Connection.class), eq("org-1"), eq("sub-1"), eq("manual-1"),
+                eq(5))).thenReturn(true);
+
+        WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                configurationService);
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = worker.submitManualRetry("org-1", "manual-1");
+
+        assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.ACCEPTED);
+        verify(deliveryDAO).prepareManualRetry(any(Connection.class), eq("org-1"), eq("sub-1"),
+                eq("manual-1"), eq(5));
+    }
+
+    @Test
+    public void testManualRetryByDeliveryIdRejectsPollDelivery() {
+        SubscriptionDeliverySummary summary = new SubscriptionDeliverySummary();
+        summary.setDeliveryId("poll-1");
+        summary.setSubscriptionId("sub-1");
+        summary.setDeliveryMode("poll");
+
+        when(deliveryDAO.getOrgDeliveryById(any(Connection.class), eq("org-1"), eq("poll-1")))
+                .thenReturn(Optional.of(summary));
+
+        WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                configurationService);
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = worker.submitManualRetry("org-1", "poll-1");
+
+        assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_SUPPORTED_FOR_POLL);
+        verify(deliveryDAO, never()).prepareManualRetry(any(Connection.class), anyString(), anyString(), anyString(),
+                anyInt());
+    }
+
+    @Test
+    public void testManualRetryByDeliveryIdRejectsMissingDelivery() {
+        when(deliveryDAO.getOrgDeliveryById(any(Connection.class), eq("org-1"), eq("missing")))
+                .thenReturn(Optional.empty());
+
+        WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                configurationService);
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = worker.submitManualRetry("org-1", "missing");
+
+        assertEquals(result, WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND);
     }
 
     @Test

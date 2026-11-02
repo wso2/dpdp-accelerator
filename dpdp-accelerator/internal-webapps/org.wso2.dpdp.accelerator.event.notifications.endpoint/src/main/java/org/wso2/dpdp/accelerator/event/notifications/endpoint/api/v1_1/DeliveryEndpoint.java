@@ -70,7 +70,7 @@ public class DeliveryEndpoint {
     @GET
     @Path("/{deliveryId}")
     public Response getDelivery(@PathParam("deliveryId") String deliveryId) {
-        SubscriptionEventHistoryDTO dto = eventHandler.getDeliveryHistory(organizationIdResolver.get(), deliveryId);
+        SubscriptionEventHistoryDTO dto = eventHandler.getDelivery(organizationIdResolver.get(), deliveryId);
         return Response.ok(EventNotificationDtoMapper.toDelivery(dto)).build();
     }
 

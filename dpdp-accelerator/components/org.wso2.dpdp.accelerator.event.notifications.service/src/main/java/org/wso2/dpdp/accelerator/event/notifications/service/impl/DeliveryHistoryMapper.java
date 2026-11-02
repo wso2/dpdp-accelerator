@@ -45,10 +45,25 @@ final class DeliveryHistoryMapper {
     private DeliveryHistoryMapper() {
     }
 
+    /** Maps delivery state (without audit history) to the shared response; the caller owns {@code conn}. */
+    static SubscriptionEventHistoryDTO mapDelivery(Connection conn, String orgId, String deliveryId,
+            SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO,
+            int maxRetries, String subscriptionStatus) {
+        return map(conn, orgId, deliveryId, summary, deliveryDAO, deliveryAckDAO, maxRetries, subscriptionStatus,
+                false);
+    }
+
     /** Maps delivery state to the shared history response; the caller owns {@code conn}. */
     static SubscriptionEventHistoryDTO map(Connection conn, String orgId, String deliveryId,
             SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO,
             int maxRetries, String subscriptionStatus) {
+        return map(conn, orgId, deliveryId, summary, deliveryDAO, deliveryAckDAO, maxRetries, subscriptionStatus,
+                true);
+    }
+
+    private static SubscriptionEventHistoryDTO map(Connection conn, String orgId, String deliveryId,
+            SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO,
+            int maxRetries, String subscriptionStatus, boolean includeHistory) {
         String mode = summary.getDeliveryMode() != null ? summary.getDeliveryMode()
                 : DeliveryMode.WEBHOOK.getValue();
 
@@ -64,16 +79,16 @@ final class DeliveryHistoryMapper {
 
         if (DeliveryMode.WEBHOOK.getValue().equals(mode)) {
             mapWebhookHistory(conn, orgId, deliveryId, summary, deliveryDAO, deliveryAckDAO, dto, maxRetries,
-                    subscriptionStatus);
+                    subscriptionStatus, includeHistory);
         } else {
-            mapPollHistory(conn, orgId, deliveryId, summary, deliveryDAO, dto);
+            mapPollHistory(conn, orgId, deliveryId, summary, deliveryDAO, dto, includeHistory);
         }
         return dto;
     }
 
-    private static void mapWebhookHistory(Connection conn, String orgId, String deliveryId, SubscriptionDeliverySummary summary,
-            DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO, SubscriptionEventHistoryDTO dto,
-            int maxRetries, String subscriptionStatus) {
+    private static void mapWebhookHistory(Connection conn, String orgId, String deliveryId,
+            SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, DeliveryAckDAO deliveryAckDAO,
+            SubscriptionEventHistoryDTO dto, int maxRetries, String subscriptionStatus, boolean includeHistory) {
         Optional<WebhookDelivery> webhookDelivery = deliveryDAO.getWebhookDeliveryById(conn, deliveryId, orgId);
         if (webhookDelivery.isPresent()) {
             WebhookDelivery delivery = webhookDelivery.get();
@@ -93,9 +108,10 @@ final class DeliveryHistoryMapper {
                     : DeliveryStatus.COMPLETED.getValue();
             dto.setCompletionStatus(compStatus);
             dto.setCompletionEvidence(ack.getCompletionEvidence());
-            if (DeliveryStatus.COMPLETED.getValue().equalsIgnoreCase(compStatus)) {
-                dto.setCurrentStatus(DeliveryStatus.COMPLETED.getValue());
-            }
+        }
+
+        if (!includeHistory) {
+            return;
         }
 
         List<SubscriptionDeliveryAttemptDTO> attempts = new ArrayList<>();
@@ -134,8 +150,9 @@ final class DeliveryHistoryMapper {
         return new SubscriptionDeliveryAttemptDTO(attemptNumber, status, timestamp, httpStatus, error);
     }
 
-    private static void mapPollHistory(Connection conn, String orgId, String deliveryId, SubscriptionDeliverySummary summary,
-            DeliveryDAO deliveryDAO, SubscriptionEventHistoryDTO dto) {
+    private static void mapPollHistory(Connection conn, String orgId, String deliveryId,
+            SubscriptionDeliverySummary summary, DeliveryDAO deliveryDAO, SubscriptionEventHistoryDTO dto,
+            boolean includeHistory) {
         Optional<PollDelivery> pollDelivery = deliveryDAO.getPollDeliveryById(conn, deliveryId, orgId);
         String pollStatus = summary.getCurrentStatus() != null ? summary.getCurrentStatus()
                 : PollStatus.PENDING.getValue();
@@ -154,6 +171,9 @@ final class DeliveryHistoryMapper {
         }
 
         dto.setCompletionStatus(pollStatus);
+        if (!includeHistory) {
+            return;
+        }
         List<SubscriptionDeliveryAttemptDTO> attempts = new ArrayList<>();
         attempts.add(new SubscriptionDeliveryAttemptDTO(1, pollStatus, timestamp, null, error));
         dto.setHistory(attempts);

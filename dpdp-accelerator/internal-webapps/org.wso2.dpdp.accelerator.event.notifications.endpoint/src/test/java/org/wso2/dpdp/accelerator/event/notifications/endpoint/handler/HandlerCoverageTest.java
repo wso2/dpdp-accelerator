@@ -30,11 +30,13 @@ public class HandlerCoverageTest {
         handler.searchEvents("org", "topic", "status", "group", "sub", "p", "search", Integer.MAX_VALUE, -1);
         handler.searchEvents("org", "topic", "status", "group", "p", "search", 10, 2);
         handler.listOrgDeliveries("org", null, null, null, null, null, 0, null);
+        handler.getDelivery("org", "delivery");
         handler.getDeliveryHistory("org", "delivery");
         handler.getEventById("org", "event");
         handler.getEventDeliveries("org", "event", Integer.MAX_VALUE, -1);
 
         verify(service).publishEvent(eq("org"), eq("group"), eq("topic"), any(), any());
+        verify(service).getDelivery("org", "delivery");
         verify(service).getDeliveryHistory("org", "delivery");
         verify(service).getEventById("org", "event");
         verify(service).getEventDeliveries("org", "event", Integer.MAX_VALUE, -1);

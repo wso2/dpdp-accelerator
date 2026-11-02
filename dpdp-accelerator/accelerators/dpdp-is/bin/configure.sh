@@ -386,6 +386,11 @@ else
       fi
       echo "      Applying ${FEATURE_NAME}/${DB_SCRIPT_SUFFIX}.sql"
       apply_sql_file "${DB_DPDP}" "${FEATURE_SCRIPT}"
+      FEATURE_MIGRATION_SCRIPT="${FEATURE_DIR}migrations/${DB_SCRIPT_SUFFIX}.sql"
+      if [ -f "${FEATURE_MIGRATION_SCRIPT}" ]; then
+        echo "      Applying ${FEATURE_NAME}/migrations/${DB_SCRIPT_SUFFIX}.sql"
+        apply_sql_file "${DB_DPDP}" "${FEATURE_MIGRATION_SCRIPT}"
+      fi
     done
     echo "      Schema created."
   fi

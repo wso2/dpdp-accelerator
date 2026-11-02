@@ -96,6 +96,10 @@ public class EventHandler {
         return eventPublishService.listOrgDeliveries(orgId, status, subscriptionId, groupId, purposes, search, lim, off);
     }
 
+    public SubscriptionEventHistoryDTO getDelivery(String orgId, String deliveryId) {
+        return eventPublishService.getDelivery(orgId, deliveryId);
+    }
+
     public SubscriptionEventHistoryDTO getDeliveryHistory(String orgId, String deliveryId) {
         return eventPublishService.getDeliveryHistory(orgId, deliveryId);
     }

@@ -26,7 +26,6 @@ import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.constant.DPDPCommonConstants;
 import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
-import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.PollStatus;
@@ -249,68 +248,83 @@ public class EventPublishServiceImpl implements EventPublishService {
                     EventNotificationServiceConstants.DELIVERY_COMPLETION_SERVICES_NOT_INITIALIZED_ERROR_MSG, 500);
         }
 
-        DatabaseUtils.<Void>executeInTransaction(conn -> {
-            Optional<org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery> delivery = deliveryDAO
-                    .getWebhookDeliveryById(conn, safeDeliveryId, safeOrgId);
-            Optional<org.wso2.dpdp.accelerator.event.notifications.dao.model.Subscription> subscription = delivery
-                    .flatMap(value -> subscriptionDAO.getSubscriptionById(conn, value.getSubscriptionId(), safeOrgId));
-            if (!delivery.isPresent() || !subscription.isPresent()
-                    || !safeGroupId.equalsIgnoreCase(subscription.get().getGroupId())
-                    || !HmacSigner.verifyCompletion(subscription.get().getSharedSecret(), safeDeliveryId,
-                            requestBody, eventSignature)) {
-                throw invalidCompletionSignature();
-            }
-            if (DeliveryStatus.COMPLETED.getValue().equalsIgnoreCase(delivery.get().getStatus())
-                    || deliveryAckDAO.getDeliveryAckByDeliveryId(conn, safeDeliveryId, safeOrgId).isPresent()) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
-                        EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_EXISTS,
-                        EventNotificationServiceConstants.DELIVERY_COMPLETION_ALREADY_EXISTS_ERROR_MSG, 409);
-            }
-            if (!DeliveryStatus.DELIVERED.getValue().equalsIgnoreCase(delivery.get().getStatus())) {
-                throw new EventNotificationServiceException(EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE,
-                        EventNotificationServiceConstants.ERROR_TITLE_INVALID_STATE,
-                        EventNotificationServiceConstants.DELIVERY_COMPLETION_INVALID_STATE_ERROR_MSG, 409);
-            }
-
-            if (requestBody == null || requestBody.trim().isEmpty()) {
-                throw invalidCompletion(EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
-                        EventNotificationServiceConstants.COMPLETION_REQUEST_BODY_REQUIRED_ERROR_MSG);
-            }
-            final DeliveryCompletionRequestDTO completion;
-            try {
-                completion = objectMapper.readValue(requestBody, DeliveryCompletionRequestDTO.class);
-            } catch (JsonProcessingException e) {
-                throw invalidCompletion(EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
-                        EventNotificationServiceConstants.COMPLETION_REQUEST_BODY_MALFORMED_ERROR_MSG);
-            }
-            validateCompletion(completion);
-            Timestamp completedAt = completion.getCompletedAt() == null
-                    ? new Timestamp(System.currentTimeMillis())
-                    : new Timestamp(completion.getCompletedAt());
-
-            String completionStatus = completion.getCompletionStatus().trim().toLowerCase(java.util.Locale.ROOT);
-            try {
-                deliveryAckDAO.addDeliveryAck(conn,
-                        new org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryAck(
-                                UUID.randomUUID().toString(), safeDeliveryId, safeOrgId, completedAt,
-                                completionStatus,
-                                completion.getCompletionEvidence().trim()));
-            } catch (EventNotificationDuplicateResourceException e) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
-                        EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_EXISTS,
-                        EventNotificationServiceConstants.DELIVERY_COMPLETION_ALREADY_EXISTS_ERROR_MSG, 409);
-            }
-
-            if (DeliveryStatus.COMPLETED.getValue().equalsIgnoreCase(completionStatus)) {
-                if (!deliveryDAO.markWebhookDeliveryCompleted(conn, safeDeliveryId, safeOrgId)) {
-                    throw new EventNotificationDaoException(
-                            String.format(EventNotificationCommonConstants.ERROR_UPDATING_WEBHOOK_DELIVERY_STATUS, safeDeliveryId));
+        try {
+            DatabaseUtils.<Void>executeInTransaction(conn -> {
+                Optional<org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery> delivery = deliveryDAO
+                        .getWebhookDeliveryById(conn, safeDeliveryId, safeOrgId);
+                Optional<org.wso2.dpdp.accelerator.event.notifications.dao.model.Subscription> subscription = delivery
+                        .flatMap(value -> subscriptionDAO.getSubscriptionById(
+                                conn, value.getSubscriptionId(), safeOrgId));
+                if (!delivery.isPresent() || !subscription.isPresent()
+                        || !safeGroupId.equalsIgnoreCase(subscription.get().getGroupId())
+                        || !HmacSigner.verifyCompletion(subscription.get().getSharedSecret(), safeDeliveryId,
+                                requestBody, eventSignature)) {
+                    throw invalidCompletionSignature();
                 }
-            }
-            return null;
-        });
+                if (DeliveryStatus.COMPLETED.getValue().equalsIgnoreCase(delivery.get().getStatus())
+                        || deliveryAckDAO.getDeliveryAckByDeliveryId(conn, safeDeliveryId, safeOrgId).isPresent()) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
+                            EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_EXISTS,
+                            EventNotificationServiceConstants.DELIVERY_COMPLETION_ALREADY_EXISTS_ERROR_MSG, 409);
+                }
+                if (!DeliveryStatus.DELIVERED.getValue().equalsIgnoreCase(delivery.get().getStatus())) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE,
+                            EventNotificationServiceConstants.ERROR_TITLE_INVALID_STATE,
+                            EventNotificationServiceConstants.DELIVERY_COMPLETION_INVALID_STATE_ERROR_MSG, 409);
+                }
+
+                if (requestBody == null || requestBody.trim().isEmpty()) {
+                    throw invalidCompletion(EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                            EventNotificationServiceConstants.COMPLETION_REQUEST_BODY_REQUIRED_ERROR_MSG);
+                }
+                final DeliveryCompletionRequestDTO completion;
+                try {
+                    completion = objectMapper.readValue(requestBody, DeliveryCompletionRequestDTO.class);
+                } catch (JsonProcessingException e) {
+                    throw invalidCompletion(EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                            EventNotificationServiceConstants.COMPLETION_REQUEST_BODY_MALFORMED_ERROR_MSG);
+                }
+                validateCompletion(completion);
+                Timestamp completedAt = completion.getCompletedAt() == null
+                        ? new Timestamp(System.currentTimeMillis())
+                        : new Timestamp(completion.getCompletedAt());
+
+                String completionStatus = completion.getCompletionStatus().trim().toLowerCase(java.util.Locale.ROOT);
+                try {
+                    deliveryAckDAO.addDeliveryAck(conn,
+                            new org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryAck(
+                                    UUID.randomUUID().toString(), safeDeliveryId, safeOrgId, completedAt,
+                                    completionStatus,
+                                    completion.getCompletionEvidence().trim()));
+                } catch (EventNotificationDuplicateResourceException e) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
+                            EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_EXISTS,
+                            EventNotificationServiceConstants.DELIVERY_COMPLETION_ALREADY_EXISTS_ERROR_MSG, 409);
+                }
+
+                if (DeliveryStatus.COMPLETED.getValue().equalsIgnoreCase(completionStatus)) {
+                    if (!deliveryDAO.markWebhookDeliveryCompleted(conn, safeDeliveryId, safeOrgId)) {
+                        throw new EventNotificationServiceException(
+                                EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE,
+                                EventNotificationServiceConstants.ERROR_TITLE_INVALID_STATE,
+                                EventNotificationServiceConstants.DELIVERY_COMPLETION_INVALID_STATE_ERROR_MSG, 409);
+                    }
+                }
+                return null;
+            });
+        } catch (EventNotificationServiceException e) {
+            throw e;
+        } catch (EventNotificationDaoException e) {
+            LOG.error("Failed to persist delivery completion for delivery ["
+                    + LogSanitizer.sanitize(safeDeliveryId) + "].", e);
+            throw new EventNotificationServiceException(
+                    EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.FAILED_TO_COMPLETE_DELIVERY_ERROR_MSG, 500);
+        }
     }
 
     private static String requireValue(String value, String message) {
@@ -700,7 +714,16 @@ public class EventPublishServiceImpl implements EventPublishService {
     }
 
     @Override
+    public SubscriptionEventHistoryDTO getDelivery(String orgId, String deliveryId) {
+        return loadDelivery(orgId, deliveryId, false);
+    }
+
+    @Override
     public SubscriptionEventHistoryDTO getDeliveryHistory(String orgId, String deliveryId) {
+        return loadDelivery(orgId, deliveryId, true);
+    }
+
+    private SubscriptionEventHistoryDTO loadDelivery(String orgId, String deliveryId, boolean includeHistory) {
         if (orgId == null || orgId.trim().isEmpty()) {
             throw new EventNotificationServiceException(EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
                     EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
@@ -731,7 +754,12 @@ public class EventPublishServiceImpl implements EventPublishService {
                         .orElse(null);
             }
 
-            return DeliveryHistoryMapper.map(conn, orgId.trim(), deliveryId.trim(),
+            if (includeHistory) {
+                return DeliveryHistoryMapper.map(conn, orgId.trim(), deliveryId.trim(),
+                        summary, deliveryDAO, deliveryAckDAO,
+                        getEventNotificationMaxRetries(), subscriptionStatus);
+            }
+            return DeliveryHistoryMapper.mapDelivery(conn, orgId.trim(), deliveryId.trim(),
                     summary, deliveryDAO, deliveryAckDAO,
                     getEventNotificationMaxRetries(), subscriptionStatus);
         });
