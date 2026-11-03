@@ -103,6 +103,10 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     public interface ManualRetryDispatcher {
         WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String subscriptionId,
                 String deliveryId);
+
+        default WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String deliveryId) {
+            return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND;
+        }
     }
 
     public SubscriptionServiceImpl() {
@@ -819,9 +823,17 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     EventNotificationServiceConstants.ERROR_TITLE_CONCURRENT_MUTATION,
                     EventNotificationServiceConstants.SUBSCRIPTION_CONCURRENT_MODIFICATION_ERROR_MSG, 409);
         }
-        subHolder[0].setStatus(SubscriptionStatus.ACTIVE.getValue());
-
-        return DatabaseUtils.executeInTransaction(conn -> mapToDTO(conn, subHolder[0]));
+        return DatabaseUtils.executeInTransaction(conn -> {
+            Optional<Subscription> updated = subscriptionDAO.getSubscriptionById(
+                    conn, subscriptionId.trim(), orgId.trim());
+            if (!updated.isPresent()) {
+                throw new EventNotificationServiceException(
+                        EventNotificationServiceConstants.ERROR_CODE_RESOURCE_NOT_FOUND,
+                        EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_NOT_FOUND,
+                        EventNotificationServiceConstants.SUBSCRIPTION_NOT_FOUND_ERROR_MSG, 404);
+            }
+            return mapToDTO(conn, updated.get());
+        });
     }
 
     @Override
@@ -949,6 +961,73 @@ public class SubscriptionServiceImpl implements SubscriptionService {
                     EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_NOT_ELIGIBLE_ERROR_MSG, 409);
         }
         return getSubscriptionEventHistory(orgId, subscriptionId, deliveryId);
+    }
+
+    @Override
+    public SubscriptionEventHistoryDTO retryDelivery(String orgId, String deliveryId) {
+        if (orgId == null || orgId.trim().isEmpty()) {
+            throw new EventNotificationServiceException(EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
+                    EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                    EventNotificationServiceConstants.ORG_ID_MISSING_ERROR_MSG, 400);
+        }
+        if (deliveryId == null || deliveryId.trim().isEmpty()) {
+            throw new EventNotificationServiceException(EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
+                    EventNotificationServiceConstants.ERROR_TITLE_MALFORMED_REQUEST,
+                    EventNotificationServiceConstants.DELIVERY_ID_MISSING_ERROR_MSG, 400);
+        }
+        if (manualRetryDispatcher == null) {
+            throw new EventNotificationServiceException(EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_UNAVAILABLE_ERROR_MSG, 500);
+        }
+
+        WebhookDeliveryWorker.ManualRetrySubmissionResult result = manualRetryDispatcher.submit(
+                orgId.trim(), deliveryId.trim());
+        if (result == WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND) {
+            throw new EventNotificationServiceException(
+                    EventNotificationServiceConstants.ERROR_CODE_DELIVERY_NOT_FOUND,
+                    EventNotificationServiceConstants.ERROR_TITLE_DELIVERY_NOT_FOUND,
+                    EventNotificationServiceConstants.DELIVERY_NOT_FOUND_ERROR_MSG, 404);
+        }
+        if (result == WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_SUPPORTED_FOR_POLL) {
+            throw new EventNotificationServiceException(
+                    EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE,
+                    EventNotificationServiceConstants.ERROR_TITLE_INVALID_STATE,
+                    EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_POLL_NOT_SUPPORTED_ERROR_MSG, 409);
+        }
+        if (result == WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE) {
+            throw new EventNotificationServiceException(
+                    EventNotificationServiceConstants.ERROR_CODE_INVALID_STATE,
+                    EventNotificationServiceConstants.ERROR_TITLE_INVALID_STATE,
+                    EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_NOT_ELIGIBLE_ERROR_MSG, 409);
+        }
+        return getDelivery(orgId, deliveryId);
+    }
+
+    private SubscriptionEventHistoryDTO getDelivery(String orgId, String deliveryId) {
+        return DatabaseUtils.<SubscriptionEventHistoryDTO>executeInTransaction(conn -> {
+            Optional<SubscriptionDeliverySummary> summaryOpt = deliveryDAO.getOrgDeliveryById(conn, orgId.trim(),
+                    deliveryId.trim());
+            if (!summaryOpt.isPresent()) {
+                throw new EventNotificationServiceException(
+                        EventNotificationServiceConstants.ERROR_CODE_DELIVERY_NOT_FOUND,
+                        EventNotificationServiceConstants.ERROR_TITLE_DELIVERY_NOT_FOUND,
+                        EventNotificationServiceConstants.DELIVERY_NOT_FOUND_ERROR_MSG, 404);
+            }
+
+            SubscriptionDeliverySummary summary = summaryOpt.get();
+            String subscriptionStatus = null;
+            if (subscriptionDAO != null && summary.getSubscriptionId() != null) {
+                subscriptionStatus = subscriptionDAO
+                        .getSubscriptionById(conn, summary.getSubscriptionId(), orgId.trim())
+                        .map(Subscription::getStatus)
+                        .orElse(null);
+            }
+
+            return DeliveryHistoryMapper.mapDelivery(conn, orgId.trim(), deliveryId.trim(),
+                    summary, deliveryDAO, deliveryAckDAO,
+                    getConfiguration().getEventNotificationMaxRetries(), subscriptionStatus);
+        });
     }
 
     private List<String> resolveTopicNames(Connection conn, Subscription sub) {

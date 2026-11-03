@@ -142,6 +142,18 @@ public interface EventPublishService {
             String subscriptionId, String groupId, String purposes, String search, int limit, int offset);
 
     /**
+     * Fetches delivery details and completion state for a specific delivery instance
+     * without loading attempt audit history.
+     *
+     * @param orgId the organisation identifier (required).
+     * @param deliveryId the delivery identifier (required).
+     * @return the delivery details including retry eligibility and completion evidence.
+     */
+    default SubscriptionEventHistoryDTO getDelivery(String orgId, String deliveryId) {
+        return getDeliveryHistory(orgId, deliveryId);
+    }
+
+    /**
      * Fetches delivery audit history and completion details for a specific delivery instance.
      *
      * @param orgId the organisation identifier (required).

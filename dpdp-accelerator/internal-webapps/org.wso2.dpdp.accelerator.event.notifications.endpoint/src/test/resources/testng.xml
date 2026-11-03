@@ -4,6 +4,7 @@
     <test name="dpdp-event-notifications-endpoint-tests">
         <packages>
             <package name="org.wso2.dpdp.accelerator.event.notifications.endpoint.api"/>
+            <package name="org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1"/>
             <package name="org.wso2.dpdp.accelerator.event.notifications.endpoint.handler"/>
             <package name="org.wso2.dpdp.accelerator.event.notifications.endpoint.exception"/>
         </packages>

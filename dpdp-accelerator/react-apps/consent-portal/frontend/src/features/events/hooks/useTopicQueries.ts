@@ -29,6 +29,7 @@ import type {
   TopicInput,
   TopicListQueryParams,
   TopicRecord,
+  TopicStatusUpdate,
 } from '../../../types/topic'
 import { createTopic, deleteTopic, fetchTopics } from '../api/topicsApi'
 
@@ -86,7 +87,7 @@ export function useCreateTopicMutation(): UseMutationResult<TopicRecord, Error, 
   })
 }
 
-export function useDeleteTopicMutation(): UseMutationResult<TopicRecord, Error, string> {
+export function useDeleteTopicMutation(): UseMutationResult<TopicStatusUpdate, Error, string> {
   const queryClient = useQueryClient()
 
   return useMutation({

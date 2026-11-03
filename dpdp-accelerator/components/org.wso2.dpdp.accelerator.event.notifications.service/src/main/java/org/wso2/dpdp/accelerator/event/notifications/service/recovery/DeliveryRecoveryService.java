@@ -143,6 +143,13 @@ public class DeliveryRecoveryService {
         return webhookDeliveryWorker.submitManualRetry(orgId, subscriptionId, deliveryId);
     }
 
+    public WebhookDeliveryWorker.ManualRetrySubmissionResult submitManualRetry(String orgId, String deliveryId) {
+        if (webhookDeliveryWorker == null) {
+            throw new IllegalStateException("Webhook delivery worker is not initialized.");
+        }
+        return webhookDeliveryWorker.submitManualRetry(orgId, deliveryId);
+    }
+
     private static void shutdownGracefully(String name, java.util.concurrent.ExecutorService pool,
             int timeoutSeconds) {
         if (pool == null || pool.isShutdown()) {

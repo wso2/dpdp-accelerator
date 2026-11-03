@@ -63,7 +63,7 @@ describe('subscriptionsApi', () => {
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions')
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/subscriptions')
     expect(Object.fromEntries(url.searchParams)).toEqual({
       limit: '10',
       offset: '20',
@@ -80,7 +80,7 @@ describe('subscriptionsApi', () => {
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions/sub%2F123')
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/subscriptions/sub%2F123')
     expect(req.method).toBe('GET')
   })
 
@@ -102,31 +102,33 @@ describe('subscriptionsApi', () => {
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions')
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/subscriptions')
     expect(req.method).toBe('POST')
     expect(JSON.parse(String(req.data))).toEqual(payload)
   })
 
   it('deletes a subscription by ID', async () => {
-    respondWith({ subscriptionId: 'sub-1', status: 'DELETED' })
+    respondWith({ subscriptionId: 'sub-1', status: 'deleted', updatedAt: 1787652970000 })
 
-    await deleteSubscription('sub-1')
+    const result = await deleteSubscription('sub-1')
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions/sub-1')
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/subscriptions/sub-1')
     expect(req.method).toBe('DELETE')
+    expect(result).toEqual({ subscriptionId: 'sub-1', status: 'deleted', updatedAt: 1787652970000 })
   })
 
   it('triggers verification on a subscription', async () => {
-    respondWith({ subscriptionId: 'sub-1', status: 'ACTIVE' })
+    respondWith({ subscriptionId: 'sub-1', status: 'active', updatedAt: 1787652970000 })
 
-    await verifySubscription('sub-1')
+    const result = await verifySubscription('sub-1')
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions/sub-1/verify')
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/subscriptions/sub-1/verify')
     expect(req.method).toBe('POST')
+    expect(result).toEqual({ subscriptionId: 'sub-1', status: 'active', updatedAt: 1787652970000 })
   })
 
   it('fetches subscription delivery events with pagination', async () => {
@@ -136,7 +138,7 @@ describe('subscriptionsApi', () => {
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions/sub-1/events')
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/subscriptions/sub-1/deliveries')
     expect(Object.fromEntries(url.searchParams)).toEqual({
       limit: '5',
       offset: '10',
@@ -149,10 +151,14 @@ describe('subscriptionsApi', () => {
 
     await fetchSubscriptionEventHistory('sub-1', 'dlv-1')
 
-    const req = sentRequest()
-    const url = new URL(req.url)
-    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1/subscriptions/sub-1/events/dlv-1')
-    expect(req.method).toBe('GET')
+    const req1 = sentRequest(0)
+    const req2 = sentRequest(1)
+    const url1 = new URL(req1.url)
+    const url2 = new URL(req2.url)
+    expect(url1.pathname).toBe('/api/dpdp/event-notifications/v1.1/deliveries/dlv-1')
+    expect(req1.method).toBe('GET')
+    expect(url2.pathname).toBe('/api/dpdp/event-notifications/v1.1/deliveries/dlv-1/history')
+    expect(req2.method).toBe('GET')
   })
 
   it('submits a manual delivery retry', async () => {
@@ -162,9 +168,7 @@ describe('subscriptionsApi', () => {
 
     const req = sentRequest()
     const url = new URL(req.url)
-    expect(url.pathname).toBe(
-      '/api/dpdp/event-notifications/v1/subscriptions/sub%2F1/events/dlv%2F1/retry',
-    )
+    expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/deliveries/dlv%2F1/retry')
     expect(req.method).toBe('POST')
   })
 })

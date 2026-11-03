@@ -78,6 +78,7 @@ public class DaoWritePathCoverageTest {
 
         assertTrue(dao.addWebhookDelivery(connection, webhook));
         assertTrue(dao.updateWebhookDeliveryStatus(connection, webhook));
+        assertTrue(dao.markWebhookDeliveryCompleted(connection, "d-1", "org-1"));
         assertTrue(dao.addWebhookDeliveryAudit(connection, audit));
         assertTrue(dao.addPollDelivery(connection, poll));
         dao.updatePollDeliveryStatusesByDeliveryIds(connection, "org-1", "group-1", "s-1",

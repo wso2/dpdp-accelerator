@@ -45,6 +45,7 @@ import { formatEpochTimestamp } from '../../../utils/dateTime'
 import { useEventDeliveryHistoryQuery } from '../hooks/useEventQueries'
 import { useRetrySubscriptionDeliveryMutation } from '../hooks/useSubscriptionQueries'
 import { getSubscriptionStatusChipColor } from '../utils/subscriptionStatusChip'
+import CompletionEvidenceCard from './CompletionEvidenceCard'
 
 interface EventDetailsModalProps {
   open: boolean
@@ -165,29 +166,12 @@ export default function EventDetailsModal({
             <Alert severity="warning">{t('events.details.noHistory')}</Alert>
           ) : (
             <Stack spacing={2}>
-              {historyData?.completionStatus ? (
-                <Box
-                  sx={{
-                    p: 2,
-                    borderRadius: 1,
-                    border: 1,
-                    borderColor: 'divider',
-                    bgcolor: 'background.paper',
-                  }}
-                >
-                  <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 0.5 }}>
-                    {t('events.details.completionTitle')}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    <strong>
-                      {t(
-                        `events.status.${historyData.completionStatus.toLowerCase()}`,
-                        historyData.completionStatus,
-                      )}
-                    </strong>
-                    {historyData.completionEvidence ? ` — ${historyData.completionEvidence}` : ''}
-                  </Typography>
-                </Box>
+              {rawMode === 'webhook' ? (
+                <CompletionEvidenceCard
+                  completionStatus={historyData?.completionStatus}
+                  completionEvidence={historyData?.completionEvidence}
+                  deliveryMode={rawMode}
+                />
               ) : null}
 
               {retryMutation.isError ? (

@@ -51,6 +51,15 @@ for webapp in "${ACCELERATOR_HOME}"/carbon-home/repository/deployment/server/web
   rm -f "${WEBAPPS_PATH}/${name}.war"
 done
 
+# Explicitly remove the legacy version-suffixed event-notifications webapp
+# (renamed from api#dpdp#event-notifications#v1 to api#dpdp#event-notifications).
+LEGACY_EVENT_WEBAPP="api#dpdp#event-notifications#v1"
+if [ -d "${WEBAPPS_PATH}/${LEGACY_EVENT_WEBAPP}" ]; then
+  echo "Removing the previously deployed ${LEGACY_EVENT_WEBAPP}"
+  rm -rf "${WEBAPPS_PATH:?}/${LEGACY_EVENT_WEBAPP}"
+fi
+rm -f "${WEBAPPS_PATH}/${LEGACY_EVENT_WEBAPP}.war"
+
 # Remove stale dropins to prevent duplicate bundle loading.
 echo "Removing old DPDP accelerator artifacts from the product"
 find "${WSO2_IS_HOME}/repository/components/dropins" -name "org.wso2.dpdp.accelerator.*" -exec rm -f {} \;

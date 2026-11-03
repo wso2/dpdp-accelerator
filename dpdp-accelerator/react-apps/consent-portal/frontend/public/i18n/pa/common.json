@@ -800,7 +800,9 @@
       "httpStatus": "HTTP ਸਥਿਤੀ",
       "timestamp": "ਟਾਈਮਸਟੈਂਪ",
       "errorDetails": "ਗਲਤੀ ਵੇਰਵੇ",
-      "noAttempts": "ਕੋਈ ਐਗਜ਼ੀਕਿਊਸ਼ਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤੀ ਗਈ।"
+      "noAttempts": "ਕੋਈ ਐਗਜ਼ੀਕਿਊਸ਼ਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਰਿਕਾਰਡ ਨਹੀਂ ਕੀਤੀ ਗਈ।",
+      "collapseEvidence": "ਸੰਪੂਰਨਤਾ ਸਬੂਤ ਸੰਖੇਪ ਕਰੋ",
+      "expandEvidence": "ਸੰਪੂਰਨਤਾ ਸਬੂਤ ਫੈਲਾਓ"
     }
   },
   "events": {

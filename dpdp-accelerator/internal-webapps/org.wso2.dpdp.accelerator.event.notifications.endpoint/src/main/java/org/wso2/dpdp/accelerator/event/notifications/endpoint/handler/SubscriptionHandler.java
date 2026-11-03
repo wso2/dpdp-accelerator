@@ -99,4 +99,8 @@ public class SubscriptionHandler {
     public SubscriptionEventHistoryDTO retryDelivery(String orgId, String subscriptionId, String deliveryId) {
         return subscriptionService.retryDelivery(orgId, subscriptionId, deliveryId);
     }
+
+    public SubscriptionEventHistoryDTO retryDelivery(String orgId, String deliveryId) {
+        return subscriptionService.retryDelivery(orgId, deliveryId);
+    }
 }

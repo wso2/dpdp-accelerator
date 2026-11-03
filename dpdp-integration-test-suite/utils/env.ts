@@ -161,7 +161,7 @@ export function meComplaintsApiUrl(path: string, tenantDomain?: string): string 
 }
 
 // The accelerator's own event-notification webapp (org.wso2.dpdp.accelerator.event.notifications.endpoint,
-// finalName "api#dpdp#event-notifications#v1"). Unlike the complaint-server, this IS
+// finalName "api#dpdp#event-notifications"). Unlike the complaint-server, this IS
 // tenant-qualified (see docs/content/event-notification-guide.md) - every path goes through
 // tenantSegment the same way the IS-native consent APIs above do.
 export function eventNotificationsApiUrl(path: string, tenantDomain?: string): string {

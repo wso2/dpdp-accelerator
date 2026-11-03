@@ -77,6 +77,8 @@ public class EventNotificationServiceConstants {
         public static final String DELIVERY_NOT_FOUND_ERROR_MSG = "No delivery exists with the specified ID for this subscription.";
         public static final String DELIVERY_MANUAL_RETRY_NOT_ELIGIBLE_ERROR_MSG =
                 "Manual retry is only available once after a webhook delivery exhausts all automatic retries.";
+        public static final String DELIVERY_MANUAL_RETRY_POLL_NOT_SUPPORTED_ERROR_MSG =
+                "Manual retry is not available for poll deliveries.";
         public static final String DELIVERY_MANUAL_RETRY_UNAVAILABLE_ERROR_MSG =
                 "The webhook delivery worker is not available.";
         public static final String ONLY_STALE_SUBSCRIPTIONS_VERIFIABLE_ERROR_MSG = "Only subscriptions in 'stale' state can be re-verified.";
@@ -127,6 +129,8 @@ public class EventNotificationServiceConstants {
         public static final String COMPLETION_STATUS_INVALID_CHOICE_ERROR_MSG =
                 "completionStatus must be completed, ack, disputed, or partial.";
         public static final String COMPLETION_COMPLETED_AT_NEGATIVE_ERROR_MSG = "completedAt must not be negative.";
+        public static final String FAILED_TO_COMPLETE_DELIVERY_ERROR_MSG =
+                "Failed to persist delivery completion report.";
         public static final int MAX_POLL_ERROR_CODE_LENGTH = 64;
         public static final int MAX_POLL_ERROR_DETAIL_LENGTH = 1024;
 }

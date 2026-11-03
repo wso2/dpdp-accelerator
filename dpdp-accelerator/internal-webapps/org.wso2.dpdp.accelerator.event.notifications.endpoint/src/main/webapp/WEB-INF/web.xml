@@ -7,18 +7,44 @@
 
   <display-name>WSO2 DPDP Accelerator - Event Notification API</display-name>
 
+  <!-- V1 CXF Servlet -->
   <servlet>
-    <servlet-name>CXFServlet</servlet-name>
+    <servlet-name>CXFServletV1</servlet-name>
     <servlet-class>
       org.wso2.carbon.identity.servlet.mgt.CustomCXFNonSpringJaxrsServlet
     </servlet-class>
     <init-param>
       <param-name>jaxrs.serviceClasses</param-name>
       <param-value>
-        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.SubscriptionEndpoint,
-        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.TopicEndpoint,
-        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.EventEndpoint,
-        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.DeliveryEndpoint
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.SubscriptionEndpoint,
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.TopicEndpoint,
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.EventEndpoint,
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.DeliveryEndpoint
+      </param-value>
+    </init-param>
+    <init-param>
+      <param-name>jaxrs.providers</param-name>
+      <param-value>
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.exception.EventNotificationExceptionMapper,
+        com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider
+      </param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <!-- V1.1 CXF Servlet -->
+  <servlet>
+    <servlet-name>CXFServletV1_1</servlet-name>
+    <servlet-class>
+      org.wso2.carbon.identity.servlet.mgt.CustomCXFNonSpringJaxrsServlet
+    </servlet-class>
+    <init-param>
+      <param-name>jaxrs.serviceClasses</param-name>
+      <param-value>
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.SubscriptionEndpoint,
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.TopicEndpoint,
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.EventEndpoint,
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1_1.DeliveryEndpoint
       </param-value>
     </init-param>
     <init-param>
@@ -32,8 +58,13 @@
   </servlet>
 
   <servlet-mapping>
-    <servlet-name>CXFServlet</servlet-name>
-    <url-pattern>/*</url-pattern>
+    <servlet-name>CXFServletV1</servlet-name>
+    <url-pattern>/v1/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>CXFServletV1_1</servlet-name>
+    <url-pattern>/v1.1/*</url-pattern>
   </servlet-mapping>
 
 </web-app>
