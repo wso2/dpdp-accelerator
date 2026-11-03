@@ -76,16 +76,12 @@ You normally do not need to work with these scope names when assigning the prede
 | :------------------------------------------ | :-------------------------------------------- | :-----: | :----: | :---: |
 | View topics                             | `notifications:topics:read`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | Create or deregister topics             | `notifications:topics:write`              |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-| View subscriptions, delivery details, and delivery history | `notifications:subscriptions:read`        |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-| Create, verify, or delete subscriptions, and retry deliveries | `notifications:subscriptions:write`       |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-| View events and event deliveries        | `notifications:events:read`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
+| View subscriptions and delivery history | `notifications:subscriptions:read`        |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
+| Create, verify, or delete subscriptions | `notifications:subscriptions:write`       |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
+| View events and delivery history        | `notifications:events:read`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | Publish events                          | `notifications:events:write`              |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | Poll event deliveries                   | `notifications:events:poll`               |  <span className="scope-no">✗</span>    |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | Submit delivery-completion evidence     | `notifications:event-deliveries:complete` |  <span className="scope-no">✗</span>    |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-
-:::note Delivery details and history scope in v1.1
-In `v1.1` (and in the Consent Portal's Event details view), reading delivery details (`GET /deliveries/{deliveryId}`) and delivery attempt history (`GET /deliveries/{deliveryId}/history`) requires `notifications:subscriptions:read`. Custom roles or integrations that need to inspect delivery history alongside events must be granted both `notifications:events:read` and `notifications:subscriptions:read`.
-:::
 
 The last two scopes are intended for applications that receive events. For example, you can create dedicated applications with only the permissions they require:
 

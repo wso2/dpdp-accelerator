@@ -390,7 +390,7 @@ equivalent request. It uses the administrator's access token, which carries
 export ADMIN_TOKEN="<admin-access-token>"
 
 curl -X POST \
-  "${BASE_URL}/api/dpdp/event-notifications/v1.1/subscriptions" \
+  "${BASE_URL}/api/dpdp/event-notifications/v1/subscriptions" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -414,7 +414,7 @@ curl -X POST \
 export ADMIN_TOKEN="<admin-access-token>"
 
 curl -X POST \
-  "${BASE_URL}/api/dpdp/event-notifications/v1.1/subscriptions" \
+  "${BASE_URL}/api/dpdp/event-notifications/v1/subscriptions" \
   -H "Authorization: Bearer ${ADMIN_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
@@ -453,7 +453,7 @@ $Body = @'
 '@
 
 Invoke-RestMethod -Method Post `
-  -Uri "$env:BASE_URL/api/dpdp/event-notifications/v1.1/subscriptions" `
+  -Uri "$env:BASE_URL/api/dpdp/event-notifications/v1/subscriptions" `
   -Headers @{ Authorization = "Bearer $env:ADMIN_TOKEN" } `
   -ContentType "application/json" `
   -Body $Body | ConvertTo-Json -Depth 10
@@ -605,7 +605,7 @@ lists the roles that grant them:
 ```bash
 export BASE_URL="https://localhost:9443"
 export TENANT_DOMAIN="example.com"
-export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1.1"
+export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1"
 export PUBLISHER_TOKEN="<publisher-access-token>"
 export RECEIVER_TOKEN="<receiver-access-token>"
 ```
@@ -616,7 +616,7 @@ export RECEIVER_TOKEN="<receiver-access-token>"
 ```bash
 export BASE_URL="https://localhost:9443"
 export TENANT_DOMAIN="example.com"
-export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1.1"
+export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1"
 export PUBLISHER_TOKEN="<publisher-access-token>"
 export RECEIVER_TOKEN="<receiver-access-token>"
 ```
@@ -627,7 +627,7 @@ export RECEIVER_TOKEN="<receiver-access-token>"
 ```powershell
 $env:BASE_URL = "https://localhost:9443"
 $env:TENANT_DOMAIN = "example.com"
-$env:API_BASE = "$env:BASE_URL/api/dpdp/event-notifications/v1.1"
+$env:API_BASE = "$env:BASE_URL/api/dpdp/event-notifications/v1"
 $env:PUBLISHER_TOKEN = "<publisher-access-token>"
 $env:RECEIVER_TOKEN = "<receiver-access-token>"
 ```
@@ -698,7 +698,9 @@ $env:SHARED_SECRET = "medexpress-sample-secret-4f8a2c91"
 
 ### Step 3: Publish an event
 
-Now play the order system and publish the change with the publisher token:
+Now play the order system and publish the change with the publisher token.
+The `group-id` header has to match the subscription's group, which is the
+tenant domain:
 
 <Tabs groupId="operating-systems">
 <TabItem value="linux" label="Linux" default>
@@ -706,6 +708,7 @@ Now play the order system and publish the change with the publisher token:
 ```bash
 curl -sk -X POST "${API_BASE}/events" \
   -H "Authorization: Bearer ${PUBLISHER_TOKEN}" \
+  -H "group-id: ${TENANT_DOMAIN}" \
   -H "Content-Type: application/json" \
   -d '{
     "topic": "delivery.preferences.update",
@@ -722,6 +725,7 @@ curl -sk -X POST "${API_BASE}/events" \
 ```bash
 curl -sk -X POST "${API_BASE}/events" \
   -H "Authorization: Bearer ${PUBLISHER_TOKEN}" \
+  -H "group-id: ${TENANT_DOMAIN}" \
   -H "Content-Type: application/json" \
   -d '{
     "topic": "delivery.preferences.update",
@@ -749,6 +753,7 @@ $Body = @'
 Invoke-RestMethod -SkipCertificateCheck -Method Post -Uri "$env:API_BASE/events" `
   -Headers @{
     Authorization = "Bearer $env:PUBLISHER_TOKEN"
+    "group-id"    = $env:TENANT_DOMAIN
   } `
   -ContentType "application/json" `
   -Body $Body | ConvertTo-Json -Depth 10
@@ -762,10 +767,10 @@ You'll get back the stored event and its `eventId`:
 ```json
 {
   "eventId": "f0b66a0d-edcb-4d94-94ee-70ce33b34f20",
+  "orgId": "example.com",
+  "groupId": "example.com",
   "topicId": "3064830b-7249-4fa6-9b83-59d7215af1c2",
-  "topic": "delivery.preferences.update",
   "payload": "{\"customerReference\":\"cust-0001\",\"change\":\"DELIVERY_WINDOW_UPDATED\"}",
-  "purposes": [],
   "occurredAt": 1791199075832,
   "createdAt": 1791199075832
 }
@@ -789,6 +794,7 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -sk -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${RECEIVER_TOKEN}" \
   -H "Content-Type: application/json" \
+  -H "group-id: ${TENANT_DOMAIN}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -804,6 +810,7 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -sk -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${RECEIVER_TOKEN}" \
   -H "Content-Type: application/json" \
+  -H "group-id: ${TENANT_DOMAIN}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -820,6 +827,7 @@ $PollSignature = 'sha256=' + [BitConverter]::ToString($Hmac.ComputeHash([Text.En
 Invoke-RestMethod -SkipCertificateCheck -Method Post -Uri "$env:API_BASE/events/poll" `
   -Headers @{
     Authorization     = "Bearer $env:RECEIVER_TOKEN"
+    "group-id"        = $env:TENANT_DOMAIN
     "subscription-id" = $env:SUBSCRIPTION_ID
     "event-signature" = $PollSignature
   } `
@@ -878,6 +886,7 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -sk -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${RECEIVER_TOKEN}" \
   -H "Content-Type: application/json" \
+  -H "group-id: ${TENANT_DOMAIN}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -894,6 +903,7 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -sk -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${RECEIVER_TOKEN}" \
   -H "Content-Type: application/json" \
+  -H "group-id: ${TENANT_DOMAIN}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -911,6 +921,7 @@ $PollSignature = 'sha256=' + [BitConverter]::ToString($Hmac.ComputeHash([Text.En
 Invoke-RestMethod -SkipCertificateCheck -Method Post -Uri "$env:API_BASE/events/poll" `
   -Headers @{
     Authorization     = "Bearer $env:RECEIVER_TOKEN"
+    "group-id"        = $env:TENANT_DOMAIN
     "subscription-id" = $env:SUBSCRIPTION_ID
     "event-signature" = $PollSignature
   } `
