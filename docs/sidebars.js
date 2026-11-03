@@ -4,12 +4,12 @@
 const sidebars = {
   docs: [
     { type: 'doc', id: 'introduction', label: 'Introduction' },
-    { type: 'doc', id: 'release-notes', label: 'Release Notes' },
     {
       type: 'category',
       label: 'Getting Started',
       items: [
         { type: 'doc', id: 'quickstart', label: 'Quickstart' },
+        { type: 'doc', id: 'about-this-release', label: 'About this Release' },
       ],
     },
     {

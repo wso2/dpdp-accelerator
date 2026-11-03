@@ -718,6 +718,7 @@ The corresponding read APIs are:
 | List deliveries for a subscription (`v1.1`) | `GET /subscriptions/{subscriptionId}/deliveries` | `notifications:subscriptions:read` |
 | List deliveries for a subscription (`v1`, deprecated) | `GET /subscriptions/{subscriptionId}/events` | `notifications:subscriptions:read` |
 | Get a subscription delivery history (`v1`, deprecated) | `GET /subscriptions/{subscriptionId}/events/{deliveryId}` | `notifications:subscriptions:read` |
+| Retry an exhausted delivery (`v1`, deprecated) | `POST /subscriptions/{subscriptionId}/events/{deliveryId}/retry` | `notifications:subscriptions:write` |
 
 :::note Scope required for delivery details and history in v1.1
 In `v1.1`, delivery details and attempt history moved from `/events/{deliveryId}/history` to `/deliveries/{deliveryId}` and `/deliveries/{deliveryId}/history`, which require the `notifications:subscriptions:read` scope (and `POST /deliveries/{deliveryId}/retry` requires `notifications:subscriptions:write`). Because the Consent Portal's Event details modal calls the `v1.1` `/deliveries/{deliveryId}` and `/deliveries/{deliveryId}/history` endpoints, any custom role that previously held only `notifications:events:read` must also be granted `notifications:subscriptions:read` to inspect delivery details and attempt history without receiving HTTP `403 Forbidden`.
