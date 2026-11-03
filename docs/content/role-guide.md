@@ -118,12 +118,16 @@ Of the three automatically provisioned portal roles, only `dpdp-consent-admin` r
 | :--- | :--- | :---: | :---: | :---: |
 | View topics | `notifications:topics:read` | ✅ | ❌ | ❌ |
 | Create or deregister topics | `notifications:topics:write` | ✅ | ❌ | ❌ |
-| View subscriptions and their delivery history | `notifications:subscriptions:read` | ✅ | ❌ | ❌ |
-| Create, verify, or delete subscriptions | `notifications:subscriptions:write` | ✅ | ❌ | ❌ |
-| View events and delivery history | `notifications:events:read` | ✅ | ❌ | ❌ |
+| View subscriptions, delivery details, and delivery history (`GET /deliveries/{id}`, `GET /deliveries/{id}/history`) | `notifications:subscriptions:read` | ✅ | ❌ | ❌ |
+| Create, verify, or delete subscriptions, and retry deliveries (`POST /deliveries/{id}/retry`) | `notifications:subscriptions:write` | ✅ | ❌ | ❌ |
+| View events and event deliveries (`GET /events`, `GET /events/{id}/deliveries`, and legacy `v1` `GET /events/{id}/history`) | `notifications:events:read` | ✅ | ❌ | ❌ |
 | Publish events | `notifications:events:write` | ✅ | ❌ | ❌ |
 | Poll event deliveries | `notifications:events:poll` | ❌ | ❌ | ❌ |
 | Submit delivery completion evidence | `notifications:event-deliveries:complete` | ❌ | ❌ | ❌ |
+
+:::note Custom roles inspecting delivery history
+In API `v1.1` (used by the Consent Portal), reading delivery details and attempt history moved from `/events/{deliveryId}/history` to `/deliveries/{deliveryId}` and `/deliveries/{deliveryId}/history`, which require `notifications:subscriptions:read`. If you define a custom role for viewing events and their delivery history in the portal or via `v1.1`, grant both `notifications:events:read` and `notifications:subscriptions:read`.
+:::
 
 The final two scopes exist in Identity Server so a dedicated receiver client can use the corresponding APIs. Their existence does not grant them to `dpdp-consent-admin`, `dpdp-consent-user`, or `dpdp-consent-dpo`.
 
@@ -195,9 +199,9 @@ The following steps must be performed manually by the operator in the **WSO2 IS 
 | Manage Elements catalog | `internal_consent_mgt_element_view`, `internal_consent_mgt_element_create`, `internal_consent_mgt_element_delete` | ❌ | ❌ | ❌ | ✅ |
 | View topics | `notifications:topics:read` | ❌ | ❌ | ❌ | ✅ |
 | Manage topics | `notifications:topics:write` | ❌ | ❌ | ❌ | ✅ |
-| View subscriptions | `notifications:subscriptions:read` | ❌ | ❌ | ❌ | ✅ |
-| Manage subscriptions | `notifications:subscriptions:write` | ❌ | ❌ | ❌ | ✅ |
-| View events and delivery history | `notifications:events:read` | ❌ | ❌ | ❌ | ✅ |
+| View subscriptions and delivery history | `notifications:subscriptions:read` | ❌ | ❌ | ❌ | ✅ |
+| Manage subscriptions and retry deliveries | `notifications:subscriptions:write` | ❌ | ❌ | ❌ | ✅ |
+| View events and event deliveries | `notifications:events:read` | ❌ | ❌ | ❌ | ✅ |
 | Publish events | `notifications:events:write` | ❌ | ❌ | ❌ | ✅ |
 | Poll event deliveries | `notifications:events:poll` | ❌ | ❌ | ❌ | ❌ |
 | Submit delivery completion | `notifications:event-deliveries:complete` | ❌ | ❌ | ❌ | ❌ |
