@@ -72,6 +72,7 @@ permissions:
 
 env:
   MAVEN_VERSION: 3.9.11
+  MAVEN_SHA512: bcfe4fe305c962ace56ac7b5fc7a08b87d5abd8b7e89027ab251069faebee516b0ded8961445d6d91ec1985dfe30f8153268843c89aa392733d1a3ec956c9978
 
 jobs:
   prepare:
@@ -98,8 +99,12 @@ jobs:
           cache: maven
       - name: Set up Maven ${{ env.MAVEN_VERSION }}
         run: |
+          archive="${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
           curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
-            | tar -xz -C "${RUNNER_TEMP}"
+            -o "${archive}"
+          echo "${MAVEN_SHA512}  ${archive}" | sha512sum -c -
+          tar -xz -C "${RUNNER_TEMP}" -f "${archive}"
+          rm -f "${archive}"
           echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
 
       - name: Resolve and validate the version
@@ -266,8 +271,12 @@ jobs:
           cache: maven
       - name: Set up Maven ${{ env.MAVEN_VERSION }}
         run: |
+          archive="${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
           curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
-            | tar -xz -C "${RUNNER_TEMP}"
+            -o "${archive}"
+          echo "${MAVEN_SHA512}  ${archive}" | sha512sum -c -
+          tar -xz -C "${RUNNER_TEMP}" -f "${archive}"
+          rm -f "${archive}"
           echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
@@ -339,8 +348,12 @@ jobs:
           cache: maven
       - name: Set up Maven ${{ env.MAVEN_VERSION }}
         run: |
+          archive="${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
           curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
-            | tar -xz -C "${RUNNER_TEMP}"
+            -o "${archive}"
+          echo "${MAVEN_SHA512}  ${archive}" | sha512sum -c -
+          tar -xz -C "${RUNNER_TEMP}" -f "${archive}"
+          rm -f "${archive}"
           echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -534,8 +547,12 @@ jobs:
           cache: maven
       - name: Set up Maven ${{ env.MAVEN_VERSION }}
         run: |
+          archive="${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
           curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
-            | tar -xz -C "${RUNNER_TEMP}"
+            -o "${archive}"
+          echo "${MAVEN_SHA512}  ${archive}" | sha512sum -c -
+          tar -xz -C "${RUNNER_TEMP}" -f "${archive}"
+          rm -f "${archive}"
           echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
 
       # Pushed straight to main rather than raised as a PR: GITHUB_TOKEN cannot open one
