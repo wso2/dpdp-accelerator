@@ -39,6 +39,8 @@ public class EventNotificationCommonDBQueries {
     protected static final String SQL_DELIVERY_PENDING = "'" + DeliveryStatus.PENDING.getValue() + "'";
     protected static final String SQL_DELIVERY_IN_FLIGHT = "'" + DeliveryStatus.IN_FLIGHT.getValue() + "'";
     protected static final String SQL_DELIVERY_FAILED = "'" + DeliveryStatus.FAILED.getValue() + "'";
+    protected static final String SQL_DELIVERY_DELIVERED = "'" + DeliveryStatus.DELIVERED.getValue() + "'";
+    protected static final String SQL_DELIVERY_COMPLETED = "'" + DeliveryStatus.COMPLETED.getValue() + "'";
     protected static final String SQL_POLL_PENDING = "'" + PollStatus.PENDING.getValue() + "'";
     protected static final String SQL_POLL_ACKNOWLEDGED = "'" + PollStatus.ACKNOWLEDGED.getValue() + "'";
     protected static final String SQL_WEBHOOK_MODE = "'" + DeliveryMode.WEBHOOK.getValue() + "'";
@@ -257,6 +259,11 @@ public class EventNotificationCommonDBQueries {
     public String getReleaseWebhookDeliveryQuery() {
         return "UPDATE WEBHOOK_DELIVERY SET STATUS = " + SQL_DELIVERY_PENDING + ", ATTEMPT_COUNT = ?, NEXT_RETRY_AT = ?, " +
                 "UPDATED_AT = CURRENT_TIMESTAMP WHERE DELIVERY_ID = ? AND STATUS = " + SQL_DELIVERY_IN_FLIGHT;
+    }
+
+    public String getMarkWebhookDeliveryCompletedQuery() {
+        return "UPDATE WEBHOOK_DELIVERY SET STATUS = " + SQL_DELIVERY_COMPLETED + ", UPDATED_AT = CURRENT_TIMESTAMP " +
+                "WHERE DELIVERY_ID = ? AND ORG_ID = ? AND STATUS = " + SQL_DELIVERY_DELIVERED;
     }
 
     // EVENT Queries

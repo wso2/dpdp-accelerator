@@ -157,6 +157,7 @@ describe('EventDetailsModal manual retry', () => {
           attempt: 1,
           status: 'err',
           timestamp: 1700000001000,
+          error: 'Poll error: invalid payload',
         },
       ],
     }
@@ -176,8 +177,11 @@ describe('EventDetailsModal manual retry', () => {
     // Mode is rendered in Title Case
     expect(screen.getByText('Poll')).toBeInTheDocument()
 
-    // Status 'err' is localized as 'Error' (header chip, completion status, attempt row)
+    // Completion Evidence is NOT rendered for poll
+    expect(screen.queryByText('Completion Evidence')).not.toBeInTheDocument()
+
+    // Status 'err' is localized as 'Error' (header chip, attempt row)
     const errorElements = screen.getAllByText('Error')
-    expect(errorElements.length).toBeGreaterThanOrEqual(2)
+    expect(errorElements.length).toBeGreaterThanOrEqual(1)
   })
 })

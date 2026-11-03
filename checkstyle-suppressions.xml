@@ -39,4 +39,7 @@
     <!-- Generated from an OpenAPI spec - see CLAUDE.md, "Generated DTOs". -->
     <suppress checks=".*" files=".*/src/gen/java/.*"/>
 
+    <!-- Allow v1_1 package naming for minor-versioned API endpoints -->
+    <suppress checks="PackageName" files=".*/v1_1/.*"/>
+
 </suppressions>

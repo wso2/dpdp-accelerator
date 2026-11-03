@@ -24,8 +24,10 @@ import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
 import org.wso2.dpdp.accelerator.common.util.HTTPClientUtils;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
 import org.wso2.dpdp.accelerator.event.notifications.dao.DeliveryDAO;
+import org.wso2.dpdp.accelerator.event.notifications.dao.model.SubscriptionDeliverySummary;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryDispatchContext;
 
@@ -70,7 +72,8 @@ public class WebhookDeliveryWorker implements Runnable {
     public enum ManualRetrySubmissionResult {
         ACCEPTED,
         NOT_FOUND,
-        NOT_ELIGIBLE
+        NOT_ELIGIBLE,
+        NOT_SUPPORTED_FOR_POLL
     }
 
     private static final Log LOG = LogFactory.getLog(WebhookDeliveryWorker.class);
@@ -152,6 +155,49 @@ public class WebhookDeliveryWorker implements Runnable {
     public ManualRetrySubmissionResult submitManualRetry(String orgId, String subscriptionId, String deliveryId) {
         WebhookDeliveryDispatchContext[] contextHolder = new WebhookDeliveryDispatchContext[1];
         ManualRetrySubmissionResult result = DatabaseUtils.executeInTransaction(conn -> {
+            Optional<WebhookDeliveryDispatchContext> context = deliveryDAO.getWebhookDeliveryDispatchContext(
+                    conn, orgId, subscriptionId, deliveryId);
+            if (!context.isPresent()) {
+                return ManualRetrySubmissionResult.NOT_FOUND;
+            }
+            boolean prepared = deliveryDAO.prepareManualRetry(conn, orgId, subscriptionId, deliveryId,
+                    getConfiguration().getEventNotificationMaxRetries());
+            if (!prepared) {
+                return ManualRetrySubmissionResult.NOT_ELIGIBLE;
+            }
+            contextHolder[0] = context.get();
+            return ManualRetrySubmissionResult.ACCEPTED;
+        });
+        if (result != ManualRetrySubmissionResult.ACCEPTED) {
+            return result;
+        }
+
+        try {
+            executor.execute(() -> executeClaimed(contextHolder[0], false, null));
+        } catch (RuntimeException e) {
+            // The row remains pending and due, so the regular worker can pick it up on its next tick.
+            LOG.error("Manual webhook retry was persisted but could not be submitted immediately for delivery ["
+                    + LogSanitizer.sanitize(deliveryId) + "]: " + LogSanitizer.sanitize(e.getMessage()), e);
+        }
+        return ManualRetrySubmissionResult.ACCEPTED;
+    }
+
+    /**
+     * Atomically resolves a delivery across modes, validates eligibility, and submits a manual retry for webhook
+     * deliveries.
+     */
+    public ManualRetrySubmissionResult submitManualRetry(String orgId, String deliveryId) {
+        WebhookDeliveryDispatchContext[] contextHolder = new WebhookDeliveryDispatchContext[1];
+        ManualRetrySubmissionResult result = DatabaseUtils.executeInTransaction(conn -> {
+            Optional<SubscriptionDeliverySummary> summaryOpt = deliveryDAO.getOrgDeliveryById(conn, orgId, deliveryId);
+            if (!summaryOpt.isPresent()) {
+                return ManualRetrySubmissionResult.NOT_FOUND;
+            }
+            SubscriptionDeliverySummary summary = summaryOpt.get();
+            if (DeliveryMode.POLL.getValue().equalsIgnoreCase(summary.getDeliveryMode())) {
+                return ManualRetrySubmissionResult.NOT_SUPPORTED_FOR_POLL;
+            }
+            String subscriptionId = summary.getSubscriptionId();
             Optional<WebhookDeliveryDispatchContext> context = deliveryDAO.getWebhookDeliveryDispatchContext(
                     conn, orgId, subscriptionId, deliveryId);
             if (!context.isPresent()) {

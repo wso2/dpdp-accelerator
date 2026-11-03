@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.api.v1.DeliveryEndpoint;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.handler.EventHandler;
 
 import javax.ws.rs.core.Response;

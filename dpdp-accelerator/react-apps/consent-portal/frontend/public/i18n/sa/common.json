@@ -800,7 +800,9 @@
       "httpStatus": "HTTP स्थितिः",
       "timestamp": "कालमुद्रा",
       "errorDetails": "त्रुटि विवरणानि",
-      "noAttempts": "न कोऽपि निष्पादनप्रयासः अभिलिखितः।"
+      "noAttempts": "न कोऽपि निष्पादनप्रयासः अभिलिखितः।",
+      "collapseEvidence": "पूर्तिप्रमाणं सङ्कोचयतु",
+      "expandEvidence": "पूर्तिप्रमाणं विस्तारयतु"
     }
   },
   "events": {

@@ -800,7 +800,9 @@
       "httpStatus": "ꯑꯦꯆ.ꯇꯤ.ꯇꯤ.ꯄꯤ. ꯁ꯭ꯇꯦꯇꯁ",
       "timestamp": "ꯇꯥꯏꯝꯁ꯭ꯇꯥꯛ",
       "errorDetails": "ꯑꯦꯔꯔ ꯗꯤꯇꯦꯜꯁꯤꯡ",
-      "noAttempts": "ꯊꯕꯛ ꯊꯤꯟꯅꯕꯒꯤ ꯍꯣꯠꯅꯕ ꯑꯃꯠꯇ ꯂꯩꯇꯦ꯫"
+      "noAttempts": "ꯊꯕꯛ ꯊꯤꯟꯅꯕꯒꯤ ꯍꯣꯠꯅꯕ ꯑꯃꯠꯇ ꯂꯩꯇꯦ꯫",
+      "collapseEvidence": "ꯂꯣꯏꯔꯕꯒꯤ ꯈꯨꯗꯝ ꯈꯨꯝꯖꯤꯜꯂꯨ",
+      "expandEvidence": "ꯂꯣꯏꯔꯕꯒꯤ ꯈꯨꯗꯝ ꯁꯟꯗꯣꯛꯂꯨ"
     }
   },
   "events": {

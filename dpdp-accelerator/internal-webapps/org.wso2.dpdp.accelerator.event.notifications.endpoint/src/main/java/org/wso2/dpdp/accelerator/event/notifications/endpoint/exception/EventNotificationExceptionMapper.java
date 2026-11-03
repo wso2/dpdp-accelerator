@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException;
 import org.wso2.dpdp.accelerator.event.notifications.endpoint.constants.EventNotificationEndpointErrorCodes;
-import org.wso2.dpdp.accelerator.event.notifications.endpoint.dto.Error;
+import org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Error;
 
 import java.util.Collections;
 import java.util.IdentityHashMap;

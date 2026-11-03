@@ -44,6 +44,8 @@ public class H2SchemaParityTest {
 
     private static final String SCHEMA_PATH =
             "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/h2.sql";
+    private static final String MIGRATION_PATH =
+            "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/h2.sql";
 
     @Test
     public void shippedSchemaEnforcesDeliveryIntegrityAndIndexes() throws Exception {
@@ -148,15 +150,23 @@ public class H2SchemaParityTest {
     }
 
     private static Path findSchema() {
+        return findRelativePath(SCHEMA_PATH);
+    }
+
+    private static Path findMigration() {
+        return findRelativePath(MIGRATION_PATH);
+    }
+
+    private static Path findRelativePath(String relativePath) {
         Path current = Paths.get("").toAbsolutePath();
         while (current != null) {
-            Path candidate = current.resolve(SCHEMA_PATH);
+            Path candidate = current.resolve(relativePath);
             if (Files.isRegularFile(candidate)) {
                 return candidate;
             }
             current = current.getParent();
         }
-        throw new IllegalStateException("Could not locate " + SCHEMA_PATH);
+        throw new IllegalStateException("Could not locate " + relativePath);
     }
 
     @Test
@@ -305,6 +315,62 @@ public class H2SchemaParityTest {
             org.wso2.dpdp.accelerator.event.notifications.dao.model.Subscription fetched4 =
                     dao.getSubscriptionById(connection, "sub-4", "org-1").get();
             org.testng.Assert.assertEquals(fetched4.getName(), "ORDERS WEBHOOK");
+        }
+    }
+
+    @Test
+    public void migrationBackfillsCompletedWebhookDeliveriesIdempotently() throws Exception {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_migration_test");
+                Reader schema = Files.newBufferedReader(findSchema(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, schema);
+            try (Statement statement = connection.createStatement()) {
+                statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME) VALUES ('t1', 'org-1', 'orders')");
+                statement.executeUpdate("INSERT INTO EVENT (EVENT_ID, ORG_ID, GROUP_ID, TOPIC_ID, PAYLOAD) VALUES "
+                        + "('e1', 'org-1', 'g1', 't1', '{}'), "
+                        + "('e2', 'org-1', 'g1', 't1', '{}'), "
+                        + "('e3', 'org-1', 'g1', 't1', '{}')");
+                statement.executeUpdate("INSERT INTO SUBSCRIPTION "
+                        + "(SUBSCRIPTION_ID, ORG_ID, NAME, GROUP_ID, STATUS, PURPOSE_FILTER_MODE, "
+                        + "PURPOSE_SET_HASH, DELIVERY_MODE) VALUES "
+                        + "('s1', 'org-1', 'Sub 1', 'g1', 'active', 'all', '', 'webhook')");
+                statement.executeUpdate("INSERT INTO WEBHOOK_DELIVERY "
+                        + "(DELIVERY_ID, ORG_ID, SUBSCRIPTION_ID, EVENT_ID, STATUS) VALUES "
+                        + "('d-completed', 'org-1', 's1', 'e1', 'delivered'), "
+                        + "('d-disputed', 'org-1', 's1', 'e2', 'delivered'), "
+                        + "('d-no-ack', 'org-1', 's1', 'e3', 'delivered')");
+                statement.executeUpdate("INSERT INTO WEBHOOK_DELIVERY_ACK "
+                        + "(ACK_ID, DELIVERY_ID, ORG_ID, COMPLETION_STATUS, COMPLETION_EVIDENCE) VALUES "
+                        + "('ack-1', 'd-completed', 'org-1', 'completed', 'https://example.com/ev1'), "
+                        + "('ack-2', 'd-disputed', 'org-1', 'disputed', 'https://example.com/ev2')");
+            }
+
+            try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
+                RunScript.execute(connection, migration);
+            }
+            // Re-run to verify idempotency
+            try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
+                RunScript.execute(connection, migration);
+            }
+
+            try (Statement statement = connection.createStatement()) {
+                try (ResultSet rs = statement.executeQuery(
+                        "SELECT DELIVERY_ID, STATUS FROM WEBHOOK_DELIVERY ORDER BY DELIVERY_ID")) {
+                    assertTrue(rs.next());
+                    org.testng.Assert.assertEquals(rs.getString("DELIVERY_ID"), "d-completed");
+                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "completed");
+                    assertTrue(rs.next());
+                    org.testng.Assert.assertEquals(rs.getString("DELIVERY_ID"), "d-disputed");
+                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "delivered");
+                    assertTrue(rs.next());
+                    org.testng.Assert.assertEquals(rs.getString("DELIVERY_ID"), "d-no-ack");
+                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "delivered");
+                }
+                try (ResultSet rs = statement.executeQuery(
+                        "SELECT COUNT(*) FROM WEBHOOK_DELIVERY_ACK WHERE COMPLETION_STATUS = 'completed'")) {
+                    assertTrue(rs.next());
+                    org.testng.Assert.assertEquals(rs.getInt(1), 1);
+                }
+            }
         }
     }
 }

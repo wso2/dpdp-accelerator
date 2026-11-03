@@ -179,7 +179,7 @@ describe('SubscriptionDeliveryHistoryModal manual retry', () => {
     expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument()
   })
 
-  it('localizes completionStatus and attempt status correctly when status is err', async () => {
+  it('localizes completionStatus and attempt status correctly when status is err without showing Completion Evidence for poll', async () => {
     const pollHistory: SubscriptionEventHistoryRecord = {
       deliveryId: 'del-2',
       eventId: 'evt-2',
@@ -195,6 +195,7 @@ describe('SubscriptionDeliveryHistoryModal manual retry', () => {
           attempt: 1,
           status: 'err',
           timestamp: 1700000001000,
+          error: 'Poll error: invalid payload',
         },
       ],
     }
@@ -203,7 +204,8 @@ describe('SubscriptionDeliveryHistoryModal manual retry', () => {
     renderModal({ subscriptionId: 'sub-1', deliveryId: 'del-2' })
 
     const errorElements = await screen.findAllByText('Error')
-    expect(errorElements.length).toBeGreaterThanOrEqual(2)
+    expect(errorElements.length).toBeGreaterThanOrEqual(1)
     expect(screen.getByText(/Poll error: invalid payload/)).toBeInTheDocument()
+    expect(screen.queryByText('Completion Evidence')).not.toBeInTheDocument()
   })
 })

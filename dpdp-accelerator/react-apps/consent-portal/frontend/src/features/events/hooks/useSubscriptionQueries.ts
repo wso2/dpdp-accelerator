@@ -31,6 +31,7 @@ import type {
   SubscriptionInput,
   SubscriptionListQueryParams,
   SubscriptionRecord,
+  SubscriptionStatusUpdate,
 } from '../../../types/subscription'
 import {
   createSubscription,
@@ -130,7 +131,7 @@ export function useCreateSubscriptionMutation(): UseMutationResult<
 }
 
 export function useDeleteSubscriptionMutation(): UseMutationResult<
-  SubscriptionRecord,
+  SubscriptionStatusUpdate,
   Error,
   string
 > {
@@ -146,7 +147,7 @@ export function useDeleteSubscriptionMutation(): UseMutationResult<
 }
 
 export function useVerifySubscriptionMutation(): UseMutationResult<
-  SubscriptionRecord,
+  SubscriptionStatusUpdate,
   Error,
   string
 > {

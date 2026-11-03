@@ -18,6 +18,7 @@ import org.wso2.dpdp.accelerator.event.notifications.dao.model.SubscriptionDeliv
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryAck;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryAudit;
+import org.wso2.dpdp.accelerator.event.notifications.service.constants.EventNotificationServiceConstants;
 import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.WebhookDeliveryWorker;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.SubscriptionEventHistoryDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.model.PaginatedResult;
@@ -315,6 +316,79 @@ public class SubscriptionServiceReadAndDeleteTest {
     }
 
     @Test
+    public void retryDeliveryTwoArgMapsMissingDeliveryToNotFound() {
+        service.setManualRetryDispatcher(new SubscriptionServiceImpl.ManualRetryDispatcher() {
+            @Override
+            public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String subscriptionId,
+                    String deliveryId) {
+                return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND;
+            }
+
+            @Override
+            public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String deliveryId) {
+                return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_FOUND;
+            }
+        });
+
+        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException exception =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class,
+                        () -> service.retryDelivery("org-1", "missing"));
+
+        assertEquals(exception.getStatusCode(), 404);
+    }
+
+    @Test
+    public void retryDeliveryTwoArgMapsPollDeliveryToConflict() {
+        service.setManualRetryDispatcher(new SubscriptionServiceImpl.ManualRetryDispatcher() {
+            @Override
+            public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String subscriptionId,
+                    String deliveryId) {
+                return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_SUPPORTED_FOR_POLL;
+            }
+
+            @Override
+            public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String deliveryId) {
+                return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_SUPPORTED_FOR_POLL;
+            }
+        });
+
+        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException exception =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class,
+                        () -> service.retryDelivery("org-1", "poll-del-1"));
+
+        assertEquals(exception.getStatusCode(), 409);
+        assertEquals(exception.getDescription(),
+                EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_POLL_NOT_SUPPORTED_ERROR_MSG);
+    }
+
+    @Test
+    public void retryDeliveryTwoArgMapsIneligibleDeliveryToConflict() {
+        service.setManualRetryDispatcher(new SubscriptionServiceImpl.ManualRetryDispatcher() {
+            @Override
+            public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String subscriptionId,
+                    String deliveryId) {
+                return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE;
+            }
+
+            @Override
+            public WebhookDeliveryWorker.ManualRetrySubmissionResult submit(String orgId, String deliveryId) {
+                return WebhookDeliveryWorker.ManualRetrySubmissionResult.NOT_ELIGIBLE;
+            }
+        });
+
+        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException exception =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class,
+                        () -> service.retryDelivery("org-1", "del-1"));
+
+        assertEquals(exception.getStatusCode(), 409);
+        assertEquals(exception.getDescription(),
+                EventNotificationServiceConstants.DELIVERY_MANUAL_RETRY_NOT_ELIGIBLE_ERROR_MSG);
+    }
+
+    @Test
     public void deleteSubscriptionReportsInFlightConflict() {
         Subscription sub = subscription("sub-1", "topic-1", "active");
         when(subscriptionDAO.getSubscriptionById(any(Connection.class), eq("sub-1"), eq("org-1"))).thenReturn(Optional.of(sub));
@@ -404,7 +478,10 @@ public class SubscriptionServiceReadAndDeleteTest {
     @Test
     public void retryVerificationUsesGuardedExpectedStatusTransition() throws Exception {
         Subscription pending = webhookSubscription("sub-1", "pending");
-        when(subscriptionDAO.getSubscriptionById(any(Connection.class), eq("sub-1"), eq("org-1"))).thenReturn(Optional.of(pending));
+        Subscription active = webhookSubscription("sub-1", "active");
+        active.setUpdatedAt(new java.sql.Timestamp(1787652970000L));
+        when(subscriptionDAO.getSubscriptionById(any(Connection.class), eq("sub-1"), eq("org-1")))
+                .thenReturn(Optional.of(pending), Optional.of(active));
         when(topicDAO.getTopicsByIds(any(Connection.class), eq(Collections.singletonList("topic-1")), eq("org-1")))
                 .thenReturn(Collections.singletonList(new org.wso2.dpdp.accelerator.event.notifications.dao.model.Topic(
                         "topic-1", "org-1", "accounts", "", "active")));
@@ -416,6 +493,7 @@ public class SubscriptionServiceReadAndDeleteTest {
                 service.retryVerification("org-1", "sub-1");
 
         assertEquals(result.getStatus().getValue(), "active");
+        assertEquals(result.getUpdatedAt(), Long.valueOf(1787652970000L));
         verify(subscriptionDAO).updateSubscriptionStatus(connection, "sub-1", "org-1", "pending", "active");
         verify(subscriptionDAO, never()).updateSubscriptionStatus(any(Connection.class), eq("sub-1"), eq("org-1"), eq("active"));
     }

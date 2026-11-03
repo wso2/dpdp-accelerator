@@ -262,6 +262,25 @@ public class DeliveryDAOImpl implements DeliveryDAO {
     }
 
     @Override
+    public boolean markWebhookDeliveryCompleted(Connection conn, String deliveryId, String orgId) {
+        if (conn == null) {
+            throw new IllegalArgumentException("Connection cannot be null.");
+        }
+        if (deliveryId == null || deliveryId.trim().isEmpty() || orgId == null || orgId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Delivery ID and Organization ID cannot be null or empty.");
+        }
+        try (PreparedStatement ps = conn.prepareStatement(getQueries(conn).getMarkWebhookDeliveryCompletedQuery())) {
+            ps.setString(1, deliveryId.trim());
+            ps.setString(2, orgId.trim());
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new EventNotificationDaoException(
+                    String.format(EventNotificationCommonConstants.ERROR_UPDATING_WEBHOOK_DELIVERY_STATUS, deliveryId),
+                    e);
+        }
+    }
+
+    @Override
     public boolean recordSuccessfulAttempt(Connection conn, WebhookDeliveryAudit audit, WebhookDelivery delivery) {
         if (conn == null) {
             throw new IllegalArgumentException("Connection cannot be null.");

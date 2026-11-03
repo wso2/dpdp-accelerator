@@ -118,13 +118,19 @@ public class EventAndAckDAOImplTest {
         Timestamp now = new Timestamp(System.currentTimeMillis());
 
         WebhookDelivery webhook = new WebhookDelivery("wd-1", "org-1", "sub-1", "event-1",
-                "pending", 0, null, now, now, null);
+                "delivered", 1, null, now, now, now);
         assertTrue(dao.addWebhookDelivery(connection, webhook));
 
         Optional<WebhookDelivery> fetchedWebhook = dao.getWebhookDeliveryById(connection, "wd-1", "org-1");
         assertTrue(fetchedWebhook.isPresent());
         assertEquals(fetchedWebhook.get().getDeliveryId(), "wd-1");
-        assertEquals(fetchedWebhook.get().getOrgId(), "org-1");
+        assertEquals(fetchedWebhook.get().getStatus(), "delivered");
+
+        assertTrue(dao.markWebhookDeliveryCompleted(connection, "wd-1", "org-1"));
+        Optional<WebhookDelivery> completedWebhook = dao.getWebhookDeliveryById(connection, "wd-1", "org-1");
+        assertTrue(completedWebhook.isPresent());
+        assertEquals(completedWebhook.get().getStatus(), "completed");
+
         assertFalse(dao.getWebhookDeliveryById(connection, "wd-1", "wrong-org").isPresent());
         assertFalse(dao.getWebhookDeliveryById(connection, "missing", "org-1").isPresent());
 

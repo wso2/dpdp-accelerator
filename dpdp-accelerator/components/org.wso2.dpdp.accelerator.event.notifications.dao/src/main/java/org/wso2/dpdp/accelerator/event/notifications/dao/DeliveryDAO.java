@@ -60,6 +60,8 @@ public interface DeliveryDAO {
 
     boolean updateWebhookDeliveryStatus(Connection conn, WebhookDelivery delivery);
 
+    boolean markWebhookDeliveryCompleted(Connection conn, String deliveryId, String orgId);
+
     boolean recordSuccessfulAttempt(Connection conn, WebhookDeliveryAudit audit, WebhookDelivery delivery);
 
     boolean recordRetryableFailure(Connection conn, WebhookDeliveryAudit audit, String deliveryId, int attemptCount, Timestamp nextRetryAt);

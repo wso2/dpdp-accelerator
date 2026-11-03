@@ -21,13 +21,14 @@ import type {
   TopicListQueryParams,
   TopicListResponse,
   TopicRecord,
+  TopicStatusUpdate,
 } from '../../../types/topic'
 import { apiRequest } from '../../../utils/apiClient'
 
 const jsonHeaders = { 'Content-Type': 'application/json' }
 
 export async function fetchTopics(params: TopicListQueryParams): Promise<TopicListResponse> {
-  return apiRequest<TopicListResponse>('/api/dpdp/event-notifications/v1/topics', {
+  return apiRequest<TopicListResponse>('/api/dpdp/event-notifications/v1.1/topics', {
     method: 'GET',
     query: {
       limit: params.limit,
@@ -40,16 +41,16 @@ export async function fetchTopics(params: TopicListQueryParams): Promise<TopicLi
 }
 
 export async function createTopic(payload: TopicInput): Promise<TopicRecord> {
-  return apiRequest<TopicRecord>('/api/dpdp/event-notifications/v1/topics', {
+  return apiRequest<TopicRecord>('/api/dpdp/event-notifications/v1.1/topics', {
     method: 'POST',
     headers: jsonHeaders,
     body: JSON.stringify(payload),
   })
 }
 
-export async function deleteTopic(topicId: string): Promise<TopicRecord> {
-  return apiRequest<TopicRecord>(
-    `/api/dpdp/event-notifications/v1/topics/${encodeURIComponent(topicId)}`,
+export async function deleteTopic(topicId: string): Promise<TopicStatusUpdate> {
+  return apiRequest<TopicStatusUpdate>(
+    `/api/dpdp/event-notifications/v1.1/topics/${encodeURIComponent(topicId)}`,
     {
       method: 'DELETE',
     },
