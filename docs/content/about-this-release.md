@@ -9,7 +9,7 @@ This document describes the features, enhancements, behavioral changes, deprecat
 ## What is new in this release
 
 ### V1.1 Event Notifications REST API
-Introduced the OpenAPI 3.0 V1.1 contract (`event-notifications-v1.1.yaml`) hosted under the base URL `/api/dpdp/event-notifications/v1.1`. The web application runtime is configured with multi-version routing to serve V1.1 while preserving backwards compatibility with V1.
+Introduced the OpenAPI 3.0 V1.1 contract (`event-notifications-v1.1.yaml`) hosted under the base URL `/api/dpdp/event-notifications/v1.1` (and `/t/{tenantDomain}/api/dpdp/event-notifications/v1.1` for secondary tenants). The web application runtime is configured with multi-version routing to serve V1.1 while preserving backwards compatibility with V1.
 
 ### Dedicated delivery resource routes
 Reorganized delivery operations under direct top-level `/deliveries` endpoints to decouple delivery management from parent events and subscriptions:
@@ -81,7 +81,7 @@ The legacy V1 routes remain accessible at `/api/dpdp/event-notifications/v1` for
 Follow these steps to upgrade an existing DPDP Accelerator deployment to version 1.1.0:
 
 ### 1. Apply database migration scripts
-Run the database migration script matching your database engine from the accelerator distribution:
+Run the database migration script matching your database engine from the accelerator distribution, or use `configure.sh` with migration enabled:
 
 ```sh
 # For MySQL
@@ -89,6 +89,9 @@ mysql -u <user> -p <database_name> < repository/deployment/server/event-notifica
 
 # For PostgreSQL
 psql -U <user> -d <database_name> -f repository/deployment/server/event-notification/migrations/postgresql.sql
+
+# For embedded H2 (evaluation environments) or automated setup:
+APPLY_DPDP_DB_MIGRATION=true ./configure.sh
 ```
 
 ### 2. Reconcile custom roles and permissions
@@ -99,6 +102,9 @@ If your organization has configured custom roles that inspect delivery details i
 * Assign `notifications:subscriptions:write` if operators need permission to manually trigger delivery retries.
 
 ### 3. Update client applications
-* Point your API clients to the V1.1 base URL: `https://<host>:9443/api/dpdp/event-notifications/v1.1`.
+* Point your API clients to the V1.1 base URL according to your tenant context:
+  * **Super tenant (`carbon.super`):** `https://<host>:9443/api/dpdp/event-notifications/v1.1`
+  * **Secondary tenants:** `https://<host>:9443/t/{tenantDomain}/api/dpdp/event-notifications/v1.1`
+  *(Use the super tenant URL for the default root tenant; include the `/t/{tenantDomain}` path prefix whenever issuing requests within a secondary organization tenant).*
 * Remove the mandatory `group-id` header from publishers and receivers unless custom group partitioning is explicitly required.
 

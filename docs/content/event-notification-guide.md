@@ -123,7 +123,7 @@ The normal webhook flow is:
 |---|---|
 | Topic | A named event category, such as `consent-status-changed`. |
 | Subscription | Associates one or more topics with one shared purpose filter and delivery configuration. |
-| Event | The payload published to a topic for a group. |
+| Event | The payload published to a topic. |
 | Delivery | One subscription-specific attempt to deliver an event. |
 
 ## 3. Create and manage topics
@@ -150,7 +150,7 @@ under `[dpdp_accelerator.event_notifications.lifecycle_events]`.
 The lifecycle action creates the Event Notification event automatically; an
 administrator or external publisher does not need to call `POST /events` for
 that occurrence. A delivery is created only for an active subscription whose
-tenant, group, topic, and purpose filter match the event.
+tenant, topic, and purpose filter match the event.
 
 These topics are marked as managed by the system. A portal administrator can
 use them for subscriptions and events but cannot deregister them. The portal
@@ -451,7 +451,7 @@ Purpose filters behave as follows:
 
 `specific` and `all_except` require at least one purpose. Purpose matching is
 case-insensitive. A subscription containing `user.account.delete` or `user.data.change`
-requires the `all` purpose filter. Topics are fixed at creation. A tenant and group cannot
+requires the `all` purpose filter. Topics are fixed at creation. A tenant cannot
 mix webhook and poll subscriptions for the same topic. Duplicate or overlapping webhook
 subscriptions using the same callback URL are also rejected. Referenced topics cannot
 be deregistered while any subscription referencing them is active, pending, or stale.
@@ -585,7 +585,7 @@ fragment and must not exceed 512 characters. A second completion for the same
 delivery returns `EN-4090` with HTTP `409 Conflict`.
 
 An accepted completion returns HTTP `204 No Content` with an empty response
-body. Unknown deliveries, group mismatches, and invalid signatures return the
+body. Unknown deliveries, invalid signatures, or tenant mismatches return the
 same `401 / EN-4010` response so an unauthenticated caller cannot discover a
 delivery or its state.
 
@@ -620,7 +620,7 @@ The `ack` array contains delivery IDs, while the `setErrs` object is keyed by
 delivery ID; neither uses an event ID. Each delivery belongs to one
 subscription, so this prevents an acknowledgement for one subscription from
 updating another subscription's delivery of the same event. Only pending
-deliveries belonging to the request's tenant, group, and requested
+deliveries belonging to the request's tenant and requested
 subscription are updated. A delivery ID must not appear in both `ack` and
 `setErrs`.
 
