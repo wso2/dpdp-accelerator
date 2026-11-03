@@ -72,3 +72,4 @@ To upgrade an existing DPDP Accelerator deployment to Version 1.1.0:
 * **Event Notifications (V1):** Asynchronous event delivery via webhooks and polling, payload HMAC signing, and JWT verification.
 * **Role-Based Access Control:** Pre-configured `dpdp-consent-admin`, `dpdp-consent-user`, and `dpdp-consent-dpo` roles.
 * **Consent Portal:** Built-in web application for Data Principals and administrators.
+
