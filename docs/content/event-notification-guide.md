@@ -231,6 +231,15 @@ curl --request DELETE "${API_BASE}/topics/<topic-id>" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
 
+A successful deregistration returns HTTP `200 OK` with the updated status:
+
+```json
+{
+  "topicId": "2ea5f59a-70db-4098-b0f8-3f3cfede76c7",
+  "status": "deregistered"
+}
+```
+
 A topic cannot be deregistered while it has active subscriptions. System-created
 topics cannot be deregistered by users.
 
@@ -478,6 +487,16 @@ curl --request POST "${API_BASE}/subscriptions/<subscription-id>/verify" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
 
+A successful verification returns HTTP `200 OK` with the active subscription status:
+
+```json
+{
+  "subscriptionId": "70f63b63-7ec4-4e42-a956-fca89bfeb351",
+  "status": "active",
+  "updatedAt": 1787652970000
+}
+```
+
 You can also open the subscription details in the portal and select **Verify**.
 
 ### Register a poll subscription
@@ -694,6 +713,7 @@ The corresponding read APIs are:
 | List deliveries for an event | `GET /events/{eventId}/deliveries` | `notifications:events:read` |
 | Get delivery details (`v1.1`) | `GET /deliveries/{deliveryId}` | `notifications:subscriptions:read` |
 | Get delivery attempt history (`v1.1`) | `GET /deliveries/{deliveryId}/history` | `notifications:subscriptions:read` |
+| Retry an exhausted delivery (`v1.1`) | `POST /deliveries/{deliveryId}/retry` | `notifications:subscriptions:write` |
 | Get delivery history (`v1`, deprecated) | `GET /events/{deliveryId}/history` | `notifications:events:read` |
 | List deliveries for a subscription (`v1.1`) | `GET /subscriptions/{subscriptionId}/deliveries` | `notifications:subscriptions:read` |
 | List deliveries for a subscription (`v1`, deprecated) | `GET /subscriptions/{subscriptionId}/events` | `notifications:subscriptions:read` |
@@ -706,9 +726,20 @@ In `v1.1`, delivery details and attempt history moved from `/events/{deliveryId}
 For example:
 
 ```sh
+# List deliveries for an event
 curl "${API_BASE}/events/<event-id>/deliveries?limit=20&offset=0" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
+
+# Get delivery attempt history
+curl "${API_BASE}/deliveries/<delivery-id>/history" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}"
+
+# Retry an exhausted webhook delivery
+curl --request POST "${API_BASE}/deliveries/<delivery-id>/retry" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
+
+Calling `POST /deliveries/{deliveryId}/retry` returns HTTP `202 Accepted` and transitions a failed or exhausted webhook delivery back into the queue for automatic redelivery by the delivery worker.
 
 ## 9. Delete a subscription
 
@@ -718,6 +749,16 @@ use:
 ```sh
 curl --request DELETE "${API_BASE}/subscriptions/<subscription-id>" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
+```
+
+A successful deletion returns HTTP `200 OK` with the deleted status:
+
+```json
+{
+  "subscriptionId": "70f63b63-7ec4-4e42-a956-fca89bfeb351",
+  "status": "deleted",
+  "updatedAt": 1787652970000
+}
 ```
 
 Deletion changes the subscription to `deleted`; it does not erase its existing
