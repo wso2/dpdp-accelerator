@@ -670,12 +670,13 @@ export async function mintPersonaTokenWithScopes(
   scopes: string[],
 ): Promise<AuthHeaders> {
   const target = resolveTarget(test.info().project.name)
-  const persona =
-    personaName === 'consent-admin'
-      ? target.personas.consentAdmin
-      : personaName === 'user'
-        ? target.personas.user
-        : target.personas.dpo
+  const personasByName = {
+    'consent-admin': target.personas.consentAdmin,
+    user: target.personas.user,
+    'user-2': target.personas.user2,
+    dpo: target.personas.dpo,
+  } satisfies Record<PersonaName, Persona>
+  const persona = personasByName[personaName]
   const personaState = await getPersonaState(browser, personaName, persona)
 
   const verifier = crypto.randomBytes(32).toString('base64url')
