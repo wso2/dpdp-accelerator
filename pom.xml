@@ -527,6 +527,16 @@
                     <artifactId>openapi-generator-maven-plugin</artifactId>
                     <version>${openapi.generator.plugin.version}</version>
                 </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-help-plugin</artifactId>
+                    <version>${maven.help.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>versions-maven-plugin</artifactId>
+                    <version>${versions.maven.plugin.version}</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -663,6 +673,8 @@
         <maven.dependency.plugin.version>3.11.0</maven.dependency.plugin.version>
         <build.helper.maven.plugin.version>3.6.1</build.helper.maven.plugin.version>
         <openapi.generator.plugin.version>7.25.0</openapi.generator.plugin.version>
+        <maven.help.plugin.version>3.5.2</maven.help.plugin.version>
+        <versions.maven.plugin.version>2.23.0</versions.maven.plugin.version>
         <maven.checkstyle.plugin.version>3.6.0</maven.checkstyle.plugin.version>
         <checkstyle.version>10.20.2</checkstyle.version>
 

@@ -37,6 +37,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MAVEN_VERSION: 3.9.11
+
 jobs:
   build:
     name: Build
@@ -52,6 +55,11 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: maven
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        run: |
+          curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+            | tar -xz -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'

@@ -70,6 +70,9 @@ concurrency:
 permissions:
   contents: read
 
+env:
+  MAVEN_VERSION: 3.9.11
+
 jobs:
   prepare:
     name: Prepare
@@ -93,6 +96,11 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: maven
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        run: |
+          curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+            | tar -xz -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
 
       - name: Resolve and validate the version
         id: resolve
@@ -256,6 +264,11 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: maven
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        run: |
+          curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+            | tar -xz -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
@@ -324,6 +337,11 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: maven
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        run: |
+          curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+            | tar -xz -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
 
       - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
@@ -514,6 +532,11 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: maven
+      - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        run: |
+          curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
+            | tar -xz -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
 
       # Pushed straight to main rather than raised as a PR: GITHUB_TOKEN cannot open one
       # unless a repository admin has enabled "Allow GitHub Actions to create and approve
