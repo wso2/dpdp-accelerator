@@ -531,7 +531,7 @@ Register conflicts, re-verification, and delete guards.
 | `09.07.06` | Deleting an already-deleted subscription returns not found |  |
 | `09.07.07` | Registering with empty topics or duplicate topic names is rejected | 400 with descriptive error message. |
 | `09.07.08` | Registering with a non-existent or inactive topic is rejected | 404 with topic not active in organization error. |
-| `09.07.09` | Multi-topic subscriptions containing user lifecycle topics require the all purpose filter | 422 with lifecycle topic filter requirement error. |
+| `09.07.09` | Multi-topic subscriptions containing user lifecycle topics require the all purpose filter | 422 with lifecycle topic filter requirement error. Covered through v1 only (shares user.data.change across versions in parallel runs). |
 | `09.07.10` | Delivery mode conflict is rejected when any topic overlaps in the same group | 409 across shared topic associations. |
 
 ### `09.08-publishing-events-api.spec.ts` · API-only
@@ -598,7 +598,7 @@ V1.1 specific features: split delivery reads, event polling with HMAC verificati
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.13.01` | V1.1 split read returns delivery details without history and attempts via history endpoint | `GET /deliveries/{id}` returns delivery metadata/evidence without attempt history, while `GET /deliveries/{id}/history` returns the attempt list. |
-| `09.13.02` | V1.1 publish without group-id header and poll with HMAC signature verification | Publishes without `group-id` header; verifies polling via `POST /events/poll` with HMAC-SHA256 signature verification over request body. |
+| `09.13.02` | V1.1 publish without group-id header and poll with signature headers | Publishes without `group-id` header; verifies polling via `POST /events/poll` with signature headers (rejects with 401 if `request_hmac_validation_enabled = true` or accepts 200 when disabled by default in `deployment.toml`). |
 | `09.13.03` | Manual retry on a poll delivery is rejected with 409 Conflict | `POST /deliveries/{id}/retry` returns 409 Conflict with EN-60032. |
 | `09.13.04` | Access control on /v1.1/deliveries/* requires notifications:subscriptions:read | Token with only `notifications:events:read` receives 403 Forbidden; token with `notifications:subscriptions:read` succeeds. |
 | `09.13.05` | Webhook completion records evidence, rejects invalid signatures and duplicate completions | **Skipped unless webhook receiver is configured.** Records completion evidence on `POST /deliveries/{id}/completion`, rejects invalid signatures, and rejects duplicate completions with 409 Conflict. |

@@ -92,7 +92,7 @@ test.describe('Event Notifications V1.1 API features', () => {
     expect(Array.isArray(historyBody.history)).toBe(true)
   })
 
-  test('09.13.02 - V1.1 publish without group-id header and poll with HMAC signature verification', async ({
+  test('09.13.02 - V1.1 publish without group-id header and poll with signature headers', async ({
     browser,
     consentAdminEventApi,
     request,
@@ -127,7 +127,8 @@ test.describe('Event Notifications V1.1 API features', () => {
     ])
     const pollClient = new EventNotificationApiClient(request, pollAuth, target.tenantDomain, 'v1.1')
 
-    // Poll with invalid signature: 401 when HMAC validation is enabled, or 200 when disabled
+    // Polling request HMAC validation is optional (request_hmac_validation_enabled defaults to false
+    // in deployment.toml). Returns 401 when enabled, or 200 when disabled.
     const badSignature = 'sha256=0000000000000000000000000000000000000000000000000000000000000000'
     const rejectResponse = await pollClient.pollEvents(subscription.subscriptionId, badSignature, pollBody)
     expect([200, 401]).toContain(rejectResponse.status())
