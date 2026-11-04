@@ -65,22 +65,25 @@ const SUBSCRIBE_ITERATIONS = 30
 const WORKERS = 3
 // ──────────────────────────────────────────────────────────────────────────
 
-test.describe('09.12 — MySQL publish/subscribe deadlock reproduction', () => {
-  /**
-   * Fires WORKERS pairs of goroutines simultaneously, all sharing one topic:
-   *   • Publish loop A:   POST /events   ×  PUBLISH_ITERATIONS
-   *   • Subscribe loop B: createSubscription → deleteSubscription  ×  SUBSCRIBE_ITERATIONS
-   *
-   * Any 500 with code "EN-5001" is the deadlock signal.
-   * The test asserts zero such failures.
-   */
-  test(
-    '09.12.01 - concurrent publish and subscribe must not produce EN-5001 (MySQL deadlock)',
-    async ({ consentAdminEventApi }) => {
-      const api: EventNotificationApiClient = consentAdminEventApi
+for (const version of ['v1', 'v1.1'] as const) {
+  test.describe(`09.12 — MySQL publish/subscribe deadlock reproduction (${version})`, () => {
+    test.use({ eventApiVersion: version })
 
-      // One shared topic — all workers publish to it to maximise lock contention on the same org.
-      const topic = await seedActiveTopicViaApi(api, 'deadlock-repro')
+    /**
+     * Fires WORKERS pairs of goroutines simultaneously, all sharing one topic:
+     *   • Publish loop A:   POST /events   ×  PUBLISH_ITERATIONS
+     *   • Subscribe loop B: createSubscription → deleteSubscription  ×  SUBSCRIBE_ITERATIONS
+     *
+     * Any 500 with code "EN-5001" is the deadlock signal.
+     * The test asserts zero such failures.
+     */
+    test(
+      `09.12.01 - concurrent publish and subscribe must not produce EN-5001 (MySQL deadlock) (${version})`,
+      async ({ consentAdminEventApi }) => {
+        const api: EventNotificationApiClient = consentAdminEventApi
+
+        // One shared topic — all workers publish to it to maximise lock contention on the same org.
+        const topic = await seedActiveTopicViaApi(api, `deadlock-repro-${version}`)
 
       // The server silently forces groupId = orgId regardless of what the caller sends.
       // Read it back from the topic record the same way every other spec does.
@@ -213,3 +216,4 @@ test.describe('09.12 — MySQL publish/subscribe deadlock reproduction', () => {
     },
   )
 })
+}

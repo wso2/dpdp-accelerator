@@ -17,7 +17,7 @@
  */
 
 import type { APIRequestContext, APIResponse } from '@playwright/test'
-import { eventNotificationsApiUrl } from '../utils/env'
+import { eventNotificationsApiUrl, type EventNotificationApiVersion } from '../utils/env'
 import type { AuthHeaders } from '../utils/authStorage'
 
 /**
@@ -194,7 +194,12 @@ export class EventNotificationApiClient {
     private readonly request: APIRequestContext,
     private readonly auth: AuthHeaders,
     private readonly tenantDomain?: string,
+    public readonly version: EventNotificationApiVersion = 'v1',
   ) {}
+
+  withVersion(version: EventNotificationApiVersion): EventNotificationApiClient {
+    return new EventNotificationApiClient(this.request, this.auth, this.tenantDomain, version)
+  }
 
   private headers(extra?: Record<string, string>): Record<string, string> {
     return { ...this.auth, ...extra }
@@ -205,7 +210,7 @@ export class EventNotificationApiClient {
   }
 
   private url(path: string): string {
-    return eventNotificationsApiUrl(path, this.tenantDomain)
+    return eventNotificationsApiUrl(path, this.tenantDomain, this.version)
   }
 
   private queryParams(params: object): Record<string, string> {
@@ -233,7 +238,15 @@ export class EventNotificationApiClient {
   // ------------------------------------------------------------------------------ Subscriptions
 
   async createSubscription(body: SubscriptionCreateRequest): Promise<APIResponse> {
-    return this.request.post(this.url('/subscriptions'), { headers: this.jsonHeaders(), data: body })
+    const payload = { ...body }
+    if (this.version === 'v1.1') {
+      if (payload.topic && !payload.topics) {
+        payload.topics = [payload.topic]
+      }
+      delete payload.topic
+      delete payload.groupId
+    }
+    return this.request.post(this.url('/subscriptions'), { headers: this.jsonHeaders(), data: payload })
   }
 
   async listSubscriptions(params: SubscriptionListParams = {}): Promise<APIResponse> {
@@ -265,32 +278,40 @@ export class EventNotificationApiClient {
     subscriptionId: string,
     params: { limit?: number; offset?: number } = {},
   ): Promise<APIResponse> {
-    return this.request.get(this.url(`/subscriptions/${encodeURIComponent(subscriptionId)}/events`), {
+    const endpoint = this.version === 'v1.1' ? 'deliveries' : 'events'
+    return this.request.get(this.url(`/subscriptions/${encodeURIComponent(subscriptionId)}/${endpoint}`), {
       headers: this.headers(),
       params: this.queryParams(params),
     })
   }
 
   async getSubscriptionEventHistory(subscriptionId: string, deliveryId: string): Promise<APIResponse> {
-    return this.request.get(
-      this.url(`/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}`),
-      { headers: this.headers() },
-    )
+    const path = this.version === 'v1.1'
+      ? `/deliveries/${encodeURIComponent(deliveryId)}/history`
+      : `/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}`
+    return this.request.get(this.url(path), { headers: this.headers() })
   }
 
   async retrySubscriptionDelivery(subscriptionId: string, deliveryId: string): Promise<APIResponse> {
-    return this.request.post(
-      this.url(`/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}/retry`),
-      { headers: this.headers() },
-    )
+    const path = this.version === 'v1.1'
+      ? `/deliveries/${encodeURIComponent(deliveryId)}/retry`
+      : `/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}/retry`
+    return this.request.post(this.url(path), { headers: this.headers() })
   }
 
   // ------------------------------------------------------------------------------------ Events
 
-  /** `groupId` is a required HTTP header on the real API, never a body field - see this file's header comment. */
-  async publishEvent(groupId: string, body: EventCreateRequest): Promise<APIResponse> {
+  /**
+   * `groupId` is a required HTTP header in v1 (`EventNotificationEndpointConstants.GROUP_ID_HEADER`).
+   * In v1.1, the group is resolved from orgId, and passing groupId is optional/ignored.
+   */
+  async publishEvent(groupId: string | undefined, body: EventCreateRequest): Promise<APIResponse> {
+    const extraHeaders: Record<string, string> = {}
+    if (groupId !== undefined && groupId !== null) {
+      extraHeaders['group-id'] = groupId
+    }
     return this.request.post(this.url('/events'), {
-      headers: this.jsonHeaders({ 'group-id': groupId }),
+      headers: this.jsonHeaders(extraHeaders),
       data: body,
     })
   }
@@ -312,8 +333,74 @@ export class EventNotificationApiClient {
 
   /** Org-level delivery history, keyed by deliveryId directly - distinct from the subscription-scoped path above, same response shape. */
   async getDeliveryHistory(deliveryId: string): Promise<APIResponse> {
-    return this.request.get(this.url(`/events/${encodeURIComponent(deliveryId)}/history`), {
+    const path = this.version === 'v1.1'
+      ? `/deliveries/${encodeURIComponent(deliveryId)}/history`
+      : `/events/${encodeURIComponent(deliveryId)}/history`
+    return this.request.get(this.url(path), {
       headers: this.headers(),
+    })
+  }
+
+  // ------------------------------------------------------------------ Deliveries (v1.1 Operations)
+
+  /** V1.1 split read: returns delivery details (status, timestamps, completion evidence) without attempt history. */
+  async getDelivery(deliveryId: string): Promise<APIResponse> {
+    return this.request.get(this.url(`/deliveries/${encodeURIComponent(deliveryId)}`), {
+      headers: this.headers(),
+    })
+  }
+
+  /** V1.1 manual retry on a failed webhook delivery. */
+  async retryDelivery(deliveryId: string): Promise<APIResponse> {
+    return this.request.post(this.url(`/deliveries/${encodeURIComponent(deliveryId)}/retry`), {
+      headers: this.headers(),
+    })
+  }
+
+  /**
+   * Submits completion evidence for a webhook delivery in the delivered state.
+   * `signature` is HMAC-SHA256 (format: `sha256=<hex>`) over `v1\ncompletion\n<deliveryId>\n<requestBody>`.
+   */
+  async completeDelivery(
+    deliveryId: string,
+    signature: string,
+    body: Record<string, unknown> | string,
+    groupId?: string,
+  ): Promise<APIResponse> {
+    const rawBody = typeof body === 'string' ? body : JSON.stringify(body)
+    const extraHeaders: Record<string, string> = {
+      'event-signature': signature,
+    }
+    if (groupId && this.version === 'v1') {
+      extraHeaders['group-id'] = groupId
+    }
+    return this.request.post(this.url(`/deliveries/${encodeURIComponent(deliveryId)}/completion`), {
+      headers: this.jsonHeaders(extraHeaders),
+      data: rawBody,
+    })
+  }
+
+  /**
+   * Polls event deliveries for a subscription.
+   * `signature` is HMAC-SHA256 over exact request body string.
+   */
+  async pollEvents(
+    subscriptionId: string,
+    signature: string,
+    body: Record<string, unknown> | string = {},
+    groupId?: string,
+  ): Promise<APIResponse> {
+    const rawBody = typeof body === 'string' ? body : JSON.stringify(body)
+    const extraHeaders: Record<string, string> = {
+      'subscription-id': subscriptionId,
+      'event-signature': signature,
+    }
+    if (groupId && this.version === 'v1') {
+      extraHeaders['group-id'] = groupId
+    }
+    return this.request.post(this.url('/events/poll'), {
+      headers: this.jsonHeaders(extraHeaders),
+      data: rawBody,
     })
   }
 }

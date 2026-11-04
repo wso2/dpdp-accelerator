@@ -31,78 +31,83 @@ import { seedActiveTopicViaApi, seedPollSubscriptionViaApi, publishMarkedEventVi
  * existing one in the same (org, group, topic, deliveryMode) as EN-4090, so even two SPECIFIC
  * filters sharing a single purpose collide.
  */
-test.describe('Event query and delivery scoping', () => {
-  test('09.09.01 - The subscriptionId filter returns only events delivered to that subscription', async ({
-    consentAdminEventApi,
-  }) => {
-    const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'subscription-filter')
-    const subA = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['account'],
+for (const version of ['v1', 'v1.1'] as const) {
+  test.describe(`Event query and delivery scoping (${version})`, () => {
+    test.use({ eventApiVersion: version })
+
+    test(`09.09.01 - The subscriptionId filter returns only events delivered to that subscription (${version})`, async ({
+      consentAdminEventApi,
+    }) => {
+      const topic = await seedActiveTopicViaApi(consentAdminEventApi, `subscription-filter-${version}`)
+      const subA = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
+        type: 'specific',
+        purposes: ['account'],
+      })
+      const subB = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
+        type: 'specific',
+        purposes: ['marketing'],
+      })
+      const groupId = subA.groupId ?? ''
+
+      const { event: accountEvent } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, ['account'])
+      const { event: marketingEvent } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, [
+        'marketing',
+      ])
+
+      const forA = (
+        (await (await consentAdminEventApi.listEvents({ subscriptionId: subA.subscriptionId, limit: 100 })).json()) as {
+          items: { eventId: string }[]
+        }
+      ).items
+      expect(forA.some((item) => item.eventId === accountEvent.eventId)).toBe(true)
+      expect(forA.some((item) => item.eventId === marketingEvent.eventId)).toBe(false)
+
+      const forB = (
+        (await (await consentAdminEventApi.listEvents({ subscriptionId: subB.subscriptionId, limit: 100 })).json()) as {
+          items: { eventId: string }[]
+        }
+      ).items
+      expect(forB.some((item) => item.eventId === marketingEvent.eventId)).toBe(true)
+      expect(forB.some((item) => item.eventId === accountEvent.eventId)).toBe(false)
     })
-    const subB = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['marketing'],
+
+    test(`09.09.02 - A delivery id belonging to another subscription can't be read through the wrong subscription path (${version})`, async ({
+      consentAdminEventApi,
+    }) => {
+      test.skip(version !== 'v1', 'Subscription-nested delivery path is v1 only')
+      const topic = await seedActiveTopicViaApi(consentAdminEventApi, `wrong-subscription-path-${version}`)
+      // Disjoint SPECIFIC filters, not overlapping ones - see 09.04.03's comment on why two
+      // subscriptions with overlapping purpose sets on the same topic 409 as duplicates.
+      const subA = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
+        type: 'specific',
+        purposes: ['account'],
+      })
+      const subB = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
+        type: 'specific',
+        purposes: ['other'],
+      })
+      const groupId = subA.groupId ?? ''
+      const { event } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, ['account', 'other'])
+
+      const deliveriesForB = (
+        (await (await consentAdminEventApi.listSubscriptionEvents(subB.subscriptionId)).json()) as {
+          items: SubscriptionDeliveryRecord[]
+        }
+      ).items
+      const deliveryOfB = deliveriesForB.find((delivery) => delivery.eventId === event.eventId)
+      expect(deliveryOfB, 'subscription B should have a delivery for this event').toBeTruthy()
+
+      const mismatchedResponse = await consentAdminEventApi.getSubscriptionEventHistory(
+        subA.subscriptionId,
+        deliveryOfB!.deliveryId,
+      )
+      expect(mismatchedResponse.status()).toBe(404)
+
+      const validResponse = await consentAdminEventApi.getSubscriptionEventHistory(
+        subB.subscriptionId,
+        deliveryOfB!.deliveryId,
+      )
+      expect(validResponse.ok()).toBe(true)
     })
-    const groupId = subA.groupId!
-
-    const { event: accountEvent } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, ['account'])
-    const { event: marketingEvent } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, [
-      'marketing',
-    ])
-
-    const forA = (
-      (await (await consentAdminEventApi.listEvents({ subscriptionId: subA.subscriptionId, limit: 100 })).json()) as {
-        items: { eventId: string }[]
-      }
-    ).items
-    expect(forA.some((item) => item.eventId === accountEvent.eventId)).toBe(true)
-    expect(forA.some((item) => item.eventId === marketingEvent.eventId)).toBe(false)
-
-    const forB = (
-      (await (await consentAdminEventApi.listEvents({ subscriptionId: subB.subscriptionId, limit: 100 })).json()) as {
-        items: { eventId: string }[]
-      }
-    ).items
-    expect(forB.some((item) => item.eventId === marketingEvent.eventId)).toBe(true)
-    expect(forB.some((item) => item.eventId === accountEvent.eventId)).toBe(false)
   })
-
-  test("09.09.02 - A delivery id belonging to another subscription can't be read through the wrong subscription path", async ({
-    consentAdminEventApi,
-  }) => {
-    const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'wrong-subscription-path')
-    // Disjoint SPECIFIC filters, not overlapping ones - see 09.04.03's comment on why two
-    // subscriptions with overlapping purpose sets on the same topic 409 as duplicates.
-    const subA = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['account'],
-    })
-    const subB = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, {
-      type: 'specific',
-      purposes: ['other'],
-    })
-    const groupId = subA.groupId!
-    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, ['account', 'other'])
-
-    const deliveriesForB = (
-      (await (await consentAdminEventApi.listSubscriptionEvents(subB.subscriptionId)).json()) as {
-        items: SubscriptionDeliveryRecord[]
-      }
-    ).items
-    const deliveryOfB = deliveriesForB.find((delivery) => delivery.eventId === event.eventId)
-    expect(deliveryOfB, 'subscription B should have a delivery for this event').toBeTruthy()
-
-    const mismatchedResponse = await consentAdminEventApi.getSubscriptionEventHistory(
-      subA.subscriptionId,
-      deliveryOfB!.deliveryId,
-    )
-    expect(mismatchedResponse.status()).toBe(404)
-
-    const validResponse = await consentAdminEventApi.getSubscriptionEventHistory(
-      subB.subscriptionId,
-      deliveryOfB!.deliveryId,
-    )
-    expect(validResponse.ok()).toBe(true)
-  })
-})
+}

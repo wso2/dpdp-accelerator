@@ -31,10 +31,30 @@ import { webhookTestsEnabled, WebhookReceiver } from '../../utils/webhookReceive
  * unreliable on a machine whose LAN IP changes mid-session, which broke webhook verification
  * regardless of the tests themselves being correct (confirmed passing standalone earlier).
  */
-test.describe('Webhook delivery', () => {
-  test.beforeEach(() => {
-    test.skip(!webhookTestsEnabled(), 'webhook.receiverHost is not configured - see README.md, "Webhook-dependent tests"')
-  })
+for (const version of ['v1', 'v1.1'] as const) {
+  test.describe(`Webhook delivery (${version})`, () => {
+    test.use({ eventApiVersion: version })
+
+    test.beforeEach(() => {
+      test.skip(!webhookTestsEnabled(), 'webhook.receiverHost is not configured - see README.md, "Webhook-dependent tests"')
+    })
+
+    async function getDeliveryRecord(
+      api: import('../../clients/EventNotificationApiClient').EventNotificationApiClient,
+      subscriptionId: string,
+      deliveryId: string,
+    ) {
+      if (version === 'v1.1') {
+        const [deliveryRes, historyRes] = await Promise.all([
+          api.getDelivery(deliveryId),
+          api.getDeliveryHistory(deliveryId),
+        ])
+        const delivery = (await deliveryRes.json()) as Record<string, unknown>
+        const history = (await historyRes.json()) as { history?: unknown[] }
+        return { ...delivery, history: history.history }
+      }
+      return (await api.getSubscriptionEventHistory(subscriptionId, deliveryId)).json()
+    }
 
   /**
    * WebhookDeliveryTask.java: delaySeconds = baseBackoffSeconds * RETRY_BACKOFF_MULTIPLIER^(attempt-1)
@@ -121,7 +141,7 @@ test.describe('Webhook delivery', () => {
     return found as { deliveryId: string; eventId: string }
   }
 
-  test('09.10.01 - A non-2xx response records failure and retries with the same delivery id', async ({
+    test(`09.10.01 - A non-2xx response records failure and retries with the same delivery id (${version})`, async ({
     consentAdminEventApi,
   }) => {
     // Opt-in: needs base_backoff_seconds/max_retries shortened on the deployment too, since the
@@ -169,16 +189,12 @@ test.describe('Webhook delivery', () => {
 
       await expect
         .poll(
-          async () =>
-            (await consentAdminEventApi.getSubscriptionEventHistory(subscriptionId, delivery.deliveryId).then((r) => r.json()))
-              .currentStatus,
+          async () => (await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)).currentStatus,
           { timeout: 30_000 },
         )
         .toBe('delivered')
 
-      const history = await consentAdminEventApi
-        .getSubscriptionEventHistory(subscriptionId, delivery.deliveryId)
-        .then((r) => r.json())
+      const history = await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)
       const statuses = (history.history as { httpStatus?: number }[]).map((attempt) => attempt.httpStatus)
       expect(statuses).toContain(500)
       expect(statuses[statuses.length - 1]).toBe(204)
@@ -190,7 +206,7 @@ test.describe('Webhook delivery', () => {
     }
   })
 
-  test('09.10.02 - Persistent receiver failure transitions the delivery to failed', async ({ consentAdminEventApi }) => {
+  test(`09.10.02 - Persistent receiver failure transitions the delivery to failed (${version})`, async ({ consentAdminEventApi }) => {
     // Opt-in, same as 09.10.01 - see AGENTS.md, "Webhook-dependent tests".
     const backoff = webhookBackoffOverride()
     test.skip(
@@ -206,7 +222,7 @@ test.describe('Webhook delivery', () => {
 
     const { receiver, topicName, subscriptionId, groupId } = await registerVerifiedWebhookSubscription(
       consentAdminEventApi,
-      '08-02-02-topic',
+      `08-02-02-topic-${version}`,
     )
     try {
       receiver.respondWith((request) => (request.method === 'POST' ? { status: 503 } : { status: 204 }))
@@ -223,16 +239,12 @@ test.describe('Webhook delivery', () => {
       // get a clean signal.
       await expect
         .poll(
-          async () =>
-            (await consentAdminEventApi.getSubscriptionEventHistory(subscriptionId, delivery.deliveryId).then((r) => r.json()))
-              .currentStatus,
+          async () => (await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)).currentStatus,
           { timeout: pollTimeoutMs, intervals: [2_000] },
         )
         .toBe('failed')
 
-      const history = await consentAdminEventApi
-        .getSubscriptionEventHistory(subscriptionId, delivery.deliveryId)
-        .then((r) => r.json())
+      const history = await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)
       expect(history.nextRetryAt).toBeFalsy()
       expect(history.manualRetryAvailable).toBe(true)
       const statuses = (history.history as { httpStatus?: number }[]).map((attempt) => attempt.httpStatus)
@@ -243,7 +255,7 @@ test.describe('Webhook delivery', () => {
     }
   })
 
-  test('09.10.03 - Manual retry on a failed delivery dispatches a new attempt and re-exposes retry when it fails', async ({
+  test(`09.10.03 - Manual retry on a failed delivery dispatches a new attempt and re-exposes retry when it fails (${version})`, async ({
     consentAdminEventApi,
   }) => {
     const backoff = webhookBackoffOverride()
@@ -259,7 +271,7 @@ test.describe('Webhook delivery', () => {
 
     const { receiver, topicName, subscriptionId, groupId } = await registerVerifiedWebhookSubscription(
       consentAdminEventApi,
-      '08-02-03-topic',
+      `08-02-03-topic-${version}`,
     )
     try {
       receiver.respondWith((request) => (request.method === 'POST' ? { status: 503 } : { status: 204 }))
@@ -269,16 +281,12 @@ test.describe('Webhook delivery', () => {
 
       await expect
         .poll(
-          async () =>
-            (await consentAdminEventApi.getSubscriptionEventHistory(subscriptionId, delivery.deliveryId).then((r) => r.json()))
-              .currentStatus,
+          async () => (await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)).currentStatus,
           { timeout: pollTimeoutMs, intervals: [2_000] },
         )
         .toBe('failed')
 
-      const initialHistory = await consentAdminEventApi
-        .getSubscriptionEventHistory(subscriptionId, delivery.deliveryId)
-        .then((r) => r.json())
+      const initialHistory = await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)
       expect(initialHistory.manualRetryAvailable).toBe(true)
       const initialAttempts = (initialHistory.history as unknown[]).length
 
@@ -290,9 +298,7 @@ test.describe('Webhook delivery', () => {
       await expect
         .poll(
           async () => {
-            const h = await consentAdminEventApi
-              .getSubscriptionEventHistory(subscriptionId, delivery.deliveryId)
-              .then((r) => r.json())
+            const h = await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)
             return {
               status: h.currentStatus,
               attempts: (h.history as unknown[])?.length,
@@ -306,13 +312,11 @@ test.describe('Webhook delivery', () => {
         })
 
       // History confirms manual retry is available again
-      const failedAgainHistory = await consentAdminEventApi
-        .getSubscriptionEventHistory(subscriptionId, delivery.deliveryId)
-        .then((r) => r.json())
+      const failedAgainHistory = await getDeliveryRecord(consentAdminEventApi, subscriptionId, delivery.deliveryId)
       expect(failedAgainHistory.manualRetryAvailable).toBe(true)
     } finally {
       await receiver.stop()
     }
   })
-
 })
+}
