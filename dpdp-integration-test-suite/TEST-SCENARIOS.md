@@ -10,7 +10,7 @@ in CI was actually checking.
 
 | | |
 |---|---|
-| **Tests** | 202 across 54 spec files in 10 areas |
+| **Tests** | 207 across 55 spec files in 10 areas |
 | **Removed, not skipped** | `09.08`'s fan-out persistence rollback case, `09.10`'s stuck-in-flight reclaim case - see "What this suite cannot verify" |
 | **Skipped when unconfigured** | `04.09.03` (expiry cron); `09.10.01`, `09.10.02`, `09.10.03` (shortened backoff) |
 | **Rules and conventions** | [`AGENTS.md`](AGENTS.md) |
@@ -457,7 +457,7 @@ Two surfaces: the Data Principal's `/complaints` and the officer's `/complaint-m
 
 Mixed UI and API. Two server behaviours drive most of the test design: `groupId` is silently forced to the org id on every subscription, so tests read the *returned* `groupId` back and use two topics (or disjoint purpose filters) when they need two distinct subscriptions; and `GET /events` hardcodes the caller's orgId as `GROUP_ID`, so an event published under any other group id can never be found through it at all.
 
-**53 tests, 12 spec files.**
+**58 tests, 13 spec files.**
 
 ### `09.01-admin-managing-topics.spec.ts`
 
@@ -590,6 +590,19 @@ PostgreSQL, H2, and any deployment where the `ACTIVE_NAME` index fix is applied.
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.12.01` | Concurrent publish and subscribe must not produce EN-5001 (MySQL deadlock) | 3 worker pairs × 30 publish + 30 subscribe iterations; asserts zero HTTP 500 responses on POST /events. |
+
+### `09.13-v1-1-features-api.spec.ts` · API-only
+
+V1.1 specific features: split delivery reads, event polling with HMAC verification, manual retry rules, delivery endpoint scopes, and delivery completion evidence.
+
+| ID | Scenario | Notes |
+| --- | --- | --- |
+| `09.13.01` | V1.1 split read returns delivery details without history and attempts via history endpoint | `GET /deliveries/{id}` returns delivery metadata/evidence without attempt history, while `GET /deliveries/{id}/history` returns the attempt list. |
+| `09.13.02` | V1.1 publish without group-id header and poll with HMAC signature verification | Publishes without `group-id` header; verifies polling via `POST /events/poll` with HMAC-SHA256 signature verification over request body. |
+| `09.13.03` | Manual retry on a poll delivery is rejected with 409 Conflict | `POST /deliveries/{id}/retry` returns 409 Conflict with EN-60032. |
+| `09.13.04` | Access control on /v1.1/deliveries/* requires notifications:subscriptions:read | Token with only `notifications:events:read` receives 403 Forbidden; token with `notifications:subscriptions:read` succeeds. |
+| `09.13.05` | Webhook completion records evidence, rejects invalid signatures and duplicate completions | **Skipped unless webhook receiver is configured.** Records completion evidence on `POST /deliveries/{id}/completion`, rejects invalid signatures, and rejects duplicate completions with 409 Conflict. |
+
 
 
 ## `10-dashboard/` — Dashboard counts and links
