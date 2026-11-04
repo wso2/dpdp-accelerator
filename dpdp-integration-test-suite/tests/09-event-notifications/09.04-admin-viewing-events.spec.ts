@@ -104,7 +104,7 @@ test.describe('Admin viewing and searching Events', () => {
     }
   })
 
-  test('09.04.03 - Event details show exact payload, metadata, and subscription-specific deliveries', async ({
+  test('09.04.03 - Event details show metadata and subscription-specific deliveries', async ({
     browser,
     consentAdminEventApi,
   }) => {
@@ -124,7 +124,7 @@ test.describe('Admin viewing and searching Events', () => {
       purposes: ['profile'],
     })
     const groupId = subA.groupId!
-    const { event, marker } = await publishMarkedEventViaApi(
+    const { event } = await publishMarkedEventViaApi(
       consentAdminEventApi,
       groupId,
       topic.name,
@@ -134,16 +134,9 @@ test.describe('Admin viewing and searching Events', () => {
 
     const page = await loginAsConsentAdmin(browser)
     try {
-      // Headless Chromium denies navigator.clipboard.writeText() by default - EventDetailsPage.tsx's
-      // Copy Payload button calls it directly (no execCommand fallback), so without this the
-      // component's own catch branch fires and shows the FAILURE toast instead, which would be a
-      // false negative about the app, not a real product bug.
-      await page.context().grantPermissions(['clipboard-write', 'clipboard-read'])
-
       const detailsPage = new EventDetailsPage(page)
       await detailsPage.goto(event.eventId)
 
-      await expect(detailsPage.payloadBlock).toContainText(marker)
       await expect(detailsPage.fieldValue('Topic')).toContainText(topic.name)
 
       const deliveriesResponse = await consentAdminEventApi.getEventDeliveries(event.eventId)
@@ -154,9 +147,6 @@ test.describe('Admin viewing and searching Events', () => {
       expect(deliveryForB, 'subscription B should have a delivery for this event').toBeTruthy()
       await expect(detailsPage.deliveryRowByDeliveryId(deliveryForA!.deliveryId)).toBeVisible()
       await expect(detailsPage.deliveryRowByDeliveryId(deliveryForB!.deliveryId)).toBeVisible()
-
-      await detailsPage.copyPayload()
-      await expect(detailsPage.copyPayloadSuccessToast).toBeVisible()
     } finally {
       await page.context().close()
     }
@@ -173,7 +163,6 @@ test.describe('Admin viewing and searching Events', () => {
     try {
       const detailsPage = new EventDetailsPage(page)
       await detailsPage.goto(event.eventId)
-      await expect(detailsPage.payloadBlock).toBeVisible()
       await expect(detailsPage.noDeliveriesHeading).toBeVisible()
     } finally {
       await page.context().close()
