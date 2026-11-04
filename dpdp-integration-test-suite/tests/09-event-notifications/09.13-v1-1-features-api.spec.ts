@@ -93,7 +93,10 @@ test.describe('Event Notifications V1.1 API features', () => {
   })
 
   test('09.13.02 - V1.1 publish without group-id header and poll with HMAC signature verification', async ({
+    browser,
     consentAdminEventApi,
+    request,
+    target,
   }) => {
     const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'v1-1-poll')
     const sharedSecret = uniqueMarker('secret')
@@ -117,14 +120,21 @@ test.describe('Event Notifications V1.1 API features', () => {
 
     const pollBody = JSON.stringify({ returnImmediately: true, maxEvents: 10 })
 
+    // Polling requires notifications:events:poll scope
+    const pollAuth = await mintPersonaTokenWithScopes(browser, 'consent-admin', [
+      'openid',
+      'notifications:events:poll',
+    ])
+    const pollClient = new EventNotificationApiClient(request, pollAuth, target.tenantDomain, 'v1.1')
+
     // Poll with invalid signature: 401 when HMAC validation is enabled, or 200 when disabled
     const badSignature = 'sha256=0000000000000000000000000000000000000000000000000000000000000000'
-    const rejectResponse = await consentAdminEventApi.pollEvents(subscription.subscriptionId, badSignature, pollBody)
+    const rejectResponse = await pollClient.pollEvents(subscription.subscriptionId, badSignature, pollBody)
     expect([200, 401]).toContain(rejectResponse.status())
 
     // Poll with valid HMAC signature succeeds (200)
     const validSignature = computeHmacSignature(sharedSecret, pollBody)
-    const pollResponse = await consentAdminEventApi.pollEvents(subscription.subscriptionId, validSignature, pollBody)
+    const pollResponse = await pollClient.pollEvents(subscription.subscriptionId, validSignature, pollBody)
     expect(pollResponse.status(), await pollResponse.text()).toBe(200)
     const pollData = (await pollResponse.json()) as {
       moreAvailable: boolean
@@ -237,7 +247,10 @@ test.describe('Event Notifications V1.1 API features', () => {
   })
 
   test('09.13.05 - Webhook completion records evidence, rejects invalid signatures and duplicate completions', async ({
+    browser,
     consentAdminEventApi,
+    request,
+    target,
   }) => {
     test.skip(!webhookTestsEnabled(), 'webhook.receiverHost is not configured - see README.md, "Webhook-dependent tests"')
 
@@ -304,14 +317,21 @@ test.describe('Event Notifications V1.1 API features', () => {
         completionEvidence: 'https://processor.example.com/receipts/proof-001',
       })
 
+      // Delivery completion requires notifications:event-deliveries:complete scope
+      const completionAuth = await mintPersonaTokenWithScopes(browser, 'consent-admin', [
+        'openid',
+        'notifications:event-deliveries:complete',
+      ])
+      const completionClient = new EventNotificationApiClient(request, completionAuth, target.tenantDomain, 'v1.1')
+
       // 1. Completion with invalid signature is rejected (401 Unauthorized)
       const badSignature = 'sha256=ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff'
-      const rejectResponse = await consentAdminEventApi.completeDelivery(deliveryId, badSignature, completionBody)
+      const rejectResponse = await completionClient.completeDelivery(deliveryId, badSignature, completionBody)
       expect(rejectResponse.status()).toBe(401)
 
       // 2. Completion with valid signature succeeds (204 No Content)
       const validSignature = computeCompletionSignature(sharedSecret, deliveryId, completionBody)
-      const successResponse = await consentAdminEventApi.completeDelivery(deliveryId, validSignature, completionBody)
+      const successResponse = await completionClient.completeDelivery(deliveryId, validSignature, completionBody)
       expect(successResponse.status()).toBe(204)
 
       // 3. GET /deliveries/{deliveryId} reflects completed status and evidence
@@ -325,7 +345,7 @@ test.describe('Event Notifications V1.1 API features', () => {
       expect(verifiedDelivery.completionEvidence).toBe('https://processor.example.com/receipts/proof-001')
 
       // 4. Second completion returns 409 Conflict
-      const duplicateResponse = await consentAdminEventApi.completeDelivery(deliveryId, validSignature, completionBody)
+      const duplicateResponse = await completionClient.completeDelivery(deliveryId, validSignature, completionBody)
       expect(duplicateResponse.status()).toBe(409)
     } finally {
       await receiver.stop()
