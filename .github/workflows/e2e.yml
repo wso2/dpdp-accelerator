@@ -187,7 +187,11 @@ jobs:
           java-version: '21'
           distribution: temurin
           cache: maven
+      # Maven 3.10.0 (ubuntu-latest image 20261004+) breaks the Tycho-based carbon-p2-plugin
+      # used by the product-is build. Same pin as https://github.com/wso2/product-is/pull/28571;
+      # remove once carbon-p2-plugin supports Maven 3.10.
       - name: Set up Maven ${{ env.MAVEN_VERSION }}
+        if: env.PACK_ONLY != 'true' || env.IS_SOURCE == 'master'
         run: |
           archive="${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}-bin.tar.gz"
           curl -fsSL "https://archive.apache.org/dist/maven/maven-3/${MAVEN_VERSION}/binaries/apache-maven-${MAVEN_VERSION}-bin.tar.gz" \
@@ -196,6 +200,7 @@ jobs:
           tar -xz -C "${RUNNER_TEMP}" -f "${archive}"
           rm -f "${archive}"
           echo "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin" >> "${GITHUB_PATH}"
+          "${RUNNER_TEMP}/apache-maven-${MAVEN_VERSION}/bin/mvn" --version
       - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: '22'
