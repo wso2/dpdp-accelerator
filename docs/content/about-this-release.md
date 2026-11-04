@@ -26,7 +26,7 @@ Standardized the JSON responses returned by state-changing operations across sub
 * `DELETE /topics/{id}` returns a uniform `TopicStatusUpdate` object containing `topicId` and `status`.
 
 ### Database schema migration scripts
-Included schema migration scripts under `repository/deployment/server/event-notification/migrations/` to support upgrading existing database schemas:
+Included schema migration scripts under `carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/` in the accelerator snapshot (copied to `<IS_HOME>/dbscripts/dpdp-accelerator/event-notification/migrations/` upon running `merge.sh`) to support upgrading existing database schemas:
 * `h2.sql` (H2 database)
 * `mysql.sql` (MySQL 8.x)
 * `postgresql.sql` (PostgreSQL 14+)
@@ -81,16 +81,16 @@ The legacy V1 routes remain accessible at `/api/dpdp/event-notifications/v1` for
 Follow these steps to upgrade an existing DPDP Accelerator deployment to version 1.1.0:
 
 ### 1. Apply database migration scripts
-Run the database migration script matching your database engine from the accelerator distribution, or use `configure.sh` with migration enabled:
+Apply the database migration script matching your database engine to `WSO2DPDP_DB` from the accelerator snapshot (or `<IS_HOME>` after running `merge.sh`), or use `configure.sh` with migration enabled:
 
 ```sh
 # For MySQL
-mysql -u <user> -p <database_name> < repository/deployment/server/event-notification/migrations/mysql.sql
+mysql -u <user> -p WSO2DPDP_DB < <DPDP_ACCELERATOR_HOME>/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/mysql.sql
 
 # For PostgreSQL
-psql -U <user> -d <database_name> -f repository/deployment/server/event-notification/migrations/postgresql.sql
+psql -U <user> -d WSO2DPDP_DB -f <DPDP_ACCELERATOR_HOME>/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/postgresql.sql
 
-# For embedded H2 (evaluation environments) or automated setup:
+# For embedded H2 (evaluation environments) or automated setup (run from <IS_HOME>/<DPDP_ACCELERATOR_HOME>/bin):
 APPLY_DPDP_DB_MIGRATION=true ./configure.sh
 ```
 
