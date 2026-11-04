@@ -25,7 +25,6 @@ import {
   CardHeader,
   Chip,
   Divider,
-  IconButton,
   Link,
   Skeleton,
   Stack,
@@ -35,7 +34,6 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Tooltip,
   Typography,
 } from '@wso2/oxygen-ui'
 import {
@@ -44,7 +42,6 @@ import {
   GitBranch,
   Plus,
   Shapes,
-  Star,
   Tag,
   Trash2,
 } from '@wso2/oxygen-ui-icons-react'
@@ -61,6 +58,7 @@ import DetailGrid from './components/DetailGrid'
 import PurposeDeleteDialog from './components/PurposeDeleteDialog'
 import PurposeVersionDeleteDialog from './components/PurposeVersionDeleteDialog'
 import PurposeVersionFormDialog from './components/PurposeVersionFormDialog'
+import PurposeVersionRow from './components/PurposeVersionRow'
 import {
   useCreatePurposeVersionMutation,
   useDeletePurposeMutation,
@@ -416,6 +414,7 @@ function PurposeDetailsPage(): React.JSX.Element {
               <Table size="small">
                 <TableHead>
                   <TableRow>
+                    <TableCell sx={{ width: 44, px: 1 }} />
                     <TableCell sx={{ fontWeight: 700 }}>{t('catalog.fields.version')}</TableCell>
                     <TableCell sx={{ fontWeight: 700 }}>
                       {t('catalog.fields.description')}
@@ -431,7 +430,7 @@ function PurposeDetailsPage(): React.JSX.Element {
                   {versions.length === 0 ? (
                     <TableRow>
                       <TableCell
-                        colSpan={canWrite ? 3 : 2}
+                        colSpan={canWrite ? 4 : 3}
                         align="center"
                         sx={{ py: 4, color: 'text.secondary' }}
                       >
@@ -439,74 +438,24 @@ function PurposeDetailsPage(): React.JSX.Element {
                       </TableCell>
                     </TableRow>
                   ) : null}
-                  {versions.map((version) => {
-                    const isLatest = detail.latestVersion?.id === version.id
-                    const { description: versionDescription } = catalogText('purposes', {
-                      name: detail.name,
-                      version: version.version,
-                      description: version.description,
-                    })
-
-                    return (
-                      <TableRow hover key={version.id}>
-                        <TableCell>
-                          <Stack direction="row" spacing={0.75} alignItems="center" flexWrap="wrap">
-                            <Chip size="small" color="primary" label={version.version} />
-                            {isLatest ? (
-                              <Chip size="small" label={t('catalog.values.latest')} />
-                            ) : null}
-                          </Stack>
-                        </TableCell>
-                        <TableCell>{versionDescription ?? '-'}</TableCell>
-                        {canWrite ? (
-                          <TableCell align="right">
-                            <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                              {!isLatest ? (
-                                <Tooltip title={t('catalog.actions.setLatest')}>
-                                  <IconButton
-                                    size="small"
-                                    disabled={setLatestMutation.isPending}
-                                    aria-label={t('catalog.actions.setLatest')}
-                                    onClick={() =>
-                                      setLatestMutation.mutate({
-                                        purposeId: id,
-                                        versionId: version.id,
-                                      })
-                                    }
-                                  >
-                                    <Star size={16} />
-                                  </IconButton>
-                                </Tooltip>
-                              ) : null}
-                              <Tooltip
-                                title={
-                                  isLatest
-                                    ? t('catalog.purposes.versionDelete.latestBlocked')
-                                    : t('catalog.actions.delete')
-                                }
-                              >
-                                <span>
-                                  <IconButton
-                                    size="small"
-                                    disabled={isLatest}
-                                    aria-label={t('catalog.actions.delete')}
-                                    onClick={() =>
-                                      setVersionToDelete({
-                                        id: version.id,
-                                        version: version.version,
-                                      })
-                                    }
-                                  >
-                                    <Trash2 size={16} />
-                                  </IconButton>
-                                </span>
-                              </Tooltip>
-                            </Stack>
-                          </TableCell>
-                        ) : null}
-                      </TableRow>
-                    )
-                  })}
+                  {versions.map((version) => (
+                    <PurposeVersionRow
+                      key={version.id}
+                      purposeId={id}
+                      purposeName={detail.name}
+                      version={version}
+                      isLatest={detail.latestVersion?.id === version.id}
+                      canWrite={canWrite}
+                      isSettingLatest={setLatestMutation.isPending}
+                      onSetLatest={(versionId) =>
+                        setLatestMutation.mutate({
+                          purposeId: id,
+                          versionId,
+                        })
+                      }
+                      onDelete={(ver) => setVersionToDelete(ver)}
+                    />
+                  ))}
                 </TableBody>
               </Table>
             </TableContainer>
