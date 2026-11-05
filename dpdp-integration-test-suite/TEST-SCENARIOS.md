@@ -541,7 +541,7 @@ Register conflicts, re-verification, and delete guards.
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.08.01` | Publishing an event creates matching delivery records atomically | Readable from the event side and the subscription side, with the payload marker intact. |
-| `09.08.02` | Publishing without a group-id header is rejected |  |
+| `09.08.02` | Publishing without a group-id header is rejected | Covered through v1 only - v1.1 does not require a `group-id` header on publish (see `09.13.02`). |
 | `09.08.03` | Publishing to an unknown or deregistered topic is rejected |  |
 | `09.08.04` | A null or missing payload is rejected rather than treated as an empty object | 422 EN-4002 - not silently treated as `{}`. |
 | `09.08.05` | An ALL-filter subscription receives every event regardless of purposes | No/one/many purposes, exactly one delivery each. |
@@ -556,7 +556,7 @@ Query and delivery-scoping rules on the read endpoints.
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.09.01` | The subscriptionId filter returns only events delivered to that subscription | Checked in both directions. |
-| `09.09.02` | A delivery id belonging to another subscription can't be read through the wrong subscription path | 404 through the wrong subscription, OK through the right one. |
+| `09.09.02` | A delivery id belonging to another subscription can't be read through the wrong subscription path | 404 through the wrong subscription, OK through the right one. Covered through v1 only - the subscription-nested delivery path does not exist in v1.1. |
 
 ### `09.10-webhook-delivery-api.spec.ts` · API-only
 
@@ -591,7 +591,7 @@ PostgreSQL, H2, and any deployment where the `ACTIVE_NAME` index fix is applied.
 | --- | --- | --- |
 | `09.12.01` | Concurrent publish and subscribe must not produce EN-5001 (MySQL deadlock) | 3 worker pairs × 30 publish + 30 subscribe iterations; asserts zero HTTP 500 responses on POST /events. |
 
-### `09.13-v1-1-features-api.spec.ts` · API-only
+### `09.13-v1-1-features.spec.ts`
 
 V1.1 specific features: split delivery reads, event polling with HMAC verification, manual retry rules, delivery endpoint scopes, and delivery completion evidence.
 
