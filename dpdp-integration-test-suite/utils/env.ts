@@ -176,7 +176,10 @@ export function eventNotificationsApiUrl(
 }
 
 export function pollingRequestHmacValidationEnabled(): boolean {
-  return Boolean(config.eventNotifications?.pollingRequestHmacValidationEnabled)
+  return requireConfigured(
+    config.eventNotifications?.pollingRequestHmacValidationEnabled,
+    'eventNotifications.pollingRequestHmacValidationEnabled',
+  )
 }
 
 // The accelerator's own consent-history webapp (org.wso2.dpdp.accelerator.consent.mgt.extensions.endpoint,

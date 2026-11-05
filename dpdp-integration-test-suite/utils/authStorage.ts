@@ -85,7 +85,9 @@ export function authHeadersForMintedToken(
   accessToken: string,
   setCookieHeader?: string,
 ): AuthHeaders {
-  const match = setCookieHeader?.match(new RegExp(`(?:^|;\\s*)${ACCESS_TOKEN_BINDING_COOKIE}=([^;]+)`))
+  const match = setCookieHeader?.match(
+    new RegExp(`(?:^|[;\\r\\n]\\s*)${ACCESS_TOKEN_BINDING_COOKIE}=([^;\\r\\n]+)`),
+  )
   const bindingValue = match ? match[1] : readCookie(state, ACCESS_TOKEN_BINDING_COOKIE)
   return {
     Authorization: `Bearer ${accessToken}`,
