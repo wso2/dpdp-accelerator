@@ -47,7 +47,7 @@ for (const version of ['v1', 'v1.1'] as const) {
         type: 'specific',
         purposes: ['marketing'],
       })
-      const groupId = subA.groupId ?? ''
+      const groupId = subA.groupId
 
       const { event: accountEvent } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, ['account'])
       const { event: marketingEvent } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, [
@@ -86,7 +86,7 @@ for (const version of ['v1', 'v1.1'] as const) {
         type: 'specific',
         purposes: ['other'],
       })
-      const groupId = subA.groupId ?? ''
+      const groupId = subA.groupId
       const { event } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, ['account', 'other'])
 
       const deliveriesForB = (

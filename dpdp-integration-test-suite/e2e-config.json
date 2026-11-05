@@ -2,6 +2,7 @@
   "identityServer": {
     "baseUrl": "https://localhost:9443",
     "portalBaseUrl": "https://localhost:9443/consent-portal",
+    "portalClientId": "DPDP_CONSENT_PORTAL",
     "ignoreHttpsErrors": true
   },
   "superAdmin": {
@@ -40,5 +41,8 @@
   },
   "consentExpiry": {
     "schedulerPollTimeoutMs": null
+  },
+  "eventNotifications": {
+    "pollingRequestHmacValidationEnabled": false
   }
 }

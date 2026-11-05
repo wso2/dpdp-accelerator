@@ -19,7 +19,9 @@
 import crypto from 'node:crypto'
 import { test, expect, mintPersonaTokenWithScopes } from '../../fixtures/auth.fixtures'
 import { EventNotificationApiClient } from '../../clients/EventNotificationApiClient'
+import { pollingRequestHmacValidationEnabled } from '../../utils/env'
 import {
+  findDeliveryForEvent,
   publishMarkedEventViaApi,
   seedActiveTopicViaApi,
   seedPollSubscriptionViaApi,
@@ -37,6 +39,12 @@ function computeCompletionSignature(secret: string, deliveryId: string, rawBody:
   return computeHmacSignature(secret, signingInput)
 }
 
+function decodeJwsClaims(token: string): Record<string, unknown> {
+  const parts = token.split('.')
+  expect(parts.length).toBe(3)
+  return JSON.parse(Buffer.from(parts[1], 'base64url').toString('utf8')) as Record<string, unknown>
+}
+
 test.describe('Event Notifications V1.1 API features', () => {
   test.use({ eventApiVersion: 'v1.1' })
 
@@ -46,27 +54,13 @@ test.describe('Event Notifications V1.1 API features', () => {
     const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'v1-1-split-read')
     const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, { type: 'all' })
 
-    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, '', topic.name, ['account-management'])
+    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, undefined, topic.name, ['account-management'])
 
-    let deliveryId = ''
-    await expect
-      .poll(
-        async () => {
-          const listResponse = await consentAdminEventApi.listSubscriptionEvents(subscription.subscriptionId)
-          if (!listResponse.ok()) {
-            return false
-          }
-          const { items } = (await listResponse.json()) as { items?: { deliveryId: string; eventId: string }[] }
-          const found = items?.find((d) => d.eventId === event.eventId)
-          if (found) {
-            deliveryId = found.deliveryId
-            return true
-          }
-          return false
-        },
-        { timeout: 10_000 },
-      )
-      .toBe(true)
+    const { deliveryId } = await findDeliveryForEvent(
+      consentAdminEventApi,
+      subscription.subscriptionId,
+      event.eventId,
+    )
 
     // GET /deliveries/{deliveryId} returns Delivery details without the history array
     const deliveryResponse = await consentAdminEventApi.getDelivery(deliveryId)
@@ -110,9 +104,10 @@ test.describe('Event Notifications V1.1 API features', () => {
     const subscription = (await subResponse.json()) as { subscriptionId: string }
 
     // Publish event without group-id header (resolved from organization context in v1.1)
+    const marker = uniqueMarker('poll-event')
     const publishResponse = await consentAdminEventApi.publishEvent(undefined, {
       topic: topic.name,
-      payload: { marker: uniqueMarker('poll-event') },
+      payload: { marker },
     })
     expect(publishResponse.status(), await publishResponse.text()).toBe(201)
     const { eventId } = (await publishResponse.json()) as { eventId: string }
@@ -127,13 +122,13 @@ test.describe('Event Notifications V1.1 API features', () => {
     ])
     const pollClient = new EventNotificationApiClient(request, pollAuth, target.tenantDomain, 'v1.1')
 
-    // Polling request HMAC validation is optional (request_hmac_validation_enabled defaults to false
-    // in deployment.toml). Returns 401 when enabled, or 200 when disabled.
+    // Polling request HMAC validation is controlled by request_hmac_validation_enabled in deployment.toml
+    // (mirrored by eventNotifications.pollingRequestHmacValidationEnabled in e2e-config.json).
     const badSignature = 'sha256=0000000000000000000000000000000000000000000000000000000000000000'
     const rejectResponse = await pollClient.pollEvents(subscription.subscriptionId, badSignature, pollBody)
-    expect([200, 401]).toContain(rejectResponse.status())
+    expect(rejectResponse.status()).toBe(pollingRequestHmacValidationEnabled() ? 401 : 200)
 
-    // Poll with valid HMAC signature succeeds (200)
+    // Poll with valid HMAC signature succeeds (200) and returns the published event in `sets`
     const validSignature = computeHmacSignature(sharedSecret, pollBody)
     const pollResponse = await pollClient.pollEvents(subscription.subscriptionId, validSignature, pollBody)
     expect(pollResponse.status(), await pollResponse.text()).toBe(200)
@@ -142,7 +137,12 @@ test.describe('Event Notifications V1.1 API features', () => {
       sets: Record<string, string>
     }
     expect(typeof pollData.moreAvailable).toBe('boolean')
-    expect(typeof pollData.sets).toBe('object')
+    const decodedEvents = Object.values(pollData.sets).map((jws) => decodeJwsClaims(jws))
+    const matchingClaim = decodedEvents.find((claims) => {
+      const envelope = claims.payload as { eventId?: string; eventPayload?: { marker?: string } } | undefined
+      return claims.txn === eventId && envelope?.eventId === eventId && envelope?.eventPayload?.marker === marker
+    })
+    expect(matchingClaim, `Expected polled sets to include published event ${eventId}`).toBeTruthy()
   })
 
   test('09.13.03 - Manual retry on a poll delivery is rejected with 409 Conflict', async ({
@@ -151,33 +151,19 @@ test.describe('Event Notifications V1.1 API features', () => {
     const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'v1-1-poll-retry')
     const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, { type: 'all' })
 
-    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, '', topic.name, ['account-management'])
+    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, undefined, topic.name, ['account-management'])
 
-    let deliveryId = ''
-    await expect
-      .poll(
-        async () => {
-          const listResponse = await consentAdminEventApi.listSubscriptionEvents(subscription.subscriptionId)
-          if (!listResponse.ok()) {
-            return false
-          }
-          const { items } = (await listResponse.json()) as { items?: { deliveryId: string; eventId: string }[] }
-          const found = items?.find((d) => d.eventId === event.eventId)
-          if (found) {
-            deliveryId = found.deliveryId
-            return true
-          }
-          return false
-        },
-        { timeout: 10_000 },
-      )
-      .toBe(true)
+    const { deliveryId } = await findDeliveryForEvent(
+      consentAdminEventApi,
+      subscription.subscriptionId,
+      event.eventId,
+    )
 
-    // POST /deliveries/{deliveryId}/retry on a poll delivery returns 409
+    // POST /deliveries/{deliveryId}/retry on a poll delivery returns 409 EN-4003
     const retryResponse = await consentAdminEventApi.retryDelivery(deliveryId)
     expect(retryResponse.status(), `deliveryId=${deliveryId} text=${await retryResponse.text()}`).toBe(409)
-    const errorBody = await retryResponse.json()
-    expect(errorBody.description ?? errorBody.message).toMatch(/not (supported|available) for poll/i)
+    const errorBody = (await retryResponse.json()) as { code?: string; description?: string; message?: string }
+    expect(errorBody.code).toBe('EN-4003')
   })
 
   test('09.13.04 - Access control on /v1.1/deliveries/* requires notifications:subscriptions:read', async ({
@@ -188,27 +174,13 @@ test.describe('Event Notifications V1.1 API features', () => {
   }) => {
     const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'v1-1-scopes')
     const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, { type: 'all' })
-    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, '', topic.name, ['account-management'])
+    const { event } = await publishMarkedEventViaApi(consentAdminEventApi, undefined, topic.name, ['account-management'])
 
-    let deliveryId = ''
-    await expect
-      .poll(
-        async () => {
-          const listResponse = await consentAdminEventApi.listSubscriptionEvents(subscription.subscriptionId)
-          if (!listResponse.ok()) {
-            return false
-          }
-          const { items } = (await listResponse.json()) as { items?: { deliveryId: string; eventId: string }[] }
-          const found = items?.find((d) => d.eventId === event.eventId)
-          if (found) {
-            deliveryId = found.deliveryId
-            return true
-          }
-          return false
-        },
-        { timeout: 10_000 },
-      )
-      .toBe(true)
+    const { deliveryId } = await findDeliveryForEvent(
+      consentAdminEventApi,
+      subscription.subscriptionId,
+      event.eventId,
+    )
 
     // 1. Token with ONLY notifications:events:read cannot access /v1.1/deliveries/* -> 403 Forbidden
     const eventsOnlyHeaders = await mintPersonaTokenWithScopes(browser, 'consent-admin', [
@@ -279,27 +251,13 @@ test.describe('Event Notifications V1.1 API features', () => {
 
       receiver.respondWith(() => ({ status: 200 }))
 
-      const { event } = await publishMarkedEventViaApi(consentAdminEventApi, '', topic.name)
+      const { event } = await publishMarkedEventViaApi(consentAdminEventApi, undefined, topic.name)
 
-      let deliveryId = ''
-      await expect
-        .poll(
-          async () => {
-            const listResponse = await consentAdminEventApi.listSubscriptionEvents(subscription.subscriptionId)
-            if (!listResponse.ok()) {
-              return false
-            }
-            const { items } = (await listResponse.json()) as { items?: { deliveryId: string; eventId: string }[] }
-            const found = items?.find((d) => d.eventId === event.eventId)
-            if (found) {
-              deliveryId = found.deliveryId
-              return true
-            }
-            return false
-          },
-          { timeout: 15_000 },
-        )
-        .toBe(true)
+      const { deliveryId } = await findDeliveryForEvent(
+        consentAdminEventApi,
+        subscription.subscriptionId,
+        event.eventId,
+      )
 
       // Wait for delivery to reach 'delivered' status
       await expect

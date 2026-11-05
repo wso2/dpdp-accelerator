@@ -70,3 +70,25 @@ export function authHeadersFromPersonaState(state: PersonaAuthState): AuthHeader
     Cookie: `${ACCESS_TOKEN_BINDING_COOKIE}=${readCookie(state.storageState, ACCESS_TOKEN_BINDING_COOKIE)}`,
   }
 }
+
+export function serializeCookies(state: PersonaStorageState): string {
+  return state.cookies.map((cookie) => `${cookie.name}=${cookie.value}`).join('; ')
+}
+
+/**
+ * Builds `AuthHeaders` for a newly minted access token, updating the token-binding cookie from a
+ * token response's `set-cookie` header when present and falling back to the persona's captured
+ * session state otherwise.
+ */
+export function authHeadersForMintedToken(
+  state: PersonaStorageState,
+  accessToken: string,
+  setCookieHeader?: string,
+): AuthHeaders {
+  const match = setCookieHeader?.match(new RegExp(`(?:^|;\\s*)${ACCESS_TOKEN_BINDING_COOKIE}=([^;]+)`))
+  const bindingValue = match ? match[1] : readCookie(state, ACCESS_TOKEN_BINDING_COOKIE)
+  return {
+    Authorization: `Bearer ${accessToken}`,
+    Cookie: `${ACCESS_TOKEN_BINDING_COOKIE}=${bindingValue}`,
+  }
+}

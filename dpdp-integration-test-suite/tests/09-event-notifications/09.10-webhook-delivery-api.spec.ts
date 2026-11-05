@@ -18,7 +18,11 @@
 
 import { test, expect } from '../../fixtures/auth.fixtures'
 import { webhookBackoffOverride } from '../../utils/env'
-import { seedActiveTopicViaApi, publishMarkedEventViaApi } from '../../utils/eventNotificationSetup'
+import {
+  findDeliveryForEvent,
+  publishMarkedEventViaApi,
+  seedActiveTopicViaApi,
+} from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 import { webhookTestsEnabled, WebhookReceiver } from '../../utils/webhookReceiver'
 
@@ -75,7 +79,13 @@ for (const version of ['v1', 'v1.1'] as const) {
   async function registerVerifiedWebhookSubscription(
     consentAdminEventApi: import('../../clients/EventNotificationApiClient').EventNotificationApiClient,
     label: string,
-  ): Promise<{ receiver: WebhookReceiver; secret: string; topicName: string; subscriptionId: string; groupId: string }> {
+  ): Promise<{
+    receiver: WebhookReceiver
+    secret: string
+    topicName: string
+    subscriptionId: string
+    groupId?: string
+  }> {
     const topic = await seedActiveTopicViaApi(consentAdminEventApi, label)
     const receiver = new WebhookReceiver()
     const started = await receiver.start()
@@ -106,39 +116,6 @@ for (const version of ['v1', 'v1.1'] as const) {
       subscriptionId: subscription.subscriptionId,
       groupId: subscription.groupId,
     }
-  }
-
-  /**
-   * A one-shot `listSubscriptionEvents` call right after publish is fine when nothing else has
-   * happened yet, but the retry tests below first poll the receiver for
-   * several webhook attempts - tens of seconds of real elapsed time in which this shared
-   * `consent-admin` persona's session can be invalidated by an entirely different concurrent test
-   * run also using it (this environment is real and shared - see AGENTS.md), turning the next API
-   * call into a 401 whose body has no `items` field at all. Polling here, rather than a single
-   * fetch, makes this resilient to that transient blip the same way this suite already tolerates
-   * everything else about the shared environment - a future successful call recovers on its own.
-   */
-  async function findDeliveryForEvent(
-    consentAdminEventApi: import('../../clients/EventNotificationApiClient').EventNotificationApiClient,
-    subscriptionId: string,
-    eventId: string,
-  ): Promise<{ deliveryId: string; eventId: string }> {
-    let found: { deliveryId: string; eventId: string } | undefined
-    await expect
-      .poll(
-        async () => {
-          const eventsList = await consentAdminEventApi.listSubscriptionEvents(subscriptionId, { limit: 20 })
-          if (!eventsList.ok()) {
-            return false
-          }
-          const { items } = (await eventsList.json()) as { items?: { deliveryId: string; eventId: string }[] }
-          found = items?.find((item) => item.eventId === eventId)
-          return Boolean(found)
-        },
-        { timeout: 30_000 },
-      )
-      .toBe(true)
-    return found as { deliveryId: string; eventId: string }
   }
 
     test(`09.10.01 - A non-2xx response records failure and retries with the same delivery id (${version})`, async ({
@@ -291,7 +268,10 @@ for (const version of ['v1', 'v1.1'] as const) {
       const initialAttempts = (initialHistory.history as unknown[]).length
 
       // Trigger manual retry
-      const retryResponse = await consentAdminEventApi.retrySubscriptionDelivery(subscriptionId, delivery.deliveryId)
+      const retryResponse =
+        version === 'v1.1'
+          ? await consentAdminEventApi.retryDelivery(delivery.deliveryId)
+          : await consentAdminEventApi.retrySubscriptionDelivery(subscriptionId, delivery.deliveryId)
       expect(retryResponse.status()).toBe(202)
 
       // The receiver fails again (503), delivery transitions back to 'failed' with an additional attempt

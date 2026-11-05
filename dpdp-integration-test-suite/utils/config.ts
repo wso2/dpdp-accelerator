@@ -48,6 +48,7 @@ export interface E2EConfig {
   identityServer: {
     baseUrl: string
     portalBaseUrl: string
+    portalClientId: string
     ignoreHttpsErrors: boolean
   }
   superAdmin: Credentials
@@ -83,6 +84,9 @@ export interface E2EConfig {
   }
   consentExpiry: {
     schedulerPollTimeoutMs: number | null
+  }
+  eventNotifications: {
+    pollingRequestHmacValidationEnabled: boolean
   }
 }
 

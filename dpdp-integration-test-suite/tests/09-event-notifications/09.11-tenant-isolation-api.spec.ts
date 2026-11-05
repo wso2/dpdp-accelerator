@@ -17,7 +17,12 @@
  */
 
 import { test, expect } from '../../fixtures/tenant.fixtures'
-import { seedActiveTopicViaApi, seedPollSubscriptionViaApi, publishMarkedEventViaApi } from '../../utils/eventNotificationSetup'
+import {
+  findDeliveryForEvent,
+  publishMarkedEventViaApi,
+  seedActiveTopicViaApi,
+  seedPollSubscriptionViaApi,
+} from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 
 const SYSTEM_TOPICS = ['consent.update', 'consent.revoke', 'consent.expire', 'user.data.change', 'user.account.delete']
@@ -72,7 +77,8 @@ for (const version of ['v1', 'v1.1'] as const) {
 
       const topicB = await seedActiveTopicViaApi(apiB, `09-02-02-topic-${version}`)
       const subscriptionB = await seedPollSubscriptionViaApi(apiB, topicB.name)
-      const { event: eventB } = await publishMarkedEventViaApi(apiB, tenantB.domain, topicB.name)
+      const { event: eventB } = await publishMarkedEventViaApi(apiB, subscriptionB.groupId, topicB.name)
+      const deliveryB = await findDeliveryForEvent(apiB, subscriptionB.subscriptionId, eventB.eventId)
 
       // Tenant A's own token, tenant B's resource ids - every operation must behave exactly like
       // an unknown id, never exposing that the id belongs to someone else.
@@ -81,10 +87,14 @@ for (const version of ['v1', 'v1.1'] as const) {
       expect((await apiA.deleteSubscription(subscriptionB.subscriptionId)).status()).toBe(404)
       expect((await apiA.verifySubscription(subscriptionB.subscriptionId)).status()).toBe(404)
       expect((await apiA.getEvent(eventB.eventId)).status()).toBe(404)
-      expect((await apiA.getDeliveryHistory(eventB.eventId)).status()).toBe(404)
-      expect(
-        (await apiA.getSubscriptionEventHistory(subscriptionB.subscriptionId, eventB.eventId)).status(),
-      ).toBe(404)
+      expect((await apiA.getDeliveryHistory(deliveryB.deliveryId)).status()).toBe(404)
+      if (version === 'v1.1') {
+        expect((await apiA.getDelivery(deliveryB.deliveryId)).status()).toBe(404)
+      } else {
+        expect(
+          (await apiA.getSubscriptionEventHistory(subscriptionB.subscriptionId, deliveryB.deliveryId)).status(),
+        ).toBe(404)
+      }
 
       // Tenant B's own view of its own resources is unaffected by the rejected cross-tenant attempts.
       const stillThere = await apiB.getSubscription(subscriptionB.subscriptionId)

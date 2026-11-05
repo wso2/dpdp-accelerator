@@ -32,7 +32,9 @@ import { ConsentApiClient } from '../clients/ConsentApiClient'
 import { EventNotificationApiClient } from '../clients/EventNotificationApiClient'
 import { LoginPage } from '../pages/LoginPage'
 import {
+  authHeadersForMintedToken,
   authHeadersFromPersonaState,
+  serializeCookies,
   type AuthHeaders,
   type PersonaAuthState,
   type PersonaStorageState,
@@ -686,16 +688,14 @@ export async function mintPersonaTokenWithScopes(
   const authorizeUrl = new URL(
     `${env.identityServerBaseUrl}${tenantSegment(target.tenantDomain)}/oauth2/authorize`,
   )
-  authorizeUrl.searchParams.set('client_id', 'DPDP_CONSENT_PORTAL')
+  authorizeUrl.searchParams.set('client_id', env.portalClientId)
   authorizeUrl.searchParams.set('response_type', 'code')
   authorizeUrl.searchParams.set('redirect_uri', callbackUrl)
   authorizeUrl.searchParams.set('scope', scopes.join(' '))
   authorizeUrl.searchParams.set('code_challenge', challenge)
   authorizeUrl.searchParams.set('code_challenge_method', 'S256')
 
-  const cookieHeader = personaState.storageState.cookies
-    .map((c) => `${c.name}=${c.value}`)
-    .join('; ')
+  const cookieHeader = serializeCookies(personaState.storageState)
 
   const apiRequest = await playwrightRequest.newContext({
     ignoreHTTPSErrors: env.ignoreHttpsErrors,
@@ -724,7 +724,7 @@ export async function mintPersonaTokenWithScopes(
       {
         form: {
           grant_type: 'authorization_code',
-          client_id: 'DPDP_CONSENT_PORTAL',
+          client_id: env.portalClientId,
           code,
           redirect_uri: callbackUrl,
           code_verifier: verifier,
@@ -739,16 +739,11 @@ export async function mintPersonaTokenWithScopes(
     }
 
     const tokenData = (await tokenResponse.json()) as { access_token: string }
-    const atbvFromSession =
-      personaState.storageState.cookies.find((c) => c.name === 'atbv')?.value ?? ''
-    const setCookie = tokenResponse.headers()['set-cookie'] ?? ''
-    const atbvMatch = setCookie.match(/atbv=([^;]+)/)
-    const atbv = atbvMatch ? atbvMatch[1] : atbvFromSession
-
-    return {
-      Authorization: `Bearer ${tokenData.access_token}`,
-      Cookie: atbv ? `atbv=${atbv}` : '',
-    }
+    return authHeadersForMintedToken(
+      personaState.storageState,
+      tokenData.access_token,
+      tokenResponse.headers()['set-cookie'],
+    )
   } finally {
     await apiRequest.dispose()
   }

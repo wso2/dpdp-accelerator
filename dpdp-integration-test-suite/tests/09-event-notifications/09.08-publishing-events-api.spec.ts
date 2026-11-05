@@ -44,11 +44,13 @@ for (const version of ['v1', 'v1.1'] as const) {
     }) => {
       const topic = await seedActiveTopicViaApi(consentAdminEventApi, `atomic-${version}`)
       const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, { type: 'all' })
-      const groupId = subscription.groupId ?? ''
 
-      const { event, marker } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, [
-        'account-management',
-      ])
+      const { event, marker } = await publishMarkedEventViaApi(
+        consentAdminEventApi,
+        subscription.groupId,
+        topic.name,
+        ['account-management'],
+      )
       expect(typeof event.eventId).toBe('string')
       expect(event.eventId.length).toBeGreaterThan(0)
 
@@ -131,10 +133,14 @@ for (const version of ['v1', 'v1.1'] as const) {
     }) => {
       const topic = await seedActiveTopicViaApi(consentAdminEventApi, `all-filter-${version}`)
       const subscription = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name, { type: 'all' })
-      const groupId = subscription.groupId ?? ''
 
       for (const purposes of [[], ['account'], ['account', 'profile']]) {
-        const { event } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, purposes)
+        const { event } = await publishMarkedEventViaApi(
+          consentAdminEventApi,
+          subscription.groupId,
+          topic.name,
+          purposes,
+        )
         const deliveriesResponse = await consentAdminEventApi.getEventDeliveries(event.eventId)
         const { items: deliveries } = (await deliveriesResponse.json()) as { items: SubscriptionDeliveryRecord[] }
         const matching = deliveries.filter((delivery) => delivery.subscriptionId === subscription.subscriptionId)
@@ -150,7 +156,7 @@ for (const version of ['v1', 'v1.1'] as const) {
         type: 'specific',
         purposes: ['Account-Management'],
       })
-      const groupId = subscription.groupId ?? ''
+      const groupId = subscription.groupId
 
       const { event: overlapping } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, [
         'account-management',
@@ -184,7 +190,7 @@ for (const version of ['v1', 'v1.1'] as const) {
         type: 'all_except',
         purposes: ['marketing'],
       })
-      const groupId = subscription.groupId ?? ''
+      const groupId = subscription.groupId
 
       const { event: excludedOnly } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topic.name, [
         'marketing',
@@ -226,7 +232,7 @@ for (const version of ['v1', 'v1.1'] as const) {
       const subscription = (await response.json()) as { subscriptionId: string; groupId?: string; topics?: string[] }
       expect(subscription.topics).toEqual(expect.arrayContaining([topicA.name, topicB.name]))
 
-      const groupId = subscription.groupId ?? ''
+      const groupId = subscription.groupId
 
       // Event on topicA delivers to this subscription
       const { event: eventA } = await publishMarkedEventViaApi(consentAdminEventApi, groupId, topicA.name)

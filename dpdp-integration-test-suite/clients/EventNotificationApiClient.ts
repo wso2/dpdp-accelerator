@@ -286,17 +286,25 @@ export class EventNotificationApiClient {
   }
 
   async getSubscriptionEventHistory(subscriptionId: string, deliveryId: string): Promise<APIResponse> {
-    const path = this.version === 'v1.1'
-      ? `/deliveries/${encodeURIComponent(deliveryId)}/history`
-      : `/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}`
-    return this.request.get(this.url(path), { headers: this.headers() })
+    if (this.version === 'v1.1') {
+      throw new Error(
+        'Subscription-scoped delivery routes do not exist in v1.1; use getDelivery / getDeliveryHistory.',
+      )
+    }
+    return this.request.get(
+      this.url(`/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}`),
+      { headers: this.headers() },
+    )
   }
 
   async retrySubscriptionDelivery(subscriptionId: string, deliveryId: string): Promise<APIResponse> {
-    const path = this.version === 'v1.1'
-      ? `/deliveries/${encodeURIComponent(deliveryId)}/retry`
-      : `/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}/retry`
-    return this.request.post(this.url(path), { headers: this.headers() })
+    if (this.version === 'v1.1') {
+      throw new Error('Subscription-scoped delivery routes do not exist in v1.1; use retryDelivery.')
+    }
+    return this.request.post(
+      this.url(`/subscriptions/${encodeURIComponent(subscriptionId)}/events/${encodeURIComponent(deliveryId)}/retry`),
+      { headers: this.headers() },
+    )
   }
 
   // ------------------------------------------------------------------------------------ Events
@@ -307,7 +315,7 @@ export class EventNotificationApiClient {
    */
   async publishEvent(groupId: string | undefined, body: EventCreateRequest): Promise<APIResponse> {
     const extraHeaders: Record<string, string> = {}
-    if (groupId !== undefined && groupId !== null) {
+    if (groupId) {
       extraHeaders['group-id'] = groupId
     }
     return this.request.post(this.url('/events'), {

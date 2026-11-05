@@ -53,6 +53,7 @@ export const env = {
   // chasing as an OAuth/IS problem before landing here. portalBaseUrl itself stays slash-free since
   // the consent API URL helpers below need that form.
   portalNavigationBaseUrl: `${rawPortalBaseUrl}/`,
+  portalClientId: requireConfigured(config.identityServer.portalClientId, 'identityServer.portalClientId'),
   identityServerBaseUrl: trimTrailingSlash(config.identityServer.baseUrl),
   ignoreHttpsErrors: config.identityServer.ignoreHttpsErrors,
 
@@ -169,9 +170,13 @@ export type EventNotificationApiVersion = 'v1' | 'v1.1'
 export function eventNotificationsApiUrl(
   path: string,
   tenantDomain?: string,
-  version: EventNotificationApiVersion | string = 'v1',
+  version: EventNotificationApiVersion = 'v1',
 ): string {
   return `${env.identityServerBaseUrl}${tenantSegment(tenantDomain)}/api/dpdp/event-notifications/${version}${path}`
+}
+
+export function pollingRequestHmacValidationEnabled(): boolean {
+  return Boolean(config.eventNotifications?.pollingRequestHmacValidationEnabled)
 }
 
 // The accelerator's own consent-history webapp (org.wso2.dpdp.accelerator.consent.mgt.extensions.endpoint,
