@@ -25,11 +25,11 @@ Standardized the JSON responses returned by state-changing operations across sub
 * `POST /subscriptions/{id}/verify` and `DELETE /subscriptions/{id}` now return a uniform `SubscriptionStatusUpdate` object containing `subscriptionId`, `status`, and `updatedAt`.
 * `DELETE /topics/{id}` returns a uniform `TopicStatusUpdate` object containing `topicId` and `status`.
 
-### Database schema migration scripts
-Included schema migration scripts under `carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/` in the accelerator snapshot (copied to `<IS_HOME>/dbscripts/dpdp-accelerator/event-notification/migrations/` upon running `merge.sh`) to support upgrading existing database schemas:
+### Database data migration scripts
+Included data migration scripts under `carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/` in the accelerator snapshot (copied to `<IS_HOME>/dbscripts/dpdp-accelerator/event-notification/migrations/` upon running `merge.sh`). These scripts backfill `WEBHOOK_DELIVERY.STATUS = 'completed'` for deliveries completed prior to v1.1 rather than changing the database schema:
 * `h2.sql` (H2 database)
-* `mysql.sql` (MySQL 8.x)
-* `postgresql.sql` (PostgreSQL 14+)
+* `mysql.sql` (MySQL 8.0)
+* `postgresql.sql` (PostgreSQL 15, 16, 17)
 
 ---
 
@@ -71,8 +71,8 @@ The legacy V1 routes remain accessible at `/api/dpdp/event-notifications/v1` for
 | Component | Supported Version |
 |---|---|
 | **Base Product** | WSO2 Identity Server 7.3.0 |
-| **Java** | OpenJDK 17 or higher (LTS recommended) |
-| **Databases** | MySQL 8.x, PostgreSQL 14+, H2 (embedded, evaluation only) |
+| **Java** | JDK 21 |
+| **Databases** | MySQL 8.0, PostgreSQL 15, 16, 17, H2 (embedded, evaluation only) |
 
 ---
 
@@ -80,7 +80,7 @@ The legacy V1 routes remain accessible at `/api/dpdp/event-notifications/v1` for
 
 Follow these steps to upgrade an existing DPDP Accelerator deployment to version 1.1.0:
 
-### 1. Apply database migration scripts
+### 1. Apply database data migration scripts
 Apply the database migration script matching your database engine to `WSO2DPDP_DB` from the accelerator snapshot (or `<IS_HOME>` after running `merge.sh`), or use `configure.sh` with migration enabled:
 
 ```sh

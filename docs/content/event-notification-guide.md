@@ -87,7 +87,7 @@ The examples below use these shell variables:
 ```sh
 IS_BASE_URL="https://is.example.com:9443"
 TENANT_DOMAIN="example.com"
-API_BASE="${IS_BASE_URL}/api/dpdp/event-notifications/v1.1"
+API_BASE="${IS_BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1.1"
 ACCESS_TOKEN="<access-token>"
 PUBLISHER_ACCESS_TOKEN="<event-publisher-access-token>"
 RECEIVER_ACCESS_TOKEN="<event-receiver-access-token>"

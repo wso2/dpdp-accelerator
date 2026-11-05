@@ -605,7 +605,7 @@ lists the roles that grant them:
 ```bash
 export BASE_URL="https://localhost:9443"
 export TENANT_DOMAIN="example.com"
-export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1.1"
+export API_BASE="${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1.1"
 export PUBLISHER_TOKEN="<publisher-access-token>"
 export RECEIVER_TOKEN="<receiver-access-token>"
 ```
@@ -616,7 +616,7 @@ export RECEIVER_TOKEN="<receiver-access-token>"
 ```bash
 export BASE_URL="https://localhost:9443"
 export TENANT_DOMAIN="example.com"
-export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1.1"
+export API_BASE="${BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1.1"
 export PUBLISHER_TOKEN="<publisher-access-token>"
 export RECEIVER_TOKEN="<receiver-access-token>"
 ```
@@ -627,7 +627,7 @@ export RECEIVER_TOKEN="<receiver-access-token>"
 ```powershell
 $env:BASE_URL = "https://localhost:9443"
 $env:TENANT_DOMAIN = "example.com"
-$env:API_BASE = "$env:BASE_URL/api/dpdp/event-notifications/v1.1"
+$env:API_BASE = "$env:BASE_URL/t/$env:TENANT_DOMAIN/api/dpdp/event-notifications/v1.1"
 $env:PUBLISHER_TOKEN = "<publisher-access-token>"
 $env:RECEIVER_TOKEN = "<receiver-access-token>"
 ```
