@@ -35,9 +35,9 @@ any of the three portal roles.
 |---|---|---|
 | View topics | `notifications:topics:read` | `dpdp-consent-admin` |
 | Create or deregister topics | `notifications:topics:write` | `dpdp-consent-admin` |
-| View subscriptions | `notifications:subscriptions:read` | `dpdp-consent-admin` |
-| Create, verify, or delete subscriptions | `notifications:subscriptions:write` | `dpdp-consent-admin` |
-| View events and delivery history | `notifications:events:read` | `dpdp-consent-admin` |
+| View subscriptions, delivery details, and delivery history | `notifications:subscriptions:read` | `dpdp-consent-admin` |
+| Create, verify, or delete subscriptions, and retry deliveries | `notifications:subscriptions:write` | `dpdp-consent-admin` |
+| View events and event deliveries | `notifications:events:read` | `dpdp-consent-admin` |
 | Publish events | `notifications:events:write` | `dpdp-consent-admin` |
 | Poll event deliveries | `notifications:events:poll` | None |
 | Submit delivery completion | `notifications:event-deliveries:complete` | None |
@@ -75,7 +75,7 @@ operator must create and assign manually.
 ### API base URL
 
 ```text
-https://<host>:9443/api/dpdp/event-notifications/v1
+https://<host>:9443/api/dpdp/event-notifications/v1.1
 ```
 
 The endpoints use the request's Carbon tenant context as the organization
@@ -87,8 +87,9 @@ The examples below use these shell variables:
 ```sh
 IS_BASE_URL="https://is.example.com:9443"
 TENANT_DOMAIN="example.com"
-API_BASE="${IS_BASE_URL}/api/dpdp/event-notifications/v1"
-GROUP_ID="${TENANT_DOMAIN}"
+# Secondary tenants. For the super tenant (carbon.super), set API_BASE to
+# "${IS_BASE_URL}/api/dpdp/event-notifications/v1.1" without the /t/ segment.
+API_BASE="${IS_BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1.1"
 ACCESS_TOKEN="<access-token>"
 PUBLISHER_ACCESS_TOKEN="<event-publisher-access-token>"
 RECEIVER_ACCESS_TOKEN="<event-receiver-access-token>"
@@ -115,8 +116,7 @@ The normal webhook flow is:
 2. The Data Fiduciary registers a webhook subscription on behalf of the Data Processors for that topic.
 3. Identity Server verifies the subscriber's callback URL.
 4. A matching lifecycle action publishes the event automatically, or an Event
-   Publisher (the Data Fiduciary or an external publisher) sends it explicitly
-   with a `group-id` header.
+   Publisher (the Data Fiduciary or an external publisher) sends it explicitly.
 5. The accelerator matches the event to active subscriptions and sends a
    signed webhook request.
 6. An administrator can inspect the event and delivery history in the portal.
@@ -125,7 +125,7 @@ The normal webhook flow is:
 |---|---|
 | Topic | A named event category, such as `consent-status-changed`. |
 | Subscription | Associates one or more topics with one shared purpose filter and delivery configuration. |
-| Event | The payload published to a topic for a group. |
+| Event | The payload published to a topic. |
 | Delivery | One subscription-specific attempt to deliver an event. |
 
 ## 3. Create and manage topics
@@ -152,7 +152,7 @@ under `[dpdp_accelerator.event_notifications.lifecycle_events]`.
 The lifecycle action creates the Event Notification event automatically; an
 administrator or external publisher does not need to call `POST /events` for
 that occurrence. A delivery is created only for an active subscription whose
-tenant, group, topic, and purpose filter match the event.
+tenant, topic, and purpose filter match the event.
 
 These topics are marked as managed by the system. A portal administrator can
 use them for subscriptions and events but cannot deregister them. The portal
@@ -231,6 +231,15 @@ To deregister a user-created topic:
 ```sh
 curl --request DELETE "${API_BASE}/topics/<topic-id>" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
+```
+
+A successful deregistration returns HTTP `200 OK` with the updated status:
+
+```json
+{
+  "topicId": "2ea5f59a-70db-4098-b0f8-3f3cfede76c7",
+  "status": "deregistered"
+}
 ```
 
 A topic cannot be deregistered while it has active subscriptions. System-created
@@ -444,7 +453,7 @@ Purpose filters behave as follows:
 
 `specific` and `all_except` require at least one purpose. Purpose matching is
 case-insensitive. A subscription containing `user.account.delete` or `user.data.change`
-requires the `all` purpose filter. Topics are fixed at creation. A tenant and group cannot
+requires the `all` purpose filter. Topics are fixed at creation. A tenant cannot
 mix webhook and poll subscriptions for the same topic. Duplicate or overlapping webhook
 subscriptions using the same callback URL are also rejected. Referenced topics cannot
 be deregistered while any subscription referencing them is active, pending, or stale.
@@ -478,6 +487,16 @@ To retry verification after fixing the receiver:
 ```sh
 curl --request POST "${API_BASE}/subscriptions/<subscription-id>/verify" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
+```
+
+A successful verification returns HTTP `200 OK` with the active subscription status:
+
+```json
+{
+  "subscriptionId": "70f63b63-7ec4-4e42-a956-fca89bfeb351",
+  "status": "active",
+  "updatedAt": 1787652970000
+}
 ```
 
 You can also open the subscription details in the portal and select **Verify**.
@@ -517,15 +536,12 @@ automatic publication is enabled. Use the API below for user-created topics or
 when an application intentionally publishes an event itself; do not duplicate
 an automatically generated lifecycle event by publishing it again manually.
 
-Publish only to an active topic. The `group-id` header is required and controls
-which group-scoped subscriptions can receive the event. With subscriptions
-created by the current API, use the current tenant domain as the group ID.
+Publish only to an active topic.
 
 ```sh
 curl --request POST "${API_BASE}/events" \
   --header "Authorization: Bearer ${PUBLISHER_ACCESS_TOKEN}" \
   --header "Content-Type: application/json" \
-  --header "group-id: ${TENANT_DOMAIN}" \
   --data '{
     "topic": "consent-status-changed",
     "purposes": ["account-management"],
@@ -537,7 +553,7 @@ curl --request POST "${API_BASE}/events" \
 ```
 
 The event and its matching delivery records are created atomically. Only active
-subscriptions on the same tenant, group, and topic whose purpose filter matches
+subscriptions on the same tenant and topic whose purpose filter matches
 the event are selected.
 
 ## 7. Process deliveries
@@ -571,7 +587,7 @@ fragment and must not exceed 512 characters. A second completion for the same
 delivery returns `EN-4090` with HTTP `409 Conflict`.
 
 An accepted completion returns HTTP `204 No Content` with an empty response
-body. Unknown deliveries, group mismatches, and invalid signatures return the
+body. Unknown deliveries, invalid signatures, or tenant mismatches return the
 same `401 / EN-4010` response so an unauthenticated caller cannot discover a
 delivery or its state.
 
@@ -586,14 +602,13 @@ COMPLETION_SIGNATURE=$(printf 'v1\ncompletion\n%s\n%s' "${DELIVERY_ID}" "${COMPL
 
 curl -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
   -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
-  -H "group-id: ${GROUP_ID}" \
   -H "event-signature: sha256=${COMPLETION_SIGNATURE}" \
   -H "Content-Type: application/json" \
   -d "${COMPLETION_BODY}"
 ```
 
 For the full request/response schema, see the `POST /deliveries/{deliveryId}/completion`
-operation in the [DPDP Event Notification API](https://github.com/wso2/dpdp-accelerator/blob/main/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/src/main/resources/event-notifications.yaml)
+operation in the [DPDP Event Notification API](https://github.com/wso2/dpdp-accelerator/blob/main/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/src/main/resources/event-notifications-v1.1.yaml)
 specification.
 
 ### Poll event deliveries
@@ -607,7 +622,7 @@ The `ack` array contains delivery IDs, while the `setErrs` object is keyed by
 delivery ID; neither uses an event ID. Each delivery belongs to one
 subscription, so this prevents an acknowledgement for one subscription from
 updating another subscription's delivery of the same event. Only pending
-deliveries belonging to the request's tenant, group, and requested
+deliveries belonging to the request's tenant and requested
 subscription are updated. A delivery ID must not appear in both `ack` and
 `setErrs`.
 
@@ -623,7 +638,6 @@ Example:
 POLL_SUBSCRIPTION_ID="<poll-subscription-id>"
 POLL_SHARED_SECRET="<poll-subscription-shared-secret>"
 POLL_BODY='{
-  "orgId": "example.com",
   "maxEvents": 20,
   "returnImmediately": true,
   "ack": ["delivery-that-succeeded"],
@@ -639,7 +653,6 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${RECEIVER_ACCESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -H "group-id: ${GROUP_ID}" \
   -H "subscription-id: ${POLL_SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -695,21 +708,41 @@ their audit history.
 
 The corresponding read APIs are:
 
-| Operation | Method and path |
-|---|---|
-| List events | `GET /events` |
-| Get an event | `GET /events/{eventId}` |
-| List deliveries for an event | `GET /events/{eventId}/deliveries` |
-| Get delivery history | `GET /events/{deliveryId}/history` |
-| List deliveries for a subscription | `GET /subscriptions/{subscriptionId}/events` |
-| Get a subscription delivery history | `GET /subscriptions/{subscriptionId}/events/{deliveryId}` |
+| Operation | Method and path | Required scope |
+|---|---|---|
+| List events | `GET /events` | `notifications:events:read` |
+| Get an event | `GET /events/{eventId}` | `notifications:events:read` |
+| List deliveries for an event | `GET /events/{eventId}/deliveries` | `notifications:events:read` |
+| Get delivery details (`v1.1`) | `GET /deliveries/{deliveryId}` | `notifications:subscriptions:read` |
+| Get delivery attempt history (`v1.1`) | `GET /deliveries/{deliveryId}/history` | `notifications:subscriptions:read` |
+| Retry an exhausted delivery (`v1.1`) | `POST /deliveries/{deliveryId}/retry` | `notifications:subscriptions:write` |
+| Get delivery history (`v1`, deprecated) | `GET /events/{deliveryId}/history` | `notifications:events:read` |
+| List deliveries for a subscription (`v1.1`) | `GET /subscriptions/{subscriptionId}/deliveries` | `notifications:subscriptions:read` |
+| List deliveries for a subscription (`v1`, deprecated) | `GET /subscriptions/{subscriptionId}/events` | `notifications:subscriptions:read` |
+| Get a subscription delivery history (`v1`, deprecated) | `GET /subscriptions/{subscriptionId}/events/{deliveryId}` | `notifications:subscriptions:read` |
+| Retry an exhausted delivery (`v1`, deprecated) | `POST /subscriptions/{subscriptionId}/events/{deliveryId}/retry` | `notifications:subscriptions:write` |
+
+:::note Scope required for delivery details and history in v1.1
+In `v1.1`, delivery details and attempt history moved from `/events/{deliveryId}/history` to `/deliveries/{deliveryId}` and `/deliveries/{deliveryId}/history`, which require the `notifications:subscriptions:read` scope (and `POST /deliveries/{deliveryId}/retry` requires `notifications:subscriptions:write`). Because the Consent Portal's Event details modal calls the `v1.1` `/deliveries/{deliveryId}` and `/deliveries/{deliveryId}/history` endpoints, any custom role that previously held only `notifications:events:read` must also be granted `notifications:subscriptions:read` to inspect delivery details and attempt history without receiving HTTP `403 Forbidden`.
+:::
 
 For example:
 
 ```sh
+# List deliveries for an event
 curl "${API_BASE}/events/<event-id>/deliveries?limit=20&offset=0" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
+
+# Get delivery attempt history
+curl "${API_BASE}/deliveries/<delivery-id>/history" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}"
+
+# Retry an exhausted webhook delivery
+curl --request POST "${API_BASE}/deliveries/<delivery-id>/retry" \
+  --header "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
+
+Calling `POST /deliveries/{deliveryId}/retry` returns HTTP `202 Accepted` and transitions a failed or exhausted webhook delivery back into the queue for automatic redelivery by the delivery worker.
 
 ## 9. Delete a subscription
 
@@ -719,6 +752,16 @@ use:
 ```sh
 curl --request DELETE "${API_BASE}/subscriptions/<subscription-id>" \
   --header "Authorization: Bearer ${ACCESS_TOKEN}"
+```
+
+A successful deletion returns HTTP `200 OK` with the deleted status:
+
+```json
+{
+  "subscriptionId": "70f63b63-7ec4-4e42-a956-fca89bfeb351",
+  "status": "deleted",
+  "updatedAt": 1787652970000
+}
 ```
 
 Deletion changes the subscription to `deleted`; it does not erase its existing
@@ -734,5 +777,5 @@ event and delivery audit history.
 | Subscription remains `pending` or becomes `stale` | Confirm the callback is reachable from Identity Server and returns the exact verification challenge with HTTP `200`. Then retry verification. |
 | Subscription creation returns `409` | Check for an existing or overlapping subscription for the same topic and purposes, and delete the conflicting subscription if it is no longer needed. |
 | A system topic exists but no automatic lifecycle events appear | Confirm `lifecycle_events.publishing_enabled = true`. Consent callbacks and expiry tracking currently require `consent_history.enabled = true`; expiry reconciliation also requires `consent_expiry.enabled = true`. For user topics, confirm the `dpdpUserLifecycleEventHandler` subscriptions. |
-| Event is created but no delivery appears | Confirm the subscription is `active`, the topic and purpose filters match, and `group-id` equals the subscription's group ID. |
+| Event is created but no delivery appears | Confirm the subscription is `active`, belongs to the same tenant, and the topic and purpose filters match. |
 | Webhook signature does not match | Compute the HMAC over the unmodified raw request body, not only the nested `payload`. |
