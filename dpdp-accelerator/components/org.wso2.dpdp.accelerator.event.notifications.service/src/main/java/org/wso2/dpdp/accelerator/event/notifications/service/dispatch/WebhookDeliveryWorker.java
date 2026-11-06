@@ -105,6 +105,15 @@ public class WebhookDeliveryWorker implements Runnable {
         POOL_SATURATED
     }
 
+    enum ExitReason {
+        TIME_BUDGET,
+        MAX_BATCHES,
+        POOL_SATURATED,
+        NO_MORE_WORK,
+        NO_FRESH_ROWS,
+        STOPPING
+    }
+
     /** Carries the results of one {@link #submitBatch} call back to {@link #runTick}. */
     private static final class BatchResult {
         final int submitted;
@@ -117,6 +126,7 @@ public class WebhookDeliveryWorker implements Runnable {
     }
 
     private static final Log LOG = LogFactory.getLog(WebhookDeliveryWorker.class);
+    static final int MAX_BATCHES_PER_TICK = 10;
 
     private final DeliveryDAO deliveryDAO;
     private final Executor executor;
@@ -137,6 +147,7 @@ public class WebhookDeliveryWorker implements Runnable {
      */
     private final ConcurrentHashMap<String, AtomicInteger> perSubInFlight = new ConcurrentHashMap<>();
     private volatile boolean stopping;
+    private volatile ExitReason lastExitReason;
 
     public WebhookDeliveryWorker(DeliveryDAO deliveryDAO, Executor executor) {
         this(deliveryDAO, executor, defaultHttpClient(), null);
@@ -179,6 +190,10 @@ public class WebhookDeliveryWorker implements Runnable {
         return tracked.contains(deliveryId);
     }
 
+    ExitReason getLastExitReason() {
+        return lastExitReason;
+    }
+
     @Override
     public void run() {
         try {
@@ -196,70 +211,113 @@ public class WebhookDeliveryWorker implements Runnable {
      */
     public int[] runTick() {
         if (stopping) {
+            lastExitReason = ExitReason.STOPPING;
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Delivery tick finished: submitted=0, exit=" + ExitReason.STOPPING);
+            }
             return new int[] { 0, 0 };
         }
         int batchSize = getConfiguration().getEventNotificationDeliveryWorkerBatchSize();
-        int maxBatches = Math.max(1, getConfiguration().getEventNotificationDeliveryWorkerMaxBatchesPerRun());
-        long maxRunNanos = TimeUnit.SECONDS.toNanos(
-                Math.max(1, getConfiguration().getEventNotificationDeliveryWorkerMaxRunSeconds()));
+        int pollSeconds = Math.max(1, getConfiguration().getEventNotificationDeliveryWorkerPollSeconds());
+        long maxRunNanos = TimeUnit.SECONDS.toNanos(pollSeconds);
         long startNanos = System.nanoTime();
+        long deadlineNanos = startNanos + maxRunNanos;
 
         // 1. Reserved reclaim pass: always attempted first so stuck in-flight
-        // deliveries
-        // are never starved by a sustained backlog of pending deliveries.
+        // deliveries are never starved by a sustained backlog of pending deliveries.
         int reclaimBudget = Math.max(1, batchSize / 10);
         int reclaimed = reclaimStuck(reclaimBudget);
 
         // 2. Pending drain loop: fills the remaining budget up to batchSize, and
-        // continues
-        // fetching further batches while forward progress is being made and capacity
-        // allows.
+        // continues fetching further batches while forward progress is being made and
+        // capacity allows. The time check below is a secondary guard for this worker
+        // (executor submissions are ~1-2ms); poolSaturated, pending.size() < fetchLimit,
+        // and MAX_BATCHES_PER_TICK are the primary bounds.
         int totalSubmitted = 0;
         int pendingBudget = Math.max(0, batchSize - reclaimed);
         Set<String> seenThisTick = new HashSet<>();
+        long maxBatchDurationNanos = 0L;
+        ExitReason exitReason = ExitReason.MAX_BATCHES;
 
-        for (int batch = 0; batch < maxBatches; batch++) {
-            if (stopping || (System.nanoTime() - startNanos) >= maxRunNanos) {
+        for (int batch = 0; batch < MAX_BATCHES_PER_TICK; batch++) {
+            if (stopping) {
+                exitReason = ExitReason.STOPPING;
                 break;
             }
+            if (batch > 0) {
+                long remainingNanos = deadlineNanos - System.nanoTime();
+                if (remainingNanos <= 0 || remainingNanos < maxBatchDurationNanos) {
+                    exitReason = ExitReason.TIME_BUDGET;
+                    break;
+                }
+            }
+            long batchStartNanos = System.nanoTime();
             int budget = (batch == 0) ? pendingBudget : batchSize;
             if (budget <= 0) {
+                exitReason = ExitReason.NO_MORE_WORK;
                 break;
             }
+            // seenThisTick includes tracked rows, so the window grows past them.
             int fetchLimit = budget + seenThisTick.size();
             List<WebhookDeliveryDispatchContext> pending = fetch(fetchLimit, false);
             if (pending.isEmpty()) {
+                exitReason = ExitReason.NO_MORE_WORK;
                 break;
             }
 
             List<WebhookDeliveryDispatchContext> fresh = new ArrayList<>();
+            int newlySeen = 0;
             for (WebhookDeliveryDispatchContext ctx : pending) {
                 if (ctx != null && ctx.getDelivery() != null) {
                     String id = ctx.getDelivery().getDeliveryId();
-                    if (id != null && !tracked.contains(id) && seenThisTick.add(id)) {
-                        fresh.add(ctx);
-                        if (fresh.size() == budget) {
-                            break;
+                    // Record the id as seen BEFORE the tracked check.
+                    if (id != null && seenThisTick.add(id)) {
+                        newlySeen++;
+                        if (!tracked.contains(id)) {
+                            fresh.add(ctx);
+                            if (fresh.size() == budget) {
+                                break;
+                            }
                         }
                     }
                 }
             }
 
             if (fresh.isEmpty()) {
-                break;
+                if (pending.size() < fetchLimit || newlySeen == 0) {
+                    // The window already covers every remaining row, or nothing new was returned.
+                    exitReason = (pending.size() < fetchLimit) ? ExitReason.NO_MORE_WORK : ExitReason.NO_FRESH_ROWS;
+                    break;
+                }
+                // Every row in this window was already tracked, but more rows exist beyond it.
+                // Continue so the grown fetchLimit (budget + seenThisTick.size()) reaches past them.
+                maxBatchDurationNanos = Math.max(maxBatchDurationNanos,
+                        Math.max(1L, System.nanoTime() - batchStartNanos));
+                continue;
             }
 
             BatchResult result = submitBatch(fresh, false, null);
             totalSubmitted += result.submitted;
+            long batchDurationNanos = Math.max(1L, System.nanoTime() - batchStartNanos);
+            maxBatchDurationNanos = Math.max(maxBatchDurationNanos, batchDurationNanos);
 
             // Stop if the pool is saturated — more rows exist but we have no capacity.
             // Do NOT stop just because some rows were capped; other subscriptions may
             // still have capacity in both the per-subscription limit and the pool.
-            if (result.poolSaturated || pending.size() < fetchLimit) {
+            if (result.poolSaturated) {
+                exitReason = ExitReason.POOL_SATURATED;
+                break;
+            }
+            if (pending.size() < fetchLimit) {
+                exitReason = ExitReason.NO_MORE_WORK;
                 break;
             }
         }
 
+        lastExitReason = exitReason;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Delivery tick finished: submitted=" + totalSubmitted + ", exit=" + exitReason);
+        }
         if (totalSubmitted + reclaimed > 0) {
             LOG.info("Webhook delivery tick: submitted=" + totalSubmitted + ", reclaimed=" + reclaimed + ".");
         }

@@ -45,6 +45,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -84,8 +85,7 @@ public class WebhookDeliveryWorkerTest {
                 scheduler = new QueueingExecutor();
                 httpClient = HTTPClientUtils.getHttpClient();
                 when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(50);
-                when(configurationService.getEventNotificationDeliveryWorkerMaxBatchesPerRun()).thenReturn(10);
-                when(configurationService.getEventNotificationDeliveryWorkerMaxRunSeconds()).thenReturn(4);
+                when(configurationService.getEventNotificationDeliveryWorkerPollSeconds()).thenReturn(5);
                 when(configurationService.getEventNotificationStuckInFlightThresholdSeconds()).thenReturn(10);
                 // Default to effectively unlimited per-subscription cap so existing tests
                 // are not affected by the noisy-neighbour guard.
@@ -727,6 +727,7 @@ public class WebhookDeliveryWorkerTest {
                 int[] counts = worker.runTick();
                 assertEquals(counts[0], 0);
                 assertEquals(counts[1], 0);
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.STOPPING);
                 verify(deliveryDAO, never()).getPendingWebhookDispatchContexts(any(Connection.class), anyInt());
                 verify(deliveryDAO, never()).getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(),
                                 any());
@@ -735,7 +736,6 @@ public class WebhookDeliveryWorkerTest {
         @Test
         public void testDrainLoopDrainsAcrossBatches() {
                 when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(50);
-                when(configurationService.getEventNotificationDeliveryWorkerMaxBatchesPerRun()).thenReturn(10);
 
                 java.util.List<WebhookDeliveryDispatchContext> allPending = new java.util.ArrayList<>();
                 for (int i = 0; i < 120; i++) {
@@ -758,6 +758,7 @@ public class WebhookDeliveryWorkerTest {
 
                 assertEquals(counts[0], 120, "All 120 pending deliveries should be submitted across batches");
                 assertEquals(counts[1], 0);
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.NO_MORE_WORK);
                 assertEquals(worker.getTrackedCount(), 120, "All 120 deliveries should be tracked in executor queue");
 
                 scheduler.runAll();
@@ -765,12 +766,11 @@ public class WebhookDeliveryWorkerTest {
         }
 
         @Test
-        public void testDrainLoopStopsAtConfiguredMaxBatches() {
-                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(20);
-                when(configurationService.getEventNotificationDeliveryWorkerMaxBatchesPerRun()).thenReturn(3);
+        public void testDrainLoopStopsAtMaxBatchesPerTick() {
+                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
 
                 java.util.List<WebhookDeliveryDispatchContext> allPending = new java.util.ArrayList<>();
-                for (int i = 0; i < 100; i++) {
+                for (int i = 0; i < 150; i++) {
                         allPending.add(context("pending-batch-cap-" + i, 0));
                 }
 
@@ -788,14 +788,14 @@ public class WebhookDeliveryWorkerTest {
                                 configurationService);
                 int[] counts = worker.runTick();
 
-                // 3 batches * 20 batchSize = 60 items submitted
-                assertEquals(counts[0], 60, "Loop must stop after maxBatches=3 (60 items)");
+                // MAX_BATCHES_PER_TICK (10) * 10 batchSize = 100 items submitted
+                assertEquals(counts[0], WebhookDeliveryWorker.MAX_BATCHES_PER_TICK * 10);
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.MAX_BATCHES);
         }
 
         @Test
         public void testDrainLoopStopsOnExecutorSaturation() {
                 when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
-                when(configurationService.getEventNotificationDeliveryWorkerMaxBatchesPerRun()).thenReturn(5);
 
                 java.util.List<WebhookDeliveryDispatchContext> allPending = new java.util.ArrayList<>();
                 for (int i = 0; i < 50; i++) {
@@ -829,5 +829,131 @@ public class WebhookDeliveryWorkerTest {
                 int[] counts = worker.runTick();
 
                 assertEquals(counts[0], 10, "Should submit 10 items and then back off on rejection without spinning");
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.POOL_SATURATED);
+        }
+
+        @Test
+        public void testTrackedRowsAtHeadDoNotStallTick() {
+                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
+
+                java.util.List<WebhookDeliveryDispatchContext> firstTickPending = new java.util.ArrayList<>();
+                for (int i = 0; i < 10; i++) {
+                        firstTickPending.add(context("tracked-head-" + i, 0));
+                }
+
+                when(deliveryDAO.getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
+                                .thenReturn(firstTickPending);
+
+                WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                                configurationService);
+                int[] firstCounts = worker.runTick();
+                assertEquals(firstCounts[0], 10);
+                assertEquals(worker.getTrackedCount(), 10);
+
+                // Second tick: the 10 tracked rows sit at the head of the pending list (>= batchSize),
+                // followed by 10 eligible untracked rows.
+                java.util.List<WebhookDeliveryDispatchContext> secondTickPending = new java.util.ArrayList<>(
+                                firstTickPending);
+                for (int i = 10; i < 20; i++) {
+                        secondTickPending.add(context("eligible-tail-" + i, 0));
+                }
+                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
+                                .thenAnswer(inv -> {
+                                        int limit = inv.getArgument(1);
+                                        return new java.util.ArrayList<>(secondTickPending.subList(0,
+                                                        Math.min(limit, secondTickPending.size())));
+                                });
+
+                int[] secondCounts = worker.runTick();
+                assertEquals(secondCounts[0], 10,
+                                "Tick must expand fetchLimit past the 10 tracked head rows and submit the 10 eligible rows");
+                assertEquals(worker.getTrackedCount(), 20);
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.NO_MORE_WORK);
+        }
+
+        @Test
+        public void testAllRowsTrackedCoveringWholeTableExitsCleanly() {
+                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
+
+                java.util.List<WebhookDeliveryDispatchContext> onlyTracked = new java.util.ArrayList<>();
+                for (int i = 0; i < 5; i++) {
+                        onlyTracked.add(context("only-tracked-" + i, 0));
+                }
+
+                when(deliveryDAO.getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
+                                .thenReturn(onlyTracked);
+
+                WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                                configurationService);
+                assertEquals(worker.runTick()[0], 5);
+
+                // Second tick: all 5 rows are already tracked and pending.size() (5) < fetchLimit (10)
+                int[] secondCounts = worker.runTick();
+                assertEquals(secondCounts[0], 0);
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.NO_MORE_WORK);
+        }
+
+        @Test
+        public void testNoisySubscriptionCappedStopsAtMaxBatchesWithoutUnboundedGrowth() {
+                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
+                when(configurationService.getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription())
+                                .thenReturn(2);
+
+                java.util.List<WebhookDeliveryDispatchContext> noisyPending = new java.util.ArrayList<>();
+                for (int i = 0; i < 500; i++) {
+                        noisyPending.add(context("noisy-" + i, 0));
+                }
+
+                when(deliveryDAO.getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
+                                .thenAnswer(inv -> {
+                                        int limit = inv.getArgument(1);
+                                        return new java.util.ArrayList<>(
+                                                        noisyPending.subList(0, Math.min(limit, noisyPending.size())));
+                                });
+
+                WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                                configurationService);
+                int[] counts = worker.runTick();
+
+                assertEquals(counts[0], 2, "Only 2 deliveries should be queued for the capped subscription");
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.MAX_BATCHES);
+                verify(deliveryDAO, times(WebhookDeliveryWorker.MAX_BATCHES_PER_TICK))
+                                .getPendingWebhookDispatchContexts(any(Connection.class), anyInt());
+        }
+
+        @Test
+        public void testDrainLoopStopsOnTimeBudget() {
+                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
+                when(configurationService.getEventNotificationDeliveryWorkerPollSeconds()).thenReturn(1);
+
+                java.util.List<WebhookDeliveryDispatchContext> allPending = new java.util.ArrayList<>();
+                for (int i = 0; i < 50; i++) {
+                        allPending.add(context("slow-fetch-" + i, 0));
+                }
+
+                when(deliveryDAO.getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
+                                .thenAnswer(inv -> {
+                                        Thread.sleep(600);
+                                        int limit = inv.getArgument(1);
+                                        return new java.util.ArrayList<>(
+                                                        allPending.subList(0, Math.min(limit, allPending.size())));
+                                });
+
+                WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                                configurationService);
+                int[] counts = worker.runTick();
+
+                // Batch 0 took ~600ms out of a 1000ms window; remaining (~400ms) < maxBatchDuration (~600ms)
+                assertEquals(counts[0], 10);
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.TIME_BUDGET);
+                verify(deliveryDAO, times(1)).getPendingWebhookDispatchContexts(any(Connection.class), anyInt());
         }
 }

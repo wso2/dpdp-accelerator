@@ -76,8 +76,6 @@ public class DeliveryRecoveryServiceTest {
         when(configurationService.getEventNotificationBackgroundWorkerInitialDelaySeconds()).thenReturn(10);
         when(configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds()).thenReturn(30);
         when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(20);
-        when(configurationService.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun()).thenReturn(10);
-        when(configurationService.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds()).thenReturn(25);
         when(configurationService.getEventNotificationWorkerShutdownTimeoutSeconds()).thenReturn(5);
         recoveryService = new DeliveryRecoveryService(subscriptionDAO, deliveryDAO,
                 subscriptionService, configurationService);
@@ -252,7 +250,6 @@ public class DeliveryRecoveryServiceTest {
     @Test
     public void drainLoopStopsAtMaxBatches() throws Exception {
         when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(1);
-        when(configurationService.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun()).thenReturn(3);
         List<Subscription> allSubs = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
             allSubs.add(subscription("sub-" + i, "https://example.com/" + i));
@@ -266,13 +263,15 @@ public class DeliveryRecoveryServiceTest {
 
         runPendingRecoveryTask();
 
-        // Configured max batches = 3, so exactly 3 batches fetched
-        verify(subscriptionDAO, times(3))
+        // MAX_BATCHES_PER_TICK (10) batches fetched
+        verify(subscriptionDAO, times(DeliveryRecoveryService.MAX_BATCHES_PER_TICK))
                 .getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt());
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < DeliveryRecoveryService.MAX_BATCHES_PER_TICK; i++) {
             verify(subscriptionService).retryVerification("org1", "sub-" + i);
         }
-        verify(subscriptionService, never()).retryVerification("org1", "sub-3");
+        verify(subscriptionService, never()).retryVerification("org1",
+                "sub-" + DeliveryRecoveryService.MAX_BATCHES_PER_TICK);
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.MAX_BATCHES);
     }
 
     @Test
@@ -285,16 +284,21 @@ public class DeliveryRecoveryServiceTest {
 
         verify(subscriptionDAO, never())
                 .getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt());
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.STOPPING);
     }
 
     @Test
     public void failedTouchPendingDoesNotAbortDrainLoop() throws Exception {
-        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(5);
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(1);
         Subscription s1 = subscription("sub-fail-touch-err", "https://example.com/1");
         Subscription s2 = subscription("sub-normal", "https://example.com/2");
+        List<Subscription> allSubs = Arrays.asList(s1, s2);
 
         when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
-                .thenReturn(Arrays.asList(s1, s2));
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
 
         doThrow(new RuntimeException("verification failed"))
                 .when(subscriptionService).retryVerification("org1", "sub-fail-touch-err");
@@ -304,8 +308,59 @@ public class DeliveryRecoveryServiceTest {
 
         runPendingRecoveryTask();
 
-        // s2 should still be processed despite s1's touch failure
-        verify(subscriptionService).retryVerification("org1", "sub-normal");
+        // s1 is not reprocessed in batch 2 thanks to seen; s2 is still processed
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-fail-touch-err");
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-normal");
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.NO_MORE_WORK);
+    }
+
+    @Test
+    public void startGatingAllowsFirstItemAndStopsSubsequentItemsBelowFloor() throws Exception {
+        // Configure interval to 4s (< 5s ITEM_START_FLOOR_NANOS): first item must still run,
+        // but the second item in the same batch must be gated off by ITEM_START_FLOOR_NANOS.
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds()).thenReturn(4);
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(5);
+
+        Subscription s1 = subscription("sub-first", "https://example.com/1");
+        Subscription s2 = subscription("sub-second", "https://example.com/2");
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenReturn(Arrays.asList(s1, s2));
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-first");
+        verify(subscriptionService, never()).retryVerification("org1", "sub-second");
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.TIME_BUDGET);
+    }
+
+    @Test
+    public void batchPredictionStopsBeforeNextBatchWhenRemainingLessThanMaxBatchDuration() throws Exception {
+        // Interval = 6s (> 5s ITEM_START_FLOOR_NANOS so items inside batch 1 can start),
+        // Batch 0 takes ~600ms leaving ~5.4s, then Batch 1 takes ~5.1s leaving < 5.1s for Batch 2.
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds()).thenReturn(6);
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(1);
+
+        Subscription s1 = subscription("sub-fast", "https://example.com/1");
+        Subscription s2 = subscription("sub-slow", "https://example.com/2");
+        Subscription s3 = subscription("sub-not-reached", "https://example.com/3");
+        List<Subscription> allSubs = Arrays.asList(s1, s2, s3);
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
+        when(subscriptionService.retryVerification("org1", "sub-slow")).thenAnswer(inv -> {
+            Thread.sleep(3200);
+            return null;
+        });
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-fast");
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-slow");
+        verify(subscriptionService, never()).retryVerification("org1", "sub-not-reached");
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.TIME_BUDGET);
     }
 
     private void runPendingRecoveryTask() throws Exception {
