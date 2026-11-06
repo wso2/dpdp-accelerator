@@ -23,16 +23,21 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.sql.DataSource;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -157,7 +162,16 @@ public class DeliveryRecoveryServiceTest {
 
         IllegalStateException error = expectThrows(IllegalStateException.class, recoveryService::activate);
 
-        assertTrue(error.getMessage().contains("must be greater than 5 seconds"));
+        assertTrue(error.getMessage().contains("must be at least 10 seconds"));
+    }
+
+    @Test
+    public void activationRejectsStuckThresholdWithoutMargin() {
+        when(configurationService.getEventNotificationStuckInFlightThresholdSeconds()).thenReturn(8);
+
+        IllegalStateException error = expectThrows(IllegalStateException.class, recoveryService::activate);
+
+        assertTrue(error.getMessage().contains("must be at least 10 seconds"));
     }
 
     @Test
@@ -167,6 +181,186 @@ public class DeliveryRecoveryServiceTest {
         IllegalStateException error = expectThrows(IllegalStateException.class, recoveryService::activate);
 
         assertTrue(error.getMessage().contains("pending subscription recovery threshold"));
+    }
+
+    @Test
+    public void pendingSubscriptionsDrainedAcrossBatches() throws Exception {
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(10);
+        List<Subscription> allSubs = new ArrayList<>();
+        for (int i = 0; i < 25; i++) {
+            allSubs.add(subscription("sub-" + i, "https://example.com/callback/" + i));
+        }
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
+
+        runPendingRecoveryTask();
+
+        for (int i = 0; i < 25; i++) {
+            verify(subscriptionService).retryVerification("org1", "sub-" + i);
+        }
+    }
+
+    @Test
+    public void failingPendingSubscriptionsTouchedAndNotReQueried() throws Exception {
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(5);
+        Subscription s1 = subscription("sub-succeed-1", "https://example.com/1");
+        Subscription s2 = subscription("sub-fail-1", "https://example.com/2");
+        Subscription s3 = subscription("sub-succeed-2", "https://example.com/3");
+        Subscription s4 = subscription("sub-fail-2", "https://example.com/4");
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenReturn(Arrays.asList(s1, s2, s3, s4));
+        doThrow(new RuntimeException("verification network timeout"))
+                .when(subscriptionService).retryVerification("org1", "sub-fail-1");
+        doThrow(new RuntimeException("verification 500 error"))
+                .when(subscriptionService).retryVerification("org1", "sub-fail-2");
+
+        runPendingRecoveryTask();
+
+        // Successful ones are not touched
+        verify(subscriptionDAO, never()).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-succeed-1"), eq("org1"), eq("pending"), eq("pending"));
+        verify(subscriptionDAO, never()).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-succeed-2"), eq("org1"), eq("pending"), eq("pending"));
+
+        // Failing ones are touched
+        verify(subscriptionDAO).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-fail-1"), eq("org1"), eq("pending"), eq("pending"));
+        verify(subscriptionDAO).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-fail-2"), eq("org1"), eq("pending"), eq("pending"));
+    }
+
+    @Test
+    public void blankCallbackUrlSubscriptionIsTouchedWithoutRetry() throws Exception {
+        Subscription blank = subscription("sub-blank", "   ");
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenReturn(Collections.singletonList(blank));
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionService, never()).retryVerification(any(), any());
+        verify(subscriptionDAO).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-blank"), eq("org1"), eq("pending"), eq("pending"));
+    }
+
+    @Test
+    public void drainLoopStopsAtMaxBatches() throws Exception {
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(1);
+        List<Subscription> allSubs = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            allSubs.add(subscription("sub-" + i, "https://example.com/" + i));
+        }
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
+
+        runPendingRecoveryTask();
+
+        // MAX_BATCHES_PER_TICK (10) batches fetched
+        verify(subscriptionDAO, times(DeliveryRecoveryService.MAX_BATCHES_PER_TICK))
+                .getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt());
+        for (int i = 0; i < DeliveryRecoveryService.MAX_BATCHES_PER_TICK; i++) {
+            verify(subscriptionService).retryVerification("org1", "sub-" + i);
+        }
+        verify(subscriptionService, never()).retryVerification("org1",
+                "sub-" + DeliveryRecoveryService.MAX_BATCHES_PER_TICK);
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.MAX_BATCHES);
+    }
+
+    @Test
+    public void drainLoopStopsImmediatelyWhenStoppingIsTrue() throws Exception {
+        Field stoppingField = DeliveryRecoveryService.class.getDeclaredField("stopping");
+        stoppingField.setAccessible(true);
+        stoppingField.set(recoveryService, true);
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionDAO, never())
+                .getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt());
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.STOPPING);
+    }
+
+    @Test
+    public void failedTouchPendingDoesNotAbortDrainLoop() throws Exception {
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(1);
+        Subscription s1 = subscription("sub-fail-touch-err", "https://example.com/1");
+        Subscription s2 = subscription("sub-normal", "https://example.com/2");
+        List<Subscription> allSubs = Arrays.asList(s1, s2);
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
+
+        doThrow(new RuntimeException("verification failed"))
+                .when(subscriptionService).retryVerification("org1", "sub-fail-touch-err");
+        doThrow(new RuntimeException("DB touch error"))
+                .when(subscriptionDAO).updateSubscriptionStatus(any(Connection.class),
+                        eq("sub-fail-touch-err"), eq("org1"), eq("pending"), eq("pending"));
+
+        runPendingRecoveryTask();
+
+        // s1 is not reprocessed in batch 2 thanks to seen; s2 is still processed
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-fail-touch-err");
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-normal");
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.NO_MORE_WORK);
+    }
+
+    @Test
+    public void startGatingAllowsFirstItemAndStopsSubsequentItemsBelowFloor() throws Exception {
+        // Configure interval to 4s (< 5s ITEM_START_FLOOR_NANOS): first item must still run,
+        // but the second item in the same batch must be gated off by ITEM_START_FLOOR_NANOS.
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds()).thenReturn(4);
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(5);
+
+        Subscription s1 = subscription("sub-first", "https://example.com/1");
+        Subscription s2 = subscription("sub-second", "https://example.com/2");
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenReturn(Arrays.asList(s1, s2));
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-first");
+        verify(subscriptionService, never()).retryVerification("org1", "sub-second");
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.TIME_BUDGET);
+    }
+
+    @Test
+    public void batchPredictionStopsBeforeNextBatchWhenRemainingLessThanMaxBatchDuration() throws Exception {
+        // Interval = 6s (> 5s ITEM_START_FLOOR_NANOS so items inside batch 1 can start),
+        // Batch 0 takes ~600ms leaving ~5.4s, then Batch 1 takes ~5.1s leaving < 5.1s for Batch 2.
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds()).thenReturn(6);
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(1);
+
+        Subscription s1 = subscription("sub-fast", "https://example.com/1");
+        Subscription s2 = subscription("sub-slow", "https://example.com/2");
+        Subscription s3 = subscription("sub-not-reached", "https://example.com/3");
+        List<Subscription> allSubs = Arrays.asList(s1, s2, s3);
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
+        when(subscriptionService.retryVerification("org1", "sub-slow")).thenAnswer(inv -> {
+            Thread.sleep(3200);
+            return null;
+        });
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-fast");
+        verify(subscriptionService, times(1)).retryVerification("org1", "sub-slow");
+        verify(subscriptionService, never()).retryVerification("org1", "sub-not-reached");
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.TIME_BUDGET);
     }
 
     private void runPendingRecoveryTask() throws Exception {

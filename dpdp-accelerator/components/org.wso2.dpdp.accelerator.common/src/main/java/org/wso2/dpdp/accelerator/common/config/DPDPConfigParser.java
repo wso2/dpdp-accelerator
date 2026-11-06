@@ -421,6 +421,13 @@ public final class DPDPConfigParser {
                 DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_BACKGROUND_WORKER_INITIAL_DELAY_SECONDS);
     }
 
+    public int getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription() {
+
+        return getPositiveInt(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_CONCURRENT_PER_SUBSCRIPTION);
+    }
+
     public int getEventNotificationPendingSubscriptionRecoveryIntervalSeconds() {
 
         return getPositiveInt(
