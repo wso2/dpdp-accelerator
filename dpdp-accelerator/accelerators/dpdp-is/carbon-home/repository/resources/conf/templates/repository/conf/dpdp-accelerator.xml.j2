@@ -156,10 +156,21 @@
         <WorkerShutdownTimeoutSeconds>5</WorkerShutdownTimeoutSeconds>
         {% endif %}
         <SystemTopics>
-            {% if dpdp_accelerator.event_notifications.system_topics_auto_create_enabled is defined %}
+            {% if dpdp_accelerator.event_notifications.system_topics.auto_create_enabled is defined %}
+            <AutoCreateEnabled>{{dpdp_accelerator.event_notifications.system_topics.auto_create_enabled}}</AutoCreateEnabled>
+            {% elif dpdp_accelerator.event_notifications.system_topics_auto_create_enabled is defined %}
             <AutoCreateEnabled>{{dpdp_accelerator.event_notifications.system_topics_auto_create_enabled}}</AutoCreateEnabled>
             {% else %}
             <AutoCreateEnabled>true</AutoCreateEnabled>
+            {% endif %}
+            {% if dpdp_accelerator.event_notifications.system_topics.verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics.verify_on_startup_enabled}}</VerifyOnStartupEnabled>
+            {% elif dpdp_accelerator.event_notifications.system_topics_verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics_verify_on_startup_enabled}}</VerifyOnStartupEnabled>
+            {% elif dpdp_accelerator.event_notifications.verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.verify_on_startup_enabled}}</VerifyOnStartupEnabled>
+            {% else %}
+            <VerifyOnStartupEnabled>true</VerifyOnStartupEnabled>
             {% endif %}
         </SystemTopics>
         <PayloadSigning>

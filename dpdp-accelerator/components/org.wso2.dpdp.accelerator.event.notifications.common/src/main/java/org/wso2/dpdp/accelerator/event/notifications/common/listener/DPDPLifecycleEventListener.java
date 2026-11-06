@@ -22,16 +22,19 @@ import java.sql.Connection;
 import java.util.List;
 
 /**
- * DPDP-internal capture point for the 5 notification-worthy lifecycle events: consent
- * updated/revoked/expired, and user data changed/account deleted. Not an IS-registered
+ * DPDP-internal capture point for the notification-worthy lifecycle events: consent
+ * created/updated/revoked/expired, and user data changed/account deleted. Not an IS-registered
  * listener - DPDP's own hooks call it after their real work is done, typically to publish into
  * the Event Notification Framework.
  *
- * <p>{@code purposes} is only meaningful for the 3 consent methods (resolved from the consent's
+ * <p>{@code purposes} is only meaningful for the 4 consent methods (resolved from the consent's
  * {@code Receipt}); the 2 user methods have no processing-purpose dimension, so a
  * purpose-filtered subscription will never match them - expected, not a bug.
  */
 public interface DPDPLifecycleEventListener {
+
+    void onConsentCreated(String orgId, String consentId, String status, String actionBy,
+            List<String> purposes);
 
     void onConsentUpdated(String orgId, String consentId, String previousStatus, String currentStatus,
             String actionBy, List<String> purposes);
