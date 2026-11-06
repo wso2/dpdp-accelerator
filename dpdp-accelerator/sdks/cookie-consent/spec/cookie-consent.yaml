@@ -1,0 +1,387 @@
+openapi: 3.0.3
+info:
+  title: DPDP Cookie Consent SDK API
+  version: 0.1.0
+  description: >-
+    The HTTP API every cookie consent SDK serves to the shared browser loader (../browser). A
+    customer website mounts the SDK under one base path in its own backend, so every call is
+    same-origin and the browser never talks to Identity Server. The loader is the only intended
+    client: websites do not call these operations themselves.
+
+
+    The subject is not passed in any call. The SDK takes it from the website's own login session
+    when a user is logged in, and otherwise from the encrypted dpdp_cc cookie it sets. What the
+    SDK writes to Identity Server, and the rules behind it, are in README.md beside this file.
+  license:
+    name: Apache-2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+servers:
+  - url: https://{host}{basePath}
+    description: The customer website, with the SDK mounted at basePath
+    variables:
+      host:
+        default: www.example.com
+      basePath:
+        default: /cookie-consent
+# No authentication: anonymous visitors call it before any login. The subject comes from the
+# website's session or the dpdp_cc cookie, never from the request.
+security: []
+tags:
+  - name: consent
+    description: >-
+      The visitor's or user's cookie choices. Responses are never cached (Cache-Control:
+      no-store).
+  - name: assets
+    description: >-
+      Static files the loader needs, served by the SDK so the page needs no third-party CDN.
+paths:
+  /state:
+    get:
+      tags: [consent]
+      summary: Get the current cookie choices and the banner configuration
+      description: >-
+        Called by the loader on every page load. Reads the subject's consents from Identity
+        Server; a browser with no dpdp_cc cookie and no logged-in user has no decision and costs
+        no Identity Server call.
+      operationId: getState
+      parameters:
+        - $ref: '#/components/parameters/subjectCookie'
+      responses:
+        '200':
+          $ref: '#/components/responses/StateResponse'
+        '502':
+          $ref: '#/components/responses/Unavailable'
+  /decision:
+    post:
+      tags: [consent]
+      summary: Save the visitor's or user's cookie choices
+      description: >-
+        Called by the loader when a choice is made in the banner or the preferences window. Only
+        categories whose choice changes are written to Identity Server. Keys that are not
+        configured categories are ignored; a configured category left out keeps its current
+        choice. The SDK accepts a body of at most 4 KB (a website that parses JSON before the SDK
+        applies its own limit).
+      operationId: saveDecision
+      parameters:
+        - $ref: '#/components/parameters/subjectCookie'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DecisionDTO'
+            example:
+              revision: 1857038833
+              categories:
+                analytics: true
+                marketing: false
+      responses:
+        '200':
+          description: >-
+            Saved. The body is the new state, as GET /state would return it. The dpdp_cc cookie
+            is set on every successful save, with a new visitor ID when the browser had none.
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/SubjectCookie'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StateDTO'
+        '400':
+          description: >-
+            revision is not an integer, or categories is not an object of booleans. A body that
+            is not valid JSON is also rejected with 400, but its response body comes from the
+            website's JSON parser and may not be ErrorDTO.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+              example:
+                error: 'Expected {revision: integer, categories: {name: boolean}}'
+        '409':
+          description: >-
+            revision is not the current one: a cookie Purpose got a new version after the page
+            loaded. The loader drops the choice and reloads the page to show the new banner.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+              example:
+                error: The cookie categories changed since the banner was shown
+        '413':
+          description: The body is larger than 4 KB.
+        '502':
+          description: >-
+            Identity Server failed while saving. Some categories may already be saved, so the
+            dpdp_cc cookie is still set when the SDK got that far: the browser's retry then
+            continues for the same visitor instead of starting a new one.
+          headers:
+            Set-Cookie:
+              $ref: '#/components/headers/SubjectCookie'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorDTO'
+              example:
+                error: Cookie consent could not be saved
+  /loader.js:
+    get:
+      tags: [assets]
+      summary: Get the browser loader
+      description: >-
+        ../browser/loader-core.js followed by ../browser/loader.js, joined with a newline. The
+        page includes it with a script tag; the loader finds the base path from its own URL.
+        Revalidated on every use (Cache-Control: no-cache).
+      operationId: getLoader
+      responses:
+        '200':
+          description: OK
+          content:
+            application/javascript:
+              schema:
+                type: string
+  /vendor/cookieconsent.umd.js:
+    get:
+      tags: [assets]
+      summary: Get the banner library
+      description: >-
+        dist/cookieconsent.umd.js from vanilla-cookieconsent 3.1.0, exactly that version: the
+        loader reads the library's own preferences cookie, whose format is specific to it.
+        Cacheable for a day.
+      operationId: getLibraryScript
+      responses:
+        '200':
+          description: OK
+          content:
+            application/javascript:
+              schema:
+                type: string
+  /vendor/cookieconsent.css:
+    get:
+      tags: [assets]
+      summary: Get the banner stylesheet
+      description: dist/cookieconsent.css from vanilla-cookieconsent 3.1.0. Cacheable for a day.
+      operationId: getLibraryStylesheet
+      responses:
+        '200':
+          description: OK
+          content:
+            text/css:
+              schema:
+                type: string
+components:
+  parameters:
+    subjectCookie:
+      name: dpdp_cc
+      in: cookie
+      required: false
+      description: >-
+        The browser's visitor ID, or the user it is linked to after login, sealed by the SDK. The
+        value is opaque to the browser; a missing, expired or tampered value is treated as no
+        cookie.
+      schema:
+        type: string
+  headers:
+    SubjectCookie:
+      description: >-
+        dpdp_cc=<sealed value>; Path=/; HttpOnly; SameSite=Lax; Secure (unless the website turns
+        it off); Max-Age equal to the consent expiry (365 days by default).
+      schema:
+        type: string
+  responses:
+    StateResponse:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/StateDTO'
+          example:
+            revision: 1857038833
+            hasDecision: true
+            basis: 3q2-7wEXAMPLEbasis_8fQ
+            categories:
+              analytics: true
+              marketing: false
+            config:
+              texts:
+                bannerTitle: We use cookies
+                bannerDescription: >-
+                  We use necessary cookies to run this site. With your permission we also use
+                  optional cookies. You can change your choice at any time from "Cookie
+                  preferences".
+                acceptAll: Accept all
+                rejectAll: Reject all
+                managePreferences: Manage preferences
+                preferencesTitle: Cookie preferences
+                savePreferences: Save preferences
+                close: Close
+                necessaryTitle: Strictly necessary cookies
+                necessaryDescription: >-
+                  Needed for the site to work, for example to keep you signed in. They are
+                  always on.
+                cookieName: Cookie
+                cookieDescription: Purpose
+              categories:
+                - key: analytics
+                  title: Analytics cookies
+                  description: Helps us understand how visitors use the site.
+                  cookies:
+                    - name: _ga
+                      description: Distinguishes visitors.
+                - key: marketing
+                  title: Marketing cookies
+                  description: Shows offers that match your interests.
+                  cookies:
+                    - name: _fbp
+                      description: Tracks visits for advertising.
+    Unavailable:
+      description: >-
+        Identity Server could not be reached or returned an error. The loader shows no banner and
+        keeps optional scripts blocked; a choice that failed to save is kept in the browser and
+        sent again on the next page load.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorDTO'
+          example:
+            error: Cookie consent state is unavailable
+  schemas:
+    StateDTO:
+      type: object
+      required: [revision, basis, hasDecision, categories, config]
+      properties:
+        revision:
+          $ref: '#/components/schemas/Revision'
+        basis:
+          type: string
+          description: >-
+            Opaque. Changes whenever the subject or their decision changes, and reveals neither.
+            The loader keeps an unsent decision together with the basis of the state it was made
+            on, and sends it again on a later page load only while that page's state has the same
+            basis; otherwise its save went through or a newer decision, a withdrawal or another
+            account overtook it.
+        hasDecision:
+          type: boolean
+          description: True only when every configured category has a choice.
+        categories:
+          $ref: '#/components/schemas/Choices'
+        config:
+          $ref: '#/components/schemas/BannerConfigDTO'
+    DecisionDTO:
+      type: object
+      required: [revision, categories]
+      properties:
+        revision:
+          $ref: '#/components/schemas/Revision'
+        categories:
+          $ref: '#/components/schemas/Choices'
+    Revision:
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 2147483647
+      description: >-
+        Identifies the current versions of all cookie Purposes; it changes whenever any of them
+        gets a new version. A number because the banner library requires one.
+    Choices:
+      type: object
+      description: >-
+        One entry per category key: true when accepted, false when declined. In a state, a
+        category with no choice yet is left out.
+      additionalProperties:
+        type: boolean
+    BannerConfigDTO:
+      type: object
+      required: [texts, categories]
+      properties:
+        texts:
+          $ref: '#/components/schemas/BannerTextsDTO'
+        categories:
+          type: array
+          description: The optional categories, in display order.
+          items:
+            $ref: '#/components/schemas/CategoryDTO'
+    BannerTextsDTO:
+      type: object
+      description: >-
+        Every text the loader shows. Each SDK has English defaults that the website can
+        override.
+      required:
+        - bannerTitle
+        - bannerDescription
+        - acceptAll
+        - rejectAll
+        - managePreferences
+        - preferencesTitle
+        - savePreferences
+        - close
+        - necessaryTitle
+        - necessaryDescription
+        - cookieName
+        - cookieDescription
+      properties:
+        bannerTitle:
+          type: string
+        bannerDescription:
+          type: string
+        acceptAll:
+          type: string
+        rejectAll:
+          type: string
+        managePreferences:
+          type: string
+        preferencesTitle:
+          type: string
+        savePreferences:
+          type: string
+        close:
+          type: string
+        necessaryTitle:
+          type: string
+          description: Title of the always-on category the loader adds itself.
+        necessaryDescription:
+          type: string
+        cookieName:
+          type: string
+          description: Column heading for cookie names in the preferences window.
+        cookieDescription:
+          type: string
+          description: Column heading for cookie descriptions in the preferences window.
+    CategoryDTO:
+      type: object
+      required: [key, title, description, cookies]
+      properties:
+        key:
+          type: string
+          pattern: '^[a-z][a-z0-9_]*$'
+          description: >-
+            The website's name for the category, never "necessary". Choices are keyed by it.
+        title:
+          type: string
+        description:
+          type: string
+          description: The Purpose's description in Identity Server; empty when it has none.
+        cookies:
+          type: array
+          description: >-
+            The Purpose's Elements. The loader deletes these cookies when the category is
+            declined.
+          items:
+            $ref: '#/components/schemas/CookieDTO'
+    CookieDTO:
+      type: object
+      required: [name]
+      properties:
+        name:
+          type: string
+          description: The browser cookie's name, which is the Element's name.
+        description:
+          type: string
+          description: The Element's description, or its display name when it has none.
+    ErrorDTO:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
+          description: A plain-language message. It never carries Identity Server's own error details.

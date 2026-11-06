@@ -54,6 +54,7 @@ const sidebars = {
         { type: 'doc', id: 'role-guide', label: 'Role Guide' },
         { type: 'doc', id: 'consent-lifecycle-guide', label: 'Consent Lifecycle' },
         { type: 'doc', id: 'event-notification-guide', label: 'Event Notification' },
+        { type: 'doc', id: 'cookie-consent-guide', label: 'Cookie Consent' },
         { type: 'doc', id: 'grievances-guide', label: 'Grievance' },
         { type: 'doc', id: 'localization-guide', label: 'Localization' },
       ],
