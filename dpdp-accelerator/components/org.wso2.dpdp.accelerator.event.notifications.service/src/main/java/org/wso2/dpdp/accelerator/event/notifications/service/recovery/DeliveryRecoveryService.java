@@ -50,7 +50,20 @@ import java.util.concurrent.TimeUnit;
  */
 public class DeliveryRecoveryService {
 
+    enum ExitReason {
+        TIME_BUDGET,
+        MAX_BATCHES,
+        NO_MORE_WORK,
+        NO_FRESH_ROWS,
+        STOPPING
+    }
+
     private static final Log LOG = LogFactory.getLog(DeliveryRecoveryService.class);
+    static final int MAX_BATCHES_PER_TICK = 10;
+    // Do not start a verification unless it can complete within the window at its
+    // normal timeout.
+    static final long ITEM_START_FLOOR_NANOS = TimeUnit.SECONDS
+            .toNanos(EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS);
 
     private SubscriptionDAO subscriptionDAO;
 
@@ -64,6 +77,7 @@ public class DeliveryRecoveryService {
     private ExecutorService workerPool;
     private WebhookDeliveryWorker webhookDeliveryWorker;
     private volatile boolean stopping;
+    private volatile ExitReason lastExitReason;
 
     public DeliveryRecoveryService() {
     }
@@ -86,8 +100,8 @@ public class DeliveryRecoveryService {
                     + EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS
                     + " second HTTP timeout, so an active webhook request cannot be reclaimed.");
         }
-        int verificationRecoveryThresholdSeconds =
-                configurationService.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds();
+        int verificationRecoveryThresholdSeconds = configurationService
+                .getEventNotificationPendingSubscriptionRecoveryThresholdSeconds();
         if (verificationRecoveryThresholdSeconds <= EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS) {
             throw new IllegalStateException("Event notification pending subscription recovery threshold must be " +
                     "greater than " + EventNotificationServiceConstants.WEBHOOK_HTTP_TIMEOUT_SECONDS +
@@ -104,14 +118,14 @@ public class DeliveryRecoveryService {
                 configurationService.getEventNotificationDeliveryWorkerBatchSize());
         this.workerPool = new ThreadPoolExecutor(workerCount, workerCount, 0L, TimeUnit.MILLISECONDS,
                 new ArrayBlockingQueue<>(queueCapacity), r -> {
-            Thread t = new Thread(r, "webhook-delivery-worker");
-            t.setDaemon(true);
-            return t;
-        }, new ThreadPoolExecutor.AbortPolicy());
+                    Thread t = new Thread(r, "webhook-delivery-worker");
+                    t.setDaemon(true);
+                    return t;
+                }, new ThreadPoolExecutor.AbortPolicy());
 
         int initialDelaySeconds = configurationService.getEventNotificationBackgroundWorkerInitialDelaySeconds();
-        int recoveryIntervalSeconds =
-                configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds();
+        int recoveryIntervalSeconds = configurationService
+                .getEventNotificationPendingSubscriptionRecoveryIntervalSeconds();
         this.scheduler.scheduleWithFixedDelay(new PendingDeliveryRecoveryTask(), initialDelaySeconds,
                 recoveryIntervalSeconds, TimeUnit.SECONDS);
 
@@ -179,10 +193,18 @@ public class DeliveryRecoveryService {
         }
     }
 
+    ExitReason getLastExitReason() {
+        return lastExitReason;
+    }
+
     private class PendingDeliveryRecoveryTask implements Runnable {
         @Override
         public void run() {
             if (stopping) {
+                lastExitReason = ExitReason.STOPPING;
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("Pending subscription recovery tick finished: exit=" + ExitReason.STOPPING);
+                }
                 return;
             }
             try {
@@ -197,28 +219,43 @@ public class DeliveryRecoveryService {
             long startNanos = System.nanoTime();
             Timestamp threshold = new Timestamp(System.currentTimeMillis()
                     - configurationService.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds()
-                    * 1000L);
-            int batchSize = configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize();
-            int maxBatches = configurationService.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun();
-            long maxRunNanos = TimeUnit.SECONDS.toNanos(
-                    configurationService.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds());
+                            * 1000L);
+            int batchSize = Math.max(1,
+                    configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize());
+            int intervalSeconds = Math.max(1,
+                    configurationService.getEventNotificationPendingSubscriptionRecoveryIntervalSeconds());
+            long maxRunNanos = TimeUnit.SECONDS.toNanos(intervalSeconds);
+            long deadlineNanos = startNanos + maxRunNanos;
             Set<String> seen = new HashSet<>();
+            int processedInTick = 0;
+            long maxBatchDurationNanos = 0L;
+            ExitReason exitReason = ExitReason.MAX_BATCHES;
 
-            for (int batch = 0; batch < maxBatches; batch++) {
-                if (stopping || (System.nanoTime() - startNanos) >= maxRunNanos) {
+            for (int batch = 0; batch < MAX_BATCHES_PER_TICK; batch++) {
+                if (stopping) {
+                    exitReason = ExitReason.STOPPING;
                     break;
                 }
+                if (batch > 0) {
+                    long remainingNanos = deadlineNanos - System.nanoTime();
+                    if (remainingNanos <= 0 || remainingNanos < maxBatchDurationNanos) {
+                        exitReason = ExitReason.TIME_BUDGET;
+                        break;
+                    }
+                }
+                long batchStartNanos = System.nanoTime();
                 int limit = batchSize + seen.size();
                 List<Subscription> pendingSubs;
                 try {
-                    pendingSubs = DatabaseUtils.executeInTransaction(conn ->
-                            subscriptionDAO.getPendingSubscriptionsForRecovery(conn, threshold, limit));
+                    pendingSubs = DatabaseUtils.executeInTransaction(
+                            conn -> subscriptionDAO.getPendingSubscriptionsForRecovery(conn, threshold, limit));
                 } catch (RuntimeException e) {
                     LOG.error("Failed to fetch pending subscriptions for recovery: "
                             + LogSanitizer.sanitize(e.getMessage()), e);
                     return;
                 }
                 if (pendingSubs == null || pendingSubs.isEmpty()) {
+                    exitReason = ExitReason.NO_MORE_WORK;
                     break;
                 }
 
@@ -226,26 +263,51 @@ public class DeliveryRecoveryService {
                 for (Subscription sub : pendingSubs) {
                     if (sub != null && sub.getSubscriptionId() != null && seen.add(sub.getSubscriptionId())) {
                         fresh.add(sub);
+                        if (fresh.size() == batchSize) {
+                            break;
+                        }
                     }
                 }
 
                 if (fresh.isEmpty()) {
+                    exitReason = (pendingSubs.size() < limit) ? ExitReason.NO_MORE_WORK : ExitReason.NO_FRESH_ROWS;
                     break;
                 }
 
+                boolean deadlineHit = false;
                 for (Subscription sub : fresh) {
-                    if (stopping || (System.nanoTime() - startNanos) >= maxRunNanos) {
+                    if (stopping) {
+                        deadlineHit = true;
                         break;
                     }
-                    boolean success = recoverOne(sub);
-                    if (!success) {
+                    // Hard bound: gate the START of each item. The first item of the tick always
+                    // runs.
+                    // recoverOne(sub) and its 5s HTTP timeout stay untouched.
+                    if (processedInTick > 0 && (deadlineNanos - System.nanoTime()) < ITEM_START_FLOOR_NANOS) {
+                        deadlineHit = true;
+                        break;
+                    }
+                    if (!recoverOne(sub)) {
                         touchPending(sub);
                     }
+                    processedInTick++;
                 }
 
-                if (pendingSubs.size() < limit) {
+                long batchDurationNanos = Math.max(1L, System.nanoTime() - batchStartNanos);
+                maxBatchDurationNanos = Math.max(maxBatchDurationNanos, batchDurationNanos);
+
+                if (deadlineHit) {
+                    exitReason = stopping ? ExitReason.STOPPING : ExitReason.TIME_BUDGET;
                     break;
                 }
+                if (pendingSubs.size() < limit) {
+                    exitReason = ExitReason.NO_MORE_WORK;
+                    break;
+                }
+            }
+            lastExitReason = exitReason;
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Pending subscription recovery tick finished: exit=" + exitReason);
             }
         }
 
