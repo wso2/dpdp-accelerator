@@ -87,10 +87,18 @@ public final class DPDPCommonConstants {
             "EventNotifications.PendingSubscriptionRecoveryThresholdSeconds";
     public static final String EVENT_NOTIFICATIONS_BACKGROUND_WORKER_INITIAL_DELAY_SECONDS =
             "EventNotifications.BackgroundWorkerInitialDelaySeconds";
+    public static final String EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_BATCHES_PER_RUN =
+            "EventNotifications.DeliveryWorkerMaxBatchesPerRun";
+    public static final String EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS =
+            "EventNotifications.DeliveryWorkerMaxRunSeconds";
     public static final String EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_INTERVAL_SECONDS =
             "EventNotifications.PendingSubscriptionRecoveryIntervalSeconds";
     public static final String EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_BATCH_SIZE =
             "EventNotifications.PendingSubscriptionRecoveryBatchSize";
+    public static final String EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_BATCHES_PER_RUN =
+            "EventNotifications.PendingSubscriptionRecoveryMaxBatchesPerRun";
+    public static final String EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_RUN_SECONDS =
+            "EventNotifications.PendingSubscriptionRecoveryMaxRunSeconds";
     public static final String EVENT_NOTIFICATIONS_WORKER_SHUTDOWN_TIMEOUT_SECONDS =
             "EventNotifications.WorkerShutdownTimeoutSeconds";
     public static final String EVENT_NOTIFICATIONS_SYSTEM_TOPICS_AUTO_CREATE_ENABLED =
@@ -121,12 +129,16 @@ public final class DPDPCommonConstants {
     public static final boolean DEFAULT_EVENT_NOTIFICATIONS_ALLOW_PRIVATE_NETWORK_CALLBACK_TARGETS = false;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_BATCH_SIZE = 50;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_POLL_SECONDS = 5;
-    public static final int DEFAULT_EVENT_NOTIFICATIONS_STUCK_INFLIGHT_THRESHOLD_SECONDS = 10;
+    public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_BATCHES_PER_RUN = 10;
+    public static final int DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS = 4;
+    public static final int DEFAULT_EVENT_NOTIFICATIONS_STUCK_INFLIGHT_THRESHOLD_SECONDS = 60;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_MAX_VERIFICATION_RESPONSE_BODY_BYTES = 4096;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_THRESHOLD_SECONDS = 60;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_BACKGROUND_WORKER_INITIAL_DELAY_SECONDS = 10;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_INTERVAL_SECONDS = 30;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_BATCH_SIZE = 20;
+    public static final int DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_BATCHES_PER_RUN = 10;
+    public static final int DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_RUN_SECONDS = 25;
     public static final int DEFAULT_EVENT_NOTIFICATIONS_WORKER_SHUTDOWN_TIMEOUT_SECONDS = 5;
     public static final boolean DEFAULT_EVENT_NOTIFICATIONS_PAYLOAD_SIGNING_ENABLED = true;
     public static final String DEFAULT_EVENT_NOTIFICATIONS_PAYLOAD_SIGNING_AUDIENCE =

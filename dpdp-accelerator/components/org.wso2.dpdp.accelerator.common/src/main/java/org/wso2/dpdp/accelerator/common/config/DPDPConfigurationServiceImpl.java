@@ -202,6 +202,22 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
     }
 
     @Override
+    public int getEventNotificationDeliveryWorkerMaxBatchesPerRun() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_BATCHES_PER_RUN
+                : configParser.getEventNotificationDeliveryWorkerMaxBatchesPerRun();
+    }
+
+    @Override
+    public int getEventNotificationDeliveryWorkerMaxRunSeconds() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_DELIVERY_WORKER_MAX_RUN_SECONDS
+                : configParser.getEventNotificationDeliveryWorkerMaxRunSeconds();
+    }
+
+    @Override
     public int getEventNotificationPendingSubscriptionRecoveryIntervalSeconds() {
 
         return configParser == null
@@ -215,6 +231,22 @@ public class DPDPConfigurationServiceImpl implements DPDPConfigurationService {
         return configParser == null
                 ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_BATCH_SIZE
                 : configParser.getEventNotificationPendingSubscriptionRecoveryBatchSize();
+    }
+
+    @Override
+    public int getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_BATCHES_PER_RUN
+                : configParser.getEventNotificationPendingSubscriptionRecoveryMaxBatchesPerRun();
+    }
+
+    @Override
+    public int getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds() {
+
+        return configParser == null
+                ? DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_PENDING_SUBSCRIPTION_RECOVERY_MAX_RUN_SECONDS
+                : configParser.getEventNotificationPendingSubscriptionRecoveryMaxRunSeconds();
     }
 
     @Override
