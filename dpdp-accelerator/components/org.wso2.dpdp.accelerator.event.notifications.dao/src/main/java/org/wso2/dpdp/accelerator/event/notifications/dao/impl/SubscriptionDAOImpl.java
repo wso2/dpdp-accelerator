@@ -18,6 +18,7 @@
 
 package org.wso2.dpdp.accelerator.event.notifications.dao.impl;
 
+import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
@@ -56,6 +57,22 @@ import java.util.Set;
 
 public class SubscriptionDAOImpl implements SubscriptionDAO {
 
+    private DPDPConfigurationService configurationService;
+
+    public SubscriptionDAOImpl() {
+    }
+
+    public SubscriptionDAOImpl(DPDPConfigurationService configurationService) {
+        this.configurationService = configurationService;
+    }
+
+    private DPDPConfigurationService getConfiguration() {
+        if (configurationService == null) {
+            return new org.wso2.dpdp.accelerator.common.config.DPDPConfigurationServiceImpl(false);
+        }
+        return configurationService;
+    }
+
     private EventNotificationCommonDBQueries getQueries(Connection conn) {
         return EventNotificationQueryFactory.getQueryProvider(conn);
     }
@@ -81,6 +98,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         subscription.setDeliveryMode(newDelMode.getValue());
         subscription.setStatus(newStatus.getValue());
         Set<String> newSet = PurposeOverlapUtils.canonicalize(subscription.getPurposes());
+        subscription.setPurposes(new ArrayList<>(newSet));
         String purposeSetHash = PurposeOverlapUtils.computePurposeSetHash(newMode, subscription.getPurposes());
         subscription.setPurposeSetHash(purposeSetHash);
 
@@ -135,44 +153,46 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 }
 
             }
-            try (PreparedStatement lockPs = conn.prepareStatement(
-                    queries.getLockSubscriptionsForTopicsQuery(topicIds.size()))) {
-                lockPs.setString(1, subscription.getOrgId());
-                lockPs.setString(2, subscription.getGroupId());
-                for (int i = 0; i < topicIds.size(); i++) {
-                    lockPs.setString(i + 3, topicIds.get(i));
-                }
-                try (ResultSet rs = lockPs.executeQuery()) {
-                    while (rs.next()) {
-                        String existingId = rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID);
-                        String existingModeStr = rs.getString(EventNotificationDBColumns.PURPOSE_FILTER_MODE);
-                        String existingDeliveryModeStr = rs.getString(EventNotificationDBColumns.DELIVERY_MODE);
-                        String existingCallbackUrl = rs.getString(EventNotificationDBColumns.CALLBACK_URL);
+            if (getConfiguration().isEventNotificationSubscriptionConstraintChecksEnabled()) {
+                try (PreparedStatement lockPs = conn.prepareStatement(
+                        queries.getLockSubscriptionsForTopicsQuery(topicIds.size()))) {
+                    lockPs.setString(1, subscription.getOrgId());
+                    lockPs.setString(2, subscription.getGroupId());
+                    for (int i = 0; i < topicIds.size(); i++) {
+                        lockPs.setString(i + 3, topicIds.get(i));
+                    }
+                    try (ResultSet rs = lockPs.executeQuery()) {
+                        while (rs.next()) {
+                            String existingId = rs.getString(EventNotificationDBColumns.SUBSCRIPTION_ID);
+                            String existingModeStr = rs.getString(EventNotificationDBColumns.PURPOSE_FILTER_MODE);
+                            String existingDeliveryModeStr = rs.getString(EventNotificationDBColumns.DELIVERY_MODE);
+                            String existingCallbackUrl = rs.getString(EventNotificationDBColumns.CALLBACK_URL);
 
-                        DeliveryMode existingDelMode = DeliveryMode.fromValueOrDefault(existingDeliveryModeStr,
-                                DeliveryMode.WEBHOOK);
+                            DeliveryMode existingDelMode = DeliveryMode.fromValueOrDefault(existingDeliveryModeStr,
+                                    DeliveryMode.WEBHOOK);
 
-                        if (newDelMode != existingDelMode) {
-                            throw new EventNotificationDuplicateResourceException(
-                                    EventNotificationCommonConstants.ERROR_SUBSCRIPTION_MIXED_DELIVERY_MODE);
-                        }
-
-                        if (newDelMode == DeliveryMode.WEBHOOK) {
-                            String newCb = CallbackUrlCanonicalizer.canonicalize(subscription.getCallbackUrl());
-                            String existCb = CallbackUrlCanonicalizer.canonicalize(existingCallbackUrl);
-                            if (!newCb.equals(existCb)) {
-                                continue;
+                            if (newDelMode != existingDelMode) {
+                                throw new EventNotificationDuplicateResourceException(
+                                        EventNotificationCommonConstants.ERROR_SUBSCRIPTION_MIXED_DELIVERY_MODE);
                             }
-                        }
 
-                        PurposeFilterMode existingMode = PurposeFilterMode.fromValueOrDefault(existingModeStr,
-                                PurposeFilterMode.ALL);
-                        List<String> existingPurposes = getPurposesBySubscriptionId(existingId,
-                                subscription.getOrgId(), conn);
-                        Set<String> existingSet = PurposeOverlapUtils.canonicalize(existingPurposes);
-                        if (PurposeOverlapUtils.overlaps(newMode, newSet, existingMode, existingSet)) {
-                            throw new EventNotificationDuplicateResourceException(
-                                    EventNotificationCommonConstants.ERROR_SUBSCRIPTION_OVERLAPPING_PURPOSES);
+                            if (newDelMode == DeliveryMode.WEBHOOK) {
+                                String newCb = CallbackUrlCanonicalizer.canonicalize(subscription.getCallbackUrl());
+                                String existCb = CallbackUrlCanonicalizer.canonicalize(existingCallbackUrl);
+                                if (!newCb.equals(existCb)) {
+                                    continue;
+                                }
+                            }
+
+                            PurposeFilterMode existingMode = PurposeFilterMode.fromValueOrDefault(existingModeStr,
+                                    PurposeFilterMode.ALL);
+                            List<String> existingPurposes = getPurposesBySubscriptionId(existingId,
+                                    subscription.getOrgId(), conn);
+                            Set<String> existingSet = PurposeOverlapUtils.canonicalize(existingPurposes);
+                            if (PurposeOverlapUtils.overlaps(newMode, newSet, existingMode, existingSet)) {
+                                throw new EventNotificationDuplicateResourceException(
+                                        EventNotificationCommonConstants.ERROR_SUBSCRIPTION_OVERLAPPING_PURPOSES);
+                            }
                         }
                     }
                 }
@@ -200,10 +220,10 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                     topicPs.executeBatch();
                 }
 
-                if (subscription.getPurposes() != null && !subscription.getPurposes().isEmpty()) {
+                if (newSet != null && !newSet.isEmpty()) {
                     try (PreparedStatement purposePs = conn
                             .prepareStatement(queries.getAddSubscriptionPurposesQuery())) {
-                        for (String purpose : subscription.getPurposes()) {
+                        for (String purpose : newSet) {
                             purposePs.setString(1, subscription.getSubscriptionId());
                             purposePs.setString(2, subscription.getOrgId());
                             purposePs.setString(3, purpose.trim());

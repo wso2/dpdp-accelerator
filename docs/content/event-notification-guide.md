@@ -732,7 +732,7 @@ event and delivery audit history.
 | A request returns `401` or `403` | Confirm the access token belongs to the URL's tenant and contains the operation's required scope. |
 | No topics appear when registering a subscription | Create a topic and confirm it is `active`. |
 | Subscription remains `pending` or becomes `stale` | Confirm the callback is reachable from Identity Server and returns the exact verification challenge with HTTP `200`. Then retry verification. |
-| Subscription creation returns `409` | Check for an existing or overlapping subscription for the same topic and purposes, and delete the conflicting subscription if it is no longer needed. |
+| Subscription creation returns `409` | Check if an active subscription with the same name already exists in the organization, or check for conflicting delivery modes / overlapping purpose filters if `subscription_constraint_checks = true`. |
 | A system topic exists but no automatic lifecycle events appear | Confirm `lifecycle_events.publishing_enabled = true`. Consent callbacks and expiry tracking currently require `consent_history.enabled = true`; expiry reconciliation also requires `consent_expiry.enabled = true`. For user topics, confirm the `dpdpUserLifecycleEventHandler` subscriptions. |
 | Event is created but no delivery appears | Confirm the subscription is `active`, the topic and purpose filters match, and `group-id` equals the subscription's group ID. |
 | Webhook signature does not match | Compute the HMAC over the unmodified raw request body, not only the nested `payload`. |

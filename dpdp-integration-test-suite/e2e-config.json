@@ -40,5 +40,8 @@
   },
   "consentExpiry": {
     "schedulerPollTimeoutMs": null
+  },
+  "eventNotifications": {
+    "subscriptionConstraintChecks": false
   }
 }
