@@ -32,10 +32,19 @@ import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDelivery;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.WebhookDeliveryDispatchContext;
 
 import java.net.http.HttpClient;
+
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionException;
+import java.util.concurrent.TimeUnit;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Batch driver for the webhook dispatch loop. One tick:
@@ -50,10 +59,13 @@ import java.util.concurrent.Executor;
  * payload, so the worker can hand one object straight to
  * {@link WebhookDeliveryTask}
  * without further DAO calls.</li>
- * <li>Submits each context to the shared executor while it is still pending.</li>
+ * <li>Submits each context to the shared executor while it is still
+ * pending.</li>
  * <li>When the executor starts that unit of work, atomically flips the row to
- * {@code in_flight} via {@link DeliveryDAO#claimWebhookDelivery(String)}. Claimed
- * rows therefore represent running work, not work waiting in an executor queue.</li>
+ * {@code in_flight} via {@link DeliveryDAO#claimWebhookDelivery(String)}.
+ * Claimed
+ * rows therefore represent running work, not work waiting in an executor
+ * queue.</li>
  * <li>Also drains stuck {@code in_flight} rows whose {@code UPDATED_AT} is
  * older than the
  * configured stuck threshold so a crashed worker does not permanently block
@@ -83,6 +95,9 @@ public class WebhookDeliveryWorker implements Runnable {
     private final HttpClient httpClient;
     private final DPDPConfigurationService configurationService;
 
+    private final Set<String> tracked = ConcurrentHashMap.newKeySet();
+    private volatile boolean stopping;
+
     public WebhookDeliveryWorker(DeliveryDAO deliveryDAO, Executor executor) {
         this(deliveryDAO, executor, defaultHttpClient(), null);
     }
@@ -108,6 +123,22 @@ public class WebhookDeliveryWorker implements Runnable {
         return HTTPClientUtils.getHttpClient();
     }
 
+    public void stop() {
+        this.stopping = true;
+    }
+
+    public boolean isStopping() {
+        return stopping;
+    }
+
+    int getTrackedCount() {
+        return tracked.size();
+    }
+
+    boolean isTracked(String deliveryId) {
+        return tracked.contains(deliveryId);
+    }
+
     @Override
     public void run() {
         try {
@@ -124,32 +155,94 @@ public class WebhookDeliveryWorker implements Runnable {
      * pass and the stuck-recovery pass fired.
      */
     public int[] runTick() {
+        if (stopping) {
+            return new int[] { 0, 0 };
+        }
         int batchSize = getConfiguration().getEventNotificationDeliveryWorkerBatchSize();
-        List<WebhookDeliveryDispatchContext> pending = fetch(batchSize, false);
-        int submitted = submitBatch(pending, false, null);
-        // Only reclaim stuck in-flight when we are below budget — if pending already filled
-        // the batch there is enough work; stuck rows will be picked up on a later tick.
-        int reclaimed = 0;
-        int remaining = batchSize - submitted;
-        if (remaining > 0) {
-            int thresholdSeconds = getConfiguration().getEventNotificationStuckInFlightThresholdSeconds();
-            java.sql.Timestamp cutoff = new java.sql.Timestamp(
-                    System.currentTimeMillis() - thresholdSeconds * 1000L);
-            List<WebhookDeliveryDispatchContext> stuck = fetch(remaining, true);
-            if (!stuck.isEmpty()) {
-                LOG.info("Reclaiming " + stuck.size() + " stuck in-flight webhook deliveries.");
+        int maxBatches = Math.max(1, getConfiguration().getEventNotificationDeliveryWorkerMaxBatchesPerRun());
+        long maxRunNanos = TimeUnit.SECONDS.toNanos(
+                Math.max(1, getConfiguration().getEventNotificationDeliveryWorkerMaxRunSeconds()));
+        long startNanos = System.nanoTime();
+
+        // 1. Reserved reclaim pass: always attempted first so stuck in-flight
+        // deliveries
+        // are never starved by a sustained backlog of pending deliveries.
+        int reclaimBudget = Math.max(1, batchSize / 10);
+        int reclaimed = reclaimStuck(reclaimBudget);
+
+        // 2. Pending drain loop: fills the remaining budget up to batchSize, and
+        // continues
+        // fetching further batches while forward progress is being made and capacity
+        // allows.
+        int totalSubmitted = 0;
+        int pendingBudget = Math.max(0, batchSize - reclaimed);
+        Set<String> seenThisTick = new HashSet<>();
+
+        for (int batch = 0; batch < maxBatches; batch++) {
+            if (stopping || (System.nanoTime() - startNanos) >= maxRunNanos) {
+                break;
             }
-            reclaimed = submitBatch(stuck, true, cutoff);
+            int budget = (batch == 0) ? pendingBudget : batchSize;
+            if (budget <= 0) {
+                break;
+            }
+            int fetchLimit = budget + totalSubmitted;
+            List<WebhookDeliveryDispatchContext> pending = fetch(fetchLimit, false);
+            if (pending.isEmpty()) {
+                break;
+            }
+
+            List<WebhookDeliveryDispatchContext> fresh = new ArrayList<>();
+            for (WebhookDeliveryDispatchContext ctx : pending) {
+                if (ctx != null && ctx.getDelivery() != null) {
+                    String id = ctx.getDelivery().getDeliveryId();
+                    if (id != null && !tracked.contains(id) && seenThisTick.add(id)) {
+                        fresh.add(ctx);
+                        if (fresh.size() == budget) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (fresh.isEmpty()) {
+                break;
+            }
+
+            int submitted = submitBatch(fresh, false, null);
+            totalSubmitted += submitted;
+
+            if (submitted < fresh.size() || pending.size() < fetchLimit) {
+                break;
+            }
         }
-        if (submitted + reclaimed > 0) {
-            LOG.info("Webhook delivery tick: submitted=" + submitted + ", reclaimed=" + reclaimed + ".");
+
+        if (totalSubmitted + reclaimed > 0) {
+            LOG.info("Webhook delivery tick: submitted=" + totalSubmitted + ", reclaimed=" + reclaimed + ".");
         }
-        return new int[] { submitted, reclaimed };
+        return new int[] { totalSubmitted, reclaimed };
+    }
+
+    private int reclaimStuck(int limit) {
+        if (limit <= 0 || stopping) {
+            return 0;
+        }
+        int thresholdSeconds = getConfiguration().getEventNotificationStuckInFlightThresholdSeconds();
+        java.sql.Timestamp cutoff = new java.sql.Timestamp(
+                System.currentTimeMillis() - thresholdSeconds * 1000L);
+        List<WebhookDeliveryDispatchContext> stuck = fetch(limit, true);
+        if (stuck.isEmpty()) {
+            return 0;
+        }
+        LOG.info("Reclaiming " + stuck.size() + " stuck in-flight webhook deliveries.");
+        return submitBatch(stuck, true, cutoff);
     }
 
     /**
-     * Atomically consumes the one-time manual retry and submits exactly one exhausted delivery.
-     * The persisted attempt count is retained, so a failure in the ordinary task path remains
+     * Atomically consumes the one-time manual retry and submits exactly one
+     * exhausted delivery.
+     * The persisted attempt count is retained, so a failure in the ordinary task
+     * path remains
      * terminal and cannot schedule another automatic retry.
      */
     public ManualRetrySubmissionResult submitManualRetry(String orgId, String subscriptionId, String deliveryId) {
@@ -172,10 +265,21 @@ public class WebhookDeliveryWorker implements Runnable {
             return result;
         }
 
+        if (!tracked.add(deliveryId)) {
+            return ManualRetrySubmissionResult.ACCEPTED;
+        }
         try {
-            executor.execute(() -> executeClaimed(contextHolder[0], false, null));
+            executor.execute(() -> {
+                try {
+                    executeClaimed(contextHolder[0], false, null);
+                } finally {
+                    tracked.remove(deliveryId);
+                }
+            });
         } catch (RuntimeException e) {
-            // The row remains pending and due, so the regular worker can pick it up on its next tick.
+            tracked.remove(deliveryId);
+            // The row remains pending and due, so the regular worker can pick it up on its
+            // next tick.
             LOG.error("Manual webhook retry was persisted but could not be submitted immediately for delivery ["
                     + LogSanitizer.sanitize(deliveryId) + "]: " + LogSanitizer.sanitize(e.getMessage()), e);
         }
@@ -247,26 +351,63 @@ public class WebhookDeliveryWorker implements Runnable {
     }
 
     /**
-     * @param isReclaim  {@code true} when processing stuck in-flight rows; the claim uses
-     *                   {@link DeliveryDAO#claimStuckWebhookDelivery} with a cutoff guard
-     *                   to prevent re-claiming a row that is still being actively processed.
-     * @param stuckCutoff the UPDATED_AT cutoff; only used when {@code isReclaim} is true.
+     * @param isReclaim   {@code true} when processing stuck in-flight rows; the
+     *                    claim uses
+     *                    {@link DeliveryDAO#claimStuckWebhookDelivery} with a
+     *                    cutoff guard
+     *                    to prevent re-claiming a row that is still being actively
+     *                    processed.
+     * @param stuckCutoff the UPDATED_AT cutoff; only used when {@code isReclaim} is
+     *                    true.
      */
     private int submitBatch(List<WebhookDeliveryDispatchContext> contexts,
             boolean isReclaim, java.sql.Timestamp stuckCutoff) {
         int submitted = 0;
         for (WebhookDeliveryDispatchContext ctx : contexts) {
-            WebhookDelivery delivery = ctx.getDelivery();
-            try {
-                executor.execute(() -> executeClaimed(ctx, isReclaim, stuckCutoff));
-                submitted++;
-            } catch (Exception e) {
-                LOG.error("Failed to submit WebhookDeliveryTask for delivery ["
-                        + LogSanitizer.sanitize(delivery.getDeliveryId()) + "]: "
-                        + LogSanitizer.sanitize(e.getMessage()), e);
+            if (stopping) {
+                break;
             }
+            String id = ctx.getDelivery().getDeliveryId();
+            if (tracked.contains(id)) {
+                continue;
+            }
+            if (!submitOne(ctx, isReclaim, stuckCutoff)) {
+                break;
+            }
+            submitted++;
         }
         return submitted;
+    }
+
+    private boolean submitOne(WebhookDeliveryDispatchContext ctx, boolean isReclaim,
+            java.sql.Timestamp stuckCutoff) {
+        String id = ctx.getDelivery().getDeliveryId();
+        if (!tracked.add(id)) {
+            return true;
+        }
+        try {
+            executor.execute(() -> {
+                try {
+                    executeClaimed(ctx, isReclaim, stuckCutoff);
+                } finally {
+                    tracked.remove(id);
+                }
+            });
+            return true;
+        } catch (RejectedExecutionException e) {
+            tracked.remove(id);
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Delivery worker pool saturated; backing off delivery ["
+                        + LogSanitizer.sanitize(id) + "].");
+            }
+            return false;
+        } catch (RuntimeException e) {
+            tracked.remove(id);
+            LOG.error("Failed to submit WebhookDeliveryTask for delivery ["
+                    + LogSanitizer.sanitize(id) + "]: "
+                    + LogSanitizer.sanitize(e.getMessage()), e);
+            return false;
+        }
     }
 
     private void executeClaimed(WebhookDeliveryDispatchContext ctx, boolean isReclaim,
@@ -307,8 +448,8 @@ public class WebhookDeliveryWorker implements Runnable {
 
     private boolean claim(String deliveryId) {
         try {
-            return DatabaseUtils.<Boolean>executeInTransaction(conn ->
-                    deliveryDAO.claimWebhookDelivery(conn, deliveryId));
+            return DatabaseUtils
+                    .<Boolean>executeInTransaction(conn -> deliveryDAO.claimWebhookDelivery(conn, deliveryId));
         } catch (RuntimeException e) {
             LOG.error("claimWebhookDelivery failed for [" + LogSanitizer.sanitize(deliveryId) + "]: "
                     + LogSanitizer.sanitize(e.getMessage()), e);
@@ -318,8 +459,8 @@ public class WebhookDeliveryWorker implements Runnable {
 
     private boolean claimStuck(String deliveryId, java.sql.Timestamp cutoff) {
         try {
-            return DatabaseUtils.<Boolean>executeInTransaction(conn ->
-                    deliveryDAO.claimStuckWebhookDelivery(conn, deliveryId, cutoff));
+            return DatabaseUtils.<Boolean>executeInTransaction(
+                    conn -> deliveryDAO.claimStuckWebhookDelivery(conn, deliveryId, cutoff));
         } catch (RuntimeException e) {
             LOG.error("claimStuckWebhookDelivery failed for [" + LogSanitizer.sanitize(deliveryId) + "]: "
                     + LogSanitizer.sanitize(e.getMessage()), e);
