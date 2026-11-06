@@ -10,7 +10,7 @@ in CI was actually checking.
 
 | | |
 |---|---|
-| **Tests** | 202 across 54 spec files in 10 areas |
+| **Tests** | 207 across 55 spec files in 10 areas |
 | **Removed, not skipped** | `09.08`'s fan-out persistence rollback case, `09.10`'s stuck-in-flight reclaim case - see "What this suite cannot verify" |
 | **Skipped when unconfigured** | `04.09.03` (expiry cron); `09.10.01`, `09.10.02`, `09.10.03` (shortened backoff) |
 | **Rules and conventions** | [`AGENTS.md`](AGENTS.md) |
@@ -457,7 +457,7 @@ Two surfaces: the Data Principal's `/complaints` and the officer's `/complaint-m
 
 Mixed UI and API. Two server behaviours drive most of the test design: `groupId` is silently forced to the org id on every subscription, so tests read the *returned* `groupId` back and use two topics (or disjoint purpose filters) when they need two distinct subscriptions; and `GET /events` hardcodes the caller's orgId as `GROUP_ID`, so an event published under any other group id can never be found through it at all.
 
-**53 tests, 12 spec files.**
+**58 tests, 13 spec files.**
 
 ### `09.01-admin-managing-topics.spec.ts`
 
@@ -531,7 +531,7 @@ Register conflicts, re-verification, and delete guards.
 | `09.07.06` | Deleting an already-deleted subscription returns not found |  |
 | `09.07.07` | Registering with empty topics or duplicate topic names is rejected | 400 with descriptive error message. |
 | `09.07.08` | Registering with a non-existent or inactive topic is rejected | 404 with topic not active in organization error. |
-| `09.07.09` | Multi-topic subscriptions containing user lifecycle topics require the all purpose filter | 422 with lifecycle topic filter requirement error. |
+| `09.07.09` | Multi-topic subscriptions containing user lifecycle topics require the all purpose filter | 422 with lifecycle topic filter requirement error. Covered through v1 only (shares user.data.change across versions in parallel runs). |
 | `09.07.10` | Delivery mode conflict is rejected when any topic overlaps in the same group | 409 across shared topic associations. |
 
 ### `09.08-publishing-events-api.spec.ts` · API-only
@@ -541,7 +541,7 @@ Register conflicts, re-verification, and delete guards.
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.08.01` | Publishing an event creates matching delivery records atomically | Readable from the event side and the subscription side, with the payload marker intact. |
-| `09.08.02` | Publishing without a group-id header is rejected |  |
+| `09.08.02` | Publishing without a group-id header is rejected | Covered through v1 only - v1.1 does not require a `group-id` header on publish (see `09.13.02`). |
 | `09.08.03` | Publishing to an unknown or deregistered topic is rejected |  |
 | `09.08.04` | A null or missing payload is rejected rather than treated as an empty object | 422 EN-4002 - not silently treated as `{}`. |
 | `09.08.05` | An ALL-filter subscription receives every event regardless of purposes | No/one/many purposes, exactly one delivery each. |
@@ -556,7 +556,7 @@ Query and delivery-scoping rules on the read endpoints.
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.09.01` | The subscriptionId filter returns only events delivered to that subscription | Checked in both directions. |
-| `09.09.02` | A delivery id belonging to another subscription can't be read through the wrong subscription path | 404 through the wrong subscription, OK through the right one. |
+| `09.09.02` | A delivery id belonging to another subscription can't be read through the wrong subscription path | 404 through the wrong subscription, OK through the right one. Covered through v1 only - the subscription-nested delivery path does not exist in v1.1. |
 
 ### `09.10-webhook-delivery-api.spec.ts` · API-only
 
@@ -590,6 +590,19 @@ PostgreSQL, H2, and any deployment where the `ACTIVE_NAME` index fix is applied.
 | ID | Scenario | Notes |
 | --- | --- | --- |
 | `09.12.01` | Concurrent publish and subscribe must not produce EN-5001 (MySQL deadlock) | 3 worker pairs × 30 publish + 30 subscribe iterations; asserts zero HTTP 500 responses on POST /events. |
+
+### `09.13-v1-1-features.spec.ts`
+
+V1.1 specific features: split delivery reads, event polling with HMAC verification, manual retry rules, delivery endpoint scopes, and delivery completion evidence.
+
+| ID | Scenario | Notes |
+| --- | --- | --- |
+| `09.13.01` | V1.1 split read returns delivery details without history and attempts via history endpoint | `GET /deliveries/{id}` returns delivery metadata/evidence without attempt history, while `GET /deliveries/{id}/history` returns the attempt list. |
+| `09.13.02` | V1.1 publish without group-id header and poll with signature headers | Publishes without `group-id` header; verifies polling via `POST /events/poll` with signature headers (asserts 401 when `eventNotifications.pollingRequestHmacValidationEnabled` is true or 200 when disabled by default, and verifies the decoded JWS in `sets` matches the published `eventId`). |
+| `09.13.03` | Manual retry on a poll delivery is rejected with 409 Conflict | `POST /deliveries/{id}/retry` returns 409 Conflict with `EN-4003`. |
+| `09.13.04` | Access control on /v1.1/deliveries/* requires notifications:subscriptions:read | Token with only `notifications:events:read` receives 403 Forbidden; token with `notifications:subscriptions:read` succeeds. |
+| `09.13.05` | Webhook completion records evidence, rejects invalid signatures and duplicate completions | **Skipped unless webhook receiver is configured.** Records completion evidence on `POST /deliveries/{id}/completion`, rejects invalid signatures, and rejects duplicate completions with 409 Conflict. |
+
 
 
 ## `10-dashboard/` — Dashboard counts and links

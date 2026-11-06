@@ -17,7 +17,12 @@
  */
 
 import { test, expect } from '../../fixtures/tenant.fixtures'
-import { seedActiveTopicViaApi, seedPollSubscriptionViaApi, publishMarkedEventViaApi } from '../../utils/eventNotificationSetup'
+import {
+  findDeliveryForEvent,
+  publishMarkedEventViaApi,
+  seedActiveTopicViaApi,
+  seedPollSubscriptionViaApi,
+} from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 
 const SYSTEM_TOPICS = ['consent.update', 'consent.revoke', 'consent.expire', 'user.data.change', 'user.account.delete']
@@ -30,80 +35,90 @@ const SYSTEM_TOPICS = ['consent.update', 'consent.revoke', 'consent.expire', 'us
  * these tests exercise that column as the isolation boundary directly, the same way
  * tests/06-multi-tenancy does for consent-mgt resources.
  */
-test.describe('Event Notification tenant isolation', () => {
-  test('09.11.01 - Tenants with the same topic name receive separate topic identities and lists', async ({
-    tenant,
-    tenantB,
-  }) => {
-    const sharedName = uniqueMarker('consent-status-changed')
+for (const version of ['v1', 'v1.1'] as const) {
+  test.describe(`Event Notification tenant isolation (${version})`, () => {
+    test.use({ eventApiVersion: version })
 
-    const responseA = await tenant.ownerEventApi.createTopic({ name: sharedName })
-    expect(responseA.status(), await responseA.text()).toBe(201)
-    const topicA = await responseA.json()
+    test(`09.11.01 - Tenants with the same topic name receive separate topic identities and lists (${version})`, async ({
+      tenant,
+      tenantB,
+    }) => {
+      const apiA = tenant.ownerEventApi.withVersion(version)
+      const apiB = tenantB.ownerEventApi.withVersion(version)
+      const sharedName = uniqueMarker(`consent-status-changed-${version}`)
 
-    const responseB = await tenantB.ownerEventApi.createTopic({ name: sharedName })
-    expect(responseB.status(), await responseB.text()).toBe(201)
-    const topicB = await responseB.json()
+      const responseA = await apiA.createTopic({ name: sharedName })
+      expect(responseA.status(), await responseA.text()).toBe(201)
+      const topicA = await responseA.json()
 
-    expect(topicA.topicId).not.toBe(topicB.topicId)
+      const responseB = await apiB.createTopic({ name: sharedName })
+      expect(responseB.status(), await responseB.text()).toBe(201)
+      const topicB = await responseB.json()
 
-    const listedA = await tenant.ownerEventApi.listTopics({ search: sharedName })
-    const { items: itemsA } = (await listedA.json()) as { items: { topicId: string }[] }
-    expect(itemsA.map((t) => t.topicId)).toContain(topicA.topicId)
-    expect(itemsA.map((t) => t.topicId)).not.toContain(topicB.topicId)
+      expect(topicA.topicId).not.toBe(topicB.topicId)
 
-    const listedB = await tenantB.ownerEventApi.listTopics({ search: sharedName })
-    const { items: itemsB } = (await listedB.json()) as { items: { topicId: string }[] }
-    expect(itemsB.map((t) => t.topicId)).toContain(topicB.topicId)
-    expect(itemsB.map((t) => t.topicId)).not.toContain(topicA.topicId)
+      const listedA = await apiA.listTopics({ search: sharedName })
+      const { items: itemsA } = (await listedA.json()) as { items: { topicId: string }[] }
+      expect(itemsA.map((t) => t.topicId)).toContain(topicA.topicId)
+      expect(itemsA.map((t) => t.topicId)).not.toContain(topicB.topicId)
+
+      const listedB = await apiB.listTopics({ search: sharedName })
+      const { items: itemsB } = (await listedB.json()) as { items: { topicId: string }[] }
+      expect(itemsB.map((t) => t.topicId)).toContain(topicB.topicId)
+      expect(itemsB.map((t) => t.topicId)).not.toContain(topicA.topicId)
+    })
+
+    test(`09.11.02 - Tenant A cannot read, delete, verify, or list history for tenant B resources (${version})`, async ({
+      tenant,
+      tenantB,
+    }) => {
+      const apiA = tenant.ownerEventApi.withVersion(version)
+      const apiB = tenantB.ownerEventApi.withVersion(version)
+
+      const topicB = await seedActiveTopicViaApi(apiB, `09-02-02-topic-${version}`)
+      const subscriptionB = await seedPollSubscriptionViaApi(apiB, topicB.name)
+      const { event: eventB } = await publishMarkedEventViaApi(apiB, subscriptionB.groupId, topicB.name)
+      const deliveryB = await findDeliveryForEvent(apiB, subscriptionB.subscriptionId, eventB.eventId)
+
+      // Tenant A's own token, tenant B's resource ids - every operation must behave exactly like
+      // an unknown id, never exposing that the id belongs to someone else.
+      expect((await apiA.deleteTopic(topicB.topicId)).status()).toBe(404)
+      expect((await apiA.getSubscription(subscriptionB.subscriptionId)).status()).toBe(404)
+      expect((await apiA.deleteSubscription(subscriptionB.subscriptionId)).status()).toBe(404)
+      expect((await apiA.verifySubscription(subscriptionB.subscriptionId)).status()).toBe(404)
+      expect((await apiA.getEvent(eventB.eventId)).status()).toBe(404)
+      expect((await apiA.getDeliveryHistory(deliveryB.deliveryId)).status()).toBe(404)
+      if (version === 'v1.1') {
+        expect((await apiA.getDelivery(deliveryB.deliveryId)).status()).toBe(404)
+      } else {
+        expect(
+          (await apiA.getSubscriptionEventHistory(subscriptionB.subscriptionId, deliveryB.deliveryId)).status(),
+        ).toBe(404)
+      }
+
+      // Tenant B's own view of its own resources is unaffected by the rejected cross-tenant attempts.
+      const stillThere = await apiB.getSubscription(subscriptionB.subscriptionId)
+      expect(stillThere.status()).toBe(200)
+      expect((await stillThere.json()).status).toBe('active')
+    })
+
+    test(`09.11.03 - A newly created tenant receives Event Notification authorization and default topics (${version})`, async ({
+      tenant,
+    }) => {
+      const api = tenant.ownerEventApi.withVersion(version)
+      const listed = await api.listTopics({ limit: 100 })
+      expect(listed.status()).toBe(200)
+      const { items } = (await listed.json()) as { items: { name: string; status: string; initiatedBy?: string }[] }
+      for (const name of SYSTEM_TOPICS) {
+        const systemTopic = items.find((t) => t.name === name)
+        expect(systemTopic, `Expected system topic "${name}" to be provisioned for tenant ${tenant.domain}`).toBeTruthy()
+        expect(systemTopic?.status).toBe('active')
+        expect(systemTopic?.initiatedBy?.toLowerCase()).toBe('system')
+      }
+
+      const topic = await seedActiveTopicViaApi(api, `09-02-04-user-topic-${version}`)
+      const subscription = await seedPollSubscriptionViaApi(api, topic.name)
+      expect(subscription.status).toBe('active')
+    })
   })
-
-  test("09.11.02 - Tenant A cannot read, delete, verify, or list history for tenant B resources", async ({
-    tenant,
-    tenantB,
-  }) => {
-    const topicB = await seedActiveTopicViaApi(tenantB.ownerEventApi, '09-02-02-topic')
-    const subscriptionB = await seedPollSubscriptionViaApi(tenantB.ownerEventApi, topicB.name)
-    const { event: eventB } = await publishMarkedEventViaApi(tenantB.ownerEventApi, tenantB.domain, topicB.name)
-
-    // Tenant A's own token, tenant B's resource ids - every operation must behave exactly like
-    // an unknown id, never exposing that the id belongs to someone else.
-    expect((await tenant.ownerEventApi.deleteTopic(topicB.topicId)).status()).toBe(404)
-    expect((await tenant.ownerEventApi.getSubscription(subscriptionB.subscriptionId)).status()).toBe(404)
-    expect((await tenant.ownerEventApi.deleteSubscription(subscriptionB.subscriptionId)).status()).toBe(404)
-    expect((await tenant.ownerEventApi.verifySubscription(subscriptionB.subscriptionId)).status()).toBe(404)
-    expect((await tenant.ownerEventApi.getEvent(eventB.eventId)).status()).toBe(404)
-    expect((await tenant.ownerEventApi.getDeliveryHistory(eventB.eventId)).status()).toBe(404)
-    expect(
-      (await tenant.ownerEventApi.getSubscriptionEventHistory(subscriptionB.subscriptionId, eventB.eventId)).status(),
-    ).toBe(404)
-
-    // Tenant B's own view of its own resources is unaffected by the rejected cross-tenant attempts.
-    const stillThere = await tenantB.ownerEventApi.getSubscription(subscriptionB.subscriptionId)
-    expect(stillThere.status()).toBe(200)
-    expect((await stillThere.json()).status).toBe('active')
-  })
-
-  test('09.11.03 - A newly created tenant receives Event Notification authorization and default topics', async ({
-    tenant,
-  }) => {
-    // tenant.fixtures.ts's own setup already proves the portal app/role provisioning succeeded
-    // (the owner signed into their tenant-qualified portal for real to build ownerEventApi) - this
-    // test asserts the two things provisioning must get right: the system topics exist as
-    // active/system, and the owner can manage user topics/subscriptions with no extra manual
-    // API-resource registration (i.e. ordinary calls just work).
-    const listed = await tenant.ownerEventApi.listTopics({ limit: 100 })
-    expect(listed.status()).toBe(200)
-    const { items } = (await listed.json()) as { items: { name: string; status: string; initiatedBy?: string }[] }
-    for (const name of SYSTEM_TOPICS) {
-      const systemTopic = items.find((t) => t.name === name)
-      expect(systemTopic, `Expected system topic "${name}" to be provisioned for tenant ${tenant.domain}`).toBeTruthy()
-      expect(systemTopic?.status).toBe('active')
-      expect(systemTopic?.initiatedBy?.toLowerCase()).toBe('system')
-    }
-
-    const topic = await seedActiveTopicViaApi(tenant.ownerEventApi, '09-02-04-user-topic')
-    const subscription = await seedPollSubscriptionViaApi(tenant.ownerEventApi, topic.name)
-    expect(subscription.status).toBe('active')
-  })
-})
+}

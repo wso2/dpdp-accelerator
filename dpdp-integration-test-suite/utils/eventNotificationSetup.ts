@@ -81,7 +81,7 @@ export async function seedPollSubscriptionViaApi(
  */
 export async function publishMarkedEventViaApi(
   api: EventNotificationApiClient,
-  groupId: string,
+  groupId: string | undefined,
   topic: string,
   purposes: string[] = [],
   extraPayload: Record<string, unknown> = {},
@@ -94,4 +94,33 @@ export async function publishMarkedEventViaApi(
   })
   expect(response.status(), await response.text()).toBe(201)
   return { event: (await response.json()) as EventRecord, marker }
+}
+
+/**
+ * Polls `listSubscriptionEvents` until the delivery record for `eventId` appears on `subscriptionId`.
+ * Polling rather than a single fetch also makes callers resilient to transient 401 blips if a
+ * concurrent worker invalidates the shared persona session mid-run.
+ */
+export async function findDeliveryForEvent(
+  api: EventNotificationApiClient,
+  subscriptionId: string,
+  eventId: string,
+  timeout = 30_000,
+): Promise<{ deliveryId: string; eventId: string }> {
+  let found: { deliveryId: string; eventId: string } | undefined
+  await expect
+    .poll(
+      async () => {
+        const eventsList = await api.listSubscriptionEvents(subscriptionId, { limit: 20 })
+        if (!eventsList.ok()) {
+          return false
+        }
+        const { items } = (await eventsList.json()) as { items?: { deliveryId: string; eventId: string }[] }
+        found = items?.find((item) => item.eventId === eventId)
+        return Boolean(found)
+      },
+      { timeout },
+    )
+    .toBe(true)
+  return found as { deliveryId: string; eventId: string }
 }

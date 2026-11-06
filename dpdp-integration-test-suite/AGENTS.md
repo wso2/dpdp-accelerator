@@ -317,6 +317,12 @@ no "Consent" category at all. Don't assume the admin sees a superset of what the
 (`pages/TopicsPage.ts`'s `ROWS_PER_PAGE_OPTIONS`); the catalog and complaint tables offer 25. Check
 the page object, don't assume.
 
+## Event-notification API versions (`v1` and `v1.1`)
+
+- **Selecting the API version:** Event-notification API specs choose the target version with `test.use({ eventApiVersion })` (or `api.withVersion(version)` when constructing a tenant client). Functional API specs (`09.06`–`09.11`) run against both `v1` and `v1.1`, whereas load and concurrency stress specs such as `09.12-deadlock-repro.spec.ts` run once so they do not double database lock contention on the shared org.
+- **Delivery routes in `v1.1`:** Call `getDelivery`, `getDeliveryHistory`, and `retryDelivery` with a real `deliveryId` (looked up via `findDeliveryForEvent` in `utils/eventNotificationSetup.ts`). Do not use the `v1`-only subscription-scoped methods (`getSubscriptionEventHistory`, `retrySubscriptionDelivery`) under `v1.1` — the client throws if called on `v1.1`.
+- **Omitting `group-id`:** To test publishing without `group-id` (or in `v1.1` where `group-id` is resolved from `orgId`), leave the header out entirely by passing `undefined` (or `subscription.groupId`, which is `undefined` on `v1.1`); do not send an empty string header (`group-id: ""`).
+
 ## Webhook-dependent tests
 
 `09.10-webhook-delivery-api.spec.ts` needs a receiver the WSO2 IS process can actually reach

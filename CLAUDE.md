@@ -178,6 +178,13 @@ this and every other tenant lifecycle hook follows.
 `org.wso2.dpdp.accelerator.common` holds the `deployment.toml` config parser
 (`DPDPConfigParser`) exposed as an OSGi service; `identity.extensions` consumes it.
 
+### Event notifications (`v1` and `v1.1`)
+
+- The event-notification webapp is `api#dpdp#event-notifications` (`internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint`) and serves both `/api/dpdp/event-notifications/v1/*` and `/api/dpdp/event-notifications/v1.1/*`. `merge.sh` removes the legacy `api#dpdp#event-notifications#v1` webapp on upgrade.
+- In `v1.1`, the `group-id` header is ignored and the organization ID is used instead. In `v1`, `POST /events` (publish) still requires `group-id`, while `POST /events/poll` and `POST /deliveries/{id}/completion` treat it as optional. Subscriptions always have `groupId = orgId`.
+- In `v1.1`, delivery reads are split: `GET /deliveries/{id}` is the lightweight read returning delivery metadata and completion evidence with no audit rows, and `GET /deliveries/{id}/history` returns the attempt history. `GET /deliveries/*` routes require `notifications:subscriptions:read`, `POST /deliveries/{id}/retry` requires `notifications:subscriptions:write`, and `POST /deliveries/{id}/completion` requires `notifications:event-deliveries:complete`. Retrying a `poll` delivery returns `409 Conflict` with error code `EN-4003`.
+- Upgrading from `1.0` requires running the data backfill scripts under `dpdp-accelerator/accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/` (with `APPLY_DPDP_DB_MIGRATION=true` set in `repository/conf/configure.properties`, which `configure.sh` sources and uses over a shell environment variable).
+
 ### Integration test suite
 
 Runs against a **real, persistent, shared** IS — nothing is mocked, and the environment never

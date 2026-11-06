@@ -16,19 +16,37 @@
  * under the License.
  */
 
+import crypto from 'node:crypto'
 import { mkdir, open, readFile, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
-import { test as base, type APIRequestContext, type Browser, type Page, type Request } from '@playwright/test'
+import {
+  test as base,
+  request as playwrightRequest,
+  type APIRequestContext,
+  type Browser,
+  type Page,
+  type Request,
+} from '@playwright/test'
 import { ComplaintApiClient } from '../clients/ComplaintApiClient'
 import { ConsentApiClient } from '../clients/ConsentApiClient'
 import { EventNotificationApiClient } from '../clients/EventNotificationApiClient'
 import { LoginPage } from '../pages/LoginPage'
 import {
+  authHeadersForMintedToken,
   authHeadersFromPersonaState,
+  serializeCookies,
+  type AuthHeaders,
   type PersonaAuthState,
   type PersonaStorageState,
 } from '../utils/authStorage'
-import { consentPurposesApiUrl, env, type Persona, type PersonaName } from '../utils/env'
+import {
+  consentPurposesApiUrl,
+  env,
+  tenantSegment,
+  type EventNotificationApiVersion,
+  type Persona,
+  type PersonaName,
+} from '../utils/env'
 import { resolveTarget, type Target } from '../utils/targets'
 import { createThrowawayUser, deleteThrowawayUser, type ThrowawayUser } from '../utils/throwawayUser'
 
@@ -64,6 +82,8 @@ interface Fixtures {
   // Fresh, signed-in portal users that exist for one test and are deleted after it - see
   // ThrowawayAccounts.
   throwawayAccounts: ThrowawayAccounts
+  // Version targeted by event notification fixtures (defaults to 'v1').
+  eventApiVersion: EventNotificationApiVersion
 }
 
 /**
@@ -578,19 +598,31 @@ export const test = base.extend<Fixtures>({
     await use(new ComplaintApiClient(request, authHeadersFromPersonaState(personaState), target.tenantDomain))
   },
 
-  consentAdminEventApi: async ({ browser, request }, use) => {
+  eventApiVersion: ['v1', { option: true }],
+
+  consentAdminEventApi: async ({ browser, request, eventApiVersion }, use) => {
     const target = resolveTarget(test.info().project.name)
     const personaState = await getPersonaState(browser, 'consent-admin', target.personas.consentAdmin)
     await use(
-      new EventNotificationApiClient(request, authHeadersFromPersonaState(personaState), target.tenantDomain),
+      new EventNotificationApiClient(
+        request,
+        authHeadersFromPersonaState(personaState),
+        target.tenantDomain,
+        eventApiVersion,
+      ),
     )
   },
 
-  userEventApi: async ({ browser, request }, use) => {
+  userEventApi: async ({ browser, request, eventApiVersion }, use) => {
     const target = resolveTarget(test.info().project.name)
     const personaState = await getPersonaState(browser, 'user', target.personas.user)
     await use(
-      new EventNotificationApiClient(request, authHeadersFromPersonaState(personaState), target.tenantDomain),
+      new EventNotificationApiClient(
+        request,
+        authHeadersFromPersonaState(personaState),
+        target.tenantDomain,
+        eventApiVersion,
+      ),
     )
   },
 
@@ -628,4 +660,91 @@ export async function getSecondUserComplaintApi(
   const target = resolveTarget(test.info().project.name)
   const personaState = await getPersonaState(browser, 'user-2', target.personas.user2)
   return new ComplaintApiClient(request, authHeadersFromPersonaState(personaState), target.tenantDomain)
+}
+
+/**
+ * Mints an access token for an authenticated persona with an explicit subset of scopes,
+ * using the OAuth2 PKCE authorization code flow while bound to the persona's active session.
+ */
+export async function mintPersonaTokenWithScopes(
+  browser: Browser,
+  personaName: PersonaName,
+  scopes: string[],
+): Promise<AuthHeaders> {
+  const target = resolveTarget(test.info().project.name)
+  const personasByName = {
+    'consent-admin': target.personas.consentAdmin,
+    user: target.personas.user,
+    'user-2': target.personas.user2,
+    dpo: target.personas.dpo,
+  } satisfies Record<PersonaName, Persona>
+  const persona = personasByName[personaName]
+  const personaState = await getPersonaState(browser, personaName, persona)
+
+  const verifier = crypto.randomBytes(32).toString('base64url')
+  const challenge = crypto.createHash('sha256').update(verifier).digest('base64url')
+
+  const callbackUrl = target.portalBaseUrl.replace(/\/$/, '')
+  const authorizeUrl = new URL(
+    `${env.identityServerBaseUrl}${tenantSegment(target.tenantDomain)}/oauth2/authorize`,
+  )
+  authorizeUrl.searchParams.set('client_id', env.portalClientId)
+  authorizeUrl.searchParams.set('response_type', 'code')
+  authorizeUrl.searchParams.set('redirect_uri', callbackUrl)
+  authorizeUrl.searchParams.set('scope', scopes.join(' '))
+  authorizeUrl.searchParams.set('code_challenge', challenge)
+  authorizeUrl.searchParams.set('code_challenge_method', 'S256')
+
+  const cookieHeader = serializeCookies(personaState.storageState)
+
+  const apiRequest = await playwrightRequest.newContext({
+    ignoreHTTPSErrors: env.ignoreHttpsErrors,
+  })
+  try {
+    const authResponse = await apiRequest.get(authorizeUrl.toString(), {
+      headers: { Cookie: cookieHeader },
+      maxRedirects: 0,
+    })
+
+    const location = authResponse.headers()['location']
+    if (!location) {
+      throw new Error(
+        `Authorize request did not return a redirect location. Status: ${authResponse.status()} body: ${await authResponse.text()}`,
+      )
+    }
+
+    const redirectUrl = new URL(location)
+    const code = redirectUrl.searchParams.get('code')
+    if (!code) {
+      throw new Error(`Authorize redirect missing code parameter: ${location}`)
+    }
+
+    const tokenResponse = await apiRequest.post(
+      `${env.identityServerBaseUrl}${tenantSegment(target.tenantDomain)}/oauth2/token`,
+      {
+        form: {
+          grant_type: 'authorization_code',
+          client_id: env.portalClientId,
+          code,
+          redirect_uri: callbackUrl,
+          code_verifier: verifier,
+        },
+      },
+    )
+
+    if (!tokenResponse.ok()) {
+      throw new Error(
+        `Failed to exchange authorization code for token: ${await tokenResponse.text()}`,
+      )
+    }
+
+    const tokenData = (await tokenResponse.json()) as { access_token: string }
+    return authHeadersForMintedToken(
+      personaState.storageState,
+      tokenData.access_token,
+      tokenResponse.headers()['set-cookie'],
+    )
+  } finally {
+    await apiRequest.dispose()
+  }
 }

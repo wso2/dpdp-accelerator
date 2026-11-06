@@ -66,6 +66,8 @@ const WORKERS = 3
 // ──────────────────────────────────────────────────────────────────────────
 
 test.describe('09.12 — MySQL publish/subscribe deadlock reproduction', () => {
+  test.use({ eventApiVersion: 'v1.1' })
+
   /**
    * Fires WORKERS pairs of goroutines simultaneously, all sharing one topic:
    *   • Publish loop A:   POST /events   ×  PUBLISH_ITERATIONS
@@ -84,7 +86,7 @@ test.describe('09.12 — MySQL publish/subscribe deadlock reproduction', () => {
 
       // The server silently forces groupId = orgId regardless of what the caller sends.
       // Read it back from the topic record the same way every other spec does.
-      const groupId: string = (topic as unknown as Record<string, string>).groupId ?? topic.topicId
+      const groupId: string | undefined = (topic as unknown as Record<string, string>).groupId
 
       const deadlockFailures: Array<{ attempt: number; worker: number; body: unknown }> = []
       let successfulSubscriptionCreates = 0

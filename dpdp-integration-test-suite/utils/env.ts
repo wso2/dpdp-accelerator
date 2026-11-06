@@ -53,6 +53,7 @@ export const env = {
   // chasing as an OAuth/IS problem before landing here. portalBaseUrl itself stays slash-free since
   // the consent API URL helpers below need that form.
   portalNavigationBaseUrl: `${rawPortalBaseUrl}/`,
+  portalClientId: requireConfigured(config.identityServer.portalClientId, 'identityServer.portalClientId'),
   identityServerBaseUrl: trimTrailingSlash(config.identityServer.baseUrl),
   ignoreHttpsErrors: config.identityServer.ignoreHttpsErrors,
 
@@ -96,7 +97,7 @@ export const env = {
 // full contract). `tenantDomain` prefixes `/t/<tenant>` - as per routing rules.
 // fixtures/tenant.fixtures.ts) that a real OAuth2 bearer token reaches both surfaces fine
 // tenant-qualified; omit it (or pass undefined) for the super-tenant paths every other test uses.
-function tenantSegment(tenantDomain?: string): string {
+export function tenantSegment(tenantDomain?: string): string {
   return tenantDomain ? `/t/${tenantDomain}` : ''
 }
 
@@ -160,12 +161,25 @@ export function meComplaintsApiUrl(path: string, tenantDomain?: string): string 
   return `${env.identityServerBaseUrl}${tenantSegment(tenantDomain)}${COMPLAINT_SERVER_BASE}/me/complaints${path}`
 }
 
+export type EventNotificationApiVersion = 'v1' | 'v1.1'
+
 // The accelerator's own event-notification webapp (org.wso2.dpdp.accelerator.event.notifications.endpoint,
 // finalName "api#dpdp#event-notifications"). Unlike the complaint-server, this IS
 // tenant-qualified (see docs/content/event-notification-guide.md) - every path goes through
 // tenantSegment the same way the IS-native consent APIs above do.
-export function eventNotificationsApiUrl(path: string, tenantDomain?: string): string {
-  return `${env.identityServerBaseUrl}${tenantSegment(tenantDomain)}/api/dpdp/event-notifications/v1${path}`
+export function eventNotificationsApiUrl(
+  path: string,
+  tenantDomain?: string,
+  version: EventNotificationApiVersion = 'v1',
+): string {
+  return `${env.identityServerBaseUrl}${tenantSegment(tenantDomain)}/api/dpdp/event-notifications/${version}${path}`
+}
+
+export function pollingRequestHmacValidationEnabled(): boolean {
+  return requireConfigured(
+    config.eventNotifications?.pollingRequestHmacValidationEnabled,
+    'eventNotifications.pollingRequestHmacValidationEnabled',
+  )
 }
 
 // The accelerator's own consent-history webapp (org.wso2.dpdp.accelerator.consent.mgt.extensions.endpoint,
