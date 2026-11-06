@@ -87,6 +87,8 @@ The examples below use these shell variables:
 ```sh
 IS_BASE_URL="https://is.example.com:9443"
 TENANT_DOMAIN="example.com"
+# Secondary tenants. For the super tenant (carbon.super), set API_BASE to
+# "${IS_BASE_URL}/api/dpdp/event-notifications/v1.1" without the /t/ segment.
 API_BASE="${IS_BASE_URL}/t/${TENANT_DOMAIN}/api/dpdp/event-notifications/v1.1"
 ACCESS_TOKEN="<access-token>"
 PUBLISHER_ACCESS_TOKEN="<event-publisher-access-token>"
