@@ -182,12 +182,13 @@ public class TransactionIntegrationTest {
         new SubscriptionDAOImpl().addSubscription(connection, subscription);
         connection.commit();
 
+        assertEquals(subscription.getPurposes(), java.util.Arrays.asList("profile", "ACCOUNT"));
         try (PreparedStatement ps = connection.prepareStatement(
                 "SELECT PURPOSE_NAME FROM SUBSCRIPTION_PURPOSE WHERE SUBSCRIPTION_ID = ? ORDER BY PURPOSE_NAME")) {
             ps.setString(1, "sub-dup-p");
             try (ResultSet rs = ps.executeQuery()) {
                 assertTrue(rs.next());
-                assertEquals(rs.getString(1), "account");
+                assertEquals(rs.getString(1), "ACCOUNT");
                 assertTrue(rs.next());
                 assertEquals(rs.getString(1), "profile");
                 assertFalse(rs.next());
@@ -338,7 +339,7 @@ public class TransactionIntegrationTest {
         try {
             org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService config =
                     org.mockito.Mockito.mock(org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService.class);
-            org.mockito.Mockito.when(config.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
+            org.mockito.Mockito.when(config.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(true);
             SubscriptionDAOImpl subscriptionDAO = new SubscriptionDAOImpl(config);
             Future<Boolean> first = executor.submit(() -> createMultiTopicWhenReady(start, "sub-a", false,
                     subscriptionDAO, "topic-a", "topic-b"));
@@ -357,7 +358,7 @@ public class TransactionIntegrationTest {
     }
 
     @Test(timeOut = 10000)
-    public void concurrentReversedTopicSetsAllowBothSubscriptionsWhenConstraintChecksDisabled() throws Exception {
+    public void concurrentReversedTopicSetsAllowBothSubscriptionsWhenConflictChecksDisabled() throws Exception {
         TopicDAOImpl topics = new TopicDAOImpl();
         topics.addTopic(connection, new Topic("topic-c", "org-1", "c", "", TopicStatus.ACTIVE.getValue()));
         topics.addTopic(connection, new Topic("topic-d", "org-1", "d", "", TopicStatus.ACTIVE.getValue()));

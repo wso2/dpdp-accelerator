@@ -347,11 +347,11 @@ public final class DPDPConfigParser {
                 DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_MAX_SUBSCRIPTION_TOPICS);
     }
 
-    public boolean isEventNotificationSubscriptionConstraintChecksEnabled() {
+    public boolean isEventNotificationSubscriptionConflictChecksEnabled() {
 
         return getValidatedBoolean(
-                DPDPCommonConstants.EVENT_NOTIFICATIONS_SUBSCRIPTION_CONSTRAINT_CHECKS,
-                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SUBSCRIPTION_CONSTRAINT_CHECKS);
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_SUBSCRIPTION_CONFLICT_CHECKS_ENABLED,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SUBSCRIPTION_CONFLICT_CHECKS_ENABLED);
     }
 
     public boolean isEventNotificationPollingRequestHmacValidationEnabled() {

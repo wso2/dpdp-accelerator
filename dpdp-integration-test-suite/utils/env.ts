@@ -236,8 +236,8 @@ export function webhookBackoffOverride(): { baseBackoffSeconds: number; maxRetri
   return baseBackoffSeconds !== null && maxRetries !== null ? { baseBackoffSeconds, maxRetries } : undefined
 }
 
-export function isSubscriptionConstraintChecksEnabled(): boolean {
-  return config.eventNotifications?.subscriptionConstraintChecks ?? false
+export function isSubscriptionConflictChecksEnabled(): boolean {
+  return config.eventNotifications?.subscriptionConflictChecksEnabled ?? false
 }
 
 export type PersonaName = 'user' | 'user-2' | 'consent-admin' | 'dpo'

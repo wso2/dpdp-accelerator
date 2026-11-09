@@ -279,10 +279,10 @@ request_hmac_validation_enabled = false
 
 ```toml
 [dpdp_accelerator.event_notifications.subscription]
-subscription_constraint_checks = false
+conflict_checks_enabled = false
 ```
 
-- `subscription_constraint_checks` — Controls whether the accelerator enforces subscription conflict constraints (mixed delivery mode and overlapping purpose filter checks). Defaults to `false`. When `false`, multiple subscriptions (e.g., multiple polling consumers or coexisting polling and webhook consumers) can subscribe to the same topic with overlapping filters, while active subscription name uniqueness within an organization is always preserved.
+- `conflict_checks_enabled` — Controls whether the accelerator enforces subscription conflict constraints (mixed delivery mode and overlapping purpose filter checks). Defaults to `false`. When `false`, multiple subscriptions (e.g., multiple polling consumers or coexisting polling and webhook consumers) can subscribe to the same topic with overlapping filters, while active subscription name uniqueness within an organization is always preserved.
 
 ### Configure webhook delivery
 

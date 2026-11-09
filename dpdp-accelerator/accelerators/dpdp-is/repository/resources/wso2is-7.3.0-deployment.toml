@@ -473,7 +473,7 @@ request_hmac_validation_enabled = false
 # Enforces subscription conflict constraints (mixed delivery mode and overlapping purpose filter checks).
 # When false (default), multiple subscriptions can subscribe to the same topic with overlapping filters,
 # while active subscription name uniqueness is always preserved.
-subscription_constraint_checks = false
+conflict_checks_enabled = false
 
 # Webhook delivery: callback URL validation, delivery worker sizing, retry/backoff, and
 # subscription-verification behavior.

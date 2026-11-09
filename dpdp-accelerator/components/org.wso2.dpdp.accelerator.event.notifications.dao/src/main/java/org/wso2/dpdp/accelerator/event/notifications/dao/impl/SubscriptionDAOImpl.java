@@ -19,6 +19,7 @@
 package org.wso2.dpdp.accelerator.event.notifications.dao.impl;
 
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
+import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationServiceImpl;
 import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryMode;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DeliveryStatus;
@@ -48,6 +49,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -68,7 +70,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
 
     private DPDPConfigurationService getConfiguration() {
         if (configurationService == null) {
-            return new org.wso2.dpdp.accelerator.common.config.DPDPConfigurationServiceImpl(false);
+            configurationService = new DPDPConfigurationServiceImpl(false);
         }
         return configurationService;
     }
@@ -97,9 +99,10 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
         subscription.setPurposeFilterMode(newMode.getValue());
         subscription.setDeliveryMode(newDelMode.getValue());
         subscription.setStatus(newStatus.getValue());
-        Set<String> newSet = PurposeOverlapUtils.canonicalize(subscription.getPurposes());
-        subscription.setPurposes(new ArrayList<>(newSet));
-        String purposeSetHash = PurposeOverlapUtils.computePurposeSetHash(newMode, subscription.getPurposes());
+        List<String> deduplicatedPurposes = deduplicatePurposesPreservingCase(subscription.getPurposes());
+        subscription.setPurposes(deduplicatedPurposes);
+        Set<String> newSet = PurposeOverlapUtils.canonicalize(deduplicatedPurposes);
+        String purposeSetHash = PurposeOverlapUtils.computePurposeSetHash(newMode, deduplicatedPurposes);
         subscription.setPurposeSetHash(purposeSetHash);
 
         try {
@@ -153,7 +156,9 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 }
 
             }
-            if (getConfiguration().isEventNotificationSubscriptionConstraintChecksEnabled()) {
+            // Conflict checks here under the topic row lock are mirrored by the fast-fail pre-check in
+            // SubscriptionServiceImpl.createMultiTopicSubscription; keep both gates in sync.
+            if (getConfiguration().isEventNotificationSubscriptionConflictChecksEnabled()) {
                 try (PreparedStatement lockPs = conn.prepareStatement(
                         queries.getLockSubscriptionsForTopicsQuery(topicIds.size()))) {
                     lockPs.setString(1, subscription.getOrgId());
@@ -220,13 +225,13 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                     topicPs.executeBatch();
                 }
 
-                if (newSet != null && !newSet.isEmpty()) {
+                if (!deduplicatedPurposes.isEmpty()) {
                     try (PreparedStatement purposePs = conn
                             .prepareStatement(queries.getAddSubscriptionPurposesQuery())) {
-                        for (String purpose : newSet) {
+                        for (String purpose : deduplicatedPurposes) {
                             purposePs.setString(1, subscription.getSubscriptionId());
                             purposePs.setString(2, subscription.getOrgId());
-                            purposePs.setString(3, purpose.trim());
+                            purposePs.setString(3, purpose);
                             purposePs.addBatch();
                         }
                         purposePs.executeBatch();
@@ -672,6 +677,22 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
             subscription.setTopicIds(ids.get(subscription.getSubscriptionId()));
             subscription.setTopicNames(names.get(subscription.getSubscriptionId()));
         }
+    }
+
+    private List<String> deduplicatePurposesPreservingCase(List<String> purposes) {
+        if (purposes == null || purposes.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Map<String, String> deduplicated = new LinkedHashMap<>();
+        for (String purpose : purposes) {
+            if (purpose != null) {
+                String trimmed = purpose.trim();
+                if (!trimmed.isEmpty()) {
+                    deduplicated.putIfAbsent(trimmed.toLowerCase(Locale.ROOT), trimmed);
+                }
+            }
+        }
+        return new ArrayList<>(deduplicated.values());
     }
 
     private Subscription mapSubscription(ResultSet rs) throws SQLException {
