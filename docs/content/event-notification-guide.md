@@ -85,7 +85,7 @@ A subscription links one or more topics to a purpose filter and a delivery mode:
 - A subscription covers 1 to 100 active topics, fixed at creation.
 - `specific` and `all_except` need at least one purpose. Purpose matching is case-insensitive.
 - A subscription that includes `user.data.change` or `user.account.delete` must use `all`, because user events carry no purpose. Any other filter is rejected with `422`.
-- A tenant can't mix webhook and poll subscriptions on the same topic, and overlapping webhook subscriptions to the same callback URL are rejected (`409`).
+- Active subscription names must be unique within a tenant (`409`). When `[dpdp_accelerator.event_notifications.subscription] conflict_checks_enabled = true` (off by default), a tenant also can't mix webhook and poll subscriptions on the same topic or create overlapping webhook subscriptions to the same callback URL.
 
 ### Register a webhook subscription
 
@@ -370,7 +370,7 @@ In the portal, open **Event Notifications → Events** to see each event's paylo
 |---|---|
 | Event Notification pages aren't visible in the portal | Assign `dpdp-consent-admin` in the current tenant, then sign in again. |
 | `401` or `403` from the API | The token must come from the URL's tenant and carry the operation's scope. Get a new token after changing scopes or roles. |
-| Subscription creation returns `409` | An existing subscription overlaps it: the same callback URL and topics, or the other delivery mode on the same topic. A duplicate name also conflicts. |
+| Subscription creation returns `409` | An active subscription with the same name already exists in the tenant, or (when `conflict_checks_enabled = true`) an existing subscription has a conflicting delivery mode or overlapping purpose filter. |
 | Subscription creation returns `422` | A subscription with a user topic must use the `all` filter. |
 | Subscription stays `pending` or becomes `stale` | The callback must be reachable from Identity Server, on an allowed port, and return the exact challenge with HTTP `200`. Then retry verification. |
 | A system topic gets no events | Check `lifecycle_events.publishing_enabled = true` and `consent_history.enabled = true`; consent expiry also needs `consent_expiry.enabled = true`. User topics need the `dpdpUserLifecycleEventHandler` event handler. |
