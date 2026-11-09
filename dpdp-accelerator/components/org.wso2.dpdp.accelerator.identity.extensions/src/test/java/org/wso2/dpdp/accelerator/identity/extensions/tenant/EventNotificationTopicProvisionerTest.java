@@ -32,6 +32,8 @@ import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
 import org.wso2.dpdp.accelerator.identity.extensions.internal.DPDPIdentityExtensionDataHolder;
 
+import java.util.Collections;
+
 import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
@@ -169,6 +171,6 @@ public class EventNotificationTopicProvisionerTest {
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
-        verify(topicService, never()).reconcileSystemTopicsAcrossTenants(anyCollection());
+        verify(topicService).reconcileSystemTopicsAcrossTenants(Collections.emptyList());
     }
 }

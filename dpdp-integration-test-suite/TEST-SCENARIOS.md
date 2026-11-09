@@ -578,7 +578,7 @@ Two independently provisioned throwaway tenants; `TENANT.ORG_ID` is the isolatio
 | --- | --- | --- |
 | `09.11.01` | Tenants with the same topic name receive separate topic identities and lists | Different topic ids and disjoint lists. |
 | `09.11.02` | Tenant A cannot read, delete, verify, or list history for tenant B resources | 404 - never 403 - on every cross-tenant operation, and tenant B's own view is unaffected. |
-| `09.11.03` | A newly created tenant receives Event Notification authorization and default topics | The five system topics exist as active/system, and the owner can create user topics and subscriptions with no manual API-resource registration. |
+| `09.11.03` | A newly created tenant receives Event Notification authorization and default topics | The six system topics exist as active/system, and the owner can create user topics and subscriptions with no manual API-resource registration. |
 
 ### `09.12-deadlock-repro.spec.ts` · API-only
 

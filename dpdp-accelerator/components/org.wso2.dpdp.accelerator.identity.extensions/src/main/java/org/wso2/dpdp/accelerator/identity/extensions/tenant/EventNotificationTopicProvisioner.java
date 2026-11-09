@@ -30,6 +30,7 @@ import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
 import org.wso2.dpdp.accelerator.identity.extensions.internal.DPDPIdentityExtensionDataHolder;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -104,8 +105,8 @@ public final class EventNotificationTopicProvisioner {
         try {
             tenantDomains = getActiveTenantDomains();
         } catch (Exception e) {
-            LOG.error("Failed to list tenants; skipping startup system topic verification.", e);
-            return;
+            LOG.error("Failed to list tenants; running promotion only, without per-tenant provisioning.", e);
+            tenantDomains = Collections.emptyList();
         }
 
         topicService.reconcileSystemTopicsAcrossTenants(tenantDomains);
