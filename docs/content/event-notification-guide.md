@@ -41,6 +41,7 @@ The accelerator creates these topics for every tenant when `system_topics_auto_c
 
 | Topic | Published when | Carries a purpose? |
 |---|---|---|
+| `consent.create` | A consent is created | Yes |
 | `consent.update` | A consent is updated, or an authorization is approved or rejected | Yes |
 | `consent.revoke` | A consent or its authorization is revoked | Yes |
 | `consent.expire` | The expiry reconciler records a consent as expired | Yes |
@@ -48,6 +49,11 @@ The accelerator creates these topics for every tenant when `system_topics_auto_c
 | `user.account.delete` | A user account is deleted | No |
 
 System topics can't be deregistered. The two user topics also need the `dpdpUserLifecycleEventHandler` event handler, which `configure.sh` adds; see [Configure lifecycle event publishing](install-and-setup/configuring-the-accelerator.md#configure-lifecycle-event-publishing).
+
+When both `system_topics_auto_create_enabled` and `system_topics_verify_on_startup_enabled` are `true` (the default), the server reconciles system topics at startup across every active tenant (plus `carbon.super`), including tenants with no topic rows yet:
+
+- An **active** user-created topic whose name matches a system topic is promoted in-place to a system topic (`initiatedBy = system`), receives automatic lifecycle events, and can no longer be deregistered.
+- A **deregistered** user topic with the same name is left `deregistered`, and a new active system topic is created alongside it.
 
 ### Register a user topic
 
