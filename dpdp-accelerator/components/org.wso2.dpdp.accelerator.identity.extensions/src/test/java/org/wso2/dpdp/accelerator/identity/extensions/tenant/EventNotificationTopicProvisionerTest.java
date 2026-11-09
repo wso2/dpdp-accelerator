@@ -23,11 +23,16 @@ import org.mockito.MockitoAnnotations;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.carbon.user.api.Tenant;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.user.core.service.RealmService;
+import org.wso2.carbon.user.core.tenant.TenantManager;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
 import org.wso2.dpdp.accelerator.identity.extensions.internal.DPDPIdentityExtensionDataHolder;
 
+import static org.mockito.ArgumentMatchers.anyCollection;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.never;
@@ -46,12 +51,34 @@ public class EventNotificationTopicProvisionerTest {
     @Mock
     private DPDPConfigurationService configurationService;
 
+    @Mock
+    private RealmService realmService;
+
+    @Mock
+    private TenantManager tenantManager;
+
     @BeforeMethod
     public void setUp() {
 
         MockitoAnnotations.openMocks(this);
         DPDPIdentityExtensionDataHolder.getInstance().setTopicService(topicService);
         DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(configurationService);
+        DPDPIdentityExtensionDataHolder.getInstance().setRealmService(realmService);
+        try {
+            when(realmService.getTenantManager()).thenReturn(tenantManager);
+            when(tenantManager.getAllTenants()).thenReturn(new Tenant[] {
+                    tenant("active.example", true), tenant("inactive.example", false)});
+        } catch (UserStoreException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static Tenant tenant(String domain, boolean active) {
+
+        Tenant tenant = new Tenant();
+        tenant.setDomain(domain);
+        tenant.setActive(active);
+        return tenant;
     }
 
     @Test
@@ -93,7 +120,8 @@ public class EventNotificationTopicProvisionerTest {
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
-        verify(topicService).reconcileSystemTopicsAcrossTenants();
+        verify(topicService).reconcileSystemTopicsAcrossTenants(
+                java.util.Arrays.asList("carbon.super", "active.example"));
     }
 
     @Test
@@ -104,7 +132,7 @@ public class EventNotificationTopicProvisionerTest {
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
-        verify(topicService, never()).reconcileSystemTopicsAcrossTenants();
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants(anyCollection());
     }
 
     @Test
@@ -115,7 +143,7 @@ public class EventNotificationTopicProvisionerTest {
 
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
 
-        verify(topicService, never()).reconcileSystemTopicsAcrossTenants();
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants(anyCollection());
     }
 
     @Test
@@ -123,12 +151,24 @@ public class EventNotificationTopicProvisionerTest {
 
         DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(null);
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
-        verify(topicService, never()).reconcileSystemTopicsAcrossTenants();
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants(anyCollection());
 
         DPDPIdentityExtensionDataHolder.getInstance().setConfigurationService(configurationService);
         when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
         when(configurationService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()).thenReturn(true);
         DPDPIdentityExtensionDataHolder.getInstance().setTopicService(null);
         EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+    }
+
+    @Test
+    public void testReconcileExistingTenantSystemTopicsSkipsWhenTenantListingFails() throws Exception {
+
+        when(configurationService.isEventNotificationSystemTopicsAutoCreateEnabled()).thenReturn(true);
+        when(configurationService.isEventNotificationSystemTopicsVerifyOnStartupEnabled()).thenReturn(true);
+        when(tenantManager.getAllTenants()).thenThrow(new UserStoreException("tenant store unavailable"));
+
+        EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+
+        verify(topicService, never()).reconcileSystemTopicsAcrossTenants(anyCollection());
     }
 }

@@ -62,8 +62,9 @@ public interface TopicDAO {
     List<Topic> promoteUserTopicsToSystem(Connection conn, List<String> lowerTopicNames);
 
     /**
-     * Returns organization IDs present in {@code TOPIC} that have fewer than {@code lowerTopicNames.size()}
-     * active system topics matching the given lowercased default system topic names.
+     * Returns organization IDs present in {@code TOPIC} that have all {@code lowerTopicNames.size()} given
+     * lowercased default system topic names as active system topics. Organizations with no matching rows are
+     * not returned, so callers must treat any organization absent from the result as incomplete.
      */
-    List<String> getOrgsWithMissingSystemTopics(Connection conn, List<String> lowerTopicNames);
+    List<String> getOrgsWithCompleteSystemTopics(Connection conn, List<String> lowerTopicNames);
 }

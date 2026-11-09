@@ -230,7 +230,7 @@ public class DaoWritePathCoverageTest {
         expectThrows(IllegalArgumentException.class,
                 () -> topics.promoteUserTopicsToSystem(null, Arrays.asList("consent.create")));
         expectThrows(IllegalArgumentException.class,
-                () -> topics.getOrgsWithMissingSystemTopics(null, Arrays.asList("consent.create")));
+                () -> topics.getOrgsWithCompleteSystemTopics(null, Arrays.asList("consent.create")));
 
         SubscriptionDAOImpl subscriptions = new SubscriptionDAOImpl();
         assertTrue(subscriptions.updateSubscriptionStatus(connection, "s", "org", "active"));

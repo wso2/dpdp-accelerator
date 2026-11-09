@@ -105,7 +105,7 @@ Events reach the framework in two ways:
 
 - **Automatic lifecycle publication:** with lifecycle publication enabled (the
   default), the accelerator publishes an event when the corresponding consent
-  or user lifecycle action occurs for one of the five predefined system topics.
+  or user lifecycle action occurs for one of the six predefined system topics.
 - **Explicit API publication:** an authorized publisher calls `POST /events`,
   normally for a user-created topic or another intentional publication.
 
@@ -141,6 +141,7 @@ for that tenant:
 
 | Topic | Description | Automatic publication trigger | Has a purpose? |
 |---|---|---|---|
+| `consent.create` | Consent creation and registration notifications. | A consent is created. | Yes |
 | `consent.update` | Consent update and state transition notifications. | A consent is updated, or an authorization is approved or rejected. | Yes |
 | `consent.revoke` | Consent revocation and withdrawal notifications. | A consent or its authorization is revoked through a lifecycle path that invokes the DPDP consent listener. | Yes |
 | `consent.expire` | Consent expiration notifications. | The expiry reconciler records a due consent as expired. | Yes |
@@ -161,7 +162,7 @@ attempts.
 
 **About the "Has a purpose?" column:** a subscription's purpose filter (see
 [§5](#register-a-webhook-subscription)) only works if the event actually
-carries a purpose. The 3 consent topics do. `user.data.change` and
+carries a purpose. The 4 consent topics do. `user.data.change` and
 `user.account.delete` don't — a user isn't tied to one processing purpose the
 way a consent is. So use the `all` filter when subscribing to those 2 topics;
 `specific`/`all_except` will simply never match anything on them.
@@ -172,8 +173,20 @@ Portal auto-provisioning separately creates its application roles, but role
 membership remains a manual administrator action. Updating the tenant safely
 reconciles any missing system topic without creating duplicates. For
 `carbon.super`, the server startup observer invokes the same provisioning flow
-after startup. The five system topics are therefore also created for the super
+after startup. The six system topics are therefore also created for the super
 tenant when `system_topics_auto_create_enabled` is `true`.
+
+When both `system_topics_auto_create_enabled` and
+`system_topics_verify_on_startup_enabled` are `true`, the server also runs a
+startup reconciliation across every active tenant in the tenant manager (plus
+`carbon.super`), including tenants that currently have no topic rows:
+
+- Any **active** user-created topic whose name matches a system topic is
+  promoted in-place to a system topic (`initiatedBy = system`). After
+  promotion, the accelerator publishes its own lifecycle events to that topic,
+  and the tenant can no longer deregister it.
+- A **deregistered** user topic with the same name is left untouched in its
+  `deregistered` state, and a new active system topic is created alongside it.
 
 #### Enabling `user.data.change` / `user.account.delete`
 

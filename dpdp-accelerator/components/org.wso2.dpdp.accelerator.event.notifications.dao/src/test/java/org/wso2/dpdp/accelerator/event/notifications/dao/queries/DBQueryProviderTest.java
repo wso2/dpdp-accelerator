@@ -35,7 +35,7 @@ public class DBQueryProviderTest {
         EventNotificationCommonDBQueries common = new EventNotificationCommonDBQueries();
         Assert.assertTrue(common.getFindUserTopicsMatchingDefaultNamesQuery(2).contains("FROM TOPIC"));
         Assert.assertTrue(common.getPromoteUserTopicsToSystemQuery(2).contains("INITIATED_BY = 'system'"));
-        Assert.assertTrue(common.getFindOrgsWithMissingSystemTopicsQuery(2).contains("GROUP BY ORG_ID"));
+        Assert.assertTrue(common.getFindOrgsWithCompleteSystemTopicsQuery(2).contains("GROUP BY ORG_ID"));
     }
 
     @Test

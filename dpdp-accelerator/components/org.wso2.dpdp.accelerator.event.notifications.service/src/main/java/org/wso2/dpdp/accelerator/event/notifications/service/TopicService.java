@@ -21,12 +21,19 @@ package org.wso2.dpdp.accelerator.event.notifications.service;
 import org.wso2.dpdp.accelerator.event.notifications.service.dto.TopicDTO;
 import org.wso2.dpdp.accelerator.event.notifications.service.model.PaginatedResult;
 
+import java.util.Collection;
+
 public interface TopicService {
     TopicDTO createTopic(String orgId, String name, String description);
 
     TopicDTO ensureSystemTopic(String orgId, String name, String description);
 
-    void reconcileSystemTopicsAcrossTenants();
+    /**
+     * Promotes user-created topics that share a system topic's name, then ensures every given organization has
+     * all default system topics. Organizations are supplied by the caller (not discovered from {@code TOPIC}) so
+     * that tenants with no topic rows are reconciled too.
+     */
+    void reconcileSystemTopicsAcrossTenants(Collection<String> orgIds);
 
     PaginatedResult<TopicDTO> listTopics(String orgId, String status, String search, int limit, int offset,
             String sort);

@@ -111,12 +111,12 @@ public class EventNotificationCommonDBQueries {
                 + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?")) + ")";
     }
 
-    public String getFindOrgsWithMissingSystemTopicsQuery(int count) {
+    public String getFindOrgsWithCompleteSystemTopicsQuery(int count) {
         return "SELECT ORG_ID FROM TOPIC GROUP BY ORG_ID "
                 + "HAVING COUNT(DISTINCT CASE WHEN LOWER(STATUS) = " + SQL_TOPIC_ACTIVE
                 + " AND LOWER(INITIATED_BY) = " + SQL_INITIATOR_SYSTEM
                 + " AND LOWER(NAME) IN (" + String.join(",", Collections.nCopies(count, "?"))
-                + ") THEN LOWER(NAME) END) < ?";
+                + ") THEN LOWER(NAME) END) >= ?";
     }
 
     // SUBSCRIPTION Queries

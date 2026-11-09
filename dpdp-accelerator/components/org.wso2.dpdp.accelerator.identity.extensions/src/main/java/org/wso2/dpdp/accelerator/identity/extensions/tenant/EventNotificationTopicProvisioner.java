@@ -21,6 +21,9 @@ package org.wso2.dpdp.accelerator.identity.extensions.tenant;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.stratos.common.exception.StratosException;
+import org.wso2.carbon.user.api.Tenant;
+import org.wso2.carbon.user.api.UserStoreException;
+import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.service.TopicService;
@@ -76,8 +79,8 @@ public final class EventNotificationTopicProvisioner {
     }
 
     /**
-     * Reconciles default system topics across all existing organizations present in {@code WSO2DPDP_DB.TOPIC}
-     * at server startup when both {@code system_topics_auto_create_enabled} and {@code system_topics_verify_on_startup_enabled}
+     * Reconciles default system topics across every active tenant known to the tenant manager (plus the super
+     * tenant) at server startup, including tenants with no rows in {@code WSO2DPDP_DB.TOPIC}, when both {@code system_topics_auto_create_enabled} and {@code system_topics_verify_on_startup_enabled}
      * are enabled.
      */
     public static void reconcileExistingTenantSystemTopics() {
@@ -97,7 +100,32 @@ public final class EventNotificationTopicProvisioner {
             return;
         }
 
-        topicService.reconcileSystemTopicsAcrossTenants();
+        List<String> tenantDomains;
+        try {
+            tenantDomains = getActiveTenantDomains();
+        } catch (Exception e) {
+            LOG.error("Failed to list tenants; skipping startup system topic verification.", e);
+            return;
+        }
+
+        topicService.reconcileSystemTopicsAcrossTenants(tenantDomains);
+    }
+
+    private static List<String> getActiveTenantDomains() throws UserStoreException {
+
+        List<String> tenantDomains = new ArrayList<>();
+        tenantDomains.add(MultitenantConstants.SUPER_TENANT_DOMAIN_NAME);
+        Tenant[] tenants = DPDPIdentityExtensionDataHolder.getInstance().getRealmService()
+                .getTenantManager().getAllTenants();
+        if (tenants != null) {
+            for (Tenant tenant : tenants) {
+                if (tenant != null && tenant.isActive() && tenant.getDomain() != null
+                        && !MultitenantConstants.SUPER_TENANT_DOMAIN_NAME.equals(tenant.getDomain())) {
+                    tenantDomains.add(tenant.getDomain());
+                }
+            }
+        }
+        return tenantDomains;
     }
 
     private static String sanitize(String value) {

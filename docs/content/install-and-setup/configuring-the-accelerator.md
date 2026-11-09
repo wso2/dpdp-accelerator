@@ -205,16 +205,24 @@ for a complete walkthrough of creating topics and subscriptions.
 ```toml
 [dpdp_accelerator.event_notifications]
 system_topics_auto_create_enabled = true
+system_topics_verify_on_startup_enabled = true
 
 [dpdp_accelerator.event_notifications.payload_signing]
 enabled = true
 audience = "dpdp-event-notifications"
 ```
 
-- `system_topics_auto_create_enabled` — Automatically creates the five
+- `system_topics_auto_create_enabled` — Automatically creates the six
   standard topics for each tenant. See
   [Configure lifecycle event publishing](#configure-lifecycle-event-publishing)
   for the list of topics.
+- `system_topics_verify_on_startup_enabled` — Reconciles system topics across
+  existing active tenants at server startup (requires
+  `system_topics_auto_create_enabled = true`). Promotes any active user-created
+  topic that has a system topic's name into a system topic (so the accelerator
+  publishes lifecycle events to it and it can no longer be deregistered), leaves
+  deregistered user topics with the same name deregistered, and creates any
+  missing system topics alongside them.
 - `payload_signing.enabled` — Signs each event so the receiving system can
   verify that it was sent by the accelerator. Keep this enabled.
 - `payload_signing.audience` — The audience value included in the event
@@ -228,13 +236,14 @@ audience = "dpdp-event-notifications"
 publishing_enabled = true
 ```
 
-`publishing_enabled` Enables automatic publishing to the five standard
+`publishing_enabled` Enables automatic publishing to the six standard
 topics when a matching event occurs. Set this to `false` if you want to
 publish events yourself or disable automatic publishing. The topics remain
 available even when publishing is disabled.
 
 | Topic | Published when... |
 |---|---|
+| `consent.create` | A consent is created. |
 | `consent.update` | A consent's state changes (e.g. approved, a decision recorded). |
 | `consent.revoke` | A consent is revoked or withdrawn. |
 | `consent.expire` | A consent expires (see [consent expiry](#configure-periodical-consent-expiration)). |

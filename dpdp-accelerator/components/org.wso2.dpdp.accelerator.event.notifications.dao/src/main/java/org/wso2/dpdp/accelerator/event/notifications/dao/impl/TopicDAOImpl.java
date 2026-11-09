@@ -362,7 +362,7 @@ public class TopicDAOImpl implements TopicDAO {
     }
 
     @Override
-    public List<String> getOrgsWithMissingSystemTopics(Connection conn, List<String> lowerTopicNames) {
+    public List<String> getOrgsWithCompleteSystemTopics(Connection conn, List<String> lowerTopicNames) {
         if (conn == null) {
             throw new IllegalArgumentException("Connection cannot be null.");
         }
@@ -371,7 +371,7 @@ public class TopicDAOImpl implements TopicDAO {
             return orgIds;
         }
         try (PreparedStatement ps = conn.prepareStatement(
-                getQueries(conn).getFindOrgsWithMissingSystemTopicsQuery(lowerTopicNames.size()))) {
+                getQueries(conn).getFindOrgsWithCompleteSystemTopicsQuery(lowerTopicNames.size()))) {
             for (int i = 0; i < lowerTopicNames.size(); i++) {
                 ps.setString(i + 1, lowerTopicNames.get(i));
             }
@@ -383,7 +383,7 @@ public class TopicDAOImpl implements TopicDAO {
             }
         } catch (SQLException e) {
             throw new EventNotificationDaoException(
-                    EventNotificationCommonConstants.ERROR_FINDING_ORGS_WITH_MISSING_SYSTEM_TOPICS, e);
+                    EventNotificationCommonConstants.ERROR_FINDING_ORGS_WITH_COMPLETE_SYSTEM_TOPICS, e);
         }
         return orgIds;
     }

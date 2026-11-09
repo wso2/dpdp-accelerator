@@ -602,6 +602,7 @@ V1.1 specific features: split delivery reads, event polling with HMAC verificati
 | `09.13.03` | Manual retry on a poll delivery is rejected with 409 Conflict | `POST /deliveries/{id}/retry` returns 409 Conflict with `EN-4003`. |
 | `09.13.04` | Access control on /v1.1/deliveries/* requires notifications:subscriptions:read | Token with only `notifications:events:read` receives 403 Forbidden; token with `notifications:subscriptions:read` succeeds. |
 | `09.13.05` | Webhook completion records evidence, rejects invalid signatures and duplicate completions | **Skipped unless webhook receiver is configured.** Records completion evidence on `POST /deliveries/{id}/completion`, rejects invalid signatures, and rejects duplicate completions with 409 Conflict. |
+| `09.13.06` | Creating a consent publishes a consent.create event with the resolved status | Subscribes to `consent.create` in poll mode, creates a direct consent (`ACTIVE`) and an authorization-backed consent (`PENDING`) via `seedConsentViaApi`, and polls to verify both events arrive with the expected `consentId` and `currentStatus`. |
 
 
 

@@ -20,6 +20,7 @@ import crypto from 'node:crypto'
 import { test, expect, mintPersonaTokenWithScopes } from '../../fixtures/auth.fixtures'
 import { EventNotificationApiClient } from '../../clients/EventNotificationApiClient'
 import { pollingRequestHmacValidationEnabled } from '../../utils/env'
+import { seedConsentViaApi } from '../../utils/consentSetup'
 import {
   findDeliveryForEvent,
   publishMarkedEventViaApi,
@@ -308,6 +309,93 @@ test.describe('Event Notifications V1.1 API features', () => {
       expect(duplicateResponse.status()).toBe(409)
     } finally {
       await receiver.stop()
+    }
+  })
+
+  test('09.13.06 - Creating a consent publishes a consent.create event with the resolved status', async ({
+    browser,
+    consentAdminConsentApi,
+    consentAdminEventApi,
+    request,
+    target,
+  }) => {
+    // Clean up any lingering subscription from earlier runs that covers consent.create
+    const existingList = await consentAdminEventApi.listSubscriptions({ limit: 100 })
+    if (existingList.ok()) {
+      const { items } = (await existingList.json()) as {
+        items?: { subscriptionId: string; topic?: string; topics?: string[] }[]
+      }
+      for (const item of items ?? []) {
+        if (item.topics?.includes('consent.create') || item.topic === 'consent.create') {
+          await consentAdminEventApi.deleteSubscription(item.subscriptionId)
+        }
+      }
+    }
+
+    const sharedSecret = uniqueMarker('secret')
+    const subResponse = await consentAdminEventApi.createSubscription({
+      name: uniqueMarker('sub-consent-create'),
+      topic: 'consent.create',
+      filter: { type: 'all' },
+      delivery: { mode: 'poll', sharedSecret },
+    })
+    expect(subResponse.status(), await subResponse.text()).toBe(201)
+    const subscription = (await subResponse.json()) as { subscriptionId: string }
+
+    try {
+      const activeConsent = await seedConsentViaApi(
+        consentAdminConsentApi,
+        target.personas.user.username,
+        'ACTIVE',
+      )
+      const pendingConsent = await seedConsentViaApi(
+        consentAdminConsentApi,
+        target.personas.user.username,
+        'PENDING',
+      )
+
+      const pollAuth = await mintPersonaTokenWithScopes(browser, 'consent-admin', [
+        'openid',
+        'notifications:events:poll',
+      ])
+      const pollClient = new EventNotificationApiClient(request, pollAuth, target.tenantDomain, 'v1.1')
+      const pollBody = JSON.stringify({ returnImmediately: true, maxEvents: 10 })
+      const validSignature = computeHmacSignature(sharedSecret, pollBody)
+
+      const matchedStatuses = new Map<string, string>()
+      await expect
+        .poll(
+          async () => {
+            const pollResponse = await pollClient.pollEvents(
+              subscription.subscriptionId,
+              validSignature,
+              pollBody,
+            )
+            if (!pollResponse.ok()) {
+              return false
+            }
+            const pollData = (await pollResponse.json()) as { sets: Record<string, string> }
+            for (const jws of Object.values(pollData.sets ?? {})) {
+              const claims = decodeJwsClaims(jws)
+              const envelope = claims.payload as
+                | { eventPayload?: { consentId?: string; currentStatus?: string } }
+                | undefined
+              const consentId = envelope?.eventPayload?.consentId
+              const currentStatus = envelope?.eventPayload?.currentStatus
+              if (consentId && currentStatus) {
+                matchedStatuses.set(consentId, currentStatus)
+              }
+            }
+            return (
+              matchedStatuses.get(activeConsent.consentId) === 'ACTIVE' &&
+              matchedStatuses.get(pendingConsent.consentId) === 'PENDING'
+            )
+          },
+          { timeout: 30_000 },
+        )
+        .toBe(true)
+    } finally {
+      await consentAdminEventApi.deleteSubscription(subscription.subscriptionId)
     }
   })
 })
