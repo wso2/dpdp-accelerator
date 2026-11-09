@@ -233,7 +233,7 @@ Test IDs are derived from location — `<area>.<file>.<test>`, so `04.06.04` is 
 | `06-multi-tenancy/` | 1 | Cross-tenant Purpose data isolation - "multi-tenant" project only |
 | `07-account/` | 5 | Self-service account deletion, and who is offered it. Destructive, so each test uses its own throwaway user |
 | `08-complaints/` | 44 | Grievance redressal: the Data Principal's list and the officer's queue — submit, view, search, reply, resolve, authorization |
-| `09-event-notifications/` | 58 | Topics, subscriptions, event publishing and fan-out, webhook delivery, authorization and tenant isolation |
+| `09-event-notifications/` | 59 | Topics, subscriptions, event publishing and fan-out, webhook delivery, authorization and tenant isolation |
 | `10-dashboard/` | 9 | Dashboard counts and links: per-state and per-relation consent counts and complaint counts for throwaway users, the admin view's shape |
 
 A filename ending `-api.spec.ts` drives no browser at all.
