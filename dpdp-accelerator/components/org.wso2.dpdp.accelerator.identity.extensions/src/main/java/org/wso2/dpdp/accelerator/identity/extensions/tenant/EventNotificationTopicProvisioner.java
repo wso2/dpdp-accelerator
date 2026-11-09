@@ -81,8 +81,8 @@ public final class EventNotificationTopicProvisioner {
 
     /**
      * Reconciles default system topics across every active tenant known to the tenant manager (plus the super
-     * tenant) at server startup, including tenants with no rows in {@code WSO2DPDP_DB.TOPIC}, when both {@code system_topics_auto_create_enabled} and {@code system_topics_verify_on_startup_enabled}
-     * are enabled.
+     * tenant) at server startup, including tenants with no rows in {@code WSO2DPDP_DB.TOPIC}, when both
+     * {@code system_topics_auto_create_enabled} and {@code system_topics_verify_on_startup_enabled} are enabled.
      */
     public static void reconcileExistingTenantSystemTopics() {
 
