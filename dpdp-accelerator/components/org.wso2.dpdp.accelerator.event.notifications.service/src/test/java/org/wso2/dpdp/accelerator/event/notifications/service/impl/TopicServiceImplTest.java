@@ -293,7 +293,8 @@ public class TopicServiceImplTest {
         when(topicDAO.getOrgsWithMissingSystemTopics(any(Connection.class), any()))
                 .thenReturn(Collections.singletonList("org1"));
         when(topicDAO.getTopicByOrgAndName(any(Connection.class), eq("org1"), eq("consent.create")))
-                .thenThrow(new RuntimeException("db failure"));
+                .thenThrow(new org.wso2.dpdp.accelerator.event.notifications.common.exception.dao
+                        .EventNotificationDaoException("db failure"));
         when(topicDAO.getTopicByOrgAndName(any(Connection.class), eq("org1"), eq("consent.update")))
                 .thenReturn(Optional.empty());
         when(topicDAO.addTopic(any(Connection.class), any(Topic.class))).thenReturn(true);

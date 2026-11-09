@@ -21,9 +21,11 @@ package org.wso2.dpdp.accelerator.event.notifications.service.impl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.dpdp.accelerator.common.util.DatabaseUtils;
+import org.wso2.dpdp.accelerator.common.util.LogSanitizer;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.Initiator;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
+import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDaoException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationInvalidStateException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException;
@@ -102,6 +104,14 @@ public class TopicServiceImpl implements TopicService {
 
     @Override
     public TopicDTO ensureSystemTopic(String orgId, String name, String description) {
+        return provisionSystemTopic(orgId, name, description).topic;
+    }
+
+    /**
+     * Ensures the system topic exists in a single lookup/insert transaction and reports whether this call
+     * created it.
+     */
+    private SystemTopicResult provisionSystemTopic(String orgId, String name, String description) {
         validateTopicCreationParameters(orgId, name);
         String normalizedOrgId = orgId.trim();
         String normalizedName = name.trim();
@@ -110,7 +120,7 @@ public class TopicServiceImpl implements TopicService {
             return DatabaseUtils.executeInTransaction(conn -> {
                 Optional<Topic> existing = topicDAO.getTopicByOrgAndName(conn, normalizedOrgId, normalizedName);
                 if (existing.isPresent()) {
-                    return mapExistingSystemTopic(existing.get(), normalizedName);
+                    return new SystemTopicResult(mapExistingSystemTopic(existing.get(), normalizedName), false);
                 }
 
                 String topicId = UUID.randomUUID().toString();
@@ -125,11 +135,23 @@ public class TopicServiceImpl implements TopicService {
                             EventNotificationServiceConstants.FAILED_TO_CREATE_TOPIC_ERROR_MSG,
                             500);
                 }
-                return new TopicDTO(topicId, topic.getName(), topic.getDescription(), TopicStatus.ACTIVE.getValue(),
-                        Initiator.SYSTEM.getValue());
+                return new SystemTopicResult(new TopicDTO(topicId, topic.getName(), topic.getDescription(),
+                        TopicStatus.ACTIVE.getValue(), Initiator.SYSTEM.getValue()), true);
             });
         } catch (EventNotificationDuplicateResourceException e) {
-            return recoverConcurrentlyCreatedSystemTopic(normalizedOrgId, normalizedName);
+            return new SystemTopicResult(recoverConcurrentlyCreatedSystemTopic(normalizedOrgId, normalizedName),
+                    false);
+        }
+    }
+
+    private static final class SystemTopicResult {
+
+        private final TopicDTO topic;
+        private final boolean created;
+
+        private SystemTopicResult(TopicDTO topic, boolean created) {
+            this.topic = topic;
+            this.created = created;
         }
     }
 
@@ -141,19 +163,29 @@ public class TopicServiceImpl implements TopicService {
         }
 
         List<Topic> promotedTopics = new ArrayList<>();
-        List<String> incompleteOrgs = DatabaseUtils.executeInTransaction(conn -> {
-            List<Topic> promoted = topicDAO.promoteUserTopicsToSystem(conn, lowerDefaultTopicNames);
-            if (promoted != null) {
-                promotedTopics.addAll(promoted);
-            }
-            return topicDAO.getOrgsWithMissingSystemTopics(conn, lowerDefaultTopicNames);
-        });
+        List<String> incompleteOrgs;
+        try {
+            incompleteOrgs = DatabaseUtils.executeInTransaction(conn -> {
+                List<Topic> promoted = topicDAO.promoteUserTopicsToSystem(conn, lowerDefaultTopicNames);
+                if (promoted != null) {
+                    promotedTopics.addAll(promoted);
+                }
+                return topicDAO.getOrgsWithMissingSystemTopics(conn, lowerDefaultTopicNames);
+            });
+        } catch (EventNotificationDaoException e) {
+            LOG.error("Failed to promote and look up system topics across organizations.", e);
+            throw new EventNotificationServiceException(
+                    EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.FAILED_TO_CREATE_TOPIC_ERROR_MSG,
+                    500);
+        }
 
         int promotedCount = promotedTopics.size();
         for (Topic promoted : promotedTopics) {
             LOG.info("Promoted user-created default topic '" + promoted.getName()
                     + "' (ID: " + promoted.getTopicId()
-                    + ") for organization '" + sanitizeLog(promoted.getOrgId())
+                    + ") for organization '" + LogSanitizer.sanitize(promoted.getOrgId())
                     + "' to system topic.");
         }
 
@@ -166,20 +198,18 @@ public class TopicServiceImpl implements TopicService {
                     continue;
                 }
                 incompleteOrgsCount++;
-                String sanitizedOrgId = sanitizeLog(orgId.trim());
+                String sanitizedOrgId = LogSanitizer.sanitize(orgId.trim());
                 for (DefaultTopic defaultTopic : DefaultTopic.values()) {
                     try {
-                        boolean alreadyExists = DatabaseUtils.executeInTransaction(conn ->
-                                topicDAO.getTopicByOrgAndName(conn, orgId.trim(), defaultTopic.getName()).isPresent());
-                        if (!alreadyExists) {
-                            TopicDTO provisioned = ensureSystemTopic(orgId, defaultTopic.getName(),
-                                    defaultTopic.getDescription());
+                        SystemTopicResult result = provisionSystemTopic(orgId, defaultTopic.getName(),
+                                defaultTopic.getDescription());
+                        if (result.created) {
                             newlyProvisionedCount++;
                             LOG.info("Provisioned missing system topic '" + defaultTopic.getName()
-                                    + "' (ID: " + provisioned.getTopicId()
+                                    + "' (ID: " + result.topic.getTopicId()
                                     + ") for organization '" + sanitizedOrgId + "'.");
                         }
-                    } catch (Exception e) {
+                    } catch (EventNotificationServiceException | EventNotificationDaoException e) {
                         failedCount++;
                         LOG.error("Failed to verify and provision system topic '" + defaultTopic.getName()
                                 + "' for organization: " + sanitizedOrgId, e);
@@ -189,23 +219,18 @@ public class TopicServiceImpl implements TopicService {
         }
 
         if (failedCount > 0) {
-            LOG.warn("System topic startup verification completed with errors: " + promotedCount
+            LOG.error("System topic startup verification completed with errors: " + promotedCount
                     + " topic(s) promoted to system, " + newlyProvisionedCount
                     + " missing topic(s) provisioned, " + failedCount
                     + " topic(s) failed across " + incompleteOrgsCount + " organization(s).");
         } else if (promotedCount == 0 && newlyProvisionedCount == 0) {
-            LOG.info("System topic startup verification completed: "
+            LOG.debug("System topic startup verification completed: "
                     + "all existing organizations have up-to-date system topics.");
         } else {
             LOG.info("System topic startup verification and provisioning completed: " + promotedCount
                     + " topic(s) promoted to system, " + newlyProvisionedCount
                     + " missing topic(s) provisioned across " + incompleteOrgsCount + " organization(s).");
         }
-    }
-
-    private String sanitizeLog(String value) {
-
-        return value == null ? null : value.replaceAll("[\r\n]", "");
     }
 
     private TopicDTO recoverConcurrentlyCreatedSystemTopic(String orgId, String topicName) {

@@ -77,7 +77,8 @@ public final class EventNotificationTopicProvisioner {
 
     /**
      * Reconciles default system topics across all existing organizations present in {@code WSO2DPDP_DB.TOPIC}
-     * at server startup when both {@code auto_create_enabled} and {@code reconcile_on_startup_enabled} are enabled.
+     * at server startup when both {@code system_topics_auto_create_enabled} and {@code system_topics_verify_on_startup_enabled}
+     * are enabled.
      */
     public static void reconcileExistingTenantSystemTopics() {
 
@@ -92,7 +93,7 @@ public final class EventNotificationTopicProvisioner {
 
         TopicService topicService = DPDPIdentityExtensionDataHolder.getInstance().getTopicService();
         if (topicService == null) {
-            LOG.warn("TopicService is unavailable; skipping startup system topic verification.");
+            LOG.debug("TopicService is unavailable; skipping startup system topic verification.");
             return;
         }
 
