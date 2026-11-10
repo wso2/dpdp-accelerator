@@ -6,8 +6,8 @@ Explore the consent lifecycle using **CarePulse** (Data Fiduciary): define what 
 
 - Ensure WSO2 Identity Server with the DPDP Accelerator is installed and running.
 - Create these users and assign their roles, as described in [Configuring Users and Roles](../install-and-setup/configuring-users-and-roles.md):
-  - **Priya** (Data Principal): `dpdp-consent-user`
-  - **Raj** (additional authorizer): `dpdp-consent-user`
+  - **Priya** (Data Principal), username `priya@example.com`: `dpdp-consent-user`
+  - **Raj** (additional authorizer), username `raj@example.com`: `dpdp-consent-user`
   - **Anika** (Data Fiduciary Administrator): `dpdp-consent-admin`
 - [Create one application](../learn/managing-access.md#step-1-create-an-application) for **CarePulse** and [authorize it](../learn/managing-access.md#step-2-authorize-the-required-scopes) for the **Consent Management V2 – Consents** and **DPDP Consent History** APIs.
 
@@ -19,6 +19,10 @@ export ACCESS_TOKEN="<carepulse-client-credentials-token>"
 ```
 
 The base URL is for the super tenant. For a specific tenant, use `https://localhost:9443/t/<tenant-domain>`.
+
+:::note Local testing with a self-signed certificate
+Add `-k` to the `curl` commands if your local Identity Server uses the default self-signed certificate. Never use `-k` in production — configure a trusted CA certificate, or pass it with `--cacert`.
+:::
 
 ## Define a purpose and its data element
 
