@@ -76,14 +76,13 @@ The **Data Fiduciary** is responsible for ensuring that its **Data Processors** 
 
 ### How events are delivered
 
-The accelerator supports two delivery methods.
+The accelerator supports two delivery methods. Each subscription uses one of them.
 
-- **Webhooks:** Event Notifications pushes events to the subscriber's configured endpoint. For example, **CloudEngage** (Data Processor) can receive a `consent.revoke` event and update **Priya** (Data Principal)'s marketing preferences. To receive webhook notifications, the Data Processor must run a listener service that accepts incoming requests from the accelerator.
-- **Polling:** The subscriber periodically requests available events from the accelerator. For example, **MedExpress** (Data Processor) can retrieve relevant updates when polling for events.
+- **Webhooks:** Event Notifications pushes events to an endpoint that the Data Processor hosts. For example, **CloudEngage** (Data Processor) can receive a `consent.revoke` event and update **Priya** (Data Principal)'s marketing preferences.
 
-The expected request and response format is defined in [`webhook-listener.openapi.yaml`](pathname:///examples/webhook-listener.openapi.yaml). You can use the sample implementations in [Node.js](pathname:///examples/webhook-listener.mjs) and [Python](pathname:///examples/webhook-listener.py) as starting points for your own listener.
+  To receive webhook notifications, the Data Processor must run its own **webhook listener**: a service on its side that accepts requests from the accelerator. The requests the accelerator sends to this listener, and the responses it expects back, are defined in [`webhook-listener.openapi.yaml`](pathname:///examples/webhook-listener.openapi.yaml). You can use the sample listeners in [Node.js](pathname:///examples/webhook-listener.mjs) and [Python](pathname:///examples/webhook-listener.py) as starting points.
 
-The delivery method depends on the subscription configuration.
+- **Polling:** The Data Processor periodically calls the accelerator to fetch available events, so it doesn't need to host a listener. For example, **MedExpress** (Data Processor) can retrieve relevant updates when polling for events.
 
 A successful delivery confirms receipt, not completion. Data Processors can also report when they've finished handling an event through **event completion reporting**, which we'll cover later in this guide.
 

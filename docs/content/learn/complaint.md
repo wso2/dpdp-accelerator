@@ -1,12 +1,8 @@
 # Understanding Complaints
 
-Even when an organization has systems in place to manage consent, things can still go wrong. A consent withdrawal might not be reflected in a connected system, a person might continue receiving unwanted communications, or someone might have concerns about how their personal data is being used.
+Even with consent management systems in place, issues can arise, such as unreflected consent withdrawals or concerns about personal data use. Data Principals need a clear way to raise grievances and track their resolution.
 
-When this happens, people need a clear way to raise their concerns, understand what is being done about them, and track the outcome.
-
-The WSO2 DPDP Accelerator provides a grievance handling system that connects Data Principals with the organization's Data Protection Officer (DPO). It supports complaint submission, communication, investigation, and resolution while maintaining a record of complaint activity.
-
-This guide uses a practical example to explain how complaints are handled and how Data Principals and the DPO participate in the process.
+The WSO2 DPDP Accelerator provides a grievance handling system that connects Data Principals with the organization's Data Protection Officer (DPO) to submit, investigate, and resolve complaints while maintaining an audit trail.
 
 ## Meet the people in this example
 

@@ -285,7 +285,7 @@ Before processing the data, the consuming application should check that:
 
 These checks help ensure that the application respects the person's recorded choices and does not rely on an earlier approval without verifying the consent's current state and scope.
 
-**Try it:** [Review, authorize, revoke, and audit a consent](../try-out/consent.md#review-authorize-revoke-and-audit-a-consent) — see the equivalent `GET` call under "Act on your own consent".
+**Try it:** [Review the consent as Priya](../try-out/consent.md#step-2-review-the-consent-as-priya-data-principal).
 
 ## Next Steps
 
