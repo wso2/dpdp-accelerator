@@ -35,7 +35,7 @@ export async function selectMuiOption(
 
   await expect(async () => {
     if (!(await option.isVisible())) {
-      await trigger.click()
+      await trigger.click({ timeout: 2_000 })
     }
     await option.click({ timeout: 2_000 })
   }).toPass({ intervals: [250, 500, 1_000], timeout: 10_000 })
