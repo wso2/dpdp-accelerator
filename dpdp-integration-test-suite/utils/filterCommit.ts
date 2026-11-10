@@ -38,6 +38,22 @@ import { expect, type Locator, type Page } from '@playwright/test'
  * leaves the input holding exactly this value anyway. Always route a fill-then-submit filter
  * interaction through this.
  */
+/**
+ * Waits until the page URL's `param` query parameter equals `expectedValue` (treating an omitted
+ * parameter as `''`), providing a deterministic commit checkpoint after a filter change.
+ */
+export async function waitForFilterQueryParam(
+  page: Page,
+  param: string,
+  expectedValue: string,
+  timeoutMs = 3_000,
+): Promise<void> {
+  await page.waitForURL(
+    (url) => (new URL(url.toString()).searchParams.get(param) ?? '') === expectedValue,
+    { timeout: timeoutMs },
+  )
+}
+
 export async function submitFilterValue(
   page: Page,
   input: Locator,
@@ -52,9 +68,6 @@ export async function submitFilterValue(
     expect(await input.inputValue(), 'a remount reset the filter input before it was submitted')
       .toBe(value)
     await submit()
-    await page.waitForURL(
-      (url) => (new URL(url.toString()).searchParams.get(param) ?? '') === expected,
-      { timeout: 3_000 },
-    )
+    await waitForFilterQueryParam(page, param, expected)
   }).toPass({ intervals: [250, 500, 1_000], timeout: 20_000 })
 }

@@ -18,8 +18,14 @@
 
 import { type Locator, type Page } from '@playwright/test'
 import { selectMuiOption } from '../utils/muiSelect'
-import { submitFilterValue } from '../utils/filterCommit'
+import { submitFilterValue, waitForFilterQueryParam } from '../utils/filterCommit'
 import { ConsentRegistryTable } from './ConsentRegistryTable'
+
+const RELATION_QUERY_VALUES: Record<'All' | 'Personal' | 'Managed', string> = {
+  All: '',
+  Personal: 'SUBJECT',
+  Managed: 'AUTHORIZER',
+}
 
 /** A user's own consent list at /consents, labelled "My Consents" in the sidebar. */
 export class MyConsentPage extends ConsentRegistryTable {
@@ -62,6 +68,7 @@ export class MyConsentPage extends ConsentRegistryTable {
 
   async filterByRelation(relationLabel: 'All' | 'Personal' | 'Managed'): Promise<void> {
     await selectMuiOption(this.page, 'consent-relation', relationLabel)
+    await waitForFilterQueryParam(this.page, 'relation', RELATION_QUERY_VALUES[relationLabel])
   }
 
   async clearFilters(): Promise<void> {
