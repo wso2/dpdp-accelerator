@@ -347,6 +347,13 @@ public final class DPDPConfigParser {
                 DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_MAX_SUBSCRIPTION_TOPICS);
     }
 
+    public boolean isEventNotificationSubscriptionConstraintChecksEnabled() {
+
+        return getValidatedBoolean(
+                DPDPCommonConstants.EVENT_NOTIFICATIONS_SUBSCRIPTION_CONSTRAINT_CHECKS_ENABLED,
+                DPDPCommonConstants.DEFAULT_EVENT_NOTIFICATIONS_SUBSCRIPTION_CONSTRAINT_CHECKS_ENABLED);
+    }
+
     public boolean isEventNotificationPollingRequestHmacValidationEnabled() {
 
         return getValidatedBoolean(

@@ -43,6 +43,7 @@
     "schedulerPollTimeoutMs": null
   },
   "eventNotifications": {
-    "pollingRequestHmacValidationEnabled": false
+    "pollingRequestHmacValidationEnabled": false,
+    "subscriptionConstraintChecksEnabled": false
   }
 }

@@ -87,6 +87,7 @@ export interface E2EConfig {
   }
   eventNotifications: {
     pollingRequestHmacValidationEnabled: boolean
+    subscriptionConstraintChecksEnabled: boolean
   }
 }
 

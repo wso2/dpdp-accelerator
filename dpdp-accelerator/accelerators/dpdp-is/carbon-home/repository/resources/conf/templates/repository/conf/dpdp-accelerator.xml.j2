@@ -208,6 +208,13 @@
             <RequestHmacValidationEnabled>false</RequestHmacValidationEnabled>
             {% endif %}
         </Polling>
+        <Subscription>
+            {% if dpdp_accelerator.event_notifications.subscription.subscription_constraint_checks_enabled is defined %}
+            <SubscriptionConstraintChecksEnabled>{{dpdp_accelerator.event_notifications.subscription.subscription_constraint_checks_enabled}}</SubscriptionConstraintChecksEnabled>
+            {% else %}
+            <SubscriptionConstraintChecksEnabled>false</SubscriptionConstraintChecksEnabled>
+            {% endif %}
+        </Subscription>
     </EventNotifications>
     <ConsentHistory>
         {% if dpdp_accelerator.consent_history.enabled is defined %}

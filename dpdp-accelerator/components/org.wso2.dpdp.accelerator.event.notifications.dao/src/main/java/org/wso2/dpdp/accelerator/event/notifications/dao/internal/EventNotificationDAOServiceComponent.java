@@ -62,7 +62,7 @@ public class EventNotificationDAOServiceComponent implements EventNotificationDA
         EventNotificationDAODataHolder dataHolder = EventNotificationDAODataHolder.getInstance();
         verifyDatabaseConnection(dataHolder.getConfigurationService());
         dataHolder.setTopicDAO(new TopicDAOImpl());
-        dataHolder.setSubscriptionDAO(new SubscriptionDAOImpl());
+        dataHolder.setSubscriptionDAO(new SubscriptionDAOImpl(dataHolder.getConfigurationService()));
         dataHolder.setEventDAO(new EventDAOImpl());
         dataHolder.setDeliveryDAO(new DeliveryDAOImpl(dataHolder.getConfigurationService()));
         dataHolder.setDeliveryAckDAO(new DeliveryAckDAOImpl());

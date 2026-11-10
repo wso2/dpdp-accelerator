@@ -239,10 +239,14 @@ public class SubscriptionServiceImpl implements SubscriptionService {
             }
             resolvedTopics.sort(Comparator.comparing(Topic::getTopicId));
             List<String> resolvedTopicIds = resolvedTopics.stream().map(Topic::getTopicId).collect(Collectors.toList());
-            List<Subscription> existingSubs = subscriptionDAO.getLiveSubscriptionsByOrgAndTopics(conn, orgId.trim(),
-                    resolvedTopicIds);
-            validateDuplicateAndConflict(existingSubs, effectiveGroupId, filterType, purposes, deliveryMode,
-                    callbackUrl);
+            // Pre-check before acquiring row locks; mirrored under the topic row lock in
+            // SubscriptionDAOImpl.addSubscription — keep both gates in sync.
+            if (getConfiguration().isEventNotificationSubscriptionConstraintChecksEnabled()) {
+                List<Subscription> existingSubs = subscriptionDAO.getLiveSubscriptionsByOrgAndTopics(conn, orgId.trim(),
+                        resolvedTopicIds);
+                validateDuplicateAndConflict(existingSubs, effectiveGroupId, filterType, purposes, deliveryMode,
+                        callbackUrl);
+            }
             sub[0] = new Subscription();
             sub[0].setSubscriptionId(subscriptionId);
             sub[0].setOrgId(orgId.trim());
