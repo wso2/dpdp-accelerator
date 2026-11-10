@@ -128,7 +128,7 @@ describe('PurposeVersionRow', () => {
     ).toHaveAttribute('aria-expanded', 'true')
   })
 
-  it('displays empty state when the version has no elements configured', async () => {
+  it('displays empty state when the version has no elements or properties configured', async () => {
     catalogApi.fetchPurposeVersion.mockResolvedValueOnce({
       id: 'ver-1',
       version: '1.0.0',
@@ -147,6 +147,123 @@ describe('PurposeVersionRow', () => {
     await waitFor(() => {
       expect(screen.getByText('No elements are configured for this version.')).toBeInTheDocument()
     })
+    expect(screen.getByText('No custom properties.')).toBeInTheDocument()
+  })
+
+  it('renders properties independently when the version has no elements', async () => {
+    catalogApi.fetchPurposeVersion.mockResolvedValueOnce({
+      id: 'ver-1',
+      version: '1.0.0',
+      description: 'Initial version',
+      elements: [],
+      properties: {
+        retention: '30d',
+      },
+    })
+
+    renderRow(version)
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Show elements for version 1.0.0',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(screen.getByText('No elements are configured for this version.')).toBeInTheDocument()
+    })
+    expect(screen.getByText('Properties')).toBeInTheDocument()
+    expect(screen.getByText('Key')).toBeInTheDocument()
+    expect(screen.getByText('Value')).toBeInTheDocument()
+    expect(screen.getByText('retention')).toBeInTheDocument()
+    expect(screen.getByText('30d')).toBeInTheDocument()
+  })
+
+  it('fetches and displays version-specific property key/value pairs for multiple expanded versions', async () => {
+    const versionTwo: PurposeVersionSummary = {
+      id: 'ver-2',
+      version: '2.0.0',
+      description: 'Updated version',
+    }
+
+    catalogApi.fetchPurposeVersion.mockImplementation((_purposeId: string, versionId: string) => {
+      if (versionId === 'ver-1') {
+        return Promise.resolve({
+          id: 'ver-1',
+          version: '1.0.0',
+          description: 'Initial version',
+          elements: [],
+          properties: {
+            retentionPeriod: '30d',
+            lawfulBasis: 'consent-v1',
+          },
+        })
+      }
+      return Promise.resolve({
+        id: 'ver-2',
+        version: '2.0.0',
+        description: 'Updated version',
+        elements: [],
+        properties: {
+          retentionPeriod: '90d',
+          jurisdiction: 'IN',
+        },
+      })
+    })
+
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    })
+
+    render(
+      <QueryClientProvider client={queryClient}>
+        <I18nextProvider i18n={i18n}>
+          <OxygenUIThemeProvider theme={AcrylicOrangeTheme}>
+            <MemoryRouter>
+              <Table>
+                <TableBody>
+                  <PurposeVersionRow
+                    purposeId="purpose-1"
+                    purposeName="Marketing"
+                    version={version}
+                    isLatest={false}
+                    canWrite={true}
+                    isSettingLatest={false}
+                    onSetLatest={vi.fn()}
+                    onDelete={vi.fn()}
+                  />
+                  <PurposeVersionRow
+                    purposeId="purpose-1"
+                    purposeName="Marketing"
+                    version={versionTwo}
+                    isLatest={true}
+                    canWrite={true}
+                    isSettingLatest={false}
+                    onSetLatest={vi.fn()}
+                    onDelete={vi.fn()}
+                  />
+                </TableBody>
+              </Table>
+            </MemoryRouter>
+          </OxygenUIThemeProvider>
+        </I18nextProvider>
+      </QueryClientProvider>,
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show elements for version 1.0.0' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Show elements for version 2.0.0' }))
+
+    await waitFor(() => {
+      expect(screen.getByText('30d')).toBeInTheDocument()
+      expect(screen.getByText('90d')).toBeInTheDocument()
+    })
+
+    expect(screen.getByText('consent-v1')).toBeInTheDocument()
+    expect(screen.getByText('jurisdiction')).toBeInTheDocument()
+    expect(screen.getByText('IN')).toBeInTheDocument()
+    expect(screen.getAllByText('retentionPeriod')).toHaveLength(2)
   })
 
   it('displays an error alert when fetching version details fails', async () => {
