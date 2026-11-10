@@ -195,7 +195,7 @@ The largest area. **Consent creation has no UI at all**, so `seedConsentViaApi` 
 | `04.02.02` | Searching by the exact service id finds the matching consent |  |
 | `04.02.03` | A service filter matching nothing shows the empty-results message |  |
 | `04.02.04` | A service search for only a partial match finds nothing | Finds nothing - serviceId is an exact server-side match, unlike the catalog's substring search. |
-| `04.02.05` | The pending view keeps state locked while filtering by Relation (Personal vs Managed) | Seeds one Personal (`user` as subject) and one Managed (`user` as authorizer for `user2`) Pending consent under a single service id, switches between `Personal` and `Managed`, and confirms Clear resets Relation while staying in Pending view. |
+| `04.02.05` | The pending view keeps state locked while filtering by Relation (Personal vs Managed) | Seeds one Personal-only (`user` as subject, `user2` as authorizer) and one Managed-only (`user2` as subject, `user` as authorizer) Pending consent under a single service id, switches between `Personal` and `Managed`, and confirms Clear resets Relation while staying in Pending view. |
 
 ### `04.03-user-acting-on-consents.spec.ts`
 

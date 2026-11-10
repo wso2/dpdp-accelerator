@@ -139,7 +139,7 @@ test.describe('User searching Consents (UI)', () => {
       'PENDING',
       serviceId,
       undefined,
-      [{ userId: target.personas.user.username, type: 'USER' }],
+      [{ userId: target.personas.user2.username, type: 'PARENT' }],
     )
     const managedPending = await seedConsentViaApi(
       consentAdminConsentApi,
