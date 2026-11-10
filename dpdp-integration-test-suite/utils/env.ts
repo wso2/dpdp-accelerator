@@ -236,10 +236,10 @@ export function webhookBackoffOverride(): { baseBackoffSeconds: number; maxRetri
   return baseBackoffSeconds !== null && maxRetries !== null ? { baseBackoffSeconds, maxRetries } : undefined
 }
 
-export function isSubscriptionConflictChecksEnabled(): boolean {
+export function isSubscriptionConstraintChecksEnabled(): boolean {
   return requireConfigured(
-    config.eventNotifications?.subscriptionConflictChecksEnabled,
-    'eventNotifications.subscriptionConflictChecksEnabled',
+    config.eventNotifications?.subscriptionConstraintChecksEnabled,
+    'eventNotifications.subscriptionConstraintChecksEnabled',
   )
 }
 

@@ -252,7 +252,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 75);
         assertTrue(service.isEventNotificationPollingRequestHmacValidationEnabled());
         assertTrue(service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
-        assertTrue(!service.isEventNotificationSubscriptionConflictChecksEnabled());
+        assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
     }
 
     @Test
@@ -291,7 +291,7 @@ public class DPDPConfigParserTest {
         assertEquals(service.getEventNotificationPollingMaxEventsLimit(), 100);
         assertTrue(!service.isEventNotificationPollingRequestHmacValidationEnabled());
         assertTrue(service.isEventNotificationSystemTopicsVerifyOnStartupEnabled());
-        assertTrue(!service.isEventNotificationSubscriptionConflictChecksEnabled());
+        assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
     }
 
     @Test
@@ -376,13 +376,13 @@ public class DPDPConfigParserTest {
             values.put("EventNotifications.SystemTopics.VerifyOnStartupEnabled", "bad");
             expectThrows(IllegalStateException.class,
                     service::isEventNotificationSystemTopicsVerifyOnStartupEnabled);
-            values.put("EventNotifications.Subscription.ConflictChecksEnabled", "true");
-            assertTrue(service.isEventNotificationSubscriptionConflictChecksEnabled());
-            values.put("EventNotifications.Subscription.ConflictChecksEnabled", "false");
-            assertTrue(!service.isEventNotificationSubscriptionConflictChecksEnabled());
-            values.put("EventNotifications.Subscription.ConflictChecksEnabled", "bad");
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecksEnabled", "true");
+            assertTrue(service.isEventNotificationSubscriptionConstraintChecksEnabled());
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecksEnabled", "false");
+            assertTrue(!service.isEventNotificationSubscriptionConstraintChecksEnabled());
+            values.put("EventNotifications.Subscription.SubscriptionConstraintChecksEnabled", "bad");
             expectThrows(IllegalStateException.class,
-                    service::isEventNotificationSubscriptionConflictChecksEnabled);
+                    service::isEventNotificationSubscriptionConstraintChecksEnabled);
             values.put("EventNotifications.PendingSubscriptionRecoveryIntervalSeconds", "0");
             expectThrows(IllegalStateException.class,
                     service::getEventNotificationPendingSubscriptionRecoveryIntervalSeconds);

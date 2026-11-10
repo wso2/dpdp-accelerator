@@ -17,7 +17,7 @@
  */
 
 import { test, expect } from '../../fixtures/auth.fixtures'
-import { isSubscriptionConflictChecksEnabled } from '../../utils/env'
+import { isSubscriptionConstraintChecksEnabled } from '../../utils/env'
 import {
   findDeliveryForEvent,
   publishMarkedEventViaApi,
@@ -42,7 +42,7 @@ for (const version of ['v1', 'v1.1'] as const) {
   test.describe(`Subscription lifecycle rules (${version})`, () => {
     test.use({ eventApiVersion: version })
 
-    test(`09.07.01 - Overlapping subscriptions with equivalent purposes and callback URL follow the conflict-check setting (${version})`, async ({
+    test(`09.07.01 - Overlapping subscriptions with equivalent purposes and callback URL follow the constraint-check setting (${version})`, async ({
       consentAdminEventApi,
     }) => {
       const topic = await seedActiveTopicViaApi(consentAdminEventApi, `duplicate-check-${version}`)
@@ -63,11 +63,11 @@ for (const version of ['v1', 'v1.1'] as const) {
         filter: { type: 'specific', purposes: ['profile', 'ACCOUNT', 'account'] },
         delivery: { mode: 'webhook', callbackUrl: callbackUrl.toLowerCase(), sharedSecret: uniqueMarker('secret') },
       })
-      const conflictsEnabled = isSubscriptionConflictChecksEnabled()
-      expect(duplicate.status()).toBe(conflictsEnabled ? 409 : 201)
+      const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+      expect(duplicate.status()).toBe(constraintsEnabled ? 409 : 201)
     })
 
-    test(`09.07.02 - Mixing webhook and poll delivery modes on the same tenant/group/topic follows the conflict-check setting (${version})`, async ({
+    test(`09.07.02 - Mixing webhook and poll delivery modes on the same tenant/group/topic follows the constraint-check setting (${version})`, async ({
       consentAdminEventApi,
     }) => {
       const topicA = await seedActiveTopicViaApi(consentAdminEventApi, `mixed-mode-a-${version}`)
@@ -87,8 +87,8 @@ for (const version of ['v1', 'v1.1'] as const) {
         filter: { type: 'all' },
         delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
       })
-      const conflictsEnabled = isSubscriptionConflictChecksEnabled()
-      expect(pollConflict.status()).toBe(conflictsEnabled ? 409 : 201)
+      const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+      expect(pollConflict.status()).toBe(constraintsEnabled ? 409 : 201)
 
       const topicB = await seedActiveTopicViaApi(consentAdminEventApi, `mixed-mode-b-${version}`)
       const groupB = uniqueMarker('group')
@@ -107,7 +107,7 @@ for (const version of ['v1', 'v1.1'] as const) {
         filter: { type: 'all' },
         delivery: { mode: 'webhook', callbackUrl: 'https://example.com/hook-b', sharedSecret: uniqueMarker('secret') },
       })
-      expect(webhookConflict.status()).toBe(conflictsEnabled ? 409 : 201)
+      expect(webhookConflict.status()).toBe(constraintsEnabled ? 409 : 201)
     })
 
     test(`09.07.03 - An active or deleted subscription cannot be re-verified (${version})`, async ({ consentAdminEventApi }) => {
@@ -267,7 +267,7 @@ for (const version of ['v1', 'v1.1'] as const) {
       await consentAdminEventApi.deleteSubscription((await accepted.json()).subscriptionId)
     })
 
-    test(`09.07.10 - Mixing delivery modes across a shared topic in a multi-topic subscription follows the conflict-check setting (${version})`, async ({
+    test(`09.07.10 - Mixing delivery modes across a shared topic in a multi-topic subscription follows the constraint-check setting (${version})`, async ({
       consentAdminEventApi,
     }) => {
       const topicA = await seedActiveTopicViaApi(consentAdminEventApi, `overlap-a-${version}`)
@@ -286,23 +286,23 @@ for (const version of ['v1', 'v1.1'] as const) {
       })
       expect(webhookResponse.status()).toBe(201)
 
-      // Second subscription shares topicB with the webhook subscription above; rejected in poll mode only if conflict checks are enabled
+      // Second subscription shares topicB with the webhook subscription above; rejected in poll mode only if constraint checks are enabled
       const pollConflict = await consentAdminEventApi.createSubscription({
         name: uniqueMarker('sub-poll'),
         topics: [topicB.name, topicC.name],
         filter: { type: 'all' },
         delivery: { mode: 'poll', sharedSecret: uniqueMarker('secret') },
       })
-      const conflictsEnabled = isSubscriptionConflictChecksEnabled()
-      expect(pollConflict.status()).toBe(conflictsEnabled ? 409 : 201)
+      const constraintsEnabled = isSubscriptionConstraintChecksEnabled()
+      expect(pollConflict.status()).toBe(constraintsEnabled ? 409 : 201)
     })
 
     test(`09.07.11 - Multiple poll subscriptions on the same topic each receive their own delivery for a published event (${version})`, async ({
       consentAdminEventApi,
     }) => {
       test.skip(
-        isSubscriptionConflictChecksEnabled(),
-        'Requires conflict_checks_enabled = false so multiple poll subscriptions on the same topic are allowed',
+        isSubscriptionConstraintChecksEnabled(),
+        'Requires subscription_constraint_checks_enabled = false so multiple poll subscriptions on the same topic are allowed',
       )
       const topic = await seedActiveTopicViaApi(consentAdminEventApi, `multi-poll-${version}`)
       const firstSub = await seedPollSubscriptionViaApi(consentAdminEventApi, topic.name)

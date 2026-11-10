@@ -44,6 +44,6 @@
   },
   "eventNotifications": {
     "pollingRequestHmacValidationEnabled": false,
-    "subscriptionConflictChecksEnabled": false
+    "subscriptionConstraintChecksEnabled": false
   }
 }

@@ -542,7 +542,7 @@ public class SubscriptionServiceImplTest {
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
         public void testCreateWebhookSubscriptionSameCallbackFailsWithConflict() {
-                when(configurationService.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(true);
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -563,7 +563,7 @@ public class SubscriptionServiceImplTest {
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
         public void testCreatePollSubscriptionWhenWebhookExistsFailsWithConflict() {
-                when(configurationService.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(true);
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -583,7 +583,7 @@ public class SubscriptionServiceImplTest {
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
         public void testCreateWebhookSubscriptionWhenPollExistsFailsWithConflict() {
-                when(configurationService.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(true);
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -602,8 +602,8 @@ public class SubscriptionServiceImplTest {
         }
 
         @Test
-        public void testCreatePollSubscriptionWhenWebhookExistsSucceedsWhenConflictChecksDisabled() {
-                when(configurationService.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(false);
+        public void testCreatePollSubscriptionWhenWebhookExistsSucceedsWhenConstraintChecksDisabled() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(false);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -621,8 +621,8 @@ public class SubscriptionServiceImplTest {
         }
 
         @Test
-        public void testCreateWebhookSubscriptionSameCallbackSucceedsWhenConflictChecksDisabled() {
-                when(configurationService.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(false);
+        public void testCreateWebhookSubscriptionSameCallbackSucceedsWhenConstraintChecksDisabled() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(false);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);
@@ -641,8 +641,8 @@ public class SubscriptionServiceImplTest {
         }
 
         @Test(expectedExceptions = EventNotificationServiceException.class)
-        public void testCreateSubscriptionDuplicateActiveNameFailsEvenWhenConflictChecksDisabled() {
-                when(configurationService.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(false);
+        public void testCreateSubscriptionDuplicateActiveNameFailsEvenWhenConstraintChecksDisabled() {
+                when(configurationService.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(false);
                 Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
                 Map<String, Topic> resolved = new HashMap<>();
                 resolved.put("user-consent", topic);

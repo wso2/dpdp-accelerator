@@ -156,9 +156,9 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 }
 
             }
-            // Conflict checks here under the topic row lock are mirrored by the fast-fail pre-check in
+            // Constraint checks here under the topic row lock are mirrored by the fast-fail pre-check in
             // SubscriptionServiceImpl.createMultiTopicSubscription; keep both gates in sync.
-            if (getConfiguration().isEventNotificationSubscriptionConflictChecksEnabled()) {
+            if (getConfiguration().isEventNotificationSubscriptionConstraintChecksEnabled()) {
                 try (PreparedStatement lockPs = conn.prepareStatement(
                         queries.getLockSubscriptionsForTopicsQuery(topicIds.size()))) {
                     lockPs.setString(1, subscription.getOrgId());

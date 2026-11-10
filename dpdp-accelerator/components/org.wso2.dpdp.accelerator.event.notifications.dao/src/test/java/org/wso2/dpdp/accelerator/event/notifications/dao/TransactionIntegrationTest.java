@@ -339,7 +339,7 @@ public class TransactionIntegrationTest {
         try {
             org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService config =
                     org.mockito.Mockito.mock(org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService.class);
-            org.mockito.Mockito.when(config.isEventNotificationSubscriptionConflictChecksEnabled()).thenReturn(true);
+            org.mockito.Mockito.when(config.isEventNotificationSubscriptionConstraintChecksEnabled()).thenReturn(true);
             SubscriptionDAOImpl subscriptionDAO = new SubscriptionDAOImpl(config);
             Future<Boolean> first = executor.submit(() -> createMultiTopicWhenReady(start, "sub-a", false,
                     subscriptionDAO, "topic-a", "topic-b"));
@@ -358,7 +358,7 @@ public class TransactionIntegrationTest {
     }
 
     @Test(timeOut = 10000)
-    public void concurrentReversedTopicSetsAllowBothSubscriptionsWhenConflictChecksDisabled() throws Exception {
+    public void concurrentReversedTopicSetsAllowBothSubscriptionsWhenConstraintChecksDisabled() throws Exception {
         TopicDAOImpl topics = new TopicDAOImpl();
         topics.addTopic(connection, new Topic("topic-c", "org-1", "c", "", TopicStatus.ACTIVE.getValue()));
         topics.addTopic(connection, new Topic("topic-d", "org-1", "d", "", TopicStatus.ACTIVE.getValue()));
