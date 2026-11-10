@@ -19,6 +19,7 @@
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   CardHeader,
@@ -27,6 +28,7 @@ import {
   IconButton,
   Paper,
   Skeleton,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -38,7 +40,7 @@ import {
   Tooltip,
   Typography,
 } from '@wso2/oxygen-ui'
-import { Clock3, Eye, Layers, Tag, Users } from '@wso2/oxygen-ui-icons-react'
+import { Clock3, Code2, Copy, Eye, Layers, Tag, Users } from '@wso2/oxygen-ui-icons-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
@@ -52,6 +54,16 @@ import EventDetailsModal from './components/EventDetailsModal'
 import { useEventDeliveriesQuery, useEventDetailQuery } from './hooks/useEventQueries'
 import { getSubscriptionStatusChipColor } from './utils/subscriptionStatusChip'
 
+function formatJsonPayload(payload?: string): string {
+  if (!payload) return '{}'
+  try {
+    const parsed = typeof payload === 'string' ? JSON.parse(payload) : payload
+    return JSON.stringify(parsed, null, 2)
+  } catch {
+    return payload
+  }
+}
+
 export default function EventDetailsPage(): React.JSX.Element {
   const { t } = useTranslation('common')
   const { id } = useParams<{ id: string }>()
@@ -63,11 +75,27 @@ export default function EventDetailsPage(): React.JSX.Element {
   const deliveriesQuery = useEventDeliveriesQuery(id, page, rowsPerPage)
 
   const [selectedDelivery, setSelectedDelivery] = useState<EventRecord | undefined>()
+  const [snackbarMessage, setSnackbarMessage] = useState<string | null>(null)
+  const [snackbarSeverity, setSnackbarSeverity] = useState<'success' | 'error'>('success')
 
   const event = eventQuery.data
   const deliveries = deliveriesQuery.data?.rows ?? []
   const totalDeliveriesCount =
     deliveriesQuery.data?.total ?? event?.deliveriesCount ?? deliveries.length
+
+  const handleCopyPayload = async (rawPayload?: string) => {
+    const formatted = formatJsonPayload(rawPayload)
+    try {
+      await navigator.clipboard.writeText(formatted)
+      setSnackbarSeverity('success')
+      setSnackbarMessage(t('events.details.copyPayloadSuccess'))
+    } catch {
+      setSnackbarSeverity('error')
+      setSnackbarMessage(
+        t('events.details.copyPayloadFailed', 'Failed to copy payload to clipboard.'),
+      )
+    }
+  }
 
   if (eventQuery.isLoading) {
     return (
@@ -188,7 +216,53 @@ export default function EventDetailsPage(): React.JSX.Element {
           </CardContent>
         </Card>
 
-        {/* Section 2: Downstream Subscriber Deliveries */}
+        {/* Section 2: Event Payload */}
+        <Card variant="outlined" sx={{ borderRadius: 2 }}>
+          <CardHeader
+            title={
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Code2 size={18} />
+                <Typography variant="h6" fontWeight={600}>
+                  {t('events.details.payloadTitle')}
+                </Typography>
+              </Stack>
+            }
+            action={
+              <Button
+                size="small"
+                variant="outlined"
+                startIcon={<Copy size={14} />}
+                onClick={() => handleCopyPayload(event.payload)}
+              >
+                {t('events.actions.copyPayload')}
+              </Button>
+            }
+          />
+          <Divider />
+          <CardContent sx={{ p: 0, '&:last-child': { pb: 0 } }}>
+            <Box
+              component="pre"
+              sx={(theme) => ({
+                p: 2.5,
+                m: 0,
+                fontSize: '0.8125rem',
+                fontFamily: 'monospace',
+                overflowX: 'auto',
+                maxHeight: 320,
+                ...theme.applyStyles('light', {
+                  bgcolor: theme.palette.grey[50],
+                }),
+                ...theme.applyStyles('dark', {
+                  bgcolor: 'rgba(0, 0, 0, 0.3)',
+                }),
+              })}
+            >
+              {formatJsonPayload(event.payload)}
+            </Box>
+          </CardContent>
+        </Card>
+
+        {/* Section 3: Downstream Subscriber Deliveries */}
         <Card variant="outlined" sx={{ borderRadius: 2, overflow: 'hidden' }}>
           <CardHeader
             title={
@@ -313,6 +387,21 @@ export default function EventDetailsPage(): React.JSX.Element {
             onClose={() => setSelectedDelivery(undefined)}
           />
         ) : null}
+
+        <Snackbar
+          open={Boolean(snackbarMessage)}
+          autoHideDuration={3000}
+          onClose={() => setSnackbarMessage(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        >
+          <Alert
+            onClose={() => setSnackbarMessage(null)}
+            severity={snackbarSeverity}
+            sx={{ width: '100%' }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </Stack>
     </Box>
   )
