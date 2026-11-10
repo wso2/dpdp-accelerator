@@ -19,7 +19,6 @@
 import {
   Alert,
   Box,
-  Button,
   Card,
   CardContent,
   CardHeader,
@@ -32,7 +31,8 @@ import {
 } from '@wso2/oxygen-ui'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
+import DetailBackButton from '../../components/layout/main-layout/DetailBackButton'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
 import { formatEpochTimestamp } from '../../utils/dateTime'
 import ComplaintActivityFeed from './components/ComplaintActivityFeed'
@@ -59,6 +59,7 @@ function ComplaintDetailLoading(): React.JSX.Element {
       sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 3 }}
     >
       <Stack spacing={1}>
+        <DetailBackButton to="/complaints" />
         <HeaderBreadcrumbs />
         <Skeleton variant="text" width={220} height={48} />
       </Stack>
@@ -83,7 +84,6 @@ function ComplaintDetailLoading(): React.JSX.Element {
 function ComplaintDetailPage(): React.JSX.Element {
   const { t } = useTranslation('common')
   const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
   const detailQuery = useMyComplaintDetailQuery(id)
   const sendMessageMutation = useSendMyComplaintMessageMutation()
   const [activeTab, setActiveTab] = useState<'activity' | 'attachments'>('activity')
@@ -98,12 +98,11 @@ function ComplaintDetailPage(): React.JSX.Element {
         component="main"
         sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 2 }}
       >
+        <Stack spacing={1}>
+          <DetailBackButton to="/complaints" />
+          <HeaderBreadcrumbs />
+        </Stack>
         <Typography variant="h5">{t('complaints.detail.notFound')}</Typography>
-        <Box>
-          <Button variant="outlined" onClick={() => navigate('/complaints')}>
-            {t('complaints.detail.back')}
-          </Button>
-        </Box>
       </Box>
     )
   }
@@ -118,6 +117,7 @@ function ComplaintDetailPage(): React.JSX.Element {
       sx={{ p: { xs: 2, md: 4 }, display: 'flex', flexDirection: 'column', gap: 3 }}
     >
       <Stack spacing={1}>
+        <DetailBackButton to="/complaints" />
         <HeaderBreadcrumbs currentLabel={complaint.referenceId} />
         <Typography variant="h4" fontWeight={700}>
           {complaint.referenceId}

@@ -31,7 +31,7 @@ export class ElementDetailPage {
       .filter({ has: page.getByRole('heading', { name: 'Properties' }) })
       .getByRole('table')
     this.loadFailedMessage = page.getByText('Unable to load elements right now.')
-    this.backButton = page.getByRole('button', { name: 'Back to elements' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     // Only rendered for a persona holding ELEMENTS_WRITE - see ElementDetailsPage.tsx's
     // `canWrite` check. "Delete", not "Delete Element" - that text belongs to the confirmation
     // dialog's own title/confirm button, see ElementDeleteDialog.

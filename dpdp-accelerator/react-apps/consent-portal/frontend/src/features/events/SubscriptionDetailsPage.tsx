@@ -33,7 +33,6 @@ import {
   Typography,
 } from '@wso2/oxygen-ui'
 import {
-  ArrowLeft,
   Check,
   Clock3,
   Copy,
@@ -51,6 +50,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import SubscriptionTopicsSection from './components/SubscriptionTopicsSection'
 import SubscriptionPurposesSection from './components/SubscriptionPurposesSection'
 import CopyableText from '../../components/CopyableText'
+import DetailBackButton from '../../components/layout/main-layout/DetailBackButton'
 import HeaderBreadcrumbs from '../../components/layout/main-layout/HeaderBreadcrumbs'
 import { formatEpochTimestamp } from '../../utils/dateTime'
 import { REQUIRED_SCOPES } from '../../utils/scopes'
@@ -164,7 +164,10 @@ export default function SubscriptionDetailsPage(): React.JSX.Element {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={3}>
-          <HeaderBreadcrumbs />
+          <Stack spacing={1}>
+            <DetailBackButton to="/events/subscriptions" />
+            <HeaderBreadcrumbs />
+          </Stack>
           <Skeleton width={300} height={48} />
           <Skeleton variant="rounded" height={220} />
           <Skeleton variant="rounded" height={320} />
@@ -177,16 +180,11 @@ export default function SubscriptionDetailsPage(): React.JSX.Element {
     return (
       <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
         <Stack spacing={3}>
-          <HeaderBreadcrumbs />
+          <Stack spacing={1}>
+            <DetailBackButton to="/events/subscriptions" />
+            <HeaderBreadcrumbs />
+          </Stack>
           <Alert severity="error">{t('subscriptions.details.loadFailed')}</Alert>
-          <Button
-            variant="outlined"
-            startIcon={<ArrowLeft size={16} />}
-            onClick={() => navigate('/events/subscriptions')}
-            sx={{ alignSelf: 'flex-start' }}
-          >
-            {t('subscriptions.actions.backToList')}
-          </Button>
         </Stack>
       </Box>
     )
@@ -218,57 +216,50 @@ export default function SubscriptionDetailsPage(): React.JSX.Element {
     <Box component="main" sx={{ p: { xs: 2, md: 4 } }}>
       <Stack spacing={3}>
         <Stack spacing={1}>
+          <DetailBackButton to="/events/subscriptions" />
           <HeaderBreadcrumbs currentLabel={sub.subscriptionId} />
-          <Stack
-            direction={{ xs: 'column', sm: 'row' }}
-            justifyContent="space-between"
-            alignItems={{ xs: 'flex-start', sm: 'center' }}
-            spacing={2}
-          >
-            <Stack direction="row" spacing={1.5} alignItems="center">
+        </Stack>
+        <Stack
+          direction={{ xs: 'column', sm: 'row' }}
+          justifyContent="space-between"
+          alignItems={{ xs: 'flex-start', sm: 'center' }}
+          spacing={2}
+        >
+          <Stack direction="row" spacing={1.5} alignItems="center">
+            <Typography variant="h4" fontWeight={700}>
+              {t('subscriptions.topicUi.detailsTitle')}
+            </Typography>
+            <Chip
+              size="small"
+              color={getSubscriptionStatusChipColor(statusStr)}
+              label={t(`subscriptions.status.${statusStr.toLowerCase()}`, statusStr)}
+            />
+          </Stack>
+
+          <Stack direction="row" spacing={1}>
+            {canWrite && isWebhook && statusStr === 'STALE' ? (
               <Button
                 variant="outlined"
-                size="small"
-                startIcon={<ArrowLeft size={16} />}
-                onClick={() => navigate('/events/subscriptions')}
+                color="secondary"
+                startIcon={<RefreshCw size={16} />}
+                disabled={verifyMutation.isPending}
+                onClick={handleVerify}
               >
-                {t('subscriptions.actions.backToList')}
+                {t('subscriptions.actions.verify')}
               </Button>
-              <Typography variant="h4" fontWeight={700}>
-                {t('subscriptions.topicUi.detailsTitle')}
-              </Typography>
-              <Chip
-                size="small"
-                color={getSubscriptionStatusChipColor(statusStr)}
-                label={t(`subscriptions.status.${statusStr.toLowerCase()}`, statusStr)}
-              />
-            </Stack>
+            ) : null}
 
-            <Stack direction="row" spacing={1}>
-              {canWrite && isWebhook && statusStr === 'STALE' ? (
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  startIcon={<RefreshCw size={16} />}
-                  disabled={verifyMutation.isPending}
-                  onClick={handleVerify}
-                >
-                  {t('subscriptions.actions.verify')}
-                </Button>
-              ) : null}
-
-              {canWrite ? (
-                <Button
-                  variant="outlined"
-                  color="error"
-                  startIcon={<Trash2 size={16} />}
-                  disabled={isDeleted || deleteMutation.isPending}
-                  onClick={() => setIsDeleteOpen(true)}
-                >
-                  {t('subscriptions.actions.delete')}
-                </Button>
-              ) : null}
-            </Stack>
+            {canWrite ? (
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<Trash2 size={16} />}
+                disabled={isDeleted || deleteMutation.isPending}
+                onClick={() => setIsDeleteOpen(true)}
+              >
+                {t('subscriptions.actions.delete')}
+              </Button>
+            ) : null}
           </Stack>
         </Stack>
 

@@ -37,7 +37,7 @@ export class ComplaintDetailPage {
   readonly internalNoteToggle: Locator
 
   constructor(private readonly page: Page) {
-    this.backButton = page.getByRole('button', { name: 'Back to my complaints' })
+    this.backButton = page.getByRole('button', { name: /^Back/ })
     this.notFoundHeading = page.getByRole('heading', { name: 'Complaint not found' })
     this.awaitingInfoBanner = page.getByText(
       'The complaint officer is waiting on more information from you. Please reply below.',
