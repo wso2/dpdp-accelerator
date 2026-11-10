@@ -249,9 +249,12 @@ Creating a consent record does not automatically ensure that an application uses
 
 The application can retrieve the full consent record using the Consent Management REST API:
 
-```http
-GET /api/identity/consent-mgt/v2.0/consents/<consent-id>
+```bash
+curl "${BASE_URL}/api/identity/consent-mgt/v2.0/consents/<consent-id>" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}"
 ```
+
+To try it, use a consent ID and the **CarePulse** application's token from [Try Out: Consent](../try-out/consent.md#step-1-create-a-consent).
 
 The response provides information about the consent, including its current state, the purposes it covers, and the associated data elements.
 
@@ -284,8 +287,6 @@ Before processing the data, the consuming application should check that:
 - **The required data elements are covered.** The consent includes the specific data elements the application intends to use.
 
 These checks help ensure that the application respects the person's recorded choices and does not rely on an earlier approval without verifying the consent's current state and scope.
-
-**Try it:** [Review, authorize, revoke, and audit a consent](../try-out/consent.md#review-authorize-revoke-and-audit-a-consent) — see the equivalent `GET` call under "Act on your own consent".
 
 ## Next Steps
 
