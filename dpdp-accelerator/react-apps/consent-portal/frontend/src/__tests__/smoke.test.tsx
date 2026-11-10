@@ -17,9 +17,10 @@
  */
 
 import { cleanup, render, screen } from '@testing-library/react'
-import { I18nextProvider, useTranslation } from 'react-i18next'
+import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next'
 import { afterEach, describe, expect, it } from 'vitest'
 import i18n from '../i18n/i18n'
+import { DEFAULT_LANGUAGE } from '../i18n/languages'
 
 function I18nPlaceholder(): React.JSX.Element {
   const { t } = useTranslation('common')
@@ -31,6 +32,17 @@ function I18nMissingKeyPlaceholder(): React.JSX.Element {
   const { t } = useTranslation('common')
 
   return <h1>{t('app.missingTitle')}</h1>
+}
+
+function I18nFallbackPlaceholder(): React.JSX.Element {
+  const { t } = useTranslation('common')
+
+  return (
+    <>
+      <h1>{t('app.title')}</h1>
+      <button type="button">{t('subscriptions.actions.register')}</button>
+    </>
+  )
 }
 
 afterEach(() => {
@@ -64,5 +76,41 @@ describe('app i18n setup', () => {
         name: 'app.missingTitle',
       }),
     ).toBeInTheDocument()
+  })
+
+  it('falls back to the English translation when a key is missing in the active language', async () => {
+    const localizedTitle = 'સંમતિ પોર્ટલ'
+    const englishRegisterLabel = 'Create Subscription'
+    const isolatedI18n = i18n.createInstance()
+    await isolatedI18n.use(initReactI18next).init({
+      lng: 'gu',
+      fallbackLng: DEFAULT_LANGUAGE,
+      defaultNS: 'common',
+      ns: ['common'],
+      interpolation: { escapeValue: false },
+      react: { useSuspense: false },
+      resources: {
+        en: {
+          common: {
+            app: { title: 'Consent Portal' },
+            subscriptions: { actions: { register: englishRegisterLabel } },
+          },
+        },
+        gu: {
+          common: {
+            app: { title: localizedTitle },
+          },
+        },
+      },
+    })
+
+    render(
+      <I18nextProvider i18n={isolatedI18n}>
+        <I18nFallbackPlaceholder />
+      </I18nextProvider>,
+    )
+
+    expect(screen.getByRole('heading', { name: localizedTitle })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: englishRegisterLabel })).toBeInTheDocument()
   })
 })
