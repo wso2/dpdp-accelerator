@@ -125,4 +125,53 @@ test.describe('User searching Consents (UI)', () => {
     await expect(registryPage.emptyStateMessage).toBeVisible()
     await userPage.context().close()
   })
+
+  test('04.02.05 - The pending view keeps state locked while filtering by Relation (Personal vs Managed)', async ({
+    browser,
+    target,
+    consentAdminConsentApi,
+  }) => {
+    const userPage = await loginAsUser(browser)
+    const serviceId = randomServiceId()
+    const personalPending = await seedConsentViaApi(
+      consentAdminConsentApi,
+      target.personas.user.username,
+      'PENDING',
+      serviceId,
+      undefined,
+      [{ userId: target.personas.user.username, type: 'USER' }],
+    )
+    const managedPending = await seedConsentViaApi(
+      consentAdminConsentApi,
+      target.personas.user2.username,
+      'PENDING',
+      serviceId,
+      undefined,
+      [{ userId: target.personas.user.username, type: 'PARENT' }],
+    )
+
+    const registryPage = new MyConsentPage(userPage)
+    await registryPage.gotoPending()
+    await expect(registryPage.stateFilter).toHaveAttribute('aria-disabled', 'true')
+    await expect(registryPage.relationFilter).not.toHaveAttribute('aria-disabled', 'true')
+
+    await registryPage.searchByService(serviceId)
+    await expect(registryPage.rowByConsentId(personalPending.consentId)).toBeVisible()
+    await expect(registryPage.rowByConsentId(managedPending.consentId)).toBeVisible()
+
+    await registryPage.filterByRelation('Personal')
+    await expect(registryPage.rowByConsentId(personalPending.consentId)).toBeVisible()
+    await expect(registryPage.rowByConsentId(managedPending.consentId)).toHaveCount(0)
+
+    await registryPage.filterByRelation('Managed')
+    await expect(registryPage.rowByConsentId(managedPending.consentId)).toBeVisible()
+    await expect(registryPage.rowByConsentId(personalPending.consentId)).toHaveCount(0)
+
+    await registryPage.clearFilters()
+    await registryPage.searchByService(serviceId)
+    await expect(registryPage.stateFilter).toHaveAttribute('aria-disabled', 'true')
+    await expect(registryPage.rowByConsentId(personalPending.consentId)).toBeVisible()
+    await expect(registryPage.rowByConsentId(managedPending.consentId)).toBeVisible()
+    await userPage.context().close()
+  })
 })

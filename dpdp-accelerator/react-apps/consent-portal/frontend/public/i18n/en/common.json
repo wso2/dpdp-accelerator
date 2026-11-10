@@ -90,7 +90,6 @@
       "consentId": "Consent ID",
       "created": "Created",
       "validUntil": "Valid Until",
-      "back": "Back to Registry",
       "notFound": "Consent record not found",
       "managed": "Managed",
       "section": {
@@ -289,7 +288,6 @@
     },
     "elements": {
       "add": "Add element",
-      "back": "Back to elements",
       "empty": "No elements match the selected filters.",
       "emptyTitle": "No elements found",
       "loadFailed": "Unable to load elements right now.",
@@ -320,7 +318,6 @@
     },
     "purposes": {
       "add": "Add purpose",
-      "back": "Back to purposes",
       "empty": "No purposes match the selected filters.",
       "emptyTitle": "No purposes found",
       "loadFailed": "Unable to load purposes right now.",
@@ -460,7 +457,6 @@
       }
     },
     "detail": {
-      "back": "Back to my complaints",
       "notFound": "Complaint not found",
       "description": "Description",
       "awaitingInfo": {
@@ -564,7 +560,6 @@
         }
       },
       "case": {
-        "back": "Back to queue",
         "notFound": "Complaint not found",
         "dataPrincipal": "User",
         "resolvedLocked": "This complaint has been resolved and is now locked. You cannot reopen it directly — it can only be reopened if the client sends a new message.",
@@ -593,7 +588,7 @@
       "deregistered": "Deregistered"
     },
     "filters": {
-      "searchPlaceholder": "Search by topic name, ID, or description",
+      "searchPlaceholder": "Search by topic name or description",
       "status": "Status",
       "allStatuses": "All Statuses",
       "search": "Search",
@@ -729,7 +724,6 @@
       "verify": "Re-verify webhook",
       "delete": "Delete subscription",
       "alreadyDeleted": "This subscription is already deleted",
-      "backToList": "Back to Subscriptions",
       "close": "Close"
     },
     "dialog": {
@@ -865,7 +859,6 @@
     },
     "details": {
       "title": "Event details",
-      "backToEvents": "Back to Events",
       "loadFailed": "Unable to load event details.",
       "metadataTitle": "Event Metadata",
       "metadataSubtitle": "Identifiers, topics, and dispatch timestamps",

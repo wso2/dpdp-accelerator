@@ -149,140 +149,146 @@ export default function PurposeVersionRow({
           </TableCell>
         ) : null}
       </TableRow>
-      {expanded ? (
-        <TableRow>
-          <TableCell colSpan={colSpan} sx={{ py: 0, px: 2, bgcolor: 'background.default' }}>
-            <Collapse in={expanded} timeout="auto" unmountOnExit>
-              <Box sx={{ py: 2, pl: 5, pr: 2 }}>
-                {versionQuery.isLoading ? (
-                  <Stack spacing={1}>
-                    <Skeleton height={32} />
-                    <Skeleton height={32} />
-                  </Stack>
-                ) : null}
-                {versionQuery.isError ? (
-                  <Alert severity="error">{t('catalog.messages.versionElementsLoadFailed')}</Alert>
-                ) : null}
-                {!versionQuery.isLoading && !versionQuery.isError ? (
-                  <Stack spacing={2}>
-                    <Box>
-                      {elements.length === 0 ? (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ py: 1.5, fontStyle: 'italic' }}
-                        >
-                          {t('catalog.messages.noElements')}
-                        </Typography>
-                      ) : (
-                        <TableContainer component={Paper} variant="outlined" sx={{ my: 1 }}>
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                  {t('catalog.fields.element')}
-                                </TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                  {t('catalog.fields.description')}
-                                </TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                  {t('catalog.fields.requirement')}
-                                </TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {elements.map((element) => {
-                                const elementPath = `/elements/${encodeURIComponent(element.id)}`
-                                const {
-                                  displayName: elementDisplayName,
-                                  description: elementDescription,
-                                } = catalogText('elements', element)
-
-                                return (
-                                  <TableRow key={element.id} hover>
-                                    <TableCell>
-                                      <Stack spacing={0.25}>
-                                        <Link
-                                          component={RouterLink}
-                                          to={elementPath}
-                                          fontWeight={600}
-                                          underline="none"
-                                        >
-                                          {elementDisplayName}
-                                        </Link>
-                                        <Typography variant="caption" color="text.secondary">
-                                          <Box component="code">{element.name}</Box>
-                                        </Typography>
-                                      </Stack>
-                                    </TableCell>
-                                    <TableCell>{elementDescription ?? '-'}</TableCell>
-                                    <TableCell>
-                                      <Chip
-                                        size="small"
-                                        color={element.mandatory ? 'error' : 'default'}
-                                        variant="outlined"
-                                        label={
-                                          element.mandatory
-                                            ? t('catalog.values.mandatory')
-                                            : t('catalog.values.optional')
-                                        }
-                                      />
-                                    </TableCell>
-                                  </TableRow>
-                                )
-                              })}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                      )}
-                    </Box>
-
-                    <Box>
-                      <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
-                        {t('catalog.fields.properties')}
+      <TableRow>
+        <TableCell
+          colSpan={colSpan}
+          sx={{
+            py: 0,
+            px: 2,
+            bgcolor: 'background.default',
+            borderBottom: expanded ? undefined : 'none',
+          }}
+        >
+          <Collapse in={expanded} timeout="auto" unmountOnExit>
+            <Box sx={{ py: 2, pl: 5, pr: 2 }}>
+              {versionQuery.isLoading ? (
+                <Stack spacing={1}>
+                  <Skeleton height={32} />
+                  <Skeleton height={32} />
+                </Stack>
+              ) : null}
+              {versionQuery.isError ? (
+                <Alert severity="error">{t('catalog.messages.versionElementsLoadFailed')}</Alert>
+              ) : null}
+              {!versionQuery.isLoading && !versionQuery.isError ? (
+                <Stack spacing={2}>
+                  <Box>
+                    {elements.length === 0 ? (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ py: 1.5, fontStyle: 'italic' }}
+                      >
+                        {t('catalog.messages.noElements')}
                       </Typography>
-                      {propertyEntries.length === 0 ? (
-                        <Typography
-                          variant="body2"
-                          color="text.secondary"
-                          sx={{ fontStyle: 'italic' }}
-                        >
-                          {t('catalog.messages.noProperties')}
-                        </Typography>
-                      ) : (
-                        <TableContainer component={Paper} variant="outlined">
-                          <Table size="small">
-                            <TableHead>
-                              <TableRow>
-                                <TableCell sx={{ fontWeight: 700, width: '35%' }}>
-                                  {t('catalog.fields.propertyKey')}
-                                </TableCell>
-                                <TableCell sx={{ fontWeight: 700 }}>
-                                  {t('catalog.fields.propertyValue')}
-                                </TableCell>
-                              </TableRow>
-                            </TableHead>
-                            <TableBody>
-                              {propertyEntries.map(([key, value]) => (
-                                <TableRow key={key} hover>
+                    ) : (
+                      <TableContainer component={Paper} variant="outlined" sx={{ my: 1 }}>
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={{ fontWeight: 700 }}>
+                                {t('catalog.fields.element')}
+                              </TableCell>
+                              <TableCell sx={{ fontWeight: 700 }}>
+                                {t('catalog.fields.description')}
+                              </TableCell>
+                              <TableCell sx={{ fontWeight: 700 }}>
+                                {t('catalog.fields.requirement')}
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {elements.map((element) => {
+                              const elementPath = `/elements/${encodeURIComponent(element.id)}`
+                              const {
+                                displayName: elementDisplayName,
+                                description: elementDescription,
+                              } = catalogText('elements', element)
+
+                              return (
+                                <TableRow key={element.id} hover>
                                   <TableCell>
-                                    <Box component="code">{key}</Box>
+                                    <Stack spacing={0.25}>
+                                      <Link
+                                        component={RouterLink}
+                                        to={elementPath}
+                                        fontWeight={600}
+                                        underline="none"
+                                      >
+                                        {elementDisplayName}
+                                      </Link>
+                                      <Typography variant="caption" color="text.secondary">
+                                        <Box component="code">{element.name}</Box>
+                                      </Typography>
+                                    </Stack>
                                   </TableCell>
-                                  <TableCell sx={{ overflowWrap: 'anywhere' }}>{value}</TableCell>
+                                  <TableCell>{elementDescription ?? '-'}</TableCell>
+                                  <TableCell>
+                                    <Chip
+                                      size="small"
+                                      color={element.mandatory ? 'error' : 'default'}
+                                      variant="outlined"
+                                      label={
+                                        element.mandatory
+                                          ? t('catalog.values.mandatory')
+                                          : t('catalog.values.optional')
+                                      }
+                                    />
+                                  </TableCell>
                                 </TableRow>
-                              ))}
-                            </TableBody>
-                          </Table>
-                        </TableContainer>
-                      )}
-                    </Box>
-                  </Stack>
-                ) : null}
-              </Box>
-            </Collapse>
-          </TableCell>
-        </TableRow>
-      ) : null}
+                              )
+                            })}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    )}
+                  </Box>
+
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>
+                      {t('catalog.fields.properties')}
+                    </Typography>
+                    {propertyEntries.length === 0 ? (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        sx={{ fontStyle: 'italic' }}
+                      >
+                        {t('catalog.messages.noProperties')}
+                      </Typography>
+                    ) : (
+                      <TableContainer component={Paper} variant="outlined">
+                        <Table size="small">
+                          <TableHead>
+                            <TableRow>
+                              <TableCell sx={{ fontWeight: 700, width: '35%' }}>
+                                {t('catalog.fields.propertyKey')}
+                              </TableCell>
+                              <TableCell sx={{ fontWeight: 700 }}>
+                                {t('catalog.fields.propertyValue')}
+                              </TableCell>
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {propertyEntries.map(([key, value]) => (
+                              <TableRow key={key} hover>
+                                <TableCell>
+                                  <Box component="code">{key}</Box>
+                                </TableCell>
+                                <TableCell sx={{ overflowWrap: 'anywhere' }}>{value}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                    )}
+                  </Box>
+                </Stack>
+              ) : null}
+            </Box>
+          </Collapse>
+        </TableCell>
+      </TableRow>
     </>
   )
 }

@@ -90,7 +90,6 @@
       "consentId": "सहमति ID",
       "created": "बनाया गेआ",
       "validUntil": "इस तकर मान्य",
-      "back": "रजिस्ट्री च वापस",
       "notFound": "सहमति रिकार्ड नेईं लब्भेआ",
       "managed": "प्रबंधित",
       "section": {
@@ -289,7 +288,6 @@
     },
     "elements": {
       "add": "तत्व जोड़ो",
-      "back": "तत्वा च वापस",
       "empty": "चुने दे फिल्टरें कन्ने कोई तत्व नेईं मिलदे।",
       "emptyTitle": "कोई तत्व नेईं लब्भे",
       "loadFailed": "इसलै तत्व लोड करने च असमर्थ।",
@@ -320,7 +318,6 @@
     },
     "purposes": {
       "add": "उद्देश्य जोड़ो",
-      "back": "उद्देश्यें च वापस",
       "empty": "चुने दे फिल्टरें कन्ने कोई उद्देश्य नेईं मिलदे।",
       "emptyTitle": "कोई उद्देश्य नेईं लब्भे",
       "loadFailed": "इसलै उद्देश्य लोड करने च असमर्थ।",
@@ -460,7 +457,6 @@
       }
     },
     "detail": {
-      "back": "मेरी शिकायतां च वापस",
       "notFound": "शिकायत नेईं लब्भी",
       "description": "विवरण",
       "awaitingInfo": {
@@ -564,7 +560,6 @@
         }
       },
       "case": {
-        "back": "कतार च वापस",
         "notFound": "शिकायत नेईं लब्भी",
         "dataPrincipal": "यूजर",
         "resolvedLocked": "एह् शिकायत सुलझाई गई ऐ ते हुण एह् बंद ऐ। तुस इस्सी सिधै तौर पर दुबारा नेईं खोली सकदे — एह् सिर्फ तां गै दुबारा खोली जाई सकदी ऐ जेकर क्लाइंट कोई नमां सुनेहा भेजदा ऐ।",
@@ -593,7 +588,7 @@
       "deregistered": "रद्द कीता गेदा"
     },
     "filters": {
-      "searchPlaceholder": "विशे दे नांऽ, आईडी, जां ब्योरे राहें खोजो",
+      "searchPlaceholder": "विशे दे नांऽ जां ब्योरे राहें खोजो",
       "status": "स्थिति",
       "allStatuses": "सभनें स्थितियां",
       "search": "खोजो",
@@ -606,23 +601,23 @@
       "description": "विवरण",
       "status": "स्थिति",
       "actions": "कारवाई",
-      "empty": "कोई पंजीकृत विशे नेईं लब्भेआ गेआ।"
+      "empty": "कोई विशे नेईं लब्भेआ गेआ।"
     },
     "actions": {
-      "register": "विषे पंजीकृत करो",
+      "register": "विषे बनाओ",
       "delete": "विशे गी रद्द करो",
       "alreadyDeregistered": "एह्‌ विशे पैह्‌लें गै गैर-पंजीकृत करी दित्ता गेआ ऐ।"
     },
     "dialog": {
-      "registerTitle": "विषे पंजीकृत करो",
-      "registerSubtitle": "अपने संगठन आस्तै इक नमां इवेंट सूचना विशे पंजीकृत करो",
+      "registerTitle": "विषे बनाओ",
+      "registerSubtitle": "अपने संगठन आस्तै इक नमां इवेंट सूचना विशे बनाओ",
       "nameLabel": "विशे दा नांऽ।",
       "namePlaceholder": "उदा. consent.revoke",
       "nameRequired": "विशे दा नांऽ जरूरी ऐ।",
       "descriptionLabel": "विवरण",
       "descriptionPlaceholder": "विषे दे मकसद दा वैकल्पिक ब्योरा",
-      "registering": "पंजीकृत कीता जा करदा ऐ...",
-      "registerSubmit": "विषे पंजीकृत करो"
+      "registering": "बनाया जा करदा ऐ...",
+      "registerSubmit": "विषे बनाओ"
     },
     "deleteModal": {
       "title": "रद्द करने दी पुष्टी करो",
@@ -635,7 +630,7 @@
     "topicUi": {
       "selectionLimit": "एह् चुनाव {{max}}-टॉपिक दी सीमा शा बद्ध ऐ। अपनी खोज गी घट्ट करो जां कुसै चुने दे टॉपिक्स गी साफ करो। कोई चुनाव नेईं बदलेआ गेआ।",
       "subscribedCount": "Subscribed Topics ({{count}})",
-      "close": "रजिस्ट्रेशन बंद करो",
+      "close": "डायलॉग बंद करो",
       "topics": "टॉपिक्स",
       "delivery": "डिलीवरी",
       "chooseTopics": "2 चों स्टेप 1 — टॉपिक्स चुनो",
@@ -724,17 +719,16 @@
       "empty": "कोई सदस्यताएं नेईं लब्भेआ गेइयां।"
     },
     "actions": {
-      "register": "सदस्यता पंजीकृत करो",
+      "register": "सदस्यता बनाओ",
       "view": "विवरण दिक्खो",
       "verify": "वेबहूक गी परतियै सत्यापित करो",
       "delete": "सदस्यता मिटाओ",
       "alreadyDeleted": "एह्‌ सदस्यता पैह्‌लें गै मिटाई दित्ती गेई ऐ।",
-      "backToList": "सदस्यताएं पर वापस जाओ",
       "close": "बंद करो"
     },
     "dialog": {
-      "registerTitle": "सदस्यता पंजीकृत करो",
-      "registerSubtitle": "इक नमीं घटना अधिसूचना सदस्यता ते डिलीवरी मोड कन्फिगर करो",
+      "registerTitle": "सदस्यता बनाओ",
+      "registerSubtitle": "इक नमीं घटना अधिसूचना सदस्यता बनाओ ते डिलीवरी मोड कन्फिगर करो",
       "nameLabel": "सब्सक्रिप्शन दा नां",
       "namePlaceholder": "मसलन. आर्डर नोटिफिकेशन वेबहुक",
       "nameRequired": "सब्सक्रिप्शन दा नां जरूरी ऐ।",
@@ -755,8 +749,8 @@
       "secretRequired": "साझा रहस्य जरूरी ऐ।",
       "secretHelper": "वेबहुक पेलोड पर हस्ताक्षर करने जां पोल अनुरोधें गी प्रमाणित करने लेई इस्तेमाल कीता जंदा ऐ",
       "generateSecret": "नमां गुप्त कोड बनाओ",
-      "registering": "पंजीकृत कीता जा करदा ऐ...",
-      "registerSubmit": "सदस्यता पंजीकृत करो",
+      "registering": "बनाया जा करदा ऐ...",
+      "registerSubmit": "सदस्यता बनाओ",
       "purposesLoadFailed": "Unable to load purposes right now.",
       "purposesEmpty": "No purposes available.",
       "purposesNoMatches": "No purposes match your search."
@@ -865,7 +859,6 @@
     },
     "details": {
       "title": "इवेंट दा ब्योरा",
-      "backToEvents": "घटनां पर वापस जाओ",
       "loadFailed": "इवेंटें दे ब्यौरे लोड करने च असमर्थ।",
       "metadataTitle": "घटना मेटाडेटा",
       "metadataSubtitle": "पਛਾणकर्ता, विशे, ते भेजने दे समें",

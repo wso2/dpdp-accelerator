@@ -90,7 +90,6 @@
       "consentId": "رضامندي ID",
       "created": "ٺاهيو ويو",
       "validUntil": "تائين صحيح آهي",
-      "back": "رجسٽري ڏانهن واپس",
       "notFound": "رضامندي جو رڪارڊ نه مليو",
       "managed": "انتظام ڪيل",
       "section": {
@@ -289,7 +288,6 @@
     },
     "elements": {
       "add": "عنصر شامل ڪريو",
-      "back": "عنصرن ڏانهن واپس",
       "empty": "چونڊيل فلٽرن سان ڪي به عنصر نٿا ملن.",
       "emptyTitle": "ڪي به عنصر نه مليا",
       "loadFailed": "هن وقت عنصر لوڊ ڪرڻ ۾ ناڪام.",
@@ -320,7 +318,6 @@
     },
     "purposes": {
       "add": "مقصد شامل ڪريو",
-      "back": "مقصدن ڏانهن واپس",
       "empty": "چونڊيل فلٽرن سان ڪي به مقصد نٿا ملن.",
       "emptyTitle": "ڪي به مقصد نه مليا",
       "loadFailed": "هن وقت مقصد لوڊ ڪرڻ ۾ ناڪام.",
@@ -460,7 +457,6 @@
       }
     },
     "detail": {
-      "back": "منهنجي شڪايتن ڏانهن واپس",
       "notFound": "شڪايت نه ملي",
       "description": "تفصيل",
       "awaitingInfo": {
@@ -564,7 +560,6 @@
         }
       },
       "case": {
-        "back": "قطار ڏانهن واپس",
         "notFound": "شڪايت نه ملي",
         "dataPrincipal": "استعمال ڪندڙ",
         "resolvedLocked": "هن شڪايت جو حل ٿي ويو آهي ۽ هاڻي اها بند آهي. توهان ان کي سڌو سنوان ٻيهر نٿا کولي سگهو — اها صرف ان صورت ۾ ٻيهر کولي سگهجي ٿي جيڪڏهن ڪلائنٽ هڪ نئون پيغام موڪلي.",
@@ -593,7 +588,7 @@
       "deregistered": "डीरजिस्टरु कयल"
     },
     "filters": {
-      "searchPlaceholder": "मौज़ूअ जे नालो, आईडी, या बयान सां ॻोल्हियो",
+      "searchPlaceholder": "मौज़ूअ जे नालो या बयान सां ॻोल्हियो",
       "status": "हालत",
       "allStatuses": "सभुं हैसियतूं",
       "search": "ॻोल्हियो",
@@ -606,23 +601,23 @@
       "description": "तफ़सील",
       "status": "हालत",
       "actions": "कारवाइयूं",
-      "empty": "को बि रजिस्टर्ड मौज़ूअ न मिलियो।"
+      "empty": "को बि मौज़ूअ न मिलियो।"
     },
     "actions": {
-      "register": "मौज़ूअ रजिस्टर करियो",
+      "register": "मौज़ूअ ठाहियो",
       "delete": "मउज़ूअ डीरजिस्टरु करियो",
       "alreadyDeregistered": "इहो मौज़ूअ पहिरीं ई डी-रजिस्टर कयो वियो आहे"
     },
     "dialog": {
-      "registerTitle": "मौज़ूअ रजिस्टर करियो",
-      "registerSubtitle": "पंहिंजी तंज़ीम जे लाइ हिकु नओं इवेंन्ट जे इत्तिलाअ जो मौज़ूअ रजिस्टर करियो",
+      "registerTitle": "मौज़ूअ ठाहियो",
+      "registerSubtitle": "पंहिंजी तंज़ीम जे लाइ हिकु नओं इवेंन्ट जे इत्तिलाअ जो मौज़ूअ ठाहियो",
       "nameLabel": "मौजूअ जो नालो",
       "namePlaceholder": "मिसाल तौर, सहमति। रद्द करियो",
       "nameRequired": "मौजूअ जो नालो ज़रूरी आहे।",
       "descriptionLabel": "तफ़सील",
       "descriptionPlaceholder": "मौज़ूअ जे मक़्सद जो इख़्तियारी बयान",
-      "registering": "रजिस्टर कयो पियो वञे...",
-      "registerSubmit": "मौज़ूअ रजिस्टर करियो"
+      "registering": "ठाहिजे पियो...",
+      "registerSubmit": "मौज़ूअ ठाहियो"
     },
     "deleteModal": {
       "title": "डीरजिस्ट्रेशन जी तस्दीक़ करियो",
@@ -635,7 +630,7 @@
     "topicUi": {
       "selectionLimit": "ही चूंड़ {{max}}-टॉपिक जी हद खां वधीक आहे. पंहिंजी गोलहा घटायो या कुझ चूंड़ियल टॉपिक साफ कयो. का बी चूंड़ तब्दील न कयी वयी.",
       "subscribedCount": "Subscribed Topics ({{count}})",
-      "close": "रजिस्ट्रेशन बंद कयो",
+      "close": "डायलॉग बंद करियो",
       "topics": "टॉपिक्स",
       "delivery": "डिलिवरी",
       "chooseTopics": "2 मां कदम 1 — टॉपिक्स चूंड़ियो",
@@ -724,17 +719,16 @@
       "empty": "को बि सदस्यताउं न मिलियूं।"
     },
     "actions": {
-      "register": "सदस्यता रजिस्टर करियो",
+      "register": "सदस्यता ठाहियो",
       "view": "तफ़सील ॾिसो",
       "verify": "वेबहूक खे वरी तस्दीक़ करियो",
       "delete": "सदस्यता मिटाइयो",
       "alreadyDeleted": "इहो सब्सक्रिप्शन पहिरीं ई मिटाए वियो आहे",
-      "backToList": "सदस्यताउनि ڏانهن واپس",
       "close": "बंद करियो"
     },
     "dialog": {
-      "registerTitle": "सदस्यता रजिस्टर करियो",
-      "registerSubtitle": "हिक नईं वाक़िए जी इत्तिलाअ जी सदस्यता ऐं डिलीवरी जो तरीक़ो ठाहियो",
+      "registerTitle": "सदस्यता ठाहियो",
+      "registerSubtitle": "हिक नईं वाक़िए जी इत्तिलाअ जी सदस्यता ठाहियो ऐं डिलीवरी जो तरीक़ो कन्फिगर करियो",
       "nameLabel": "Subscription Name",
       "namePlaceholder": "e.g. Orders Notification Webhook",
       "nameRequired": "Subscription name is required.",
@@ -755,8 +749,8 @@
       "secretRequired": "साझा राज़ ज़रूरी आहे।",
       "secretHelper": "वेबहुक पेलोड्स खे साइन इन करणु या पोल रिक्वेस्टनि जी तस्दीक़ करणु लाइ इस्तिमाल कयो वियो",
       "generateSecret": "नओं राज़ ठाहियो",
-      "registering": "रजिस्टर कयो पियो वञे...",
-      "registerSubmit": "सदस्यता रजिस्टर करियो",
+      "registering": "ठाहिजे पियो...",
+      "registerSubmit": "सदस्यता ठाहियो",
       "purposesLoadFailed": "Unable to load purposes right now.",
       "purposesEmpty": "No purposes available.",
       "purposesNoMatches": "No purposes match your search."
@@ -865,7 +859,6 @@
     },
     "details": {
       "title": "इवेंट जा तफ़सील",
-      "backToEvents": "वाक़िअनि ڏانهن واپس",
       "loadFailed": "इवेंट जा तफ़सील लोड करणु में नाकामी।",
       "metadataTitle": "वाक़िए जो मेटाडेटा",
       "metadataSubtitle": "शनाख़्त कंदड़, मौज़ूअ, ऐं मोकिलिणु जा वक़्ति जा निशान",

@@ -90,7 +90,6 @@
       "consentId": "सहमति आईडी",
       "created": "बनाएल गेल",
       "validUntil": "तारीख तक वैध",
-      "back": "रजिस्ट्री पर वापस जाऊ",
       "notFound": "सहमति रिकॉर्ड नहि भेटल",
       "managed": "प्रबंधित",
       "section": {
@@ -289,7 +288,6 @@
     },
     "elements": {
       "add": "तत्व जोड़ू",
-      "back": "तत्व सभ पर वापस जाऊ",
       "empty": "चुनल गेल फ़िल्टर सँ कोनहु तत्व मेल नहि खाैत अछि।",
       "emptyTitle": "कोनहु तत्व नहि भेटल",
       "loadFailed": "अखनि तत्व सभ लोड करै मे असमर्थ।",
@@ -320,7 +318,6 @@
     },
     "purposes": {
       "add": "उद्देश्य जोड़ू",
-      "back": "उद्देश्य सभ पर वापस जाऊ",
       "empty": "चुनल गेल फ़िल्टर सँ कोनहु उद्देश्य मेल नहि खाैत अछि।",
       "emptyTitle": "कोनहु उद्देश्य नहि भेटल",
       "loadFailed": "अखनि उद्देश्य सभ लोड करै मे असमर्थ।",
@@ -460,7 +457,6 @@
       }
     },
     "detail": {
-      "back": "हमर शिकायत सभ पर वापस जाऊ",
       "notFound": "शिकायत नहि भेटल",
       "description": "विवरण",
       "awaitingInfo": {
@@ -564,7 +560,6 @@
         }
       },
       "case": {
-        "back": "कतार पर वापस जाऊ",
         "notFound": "शिकायत नहि भेटल",
         "dataPrincipal": "उपयोगकर्ता",
         "resolvedLocked": "ई शिकायत सुलझा देल गेल अछि आ एखन ई लॉक अछि। अहाँ एकरा सीधे पुनः नहि खोलि सकैत छी — एकरा केवल तखने पुनः खोलल जा सकैत अछि जखन क्लाइंट नव संदेश पठाओत।",
@@ -593,7 +588,7 @@
       "deregistered": "डी-रजिस्टर कएल गेल"
     },
     "filters": {
-      "searchPlaceholder": "विषय नाम, आईडी, या विवरण द्वारा खोजू",
+      "searchPlaceholder": "विषय नाम या विवरण द्वारा खोजू",
       "status": "स्थिति",
       "allStatuses": "सब स्थिति",
       "search": "खोजू",
@@ -606,23 +601,23 @@
       "description": "विवरण",
       "status": "स्थिति",
       "actions": "कार्य",
-      "empty": "कोनो पंजीकृत विषय नहि भेटल।"
+      "empty": "कोनो विषय नहि भेटल।"
     },
     "actions": {
-      "register": "विषय पंजीकृत करू",
+      "register": "विषय बनाऊ",
       "delete": "विषय कें डी-रजिस्टर करू",
       "alreadyDeregistered": "ई विषय पहिने सँ अपंजीकृत अछि"
     },
     "dialog": {
-      "registerTitle": "विषय पंजीकृत करू",
-      "registerSubtitle": "अहाँक संगठनक लेल एकटा नव घटना अधिसूचना विषय पंजीकृत करू",
+      "registerTitle": "विषय बनाऊ",
+      "registerSubtitle": "अहाँक संगठनक लेल एकटा नव घटना अधिसूचना विषय बनाऊ",
       "nameLabel": "विषयक नाम",
       "namePlaceholder": "उदाहरणक लेल, सहमति। रद्द करू",
       "nameRequired": "विषयक नाम आवश्यक अछि।",
       "descriptionLabel": "विवरण",
       "descriptionPlaceholder": "विषय उद्देश्यक वैकल्पिक विवरण",
-      "registering": "पंजीकरण कएल जा रहल अछि...",
-      "registerSubmit": "विषय पंजीकृत करू"
+      "registering": "बनाओल जा रहल अछि...",
+      "registerSubmit": "विषय बनाऊ"
     },
     "deleteModal": {
       "title": "डी-रजिस्ट्रेशनक पुष्टि करू",
@@ -635,7 +630,7 @@
     "topicUi": {
       "selectionLimit": "ई चयन {{max}}-विषय सीमा सँ बेसी अछि। अपन खोज केँ सीमित करू वा किछु चयनित विषय केँ हटाउ। कोनो चयन नहि बदलल गेल।",
       "subscribedCount": "Subscribed Topics ({{count}})",
-      "close": "पंजीकरण बंद करू",
+      "close": "डायलॉग बंद करू",
       "topics": "विषय",
       "delivery": "वितरण",
       "chooseTopics": "2 मे सँ 1 चरण — विषय चुनू",
@@ -724,17 +719,16 @@
       "empty": "कोनो सदस्यता नहि भेटल।"
     },
     "actions": {
-      "register": "सदस्यता पंजीकृत करू",
+      "register": "सदस्यता बनाऊ",
       "view": "विवरण देखू",
       "verify": "वेबहुकक पुन: सत्यापन करू",
       "delete": "सदस्यता हटाबू",
       "alreadyDeleted": "ई सदस्यता पहिने सँ हटा देल गेल अछि",
-      "backToList": "सदस्यता पर वापस",
       "close": "बंद करू"
     },
     "dialog": {
-      "registerTitle": "सदस्यता पंजीकृत करू",
-      "registerSubtitle": "एकटा नव घटना अधिसूचना सदस्यता आ डिलीवरी मोड कॉन्फ़िगर करू",
+      "registerTitle": "सदस्यता बनाऊ",
+      "registerSubtitle": "एकटा नव घटना अधिसूचना सदस्यता बनाऊ आ डिलीवरी मोड कॉन्फ़िगर करू",
       "nameLabel": "सब्सक्रिप्शन नाम",
       "namePlaceholder": "जेना. ऑर्डर नोटिफिकेशन वेबहुक",
       "nameRequired": "सब्सक्रिप्शन नाम आवश्यक अछि।",
@@ -755,8 +749,8 @@
       "secretRequired": "साझा रहस्य आवश्यक अछि।",
       "secretHelper": "वेबहुक पेलोड पर हस्ताक्षर करबाक या पोल अनुरोधक प्रमाणित करबाक लेल उपयोग कएल गेल",
       "generateSecret": "नव गुप्त बनाबू",
-      "registering": "पंजीकरण कएल जा रहल अछि...",
-      "registerSubmit": "सदस्यता पंजीकृत करू",
+      "registering": "बनाओल जा रहल अछि...",
+      "registerSubmit": "सदस्यता बनाऊ",
       "purposesLoadFailed": "Unable to load purposes right now.",
       "purposesEmpty": "No purposes available.",
       "purposesNoMatches": "No purposes match your search."
@@ -865,7 +859,6 @@
     },
     "details": {
       "title": "घटना विवरण",
-      "backToEvents": "घटना पर वापस",
       "loadFailed": "घटना विवरण लोड करब' मे असमर्थ।",
       "metadataTitle": "घटना मेटाडेटा",
       "metadataSubtitle": "पहचानकर्ता, विषय, आ प्रेषण टाइमस्टैम्प",

@@ -40,6 +40,14 @@ export interface CreatePurposeBody {
   properties?: Record<string, string>
 }
 
+export interface CreatePurposeVersionBody {
+  version: string
+  setAsLatest?: boolean
+  description?: string
+  elements?: PurposeElementBinding[]
+  properties?: Record<string, string>
+}
+
 export interface CreateElementBody {
   name: string
   displayName?: string
@@ -161,6 +169,13 @@ export class ConsentApiClient {
 
   async createPurpose(body: CreatePurposeBody): Promise<APIResponse> {
     return this.request.post(consentPurposesApiUrl('', this.tenantDomain), {
+      headers: this.headers({ 'Content-Type': 'application/json' }),
+      data: body,
+    })
+  }
+
+  async createPurposeVersion(purposeId: string, body: CreatePurposeVersionBody): Promise<APIResponse> {
+    return this.request.post(consentPurposesApiUrl(`/${encodeURIComponent(purposeId)}/versions`, this.tenantDomain), {
       headers: this.headers({ 'Content-Type': 'application/json' }),
       data: body,
     })

@@ -10,7 +10,7 @@ in CI was actually checking.
 
 | | |
 |---|---|
-| **Tests** | 209 across 55 spec files in 10 areas |
+| **Tests** | 211 across 55 spec files in 10 areas |
 | **Removed, not skipped** | `09.08`'s fan-out persistence rollback case, `09.10`'s stuck-in-flight reclaim case - see "What this suite cannot verify" |
 | **Skipped when unconfigured** | `04.09.03` (expiry cron); `09.10.01`, `09.10.02`, `09.10.03` (shortened backoff) |
 | **Rules and conventions** | [`AGENTS.md`](AGENTS.md) |
@@ -125,7 +125,7 @@ Same shape as elements, plus a type filter and version management (a Purpose has
 versions; exactly one is "latest" at a time - the one whose elements/properties/description the
 overview card shows).
 
-**18 tests, 5 spec files.**
+**19 tests, 5 spec files.**
 
 ### `03.01-admin-creating-purposes.spec.ts`
 
@@ -169,12 +169,13 @@ overview card shows).
 | `03.05.03` | Setting a version as latest moves the "Latest" label to it, and its own delete action becomes enabled | Also confirms the reverse: the version just promoted away from latest becomes deletable, and the newly-latest one's own delete becomes disabled. |
 | `03.05.04` | Deleting a non-latest version removes it from the version history |  |
 | `03.05.05` | A version referenced by a consent cannot be deleted | The server rejects this, but the frontend shows only a generic error - see "Product bugs the tests work around" below. |
+| `03.05.06` | Expanding each version row fetches and shows that version’s own elements and properties | Seeds two versions (`v1` and `v2`) with distinct elements and properties via API, expands both rows, and asserts each expanded panel displays only its own version-specific elements and properties. |
 
 ## `04-consents/` — Consent records
 
 The largest area. **Consent creation has no UI at all**, so `seedConsentViaApi` creates the Element, Purpose, and Consent all through the admin API - none of these tests exercise the create-Element/create-Purpose forms themselves (see `02-elements/02.01-*` and `03-purposes/03.01-*` for those). `state: PENDING` is expressed by supplying `authorizations` - the v2 API rejects an explicit `PENDING`.
 
-**49 tests, 12 spec files.**
+**50 tests, 12 spec files.**
 
 ### `04.01-user-viewing-consents.spec.ts`
 
@@ -194,6 +195,7 @@ The largest area. **Consent creation has no UI at all**, so `seedConsentViaApi` 
 | `04.02.02` | Searching by the exact service id finds the matching consent |  |
 | `04.02.03` | A service filter matching nothing shows the empty-results message |  |
 | `04.02.04` | A service search for only a partial match finds nothing | Finds nothing - serviceId is an exact server-side match, unlike the catalog's substring search. |
+| `04.02.05` | The pending view keeps state locked while filtering by Relation (Personal vs Managed) | Seeds one Personal (`user` as subject) and one Managed (`user` as authorizer for `user2`) Pending consent under a single service id, switches between `Personal` and `Managed`, and confirms Clear resets Relation while staying in Pending view. |
 
 ### `04.03-user-acting-on-consents.spec.ts`
 

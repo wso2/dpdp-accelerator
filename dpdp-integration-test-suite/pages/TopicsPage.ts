@@ -49,7 +49,7 @@ export class TopicsPage {
     // never on a truly empty environment - see 09.01.01's regression history.
     this.registerButton = page.getByRole('button', { name: 'Create Topic', exact: true })
     this.table = page.getByRole('table', { name: 'Topics management table' })
-    this.searchInput = page.getByPlaceholder('Search by topic name, ID, or description')
+    this.searchInput = page.getByPlaceholder('Search by topic name or description')
     this.statusFilter = page.getByRole('combobox', { name: 'Status' })
     this.searchButton = page.getByRole('button', { name: 'Search' })
     this.clearFiltersButton = page.getByRole('button', { name: 'Clear filters' })

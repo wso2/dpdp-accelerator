@@ -24,16 +24,24 @@ import { ConsentRegistryTable } from './ConsentRegistryTable'
 /** A user's own consent list at /consents, labelled "My Consents" in the sidebar. */
 export class MyConsentPage extends ConsentRegistryTable {
   readonly serviceSearch: Locator
+  readonly stateFilter: Locator
+  readonly relationFilter: Locator
   readonly clearFiltersButton: Locator
 
   constructor(page: Page) {
     super(page)
     this.serviceSearch = page.getByPlaceholder('Search by service')
+    this.stateFilter = page.getByRole('combobox', { name: 'State' })
+    this.relationFilter = page.getByRole('combobox', { name: 'Relation' })
     this.clearFiltersButton = page.getByRole('button', { name: 'Clear all filters' })
   }
 
   async goto(): Promise<void> {
     await this.page.goto('consents')
+  }
+
+  async gotoPending(): Promise<void> {
+    await this.page.goto('consents?view=pending')
   }
 
   async searchByService(serviceId: string): Promise<void> {
@@ -50,6 +58,10 @@ export class MyConsentPage extends ConsentRegistryTable {
 
   async filterByState(stateLabel: string): Promise<void> {
     await selectMuiOption(this.page, 'consent-state', stateLabel)
+  }
+
+  async filterByRelation(relationLabel: 'All' | 'Personal' | 'Managed'): Promise<void> {
+    await selectMuiOption(this.page, 'consent-relation', relationLabel)
   }
 
   async clearFilters(): Promise<void> {
