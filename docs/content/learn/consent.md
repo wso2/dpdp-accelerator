@@ -76,6 +76,8 @@ If **Priya** also agrees to share her phone number, **CarePulse** includes the p
 
 The consent record also captures the version of the purpose used when the consent was created. This helps establish which version of the purpose the consent refers to.
 
+To manage consents using the REST API, see the API calls in [Try Out: Consent](../try-out/consent.md).
+
 ### Review consent in the Consent Portal
 
 After giving consent, **Priya** can open **My Consents** in the Consent Portal to review her consent records, including what she agreed to, which service requested the consent, its current status, and when it expires.
@@ -122,7 +124,7 @@ A consent moves through a defined lifecycle. Its current state indicates whether
 | `PENDING` | The consent is awaiting a decision from one or more required authorizers. |
 | `ACTIVE` | The consent has received all required approvals and is in effect. |
 | `REJECTED` | A required authorizer rejected the consent. |
-| `REVOKED` | An active consent was withdrawn. |
+| `REVOKED` | The consent was withdrawn. An active consent can be revoked by the subject of a direct consent or by an authorizer, and an administrator can revoke a consent that is pending or active. |
 | `EXPIRED` | The consent has reached its expiry time. |
 
 ### How does a consent become active?
@@ -199,7 +201,7 @@ For example, both parents may be required to approve a consent for their child:
 
 The consent remains `PENDING` until both parents approve it. If either parent rejects it, the consent becomes `REJECTED`.
 
-In this model, the subject is an **observer only**. They can view the consent but cannot approve, reject, revoke, or otherwise manage it. The same mechanism applies whenever someone other than the subject must authorize on their behalf — for example, **CarePulse** naming **Raj** as the sole authorizer on a consent for **Priya**'s enrollment in a shared family health plan.
+In this model, the subject is an **observer only**. They can view the consent but cannot approve, reject, revoke, or otherwise manage it. Once the consent is active, any of the named authorizers can revoke it, and an administrator can revoke it while it is pending or active. The same mechanism applies whenever someone other than the subject must authorize on their behalf — for example, **CarePulse** naming **Raj** as the sole authorizer on a consent for **Priya**'s enrollment in a shared family health plan.
 
 **Try it:** [Authorize consent as a guardian or delegate](../try-out/consent.md#authorize-consent-as-a-guardian-or-delegate).
 

@@ -4,7 +4,7 @@ title: Configuring Users and Roles
 
 # Configuring Users and Roles
 
-Once WSO2 Identity Server and the DPDP Accelerator are started, the accelerator automatically provisions three predefined roles: `dpdp-consent-admin`, `dpdp-consent-dpo`, and `dpdp-consent-user`.
+When WSO2 Identity Server starts with the DPDP Accelerator, and whenever a new tenant is created, the accelerator automatically provisions three predefined roles: `dpdp-consent-admin`, `dpdp-consent-dpo`, and `dpdp-consent-user`.
 
 This guide walks you through:
 1. [Creating a new user](#1-creating-a-user)
@@ -73,7 +73,7 @@ The accelerator provides three predefined roles designed to separate user, admin
 
 | Role | Target Persona | Key Capabilities |
 |---|---|---|
-| **`dpdp-consent-admin`** | System & Organization Administrators | Full oversight over consents, purpose/element catalog management, tenant-wide complaint management, and event notification subscriptions. |
+| **`dpdp-consent-admin`** | System & Organization Administrators | Full oversight over consents, purpose/element catalog management, and event notification subscriptions. Complaint handling is not included; it belongs to `dpdp-consent-dpo`. |
 | **`dpdp-consent-dpo`** | Data Protection Officers (DPO) | Organization-wide complaint inspection, review, internal notes, and complaint resolution without administrative consent privileges. |
 | **`dpdp-consent-user`** | Data Principals / End Users | Self-service account deletion (`DELETE /scim2/Me`), personal complaint filing and tracking, and personal consent history audit views. |
 
