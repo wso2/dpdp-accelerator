@@ -24,7 +24,7 @@ import { PurposeListPage } from '../../pages/PurposeListPage'
 import { PurposeVersionDeleteDialog } from '../../pages/PurposeVersionDeleteDialog'
 import { PurposeVersionFormDialog } from '../../pages/PurposeVersionFormDialog'
 import { seedConsentViaApi } from '../../utils/consentSetup'
-import { uniquePurposeName } from '../../utils/testData'
+import { uniqueElementName, uniquePurposeName } from '../../utils/testData'
 
 /**
  * Version history on a Purpose's detail page: adding a version, the duplicate-version-name
@@ -197,6 +197,78 @@ test.describe('Admin managing Purpose versions (UI)', () => {
     await expect(deleteDialog.root).toBeVisible()
     await deleteDialog.cancel()
     await expect(v1Row).toBeVisible()
+    await consentAdminPage.context().close()
+  })
+
+  test('03.05.06 - Expanding each version row fetches and shows that version’s own elements and properties', async ({
+    browser,
+    consentAdminConsentApi,
+  }) => {
+    const elementOneName = uniqueElementName()
+    const elementTwoName = uniqueElementName()
+
+    const elOneResp = await consentAdminConsentApi.createElement({
+      name: elementOneName,
+      displayName: elementOneName,
+      description: 'First version element',
+    })
+    expect(elOneResp.status()).toBe(201)
+    const elementOneId = ((await elOneResp.json()) as { id: string }).id
+
+    const elTwoResp = await consentAdminConsentApi.createElement({
+      name: elementTwoName,
+      displayName: elementTwoName,
+      description: 'Second version element',
+    })
+    expect(elTwoResp.status()).toBe(201)
+    const elementTwoId = ((await elTwoResp.json()) as { id: string }).id
+
+    const purposeResp = await consentAdminConsentApi.createPurpose({
+      name: uniquePurposeName(),
+      type: 'Policy',
+      version: 'v1',
+      description: 'Version 1 description',
+      elements: [{ id: elementOneId, mandatory: true }],
+      properties: { retention: '30d', region: 'IN' },
+    })
+    expect(purposeResp.status()).toBe(201)
+    const purposeId = ((await purposeResp.json()) as { id: string }).id
+
+    const v2Resp = await consentAdminConsentApi.createPurposeVersion(purposeId, {
+      version: 'v2',
+      setAsLatest: true,
+      description: 'Version 2 description',
+      elements: [{ id: elementTwoId, mandatory: false }],
+      properties: { retention: '90d', lawfulBasis: 'consent' },
+    })
+    expect(v2Resp.status()).toBe(201)
+
+    const consentAdminPage = await loginAsConsentAdmin(browser)
+    const detailPage = new PurposeDetailPage(consentAdminPage)
+    await detailPage.goto(purposeId)
+
+    await detailPage.expandVersionButton('v1').click()
+    await detailPage.expandVersionButton('v2').click()
+
+    const v1Details = detailPage.versionDetailsRow('v1')
+    const v2Details = detailPage.versionDetailsRow('v2')
+
+    await expect(v1Details).toContainText(elementOneName)
+    await expect(v1Details).toContainText('Mandatory')
+    await expect(v1Details).toContainText('retention')
+    await expect(v1Details).toContainText('30d')
+    await expect(v1Details).toContainText('region')
+    await expect(v1Details).not.toContainText(elementTwoName)
+    await expect(v1Details).not.toContainText('90d')
+
+    await expect(v2Details).toContainText(elementTwoName)
+    await expect(v2Details).toContainText('Optional')
+    await expect(v2Details).toContainText('retention')
+    await expect(v2Details).toContainText('90d')
+    await expect(v2Details).toContainText('lawfulBasis')
+    await expect(v2Details).not.toContainText(elementOneName)
+    await expect(v2Details).not.toContainText('30d')
+
     await consentAdminPage.context().close()
   })
 })

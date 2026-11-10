@@ -227,8 +227,8 @@ Test IDs are derived from location — `<area>.<file>.<test>`, so `04.06.04` is 
 | --- | --- | --- |
 | `01-provisioning/` | 3 | Per-run setup: creates the throwaway tenant, provisions its personas and the super tenant's |
 | `02-elements/` | 12 | Element catalog: admin creating, viewing, searching, and deleting Elements |
-| `03-purposes/` | 18 | Purpose catalog: admin creating, viewing, searching, deleting Purposes, and managing versions |
-| `04-consents/` | 49 | Consent records: user and admin registries (view/search/act), consent history, expiry reconciliation |
+| `03-purposes/` | 19 | Purpose catalog: admin creating, viewing, searching, deleting Purposes, and managing versions |
+| `04-consents/` | 50 | Consent records: user and admin registries (view/search/act), consent history, expiry reconciliation |
 | `05-authorization/` | 8 | The global route-guard and sidebar-visibility mechanism, per persona's scopes |
 | `06-multi-tenancy/` | 1 | Cross-tenant Purpose data isolation - "multi-tenant" project only |
 | `07-account/` | 5 | Self-service account deletion, and who is offered it. Destructive, so each test uses its own throwaway user |

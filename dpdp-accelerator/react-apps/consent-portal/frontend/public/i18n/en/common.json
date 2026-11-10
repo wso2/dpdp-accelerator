@@ -90,7 +90,6 @@
       "consentId": "Consent ID",
       "created": "Created",
       "validUntil": "Valid Until",
-      "back": "Back to Registry",
       "notFound": "Consent record not found",
       "managed": "Managed",
       "section": {
@@ -289,7 +288,6 @@
     },
     "elements": {
       "add": "Add element",
-      "back": "Back to elements",
       "empty": "No elements match the selected filters.",
       "emptyTitle": "No elements found",
       "loadFailed": "Unable to load elements right now.",
@@ -320,7 +318,6 @@
     },
     "purposes": {
       "add": "Add purpose",
-      "back": "Back to purposes",
       "empty": "No purposes match the selected filters.",
       "emptyTitle": "No purposes found",
       "loadFailed": "Unable to load purposes right now.",
@@ -460,7 +457,6 @@
       }
     },
     "detail": {
-      "back": "Back to my complaints",
       "notFound": "Complaint not found",
       "description": "Description",
       "awaitingInfo": {
@@ -564,7 +560,6 @@
         }
       },
       "case": {
-        "back": "Back to queue",
         "notFound": "Complaint not found",
         "dataPrincipal": "User",
         "resolvedLocked": "This complaint has been resolved and is now locked. You cannot reopen it directly — it can only be reopened if the client sends a new message.",
@@ -593,7 +588,7 @@
       "deregistered": "Deregistered"
     },
     "filters": {
-      "searchPlaceholder": "Search by topic name, ID, or description",
+      "searchPlaceholder": "Search by topic name or description",
       "status": "Status",
       "allStatuses": "All Statuses",
       "search": "Search",
@@ -606,23 +601,23 @@
       "description": "Description",
       "status": "Status",
       "actions": "Actions",
-      "empty": "No registered topics found."
+      "empty": "No topics found."
     },
     "actions": {
-      "register": "Register Topic",
+      "register": "Create Topic",
       "delete": "Deregister topic",
       "alreadyDeregistered": "This topic is already deregistered"
     },
     "dialog": {
-      "registerTitle": "Register Topic",
-      "registerSubtitle": "Register a new event notification topic for your organization",
+      "registerTitle": "Create Topic",
+      "registerSubtitle": "Create a new event notification topic for your organization",
       "nameLabel": "Topic Name",
       "namePlaceholder": "e.g. consent.revoke",
       "nameRequired": "Topic name is required.",
       "descriptionLabel": "Description",
       "descriptionPlaceholder": "Optional description of the topic purpose",
-      "registering": "Registering...",
-      "registerSubmit": "Register Topic"
+      "registering": "Creating...",
+      "registerSubmit": "Create Topic"
     },
     "deleteModal": {
       "title": "Confirm Deregistration",
@@ -635,7 +630,7 @@
     "topicUi": {
       "selectionLimit": "This selection exceeds the {{max}}-topic limit. Narrow your search or clear some selected topics. No selections were changed.",
       "subscribedCount": "Subscribed Topics",
-      "close": "Close registration",
+      "close": "Close dialog",
       "topics": "Topics",
       "delivery": "Delivery",
       "chooseTopics": "Step 1 of 2 — choose topics",
@@ -724,17 +719,16 @@
       "empty": "No subscriptions found."
     },
     "actions": {
-      "register": "Register Subscription",
+      "register": "Create Subscription",
       "view": "View Details",
       "verify": "Re-verify webhook",
       "delete": "Delete subscription",
       "alreadyDeleted": "This subscription is already deleted",
-      "backToList": "Back to Subscriptions",
       "close": "Close"
     },
     "dialog": {
-      "registerTitle": "Register Subscription",
-      "registerSubtitle": "Configure a new event notification subscription and delivery mode",
+      "registerTitle": "Create Subscription",
+      "registerSubtitle": "Create and configure a new event notification subscription and delivery mode",
       "nameLabel": "Subscription Name",
       "namePlaceholder": "e.g. Orders Notification Webhook",
       "nameRequired": "Subscription name is required.",
@@ -758,8 +752,8 @@
       "secretRequired": "Shared secret is required.",
       "secretHelper": "Used to sign webhook payloads or authenticate poll requests",
       "generateSecret": "Generate new secret",
-      "registering": "Registering...",
-      "registerSubmit": "Register Subscription"
+      "registering": "Creating...",
+      "registerSubmit": "Create Subscription"
     },
     "deleteModal": {
       "title": "Confirm Subscription Deletion",
@@ -865,7 +859,6 @@
     },
     "details": {
       "title": "Event details",
-      "backToEvents": "Back to Events",
       "loadFailed": "Unable to load event details.",
       "metadataTitle": "Event Metadata",
       "metadataSubtitle": "Identifiers, topics, and dispatch timestamps",

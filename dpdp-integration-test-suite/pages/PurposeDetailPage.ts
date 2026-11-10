@@ -70,6 +70,19 @@ export class PurposeDetailPage {
     return this.versionsTable.getByRole('row', { name: new RegExp(version) })
   }
 
+  expandVersionButton(version: string): Locator {
+    return this.versionsTable.getByRole('button', { name: `Show elements for version ${version}`, exact: true })
+  }
+
+  collapseVersionButton(version: string): Locator {
+    return this.versionsTable.getByRole('button', { name: `Hide elements for version ${version}`, exact: true })
+  }
+
+  /** The collapsible details row rendered immediately after `versionRow(version)`. */
+  versionDetailsRow(version: string): Locator {
+    return this.versionRow(version).locator('xpath=following-sibling::tr[1]')
+  }
+
   /** Data rows only - scoped to tbody so the header row is never counted as a version. */
   get versionRows(): Locator {
     return this.versionsTable.locator('tbody').getByRole('row')
