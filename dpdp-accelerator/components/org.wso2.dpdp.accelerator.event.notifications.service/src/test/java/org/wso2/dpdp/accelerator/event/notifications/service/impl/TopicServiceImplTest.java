@@ -43,8 +43,10 @@ import javax.sql.DataSource;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.testng.Assert.assertEquals;
@@ -251,5 +253,86 @@ public class TopicServiceImplTest {
         when(topicDAO.getTopicById(any(Connection.class), eq("t1"), eq("org1"))).thenReturn(Optional.of(topic));
 
         topicService.deleteTopic("org1", "t1");
+    }
+
+    @Test
+    public void testReconcileSystemTopicsAcrossTenantsPromotesAndProvisionsMissingOrgs() {
+        Topic promotedTopic = new Topic("p1", "org1", "consent.create", "desc", "active", "system");
+        when(topicDAO.promoteUserTopicsToSystem(any(Connection.class), any()))
+                .thenReturn(Collections.singletonList(promotedTopic));
+        when(topicDAO.getOrgsWithCompleteSystemTopics(any(Connection.class), any()))
+                .thenReturn(Collections.emptyList());
+        when(topicDAO.getTopicByOrgAndName(any(Connection.class), eq("org1"), any()))
+                .thenReturn(Optional.empty());
+        when(topicDAO.addTopic(any(Connection.class), any(Topic.class))).thenReturn(true);
+
+        topicService.reconcileSystemTopicsAcrossTenants(java.util.Arrays.asList("org1", " ", null));
+
+        verify(topicDAO).promoteUserTopicsToSystem(any(Connection.class), any());
+        verify(topicDAO).getOrgsWithCompleteSystemTopics(any(Connection.class), any());
+        for (org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic defaultTopic
+                : org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic.values()) {
+            verify(topicDAO, atLeastOnce())
+                    .getTopicByOrgAndName(any(Connection.class), eq("org1"), eq(defaultTopic.getName()));
+        }
+        verify(topicDAO, times(org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic.values()
+                .length)).addTopic(any(Connection.class), any(Topic.class));
+    }
+
+    @Test
+    public void testReconcileSystemTopicsAcrossTenantsProvisionsTenantWithNoTopicRows() {
+        // "empty-org" has no TOPIC rows, so it is absent from the complete list but still supplied by the caller.
+        when(topicDAO.promoteUserTopicsToSystem(any(Connection.class), any())).thenReturn(Collections.emptyList());
+        when(topicDAO.getOrgsWithCompleteSystemTopics(any(Connection.class), any()))
+                .thenReturn(Collections.singletonList("complete-org"));
+        when(topicDAO.getTopicByOrgAndName(any(Connection.class), eq("empty-org"), any()))
+                .thenReturn(Optional.empty());
+        when(topicDAO.addTopic(any(Connection.class), any(Topic.class))).thenReturn(true);
+
+        topicService.reconcileSystemTopicsAcrossTenants(java.util.Arrays.asList("complete-org", "empty-org"));
+
+        verify(topicDAO, never()).getTopicByOrgAndName(any(Connection.class), eq("complete-org"), any());
+        verify(topicDAO, times(org.wso2.dpdp.accelerator.event.notifications.common.enums.DefaultTopic.values()
+                .length)).addTopic(any(Connection.class), any(Topic.class));
+    }
+
+    @Test
+    public void testReconcileSystemTopicsAcrossTenantsNoOpWhenAllOrgsComplete() {
+        when(topicDAO.promoteUserTopicsToSystem(any(Connection.class), any())).thenReturn(Collections.emptyList());
+        when(topicDAO.getOrgsWithCompleteSystemTopics(any(Connection.class), any()))
+                .thenReturn(java.util.Arrays.asList("org1", "org2"));
+
+        topicService.reconcileSystemTopicsAcrossTenants(java.util.Arrays.asList("org1", "org2"));
+
+        verify(topicDAO, never()).getTopicByOrgAndName(any(Connection.class), any(), any());
+    }
+
+    @Test
+    public void testReconcileSystemTopicsAcrossTenantsStillPromotesWithNoTenants() {
+        when(topicDAO.promoteUserTopicsToSystem(any(Connection.class), any())).thenReturn(Collections.emptyList());
+        when(topicDAO.getOrgsWithCompleteSystemTopics(any(Connection.class), any()))
+                .thenReturn(Collections.emptyList());
+
+        topicService.reconcileSystemTopicsAcrossTenants(null);
+
+        verify(topicDAO).promoteUserTopicsToSystem(any(Connection.class), any());
+        verify(topicDAO, never()).getTopicByOrgAndName(any(Connection.class), any(), any());
+    }
+
+    @Test
+    public void testReconcileSystemTopicsAcrossTenantsContinuesAfterSingleTopicFailure() {
+        when(topicDAO.promoteUserTopicsToSystem(any(Connection.class), any())).thenReturn(Collections.emptyList());
+        when(topicDAO.getOrgsWithCompleteSystemTopics(any(Connection.class), any()))
+                .thenReturn(Collections.emptyList());
+        when(topicDAO.getTopicByOrgAndName(any(Connection.class), eq("org1"), eq("consent.create")))
+                .thenThrow(new org.wso2.dpdp.accelerator.event.notifications.common.exception.dao
+                        .EventNotificationDaoException("db failure"));
+        when(topicDAO.getTopicByOrgAndName(any(Connection.class), eq("org1"), eq("consent.update")))
+                .thenReturn(Optional.empty());
+        when(topicDAO.addTopic(any(Connection.class), any(Topic.class))).thenReturn(true);
+
+        topicService.reconcileSystemTopicsAcrossTenants(Collections.singletonList("org1"));
+
+        verify(topicDAO, atLeastOnce()).getTopicByOrgAndName(any(Connection.class), eq("org1"), eq("consent.update"));
     }
 }

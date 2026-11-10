@@ -10,7 +10,7 @@ in CI was actually checking.
 
 | | |
 |---|---|
-| **Tests** | 207 across 55 spec files in 10 areas |
+| **Tests** | 208 across 55 spec files in 10 areas |
 | **Removed, not skipped** | `09.08`'s fan-out persistence rollback case, `09.10`'s stuck-in-flight reclaim case - see "What this suite cannot verify" |
 | **Skipped when unconfigured** | `04.09.03` (expiry cron); `09.10.01`, `09.10.02`, `09.10.03` (shortened backoff) |
 | **Rules and conventions** | [`AGENTS.md`](AGENTS.md) |
@@ -457,7 +457,7 @@ Two surfaces: the Data Principal's `/complaints` and the officer's `/complaint-m
 
 Mixed UI and API. Two server behaviours drive most of the test design: `groupId` is silently forced to the org id on every subscription, so tests read the *returned* `groupId` back and use two topics (or disjoint purpose filters) when they need two distinct subscriptions; and `GET /events` hardcodes the caller's orgId as `GROUP_ID`, so an event published under any other group id can never be found through it at all.
 
-**58 tests, 13 spec files.**
+**59 tests, 13 spec files.**
 
 ### `09.01-admin-managing-topics.spec.ts`
 
@@ -578,7 +578,7 @@ Two independently provisioned throwaway tenants; `TENANT.ORG_ID` is the isolatio
 | --- | --- | --- |
 | `09.11.01` | Tenants with the same topic name receive separate topic identities and lists | Different topic ids and disjoint lists. |
 | `09.11.02` | Tenant A cannot read, delete, verify, or list history for tenant B resources | 404 - never 403 - on every cross-tenant operation, and tenant B's own view is unaffected. |
-| `09.11.03` | A newly created tenant receives Event Notification authorization and default topics | The five system topics exist as active/system, and the owner can create user topics and subscriptions with no manual API-resource registration. |
+| `09.11.03` | A newly created tenant receives Event Notification authorization and default topics | The six system topics exist as active/system, and the owner can create user topics and subscriptions with no manual API-resource registration. |
 
 ### `09.12-deadlock-repro.spec.ts` · API-only
 
@@ -602,6 +602,7 @@ V1.1 specific features: split delivery reads, event polling with HMAC verificati
 | `09.13.03` | Manual retry on a poll delivery is rejected with 409 Conflict | `POST /deliveries/{id}/retry` returns 409 Conflict with `EN-4003`. |
 | `09.13.04` | Access control on /v1.1/deliveries/* requires notifications:subscriptions:read | Token with only `notifications:events:read` receives 403 Forbidden; token with `notifications:subscriptions:read` succeeds. |
 | `09.13.05` | Webhook completion records evidence, rejects invalid signatures and duplicate completions | **Skipped unless webhook receiver is configured.** Records completion evidence on `POST /deliveries/{id}/completion`, rejects invalid signatures, and rejects duplicate completions with 409 Conflict. |
+| `09.13.06` | Creating a consent publishes a consent.create event with the resolved status | Subscribes to `consent.create` in poll mode, creates a direct consent (`ACTIVE`) and an authorization-backed consent (`PENDING`) via `seedConsentViaApi`, and polls to verify both events arrive with the expected `consentId` and `currentStatus`. |
 
 
 

@@ -25,7 +25,7 @@ import {
 } from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
 
-const SYSTEM_TOPICS = ['consent.update', 'consent.revoke', 'consent.expire', 'user.data.change', 'user.account.delete']
+const SYSTEM_TOPICS = ['consent.create', 'consent.update', 'consent.revoke', 'consent.expire', 'user.data.change', 'user.account.delete']
 
 /**
  * `tenant`/`tenantB` (fixtures/tenant.fixtures.ts) are two independently-provisioned throwaway

@@ -23,6 +23,7 @@ package org.wso2.dpdp.accelerator.event.notifications.common.enums;
  */
 public enum DefaultTopic {
 
+    CONSENT_CREATE("consent.create", "Consent creation and initial state notifications"),
     CONSENT_UPDATE("consent.update", "Consent update and state transition notifications"),
     CONSENT_REVOKE("consent.revoke", "Consent revocation and withdrawal notifications"),
     CONSENT_EXPIRE("consent.expire", "Consent expiration notifications"),

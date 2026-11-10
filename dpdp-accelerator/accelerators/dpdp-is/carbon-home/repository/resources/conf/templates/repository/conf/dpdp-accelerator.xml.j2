@@ -161,6 +161,11 @@
             {% else %}
             <AutoCreateEnabled>true</AutoCreateEnabled>
             {% endif %}
+            {% if dpdp_accelerator.event_notifications.system_topics_verify_on_startup_enabled is defined %}
+            <VerifyOnStartupEnabled>{{dpdp_accelerator.event_notifications.system_topics_verify_on_startup_enabled}}</VerifyOnStartupEnabled>
+            {% else %}
+            <VerifyOnStartupEnabled>true</VerifyOnStartupEnabled>
+            {% endif %}
         </SystemTopics>
         <PayloadSigning>
             {% if dpdp_accelerator.event_notifications.payload_signing.enabled is defined %}

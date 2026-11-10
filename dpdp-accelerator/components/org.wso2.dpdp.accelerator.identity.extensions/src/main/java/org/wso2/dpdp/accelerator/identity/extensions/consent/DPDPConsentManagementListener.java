@@ -37,7 +37,7 @@ import java.util.List;
 
 /**
  * Captures consent lifecycle events into {@code DPDP_CONSENT_STATUS_AUDIT}/{@code DPDP_CONSENT_HISTORY},
- * and - for update/revoke - notifies {@code DPDPLifecycleEventListener} so the Event Notification
+ * and - for create/update/revoke - notifies {@code DPDPLifecycleEventListener} so the Event Notification
  * Framework can fan them out. Snapshots are captured on the {@code post*} hooks, tagged with the
  * action that just ran.
  *
@@ -86,15 +86,16 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
         // which would misreport a consent created with an already-past expiryTime as EXPIRED
         // instead of its true, as-persisted ACTIVE/PENDING creation state. REJECTED never hits this
         // fallback - it requires an explicit, non-null "state" in the request.
-        String currentStatus = receiptInput.getState();
-        if (currentStatus == null) {
-            boolean hasAuthorizations = receiptInput.getAuthorizations() != null
-                    && !receiptInput.getAuthorizations().isEmpty();
-            currentStatus = hasAuthorizations ? PENDING_STATUS : ACTIVE_STATUS;
-        }
+        boolean hasAuthorizations = receiptInput.getAuthorizations() != null
+                && !receiptInput.getAuthorizations().isEmpty();
+        String currentStatus = receiptInput.getState() != null
+                ? receiptInput.getState()
+                : (hasAuthorizations ? PENDING_STATUS : ACTIVE_STATUS);
         recordStatusAudit(receiptInput.getConsentReceiptId(), tenantDomain, null, currentStatus, ActionType.CREATE);
-        captureSnapshot(receiptInput.getConsentReceiptId(), tenantDomain, ActionType.CREATE);
+        Receipt receipt = captureSnapshot(receiptInput.getConsentReceiptId(), tenantDomain, ActionType.CREATE);
         trackExpiry(receiptInput.getConsentReceiptId(), tenantDomain, receiptInput.getExpiryTime());
+        DPDPLifecycleEventUtil.notify(l -> l.onConsentCreated(tenantDomain, receiptInput.getConsentReceiptId(),
+                currentStatus, getActionBy(), DPDPConsentSnapshotBuilder.resolvePurposes(receipt)));
     }
 
     @Override
@@ -245,6 +246,7 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
      */
     private void capturePreviousStatus(String consentId) {
 
+        PREVIOUS_STATUS.remove();
         try {
             Receipt receipt = DPDPIdentityExtensionDataHolder.getInstance().getPrivilegedConsentManager()
                     .getReceiptWithExtendedSchema(consentId);
@@ -257,22 +259,22 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
     /**
      * Captures a fresh, post-mutation snapshot and returns the {@link Receipt} it fetched, so
      * callers needing purposes for the lifecycle notification can reuse it instead of a second
-     * fetch. {@code null} if the fetch/capture failed (already logged here).
+     * fetch. {@code null} if the receipt fetch failed (already logged here).
      */
     private Receipt captureSnapshot(String consentId, String tenantDomain, ActionType actionType) {
 
+        PrivilegedConsentManager consentManager;
+        Receipt receipt;
         try {
-            PrivilegedConsentManager consentManager = DPDPIdentityExtensionDataHolder.getInstance()
-                    .getPrivilegedConsentManager();
-            Receipt receipt = consentManager.getReceiptWithExtendedSchema(consentId);
-            List<ConsentAuthorization> authorizations = consentManager.getConsentAuthorizations(consentId);
-            storeSnapshot(tenantDomain, consentId, actionType, receipt, authorizations);
-            return receipt;
+            consentManager = DPDPIdentityExtensionDataHolder.getInstance().getPrivilegedConsentManager();
+            receipt = consentManager.getReceiptWithExtendedSchema(consentId);
         } catch (Exception e) {
-            LOG.error("Error capturing a '" + actionType + "' consent history snapshot for consent: "
-                    + LogSanitizer.sanitize(consentId), e);
+            LOG.error("Error reading receipt for consent: " + LogSanitizer.sanitize(consentId), e);
             return null;
         }
+
+        captureSnapshotFromReceipt(tenantDomain, consentId, actionType, consentManager, receipt);
+        return receipt;
     }
 
     /**
@@ -300,6 +302,7 @@ public class DPDPConsentManagementListener extends AbstractConsentManagementList
      */
     private void capturePreDeleteSnapshot(String consentId, String tenantDomain) {
 
+        PREVIOUS_STATUS.remove();
         try {
             PrivilegedConsentManager consentManager = DPDPIdentityExtensionDataHolder.getInstance()
                     .getPrivilegedConsentManager();

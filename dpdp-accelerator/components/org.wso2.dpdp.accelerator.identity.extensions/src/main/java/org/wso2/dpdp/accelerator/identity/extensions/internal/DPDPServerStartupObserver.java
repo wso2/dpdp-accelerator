@@ -24,23 +24,25 @@ import org.wso2.carbon.core.ServerStartupObserver;
 import org.wso2.carbon.stratos.common.beans.TenantInfoBean;
 import org.wso2.carbon.utils.multitenancy.MultitenantConstants;
 import org.wso2.dpdp.accelerator.identity.extensions.tenant.DPDPIdentityExtensionTenantMgtListener;
+import org.wso2.dpdp.accelerator.identity.extensions.tenant.EventNotificationTopicProvisioner;
 
 /**
- * Provisions the DPDP Consent Portal for the super tenant only once the entire server - every
- * bundle, every deployment artifact - has finished starting.
+ * Reconciles default Event Notification system topics across all active tenants and provisions the
+ * DPDP Consent Portal for the super tenant once the entire server - every bundle, every deployment
+ * artifact - has finished starting.
  *
  * This exists because {@code DPDPIdentityExtensionServiceComponent}'s {@code @Activate} used to
- * do this directly, racing against {@code APIResourceManagementServiceComponent}'s consent-mgt v2
- * API-resource registration: a mandatory {@code @Reference} on {@code APIResourceManager} only
- * guarantees that service object exists, not that the specific API resources it seeds have been
+ * provision the super tenant directly, racing against {@code APIResourceManagementServiceComponent}'s
+ * consent-mgt v2 API-resource registration: a mandatory {@code @Reference} on {@code APIResourceManager}
+ * only guarantees that service object exists, not that the specific API resources it seeds have been
  * written yet, since that component registers the service before it finishes seeding. Deferring to
  * {@link #completedServerStartup()} removes the race entirely, since every bundle's own activation
  * work - including that seeding - is guaranteed complete by the time it fires.
  *
- * Deliberately scoped to only the super tenant: every other tenant is provisioned by
- * {@link DPDPIdentityExtensionTenantMgtListener#onTenantCreate}/{@code onTenantUpdate}, triggered
- * only once an admin actually creates or updates a tenant - always well after server startup, so
- * that path never raced and does not need to move here.
+ * First reconciles the default system topics across every active tenant (including {@code carbon.super}),
+ * then runs the full Consent Portal provisioning for the super tenant only: every other tenant's
+ * portal is provisioned by {@link DPDPIdentityExtensionTenantMgtListener#onTenantCreate}/{@code onTenantUpdate},
+ * triggered only once an admin actually creates or updates a tenant - always well after server startup.
  */
 public class DPDPServerStartupObserver implements ServerStartupObserver {
 
@@ -54,6 +56,12 @@ public class DPDPServerStartupObserver implements ServerStartupObserver {
 
     @Override
     public void completedServerStartup() {
+
+        try {
+            EventNotificationTopicProvisioner.reconcileExistingTenantSystemTopics();
+        } catch (Exception e) {
+            LOG.error("Error reconciling DPDP system topics across existing tenants at startup.", e);
+        }
 
         try {
             TenantInfoBean superTenant = new TenantInfoBean();
