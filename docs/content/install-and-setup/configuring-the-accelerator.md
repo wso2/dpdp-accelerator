@@ -116,8 +116,9 @@ email_notifications_enabled = false
 - `statutory_due_period_days` — The number of days a complaint can remain open
   before it is marked as overdue.
 - `attachment_max_size_bytes` — The maximum allowed size for each attachment.
-- `attachment_max_files_per_upload` — The maximum number of files that can be
-  attached to a complaint.
+- `attachment_max_files_per_upload` — The maximum number of files in a single
+  upload request to the API. The Consent Portal currently uploads one file at a
+  time.
 - `email_notifications_enabled` — Enables email notifications for complaints.
   This is false by default and should only be enabled after configuring email
   notifications.

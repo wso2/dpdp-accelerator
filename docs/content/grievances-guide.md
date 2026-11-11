@@ -72,8 +72,7 @@ attachment_max_files_per_upload = 5
 ```
 
 The due date is calculated from submission time. Each attachment must be a PDF,
-DOCX, PNG, or JPEG and must stay within the configured size limit. An upload
-request can contain up to the configured number of files. Restart Identity
+DOCX, PNG, or JPEG and must stay within the configured size limit. Restart Identity
 Server after changing these server-side limits.
 
 ## 4. Customize complaint notification emails
