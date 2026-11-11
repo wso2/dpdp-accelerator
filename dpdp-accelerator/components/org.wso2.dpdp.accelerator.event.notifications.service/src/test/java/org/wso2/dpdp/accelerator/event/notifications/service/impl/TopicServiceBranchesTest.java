@@ -92,6 +92,23 @@ public class TopicServiceBranchesTest {
     }
 
     @Test
+    public void deleteTranslatesDaoFailureToServiceException() {
+        Topic topic = new Topic("t", "org", "topic", null, "active", Initiator.USER.getValue());
+        when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
+        when(dao.deleteTopicAtomic(any(Connection.class), eq("t"), eq("org")))
+                .thenThrow(new org.wso2.dpdp.accelerator.event.notifications.common.exception.dao
+                        .EventNotificationDaoException("raw sql error"));
+        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException ex =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.common.exception.service
+                                .EventNotificationServiceException.class,
+                        () -> service.deleteTopic("org", "t"));
+        org.testng.Assert.assertEquals(ex.getCode(), "EN-5000");
+        org.testng.Assert.assertEquals(ex.getStatusCode(), 500);
+        org.testng.Assert.assertEquals(ex.getDescription(), "Failed to delete topic.");
+    }
+
+    @Test
     public void getTopicReturnsEmptyForWrongOrgAndReturnsMappedTopic() {
         Topic wrong = new Topic("t", "other", "topic", null, "active", Initiator.USER.getValue());
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(wrong));
