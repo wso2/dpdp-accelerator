@@ -11,7 +11,7 @@ public enum TopicStatus {
   
   ACTIVE("active"),
   
-  DEREGISTERED("deregistered");
+  DELETED("deleted");
 
   private String value;
 

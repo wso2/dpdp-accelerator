@@ -373,4 +373,72 @@ public class H2SchemaParityTest {
             }
         }
     }
+
+    @Test
+    public void migrationNormalizesLegacyDeregisteredTopicsIdempotently() throws Exception {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_migration_test")) {
+            try (Statement statement = connection.createStatement()) {
+                // Simulate the pre-unified-deletion TOPIC DDL with an unnamed inline CHECK constraint.
+                statement.execute("CREATE TABLE TOPIC ("
+                        + "TOPIC_ID VARCHAR(64) NOT NULL, "
+                        + "ORG_ID VARCHAR(128) NOT NULL, "
+                        + "NAME VARCHAR(225) NOT NULL, "
+                        + "DESCRIPTION VARCHAR(255) DEFAULT NULL, "
+                        + "STATUS VARCHAR(32) DEFAULT 'active' NOT NULL CHECK (STATUS IN ('active', 'deregistered')), "
+                        + "INITIATED_BY VARCHAR(32) DEFAULT 'USER' NOT NULL, "
+                        + "CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, "
+                        + "ACTIVE_NAME VARCHAR(225) GENERATED ALWAYS AS "
+                        + "(CASE WHEN STATUS = 'active' THEN LOWER(NAME) ELSE NULL END), "
+                        + "PRIMARY KEY (TOPIC_ID), "
+                        + "CONSTRAINT UQ_TOPIC_ORG_ID UNIQUE (ORG_ID, TOPIC_ID))");
+                statement.execute("CREATE UNIQUE INDEX UQ_TOPIC_ORG_ACTIVE_NAME ON TOPIC (ORG_ID, ACTIVE_NAME)");
+                statement.execute("CREATE TABLE EVENT ("
+                        + "EVENT_ID VARCHAR(64) NOT NULL, ORG_ID VARCHAR(128) NOT NULL, "
+                        + "GROUP_ID VARCHAR(128) NOT NULL, TOPIC_ID VARCHAR(64) NOT NULL, "
+                        + "PAYLOAD CLOB NOT NULL, PRIMARY KEY (EVENT_ID))");
+                statement.execute("CREATE TABLE SUBSCRIPTION ("
+                        + "SUBSCRIPTION_ID VARCHAR(64) NOT NULL, ORG_ID VARCHAR(128) NOT NULL, "
+                        + "PRIMARY KEY (SUBSCRIPTION_ID))");
+                statement.execute("CREATE TABLE WEBHOOK_DELIVERY ("
+                        + "DELIVERY_ID VARCHAR(64) NOT NULL, ORG_ID VARCHAR(128) NOT NULL, "
+                        + "SUBSCRIPTION_ID VARCHAR(64) NOT NULL, EVENT_ID VARCHAR(64) NOT NULL, "
+                        + "STATUS VARCHAR(32) DEFAULT 'pending' NOT NULL, PRIMARY KEY (DELIVERY_ID))");
+                statement.execute("CREATE TABLE WEBHOOK_DELIVERY_ACK ("
+                        + "ACK_ID VARCHAR(64) NOT NULL, DELIVERY_ID VARCHAR(64) NOT NULL, "
+                        + "ORG_ID VARCHAR(128) NOT NULL, COMPLETION_STATUS VARCHAR(32) NOT NULL, "
+                        + "COMPLETION_EVIDENCE VARCHAR(512) NOT NULL, PRIMARY KEY (ACK_ID))");
+
+                statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                        + "('t-active', 'org-1', 'orders', 'active'), "
+                        + "('t-legacy', 'org-1', 'retired', 'deregistered')");
+            }
+
+            try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
+                RunScript.execute(connection, migration);
+            }
+            // Re-run to verify idempotency.
+            try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
+                RunScript.execute(connection, migration);
+            }
+
+            try (Statement statement = connection.createStatement()) {
+                try (ResultSet rs = statement.executeQuery(
+                        "SELECT TOPIC_ID, STATUS FROM TOPIC ORDER BY TOPIC_ID")) {
+                    assertTrue(rs.next());
+                    org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-active");
+                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "active");
+                    assertTrue(rs.next());
+                    org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-legacy");
+                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "deleted");
+                }
+
+                // Legacy status value must now be rejected, while re-using the deleted topic's name is allowed.
+                expectThrows(SQLException.class, () -> statement.executeUpdate(
+                        "INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                                + "('t-bad', 'org-1', 'other', 'deregistered')"));
+                statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                        + "('t-reused', 'org-1', 'RETIRED', 'active')");
+            }
+        }
+    }
 }

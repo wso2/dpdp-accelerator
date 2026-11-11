@@ -14,6 +14,11 @@
 -- specific language governing permissions and limitations
 -- under the License.
 
+-- Normalize topic deletion status from 'deregistered' to 'deleted'
+ALTER TABLE TOPIC DROP CONSTRAINT IF EXISTS CHK_TOPIC_STATUS;
+UPDATE TOPIC SET STATUS = 'deleted' WHERE STATUS = 'deregistered';
+ALTER TABLE TOPIC ADD CONSTRAINT CHK_TOPIC_STATUS CHECK (STATUS IN ('active', 'deleted'));
+
 -- Backfill WEBHOOK_DELIVERY.STATUS = 'completed' for deliveries completed before v1.1
 UPDATE WEBHOOK_DELIVERY SET STATUS = 'completed'
 WHERE STATUS = 'delivered'

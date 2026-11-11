@@ -83,7 +83,7 @@ describe('topicsApi', () => {
   })
 
   it('deletes a topic and returns slim status update', async () => {
-    respondWith({ topicId: 'tpc/1', status: 'deregistered' })
+    respondWith({ topicId: 'tpc/1', status: 'deleted' })
 
     const result = await deleteTopic('tpc/1')
 
@@ -91,6 +91,6 @@ describe('topicsApi', () => {
     const url = new URL(req.url)
     expect(url.pathname).toBe('/api/dpdp/event-notifications/v1.1/topics/tpc%2F1')
     expect(req.method).toBe('DELETE')
-    expect(result).toEqual({ topicId: 'tpc/1', status: 'deregistered' })
+    expect(result).toEqual({ topicId: 'tpc/1', status: 'deleted' })
   })
 })

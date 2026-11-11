@@ -14,6 +14,24 @@
 -- specific language governing permissions and limitations
 -- under the License.
 
+-- Normalize topic deletion status from 'deregistered' to 'deleted'
+-- Drop and recreate ACTIVE_NAME/UQ_TOPIC_ORG_ACTIVE_NAME around MODIFY COLUMN STATUS (MySQL ERROR 3108).
+ALTER TABLE `TOPIC`
+  DROP INDEX `UQ_TOPIC_ORG_ACTIVE_NAME`,
+  DROP COLUMN `ACTIVE_NAME`,
+  MODIFY COLUMN `STATUS` enum('active', 'deregistered', 'deleted') NOT NULL DEFAULT 'active',
+  ADD COLUMN `ACTIVE_NAME` varchar(225) GENERATED ALWAYS AS
+    (CASE WHEN `STATUS` = 'active' THEN LOWER(`NAME`) ELSE NULL END) STORED,
+  ADD UNIQUE KEY `UQ_TOPIC_ORG_ACTIVE_NAME` (`ORG_ID`, `ACTIVE_NAME`);
+UPDATE `TOPIC` SET `STATUS` = 'deleted' WHERE `STATUS` = 'deregistered';
+ALTER TABLE `TOPIC`
+  DROP INDEX `UQ_TOPIC_ORG_ACTIVE_NAME`,
+  DROP COLUMN `ACTIVE_NAME`,
+  MODIFY COLUMN `STATUS` enum('active', 'deleted') NOT NULL DEFAULT 'active',
+  ADD COLUMN `ACTIVE_NAME` varchar(225) GENERATED ALWAYS AS
+    (CASE WHEN `STATUS` = 'active' THEN LOWER(`NAME`) ELSE NULL END) STORED,
+  ADD UNIQUE KEY `UQ_TOPIC_ORG_ACTIVE_NAME` (`ORG_ID`, `ACTIVE_NAME`);
+
 -- Backfill WEBHOOK_DELIVERY.STATUS = 'completed' for deliveries completed before v1.1
 UPDATE WEBHOOK_DELIVERY SET STATUS = 'completed'
 WHERE STATUS = 'delivered'

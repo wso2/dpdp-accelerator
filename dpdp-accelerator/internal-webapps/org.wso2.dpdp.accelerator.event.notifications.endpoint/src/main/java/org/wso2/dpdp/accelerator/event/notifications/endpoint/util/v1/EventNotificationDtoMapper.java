@@ -125,10 +125,21 @@ public final class EventNotificationDtoMapper {
         target.setTopicId(source.getTopicId());
         target.setName(source.getName());
         target.setDescription(source.getDescription());
-        target.setStatus(source.getStatus() == null ? null : TopicStatus.fromValue(source.getStatus()));
+        target.setStatus(mapTopicStatus(source.getStatus()));
         target.setInitiatedBy(source.getInitiatedBy() == null ? null :
                 Topic.InitiatedByEnum.fromValue(source.getInitiatedBy()));
         return target;
+    }
+
+    private static TopicStatus mapTopicStatus(String status) {
+        if (status == null) {
+            return null;
+        }
+        // Preserve compatibility with pre-migration DB rows that still carry 'deregistered'.
+        if ("deregistered".equalsIgnoreCase(status.trim())) {
+            return TopicStatus.DELETED;
+        }
+        return TopicStatus.fromValue(status);
     }
 
     public static Subscription toApi(SubscriptionDTO source) {

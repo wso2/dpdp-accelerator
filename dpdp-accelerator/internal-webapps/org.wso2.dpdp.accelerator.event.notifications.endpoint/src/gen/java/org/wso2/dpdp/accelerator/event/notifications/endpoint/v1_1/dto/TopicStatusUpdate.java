@@ -10,9 +10,9 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * Result of a topic status change such as deregistration.
+ * Result of a topic status change such as deletion.
  */
-@ApiModel(description="Result of a topic status change such as deregistration.")
+@ApiModel(description="Result of a topic status change such as deletion.")
 
 public class TopicStatusUpdate  {
   

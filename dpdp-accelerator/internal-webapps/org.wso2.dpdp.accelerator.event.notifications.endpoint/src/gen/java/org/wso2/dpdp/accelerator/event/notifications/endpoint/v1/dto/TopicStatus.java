@@ -32,9 +32,6 @@ public enum TopicStatus {
         return b;
       }
     }
-    if ("deregistered".equals(value)) {
-      return DELETED;
-    }
     throw new IllegalArgumentException("Unexpected value '" + value + "'");
   }
 

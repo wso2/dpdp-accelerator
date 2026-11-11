@@ -126,6 +126,9 @@ public class DtoContractTest {
     public void topicsAndDeliveryHistoryKeepAllFields() {
         TopicDTO topic = new TopicDTO("t", "topic", "description", "active", "system");
         equivalent(topic, EventNotificationDtoMapper.toApi(topic));
+        TopicDTO legacyTopic = new TopicDTO("t2", "legacy", "desc", "deregistered", "user");
+        assertEquals(EventNotificationDtoMapper.toApi(legacyTopic).getStatus(),
+                org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicStatus.DELETED);
         equivalent(new PaginatedResult<>(Collections.singletonList(topic), 7),
                 EventNotificationDtoMapper.topics(new PaginatedResult<>(Collections.singletonList(topic), 7)));
         equivalent(new TopicDTO(), EventNotificationDtoMapper.toApi(new TopicDTO()));

@@ -109,7 +109,7 @@ public class V11EndpointTest {
 
     @Test
     public void topicDeleteReturnsOnlyIdAndStatus() {
-        TopicDTO dto = new TopicDTO("t1", "topic-name", "desc", "deregistered", "user");
+        TopicDTO dto = new TopicDTO("t1", "topic-name", "desc", "deleted", "user");
         when(topicHandler.deleteTopic("org-1", "t1")).thenReturn(dto);
 
         Response response = topicEndpoint.deleteTopic("t1");
@@ -117,8 +117,26 @@ public class V11EndpointTest {
         assertEquals(response.getStatus(), 200);
         TopicStatusUpdate body = (TopicStatusUpdate) response.getEntity();
         assertEquals(body.getTopicId(), "t1");
-        assertEquals(body.getStatus(), TopicStatus.DEREGISTERED);
-        assertEquals(toJson(body), "{\"topicId\":\"t1\",\"status\":\"deregistered\"}");
+        assertEquals(body.getStatus(), TopicStatus.DELETED);
+        assertEquals(toJson(body), "{\"topicId\":\"t1\",\"status\":\"deleted\"}");
+    }
+
+    @Test
+    public void topicLegacyDeregisteredStatusMapsToDeleted() {
+        TopicDTO dto = new TopicDTO("t1", "topic-name", "desc", "deregistered", "user");
+        when(topicHandler.listTopics("org-1", null, null, 20, 0, null))
+                .thenReturn(new PaginatedResult<>(Collections.singletonList(dto), 1));
+        when(topicHandler.deleteTopic("org-1", "t1")).thenReturn(dto);
+
+        Response listResp = topicEndpoint.listTopics(null, null, 20, 0, null);
+        Response deleteResp = topicEndpoint.deleteTopic("t1");
+
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.v1_1.dto.TopicPage page =
+                (org.wso2.dpdp.accelerator.event.notifications.endpoint.v1_1.dto.TopicPage) listResp.getEntity();
+        assertEquals(page.getItems().get(0).getStatus(), TopicStatus.DELETED);
+        TopicStatusUpdate body = (TopicStatusUpdate) deleteResp.getEntity();
+        assertEquals(body.getStatus(), TopicStatus.DELETED);
+        assertEquals(toJson(body), "{\"topicId\":\"t1\",\"status\":\"deleted\"}");
     }
 
     @Test
