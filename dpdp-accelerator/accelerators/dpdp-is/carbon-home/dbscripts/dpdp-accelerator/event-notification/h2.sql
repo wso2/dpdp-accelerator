@@ -32,46 +32,6 @@ CREATE TABLE IF NOT EXISTS TOPIC (
   CONSTRAINT CHK_TOPIC_STATUS CHECK (STATUS IN ('active', 'deleted'))
 );
 
--- Recover TOPIC columns if a prior 1.1.0 migration was interrupted after dropping ACTIVE_NAME or STATUS.
-CREATE ALIAS IF NOT EXISTS DPDP_ENSURE_TOPIC_COLUMNS AS $$
-void ensureTopicColumns(java.sql.Connection conn) throws java.sql.SQLException {
-    boolean hasStatus = false;
-    boolean hasStatusMig = false;
-    boolean hasActiveName = false;
-    try (java.sql.PreparedStatement ps = conn.prepareStatement(
-            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS "
-            + "WHERE TABLE_SCHEMA = SCHEMA() AND TABLE_NAME = 'TOPIC'")) {
-        try (java.sql.ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                String col = rs.getString(1);
-                if ("STATUS".equalsIgnoreCase(col)) {
-                    hasStatus = true;
-                } else if ("STATUS_MIG".equalsIgnoreCase(col)) {
-                    hasStatusMig = true;
-                } else if ("ACTIVE_NAME".equalsIgnoreCase(col)) {
-                    hasActiveName = true;
-                }
-            }
-        }
-    }
-    try (java.sql.Statement st = conn.createStatement()) {
-        if (!hasStatus && hasStatusMig) {
-            st.execute("ALTER TABLE TOPIC ALTER COLUMN STATUS_MIG RENAME TO STATUS");
-            st.execute("ALTER TABLE TOPIC ALTER COLUMN STATUS SET DATA TYPE VARCHAR(32)");
-            st.execute("ALTER TABLE TOPIC ALTER COLUMN STATUS SET DEFAULT 'active'");
-            st.execute("ALTER TABLE TOPIC ALTER COLUMN STATUS SET NOT NULL");
-            hasStatus = true;
-        }
-        if (hasStatus && !hasActiveName) {
-            st.execute("ALTER TABLE TOPIC ADD COLUMN ACTIVE_NAME VARCHAR(225) GENERATED ALWAYS AS "
-                    + "(CASE WHEN STATUS = 'active' THEN LOWER(NAME) ELSE NULL END)");
-        }
-    }
-}
-$$;
-CALL DPDP_ENSURE_TOPIC_COLUMNS();
-DROP ALIAS IF EXISTS DPDP_ENSURE_TOPIC_COLUMNS;
-
 CREATE UNIQUE INDEX IF NOT EXISTS UQ_TOPIC_ORG_ACTIVE_NAME ON TOPIC (ORG_ID, ACTIVE_NAME);
 
 -- EVENT definition

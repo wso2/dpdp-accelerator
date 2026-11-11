@@ -377,45 +377,10 @@ public class H2SchemaParityTest {
     @Test
     public void migrationNormalizesLegacyDeregisteredTopicsIdempotently() throws Exception {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_migration_test")) {
-            seedLegacyTopicMigrationTables(connection, false, false);
+            seedLegacyTopicMigrationTables(connection);
 
             // Simulate two consecutive configure.sh runs (base h2.sql followed by 1.1.0/h2.sql).
             runBaseSchemaAndMigration(connection);
-            runBaseSchemaAndMigration(connection);
-
-            assertMigratedTopicInvariants(connection);
-        }
-    }
-
-    @Test
-    public void migrationRecoversWhenActiveNameAlreadyDropped() throws Exception {
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_recovery_active_name")) {
-            seedLegacyTopicMigrationTables(connection, true, false);
-
-            runBaseSchemaAndMigration(connection);
-            runBaseSchemaAndMigration(connection);
-
-            assertMigratedTopicInvariants(connection);
-        }
-    }
-
-    @Test
-    public void migrationRecoversWhenStatusAlreadyDroppedLeavingStatusMig() throws Exception {
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_recovery_status_mig_cfg")) {
-            seedLegacyTopicMigrationTables(connection, true, true);
-
-            runBaseSchemaAndMigration(connection);
-            runBaseSchemaAndMigration(connection);
-
-            assertMigratedTopicInvariants(connection);
-        }
-
-        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_recovery_status_mig_direct")) {
-            seedLegacyTopicMigrationTables(connection, true, true);
-
-            try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
-                RunScript.execute(connection, migration);
-            }
             runBaseSchemaAndMigration(connection);
 
             assertMigratedTopicInvariants(connection);
@@ -431,8 +396,7 @@ public class H2SchemaParityTest {
         }
     }
 
-    private static void seedLegacyTopicMigrationTables(
-            Connection connection, boolean dropActiveName, boolean dropStatusLeavingStatusMig) throws Exception {
+    private static void seedLegacyTopicMigrationTables(Connection connection) throws Exception {
         try (Reader schema = Files.newBufferedReader(findSchema(), StandardCharsets.UTF_8)) {
             RunScript.execute(connection, schema);
         }
@@ -444,17 +408,6 @@ public class H2SchemaParityTest {
             statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
                     + "('t-active', 'org-1', 'orders', 'active'), "
                     + "('t-legacy', 'org-1', 'retired', 'deregistered')");
-
-            if (dropActiveName) {
-                statement.execute("DROP INDEX UQ_TOPIC_ORG_ACTIVE_NAME");
-                statement.execute("ALTER TABLE TOPIC DROP COLUMN ACTIVE_NAME");
-            }
-            if (dropStatusLeavingStatusMig) {
-                statement.execute("ALTER TABLE TOPIC ADD COLUMN STATUS_MIG VARCHAR(32)");
-                statement.execute("UPDATE TOPIC SET STATUS_MIG = "
-                        + "CASE WHEN LOWER(STATUS) = 'deregistered' THEN 'deleted' ELSE STATUS END");
-                statement.execute("ALTER TABLE TOPIC DROP COLUMN STATUS");
-            }
         }
     }
 
