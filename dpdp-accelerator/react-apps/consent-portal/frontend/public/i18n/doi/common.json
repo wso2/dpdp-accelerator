@@ -585,8 +585,8 @@
     "loadFailed": "हुनै विशे लोड करने च असमर्थ।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "रद्द कीता गेदा",
-      "deleted": "रद्द कीता गेदा"
+      "deregistered": "मिटाया गेदा",
+      "deleted": "मिटाया गेदा"
     },
     "filters": {
       "searchPlaceholder": "विशे दे नांऽ जां ब्योरे राहें खोजो",
@@ -607,8 +607,8 @@
     "actions": {
       "register": "विषे बनाओ",
       "delete": "विशे गी रद्द करो",
-      "alreadyDeregistered": "एह्‌ विशे पैह्‌लें गै गैर-पंजीकृत करी दित्ता गेआ ऐ।",
-      "alreadyDeleted": "एह्‌ विशे पैह्‌लें गै गैर-पंजीकृत करी दित्ता गेआ ऐ।"
+      "alreadyDeregistered": "एह्‌ विशे पैह्‌लें गै मिटाया गेआ ऐ।",
+      "alreadyDeleted": "एह्‌ विशे पैह्‌लें गै मिटाया गेआ ऐ।"
     },
     "dialog": {
       "registerTitle": "विषे बनाओ",

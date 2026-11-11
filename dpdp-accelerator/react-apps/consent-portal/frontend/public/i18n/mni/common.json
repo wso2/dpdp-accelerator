@@ -585,8 +585,8 @@
     "loadFailed": "ꯇꯣꯄꯤꯛꯁꯤꯡ ꯍꯧꯖꯤꯛ ꯂꯣꯗ ꯇꯧꯕ ꯌꯥꯔꯛꯇꯦ꯫",
     "status": {
       "active": "ꯑꯦꯛꯇꯤꯕ",
-      "deregistered": "ꯗꯤꯔꯦꯖꯤꯁ꯭ꯠꯔ ꯇꯧꯔꯦ",
-      "deleted": "ꯗꯤꯔꯦꯖꯤꯁ꯭ꯠꯔ ꯇꯧꯔꯦ"
+      "deregistered": "ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ",
+      "deleted": "ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ"
     },
     "filters": {
       "searchPlaceholder": "ꯇꯣꯄꯤꯛ ꯃꯃꯤꯡ ꯅꯠꯇ꯭ꯔꯒ ꯗꯤꯁ꯭ꯀ꯭ꯔꯤꯞꯁꯟꯒꯤ ꯃꯈꯥꯗ ꯁꯔꯆ ꯇꯧ꯫",
@@ -607,8 +607,8 @@
     "actions": {
       "register": "ꯇꯣꯄꯤꯛ ꯁꯦꯝꯃꯨ",
       "delete": "ꯗꯤꯔꯦꯖꯤꯁ꯭ꯠꯔ ꯇꯣꯄꯤꯛ",
-      "alreadyDeregistered": "ꯃꯁꯤꯒꯤ ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯍꯥꯟꯅꯗꯒꯤ ꯗꯤꯔꯦꯖꯤꯁꯇꯔ ꯇꯧꯔꯦ꯫",
-      "alreadyDeleted": "ꯃꯁꯤꯒꯤ ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯍꯥꯟꯅꯗꯒꯤ ꯗꯤꯔꯦꯖꯤꯁꯇꯔ ꯇꯧꯔꯦ꯫"
+      "alreadyDeregistered": "ꯃꯁꯤꯒꯤ ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯍꯥꯟꯅꯗꯒꯤ ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ꯫",
+      "alreadyDeleted": "ꯃꯁꯤꯒꯤ ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯍꯥꯟꯅꯗꯒꯤ ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ꯫"
     },
     "dialog": {
       "registerTitle": "ꯇꯣꯄꯤꯛ ꯁꯦꯝꯃꯨ",

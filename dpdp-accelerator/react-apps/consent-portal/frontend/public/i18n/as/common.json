@@ -585,8 +585,8 @@
     "loadFailed": "এতিয়া বিষয়সমূহ লোড কৰিবলৈ অসমৰ্থ।",
     "status": {
       "active": "সক্ৰিয়",
-      "deregistered": "ডিৰজিস্টাৰ কৰা হৈছে",
-      "deleted": "ডিৰজিস্টাৰ কৰা হৈছে"
+      "deregistered": "মচন কৰা হৈছে",
+      "deleted": "মচন কৰা হৈছে"
     },
     "filters": {
       "searchPlaceholder": "বিষয়ৰ নাম বা বিৱৰণৰ দ্বাৰা সন্ধান কৰক",
@@ -607,8 +607,8 @@
     "actions": {
       "register": "বিষয় সৃষ্টি কৰক",
       "delete": "বিষয় ডিৰজিস্টাৰ কৰক",
-      "alreadyDeregistered": "এই বিষয়টো ইতিমধ্যে ডি-ৰজিস্টাৰ কৰা হৈছে",
-      "alreadyDeleted": "এই বিষয়টো ইতিমধ্যে ডি-ৰজিস্টাৰ কৰা হৈছে"
+      "alreadyDeregistered": "এই বিষয়টো ইতিমধ্যে মচি পেলোৱা হৈছে",
+      "alreadyDeleted": "এই বিষয়টো ইতিমধ্যে মচি পেলোৱা হৈছে"
     },
     "dialog": {
       "registerTitle": "বিষয় সৃষ্টি কৰক",

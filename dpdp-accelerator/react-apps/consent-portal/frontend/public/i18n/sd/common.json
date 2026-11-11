@@ -585,8 +585,8 @@
     "loadFailed": "अधुनि वक़्ति मौज़ूअ लोड करणु में नाकामी।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "डीरजिस्टरु कयल",
-      "deleted": "डीरजिस्टरु कयल"
+      "deregistered": "मिटाएल",
+      "deleted": "मिटाएल"
     },
     "filters": {
       "searchPlaceholder": "मौज़ूअ जे नालो या बयान सां ॻोल्हियो",
@@ -607,8 +607,8 @@
     "actions": {
       "register": "मौज़ूअ ठाहियो",
       "delete": "मउज़ूअ डीरजिस्टरु करियो",
-      "alreadyDeregistered": "इहो मौज़ूअ पहिरीं ई डी-रजिस्टर कयो वियो आहे",
-      "alreadyDeleted": "इहो मौज़ूअ पहिरीं ई डी-रजिस्टर कयो वियो आहे"
+      "alreadyDeregistered": "इहो मौज़ूअ पहिरीं ई मिटाए वियो आहे",
+      "alreadyDeleted": "इहो मौज़ूअ पहिरीं ई मिटाए वियो आहे"
     },
     "dialog": {
       "registerTitle": "मौज़ूअ ठाहियो",

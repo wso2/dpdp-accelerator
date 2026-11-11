@@ -607,8 +607,8 @@
     "actions": {
       "register": "विषय तयार करात",
       "delete": "विषय काडून उडोवप",
-      "alreadyDeregistered": "हो विशय पयलींच नोंदणी रद्द केलां",
-      "alreadyDeleted": "हो विशय पयलींच नोंदणी रद्द केलां"
+      "alreadyDeregistered": "हो विशय पयलींच काडून उडयला",
+      "alreadyDeleted": "हो विशय पयलींच काडून उडयला"
     },
     "dialog": {
       "registerTitle": "विषय तयार करात",

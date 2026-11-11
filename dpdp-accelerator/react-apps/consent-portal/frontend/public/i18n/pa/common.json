@@ -585,8 +585,8 @@
     "loadFailed": "ਹੁਣੇ ਵਿਸ਼ੇ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
     "status": {
       "active": "ਕਿਰਿਆਸ਼ੀਲ",
-      "deregistered": "ਡੀਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ",
-      "deleted": "ਡੀਰਜਿਸਟਰ ਕੀਤਾ ਗਿਆ"
+      "deregistered": "ਮਿਟਾਇਆ ਗਿਆ",
+      "deleted": "ਮਿਟਾਇਆ ਗਿਆ"
     },
     "filters": {
       "searchPlaceholder": "ਵਿਸ਼ੇ ਦੇ ਨਾਮ ਜਾਂ ਵੇਰਵੇ ਦੁਆਰਾ ਖੋਜ ਕਰੋ",
@@ -607,8 +607,8 @@
     "actions": {
       "register": "ਵਿਸ਼ਾ ਬਣਾਓ",
       "delete": "ਵਿਸ਼ਾ ਨੂੰ ਡੀਰਜਿਸਟਰ ਕਰੋ",
-      "alreadyDeregistered": "ਇਹ ਵਿਸ਼ਾ ਪਹਿਲਾਂ ਹੀ ਡੀ-ਰਜਿਸਟਰ ਹੋ ਚੁੱਕਾ ਹੈ",
-      "alreadyDeleted": "ਇਹ ਵਿਸ਼ਾ ਪਹਿਲਾਂ ਹੀ ਡੀ-ਰਜਿਸਟਰ ਹੋ ਚੁੱਕਾ ਹੈ"
+      "alreadyDeregistered": "ਇਹ ਵਿਸ਼ਾ ਪਹਿਲਾਂ ਹੀ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ",
+      "alreadyDeleted": "ਇਹ ਵਿਸ਼ਾ ਪਹਿਲਾਂ ਹੀ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ"
     },
     "dialog": {
       "registerTitle": "ਵਿਸ਼ਾ ਬਣਾਓ",
