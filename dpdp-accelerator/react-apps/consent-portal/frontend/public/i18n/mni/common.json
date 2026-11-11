@@ -585,7 +585,6 @@
     "loadFailed": "ꯇꯣꯄꯤꯛꯁꯤꯡ ꯍꯧꯖꯤꯛ ꯂꯣꯗ ꯇꯧꯕ ꯌꯥꯔꯛꯇꯦ꯫",
     "status": {
       "active": "ꯑꯦꯛꯇꯤꯕ",
-      "deregistered": "ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ",
       "deleted": "ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "ꯇꯣꯄꯤꯛ ꯁꯦꯝꯃꯨ",
       "delete": "ꯇꯣꯄꯤꯛ ꯗꯤꯂꯤꯠ ꯇꯧ꯫",
-      "alreadyDeregistered": "ꯃꯁꯤꯒꯤ ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯍꯥꯟꯅꯗꯒꯤ ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ꯫",
       "alreadyDeleted": "ꯃꯁꯤꯒꯤ ꯇꯣꯄꯤꯛ ꯑꯁꯤ ꯍꯥꯟꯅꯗꯒꯤ ꯗꯤꯂꯤꯠ ꯇꯧꯔꯦ꯫"
     },
     "dialog": {

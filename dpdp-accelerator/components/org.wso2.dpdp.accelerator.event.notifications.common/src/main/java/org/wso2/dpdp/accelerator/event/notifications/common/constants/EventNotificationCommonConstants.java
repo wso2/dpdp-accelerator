@@ -36,7 +36,6 @@ public class EventNotificationCommonConstants {
     public static final String ERROR_GETTING_TOPIC_BY_ORG_AND_NAME = "Error getting topic by org [%s] and name [%s]";
     public static final String ERROR_UPDATING_TOPIC_STATUS = "Error updating topic status for ID [%s]";
     public static final String ERROR_DELETING_TOPIC = "Error deleting topic [%s]";
-    public static final String ERROR_DEREGISTERING_TOPIC = ERROR_DELETING_TOPIC;
     public static final String ERROR_LISTING_TOPICS = "Error listing topics for org [%s]";
     public static final String ERROR_PROMOTING_USER_TOPICS_TO_SYSTEM = "Error promoting user topics to system";
     public static final String ERROR_FINDING_ORGS_WITH_COMPLETE_SYSTEM_TOPICS =

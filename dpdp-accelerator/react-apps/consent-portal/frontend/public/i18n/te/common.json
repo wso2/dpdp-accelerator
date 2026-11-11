@@ -585,7 +585,6 @@
     "loadFailed": "ప్రస్తుతం అంశాలను లోడ్ చేయలేము.",
     "status": {
       "active": "క్రియాశీల",
-      "deregistered": "తొలగించబడింది",
       "deleted": "తొలగించబడింది"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "అంశాన్ని సృష్టించు",
       "delete": "అంశాన్ని తొలగించు",
-      "alreadyDeregistered": "ఈ అంశం ఇప్పటికే తొలగించబడింది",
       "alreadyDeleted": "ఈ అంశం ఇప్పటికే తొలగించబడింది"
     },
     "dialog": {

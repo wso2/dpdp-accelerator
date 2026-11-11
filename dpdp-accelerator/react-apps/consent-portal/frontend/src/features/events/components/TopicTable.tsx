@@ -121,9 +121,7 @@ export default function TopicTable({
             ) : null}
             {rows.map((topic) => {
               const isActive = topic.status.toUpperCase() === 'ACTIVE'
-              const isDeleted =
-                topic.status.toUpperCase() === 'DELETED' ||
-                topic.status.toUpperCase() === 'DEREGISTERED'
+              const isDeleted = topic.status.toUpperCase() === 'DELETED'
               const isSystemTopic = topic.initiatedBy?.toLowerCase() === 'system'
               const initiator = topic.initiatedBy?.toUpperCase() || 'USER'
               let deleteActionTitle = t('topics.actions.delete')

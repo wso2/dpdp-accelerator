@@ -75,8 +75,8 @@ public class TopicEndpoint {
             @QueryParam("limit") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_LIMIT_STR) int limit,
             @QueryParam("offset") @DefaultValue(EventNotificationEndpointConstants.DEFAULT_OFFSET_STR) int offset,
             @QueryParam("sort") String sort) {
-        PaginatedResult<TopicDTO> result = topicHandler.listTopics(organizationIdSupplier.get(), status,
-                search, limit, offset, sort);
+        PaginatedResult<TopicDTO> result = topicHandler.listTopics(organizationIdSupplier.get(),
+                EventNotificationDtoMapper.toInternalTopicStatusFilter(status), search, limit, offset, sort);
         return Response.ok(EventNotificationDtoMapper.topics(result)).build();
     }
 

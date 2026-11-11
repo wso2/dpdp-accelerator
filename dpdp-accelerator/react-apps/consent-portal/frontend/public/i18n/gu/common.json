@@ -585,7 +585,6 @@
     "loadFailed": "હમણાં વિષયો લોડ કરવામાં અસમર્થ.",
     "status": {
       "active": "સક્રિય",
-      "deregistered": "ડિલીટ થયું",
       "deleted": "ડિલીટ થયું"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "વિષય બનાવો",
       "delete": "વિષય ડિલીટ કરો",
-      "alreadyDeregistered": "આ વિષય પહેલેથી જ ડિલીટ થઈ ગયો છે",
       "alreadyDeleted": "આ વિષય પહેલેથી જ ડિલીટ થઈ ગયો છે"
     },
     "dialog": {

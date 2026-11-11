@@ -135,6 +135,10 @@ public class DtoContractTest {
         assertEquals(EventNotificationDtoMapper.topics(
                 new PaginatedResult<>(Collections.singletonList(deletedTopic), 1)).getItems().get(0).getStatus(),
                 org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicStatus.DEREGISTERED);
+        assertEquals(EventNotificationDtoMapper.toInternalTopicStatusFilter("deregistered"), "deleted");
+        assertEquals(EventNotificationDtoMapper.toInternalTopicStatusFilter("DEREGISTERED"), "deleted");
+        assertEquals(EventNotificationDtoMapper.toInternalTopicStatusFilter("active"), "active");
+        assertNull(EventNotificationDtoMapper.toInternalTopicStatusFilter(null));
         equivalent(new PaginatedResult<>(Collections.singletonList(topic), 7),
                 EventNotificationDtoMapper.topics(new PaginatedResult<>(Collections.singletonList(topic), 7)));
         equivalent(new TopicDTO(), EventNotificationDtoMapper.toApi(new TopicDTO()));

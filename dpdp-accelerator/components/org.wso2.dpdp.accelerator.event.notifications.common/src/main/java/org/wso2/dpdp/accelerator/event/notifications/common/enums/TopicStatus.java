@@ -50,9 +50,6 @@ public enum TopicStatus {
                 return status;
             }
         }
-        if ("deregistered".equalsIgnoreCase(value.trim())) {
-            return DELETED;
-        }
         throw new IllegalArgumentException(
                 String.format(EventNotificationCommonConstants.ERROR_UNKNOWN_ENUM_VALUE, "TopicStatus", value));
     }

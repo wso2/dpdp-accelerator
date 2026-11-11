@@ -218,11 +218,6 @@ public class TopicDAOImpl implements TopicDAO {
     }
 
     @Override
-    public boolean deregisterTopicAtomic(Connection conn, String topicId, String orgId) {
-        return deleteTopicAtomic(conn, topicId, orgId);
-    }
-
-    @Override
     public PaginatedDAOResult<Topic> listTopics(Connection conn, String orgId, String status, String search, int limit, int offset,
             String sort) {
         if (conn == null) {

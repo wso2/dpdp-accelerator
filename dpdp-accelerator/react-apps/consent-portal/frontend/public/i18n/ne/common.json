@@ -585,7 +585,6 @@
     "loadFailed": "अहिले विषयहरू लोड गर्न असमर्थ।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "मेटाएको",
       "deleted": "मेटाएको"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "विषय सिर्जना गर्नुहोस्",
       "delete": "विषय मेटाउनुहोस्",
-      "alreadyDeregistered": "यो विषय पहिले नै हटाइएको छ।",
       "alreadyDeleted": "यो विषय पहिले नै हटाइएको छ।"
     },
     "dialog": {

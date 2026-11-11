@@ -50,7 +50,7 @@ public class TopicAndSubscriptionEndpointTest {
 
         TopicDTO deletedTopic = new TopicDTO("topic-2", "deleted-name", "desc", "deleted", "user");
         when(topicHandler.deleteTopic("org-1", "topic-2")).thenReturn(deletedTopic);
-        when(topicHandler.listTopics("org-1", "deregistered", null, 20, 0, null))
+        when(topicHandler.listTopics("org-1", "deleted", null, 20, 0, null))
                 .thenReturn(new PaginatedResult<>(Collections.singletonList(deletedTopic), 1));
         org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Topic deleteBody =
                 (org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Topic)

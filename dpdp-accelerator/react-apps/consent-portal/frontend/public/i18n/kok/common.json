@@ -585,7 +585,6 @@
     "loadFailed": "सध्या विशय लोड करपाक शकना.",
     "status": {
       "active": "सक्रीय",
-      "deregistered": "काडून उडयलें",
       "deleted": "काडून उडयलें"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "विषय तयार करात",
       "delete": "विषय काडून उडोवप",
-      "alreadyDeregistered": "हो विशय पयलींच काडून उडयला",
       "alreadyDeleted": "हो विशय पयलींच काडून उडयला"
     },
     "dialog": {

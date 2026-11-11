@@ -585,7 +585,6 @@
     "loadFailed": "এতিয়া বিষয়সমূহ লোড কৰিবলৈ অসমৰ্থ।",
     "status": {
       "active": "সক্ৰিয়",
-      "deregistered": "মচন কৰা হৈছে",
       "deleted": "মচন কৰা হৈছে"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "বিষয় সৃষ্টি কৰক",
       "delete": "বিষয় মচন কৰক",
-      "alreadyDeregistered": "এই বিষয়টো ইতিমধ্যে মচি পেলোৱা হৈছে",
       "alreadyDeleted": "এই বিষয়টো ইতিমধ্যে মচি পেলোৱা হৈছে"
     },
     "dialog": {

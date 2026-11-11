@@ -585,8 +585,7 @@
     "loadFailed": "Unable to load topics right now.",
     "status": {
       "active": "Active",
-      "deleted": "Deleted",
-      "deregistered": "Deleted"
+      "deleted": "Deleted"
     },
     "filters": {
       "searchPlaceholder": "Search by topic name or description",
@@ -606,8 +605,7 @@
     "actions": {
       "register": "Create Topic",
       "delete": "Delete topic",
-      "alreadyDeleted": "This topic is already deleted",
-      "alreadyDeregistered": "This topic is already deleted"
+      "alreadyDeleted": "This topic is already deleted"
     },
     "dialog": {
       "registerTitle": "Create Topic",

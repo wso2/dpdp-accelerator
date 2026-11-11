@@ -585,7 +585,6 @@
     "loadFailed": "ਹੁਣੇ ਵਿਸ਼ੇ ਲੋਡ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ।",
     "status": {
       "active": "ਕਿਰਿਆਸ਼ੀਲ",
-      "deregistered": "ਮਿਟਾਇਆ ਗਿਆ",
       "deleted": "ਮਿਟਾਇਆ ਗਿਆ"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "ਵਿਸ਼ਾ ਬਣਾਓ",
       "delete": "ਵਿਸ਼ਾ ਮਿਟਾਓ",
-      "alreadyDeregistered": "ਇਹ ਵਿਸ਼ਾ ਪਹਿਲਾਂ ਹੀ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ",
       "alreadyDeleted": "ਇਹ ਵਿਸ਼ਾ ਪਹਿਲਾਂ ਹੀ ਮਿਟਾ ਦਿੱਤਾ ਗਿਆ ਹੈ"
     },
     "dialog": {

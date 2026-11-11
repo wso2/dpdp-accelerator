@@ -585,7 +585,6 @@
     "loadFailed": "अखन विषय लोड करब' मे असमर्थ।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "हटाओल गेल",
       "deleted": "हटाओल गेल"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "विषय बनाऊ",
       "delete": "विषय हटाबू",
-      "alreadyDeregistered": "ई विषय पहिने सँ हटा देल गेल अछि",
       "alreadyDeleted": "ई विषय पहिने सँ हटा देल गेल अछि"
     },
     "dialog": {

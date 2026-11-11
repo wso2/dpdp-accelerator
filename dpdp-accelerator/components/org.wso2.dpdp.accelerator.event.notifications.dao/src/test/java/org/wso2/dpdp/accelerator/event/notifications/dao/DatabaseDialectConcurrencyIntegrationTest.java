@@ -174,7 +174,7 @@ public class DatabaseDialectConcurrencyIntegrationTest {
             try {
                 Future<Boolean> deregistration = executor.submit(() -> {
                     attempted.countDown();
-                    boolean deregistered = topicDAO.deregisterTopicAtomic(
+                    boolean deregistered = topicDAO.deleteTopicAtomic(
                             deregister, "topic-publish", "org-1");
                     deregister.commit();
                     return deregistered;

@@ -77,13 +77,6 @@ public class TopicServiceBranchesTest {
     }
 
     @Test(expectedExceptions = org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class)
-    public void deleteLegacyDeregisteredTopicIsRejected() {
-        Topic topic = new Topic("t", "org", "topic", null, "deregistered", Initiator.USER.getValue());
-        when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
-        service.deleteTopic("org", "t");
-    }
-
-    @Test(expectedExceptions = org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class)
     public void deleteFalseUpdateIsRejected() {
         Topic topic = new Topic("t", "org", "topic", null, "active", Initiator.USER.getValue());
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
@@ -116,16 +109,6 @@ public class TopicServiceBranchesTest {
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(
                 new Topic("t", "org", "topic", "desc", "active", Initiator.USER.getValue())));
         org.testng.Assert.assertEquals(service.getTopic("org", "t").get().getName(), "topic");
-    }
-
-    @Test
-    public void listTopicsNormalizesLegacyDeregisteredStatusFilter() {
-        when(dao.listTopics(any(Connection.class), eq("org"), eq("deleted"), eq("term"), eq(20), eq(0), eq(null)))
-                .thenReturn(new org.wso2.dpdp.accelerator.event.notifications.dao.PaginatedDAOResult<>(
-                        java.util.Collections.emptyList(), 0));
-        service.listTopics("org", "deregistered", "term", 20, 0, null);
-        org.mockito.Mockito.verify(dao).listTopics(
-                any(Connection.class), eq("org"), eq("deleted"), eq("term"), eq(20), eq(0), eq(null));
     }
 
     @Test(expectedExceptions = RuntimeException.class,

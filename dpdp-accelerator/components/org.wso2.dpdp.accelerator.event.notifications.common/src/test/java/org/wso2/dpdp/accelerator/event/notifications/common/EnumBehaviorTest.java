@@ -23,8 +23,7 @@ public class EnumBehaviorTest {
                 {DeliveryMode.WEBHOOK, "webhook"}, {DeliveryMode.POLL, "POLL"},
                 {DeliveryStatus.IN_FLIGHT, " in_flight "}, {DeliveryStatus.DELIVERED, "DELIVERED"},
                 {PollStatus.ACKNOWLEDGED, "acknowledged"}, {PurposeFilterMode.EXCEPT, "EXCEPT"},
-                {SubscriptionStatus.STALE, "stale"}, {TopicStatus.DELETED, "DELETED"},
-                {TopicStatus.DELETED, "deregistered"}
+                {SubscriptionStatus.STALE, "stale"}, {TopicStatus.DELETED, "DELETED"}
         };
     }
 

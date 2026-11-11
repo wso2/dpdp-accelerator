@@ -585,7 +585,6 @@
     "loadFailed": "विषयाः भारयितुं न शक्यन्ते।",
     "status": {
       "active": "सक्रिया",
-      "deregistered": "विलोपितम्",
       "deleted": "विलोपितम्"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "विषयः सृजन्तु",
       "delete": "विषयं विलोपयतु",
-      "alreadyDeregistered": "एषः विषयः पूर्वमेव विलोपितः।",
       "alreadyDeleted": "एषः विषयः पूर्वमेव विलोपितः।"
     },
     "dialog": {

@@ -496,7 +496,7 @@ public class TransactionIntegrationTest {
             try {
                 Future<Boolean> deregistration = executor.submit(() -> {
                     attempted.countDown();
-                    boolean result = topicDAO.deregisterTopicAtomic(deregister, "topic-1", "org-1");
+                    boolean result = topicDAO.deleteTopicAtomic(deregister, "topic-1", "org-1");
                     deregister.commit();
                     return result;
                 });
@@ -587,7 +587,7 @@ public class TransactionIntegrationTest {
         TopicDAOImpl topicDAO = new TopicDAOImpl();
         assertTrue(topicDAO.addTopic(connection,
                 new Topic("topic-1", "org-1", "accounts", "", TopicStatus.ACTIVE.getValue())));
-        assertTrue(topicDAO.deregisterTopicAtomic(connection, "topic-1", "org-1"));
+        assertTrue(topicDAO.deleteTopicAtomic(connection, "topic-1", "org-1"));
 
         Event event = new Event("event-1", "org-1", "group-1", "topic-1", "{}",
                 new Timestamp(System.currentTimeMillis()));

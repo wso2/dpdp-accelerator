@@ -585,7 +585,6 @@
     "loadFailed": "अधुनि वक़्ति मौज़ूअ लोड करणु में नाकामी।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "मिटाएल",
       "deleted": "मिटाएल"
     },
     "filters": {
@@ -606,7 +605,6 @@
     "actions": {
       "register": "मौज़ूअ ठाहियो",
       "delete": "मौज़ूअ मिटाइयो",
-      "alreadyDeregistered": "इहो मौज़ूअ पहिरीं ई मिटाए वियो आहे",
       "alreadyDeleted": "इहो मौज़ूअ पहिरीं ई मिटाए वियो आहे"
     },
     "dialog": {

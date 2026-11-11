@@ -294,10 +294,7 @@ public class TopicServiceImpl implements TopicService {
         }
         int lim = EventNotificationParameterUtils.normalizeLimit(limit);
         int off = EventNotificationParameterUtils.normalizeOffset(offset);
-        String parsedStatus = EventNotificationParameterUtils.normalizeStatusFilter(status);
-        String normalizedStatus = TopicStatus.fromValueOrDefault(parsedStatus, null) == TopicStatus.DELETED
-                ? TopicStatus.DELETED.getValue()
-                : parsedStatus;
+        String normalizedStatus = EventNotificationParameterUtils.normalizeStatusFilter(status);
 
         return DatabaseUtils.executeInTransaction(conn -> {
             PaginatedDAOResult<Topic> daoResult = topicDAO.listTopics(
