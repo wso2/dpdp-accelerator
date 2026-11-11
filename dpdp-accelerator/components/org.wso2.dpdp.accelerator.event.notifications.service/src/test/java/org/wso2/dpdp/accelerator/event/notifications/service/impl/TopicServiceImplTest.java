@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.Initiator;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationInvalidStateException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException;
@@ -141,7 +142,7 @@ public class TopicServiceImplTest {
 
         TopicDTO result = topicService.deleteTopic("org1", "t1");
         assertNotNull(result);
-        assertEquals(result.getStatus(), "deleted");
+        assertEquals(result.getStatus(), TopicStatus.DELETED.getValue());
     }
 
     @Test(expectedExceptions = EventNotificationServiceException.class)

@@ -295,7 +295,7 @@ public class TopicServiceImpl implements TopicService {
         int lim = EventNotificationParameterUtils.normalizeLimit(limit);
         int off = EventNotificationParameterUtils.normalizeOffset(offset);
         String parsedStatus = EventNotificationParameterUtils.normalizeStatusFilter(status);
-        String normalizedStatus = "deregistered".equals(parsedStatus)
+        String normalizedStatus = TopicStatus.fromValueOrDefault(parsedStatus, null) == TopicStatus.DELETED
                 ? TopicStatus.DELETED.getValue()
                 : parsedStatus;
 
@@ -354,8 +354,7 @@ public class TopicServiceImpl implements TopicService {
                             409);
                 }
 
-                if (TopicStatus.DELETED.getValue().equalsIgnoreCase(topic.getStatus())
-                        || "deregistered".equalsIgnoreCase(topic.getStatus())) {
+                if (TopicStatus.fromValueOrDefault(topic.getStatus(), null) == TopicStatus.DELETED) {
                     throw new EventNotificationServiceException(
                             EventNotificationServiceConstants.ERROR_CODE_TOPIC_NOT_FOUND,
                             EventNotificationServiceConstants.ERROR_TITLE_TOPIC_NOT_FOUND,
