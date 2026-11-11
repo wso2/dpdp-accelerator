@@ -172,7 +172,7 @@ A subscription can also be marked **Stale** if its webhook endpoint fails the ve
 
 **Try it:** [Confirm that the processor was notified](../try-out/event.md#step-5-confirm-that-the-processor-was-notified)
 
-For more details, see [Inspect events and delivery history](../event-notification-guide.md#8-inspect-events-and-delivery-history).
+For more details, see [Inspect events and delivery history](../event-notification-guide.md#7-inspect-events-and-delivery-history).
 
 ## What happens after an event is delivered?
 

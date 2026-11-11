@@ -1,162 +1,86 @@
 # Managing grievances
 
-The DPDP Accelerator provides a tenant-scoped grievance (complaint) service for
-Data Principals and the people who handle their cases. The Consent Portal is
-the ready-made user interface; the same operations are available through the
-complaint API for an application or an integration.
+This reference covers the complaint (grievance) API: its two access surfaces, the requests an application or integration makes, and how to customize complaint emails. For the concepts and the status lifecycle, see [Understanding Complaints](learn/complaint.md). For a step-by-step walkthrough in the Consent Portal, see [Try Out: Complaints](try-out/complaint.md).
 
-Complete the [Quickstart](quickstart.md) first. Assign users and roles as
-described in the [Role Management Guide](role-guide.md), then sign in again so
-new role scopes are present in their access tokens.
+For every endpoint and schema, see the [Complaint Server API specification](https://github.com/wso2/dpdp-accelerator/blob/v1.0.0/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.complaint.mgt.endpoint/src/main/resources/complaint-server-API.yaml).
 
 ## 1. Understand the two access surfaces
 
-The API has two deliberately separate namespaces:
+The API has two deliberately separate surfaces under `https://<host>:9443/api/dpdp/complaints/v1` (add `/t/<tenant-domain>` after the port for a specific tenant):
 
-| Surface | Who uses it | What it permits |
-|---|---|---|
-| `/me/complaints/*` | The authenticated Data Principal | Create, view, reply to, and add public attachments to their own complaints |
-| `/complaints/*` | A complaint officer, DPO, administrator, or trusted system | Search and manage complaints across the tenant, add public replies or internal notes, change status, and manage attachments |
+| Surface | Who uses it | Scopes | What it permits |
+|---|---|---|---|
+| `/me/complaints/*` | The signed-in Data Principal, using their own user token | `complaints:read:self`, `complaints:write:self` | Create, view, and reply to their own complaints, and add public attachments |
+| `/complaints/*` | A Data Protection Officer (DPO) or a trusted system | `complaints:read:any`, `complaints:write:any` | Search and manage every complaint in the tenant, add public replies or internal notes, change status, and manage attachments |
 
-The service derives the Data Principal from the bearer token on the `me`
-surface. Do not put a `userId` in a self-service request. A complaint officer
-can create a complaint on behalf of a Data Principal through the management
-surface when a complaint was received by phone, in person, or on paper.
+- The `me` surface derives the Data Principal from the token, so never put a `userId` in a self-service request. A caller asking for someone else's complaint gets `404`, with no hint that the ID exists.
+- The `dpdp-consent-user` role grants the self-service scopes and `dpdp-consent-dpo` grants the management scopes. `dpdp-consent-admin` has no complaint scopes. For a system integration, authorize a dedicated application for only the scopes it needs. See [Managing Access](learn/managing-access.md#complaints).
+- A DPO can create a complaint on a Data Principal's behalf through `POST /complaints`, with the `userId` in the body, when the complaint arrives by phone, in person, or on paper.
+- Complaints and attachments are isolated by tenant. Use a token issued by the same tenant as the URL.
 
-All complaints and attachments are isolated by the Identity Server tenant. The
-examples below use:
+Deadlines, attachment limits, and email notifications are set in `deployment.toml`. See [Configure complaint management](install-and-setup/configuring-the-accelerator.md#configure-complaint-management).
 
-```text
-https://<host>:9443/api/dpdp/complaints/v1
-```
-
-The examples below use these shell variables:
-
-```sh
-BASE_URL="https://localhost:9443"
-ACCESS_TOKEN="<data-principal-access-token>"
-OFFICER_ACCESS_TOKEN="<complaint-officer-access-token>"
-```
-
-## 2. Assign the required roles and scopes
-
-The automatically provisioned roles grant these complaint permissions:
-
-| Operation | Scope | Role |
-|---|---|---|
-| Create, list, view and reply to own complaints | `complaints:read:self`, `complaints:write:self` | `dpdp-consent-user` |
-| List, view and manage all complaints | `complaints:read:any`, `complaints:write:any` | `dpdp-consent-dpo` |
-
-Organization-wide complaint handling belongs to `dpdp-consent-dpo` alone —
-`dpdp-consent-admin` does not receive complaint scopes, keeping complaint
-oversight separate from portal administration (catalog, consent, and Event
-Notification management). For machine-to-machine use, assign
-`complaints:read:self`, `complaints:write:self`, `complaints:read:any`, or
-`complaints:write:any` as appropriate to a dedicated integration role instead
-of using a portal administrator role.
-
-The examples use certificates trusted by the client. For a local Identity
-Server using a self-signed certificate, add `-k` to a `curl` command only for
-that local test. Do not use `-k` in a deployed environment; configure a trusted
-CA or pass it explicitly with `--cacert` instead.
-
-## 3. Configure deadlines and attachments
-
-Set these values in `deployment.toml` under
-`[dpdp_accelerator.complaints]`:
-
-```toml
-statutory_due_period_days = 90
-attachment_max_size_bytes = 10485760
-attachment_max_files_per_upload = 5
-```
-
-The due date is calculated from submission time. Each attachment must be a PDF,
-DOCX, PNG, or JPEG and must stay within the configured size limit. An upload
-request can contain up to the configured number of files. Restart Identity
-Server after changing these server-side limits.
-
-## 4. Customize complaint notification emails
-
-`ComplaintCreated`, `ComplaintCommentAdded`, and `ComplaintAcknowledged` are standard IS
-notification templates — edit them in Console under **Email Templates**, per tenant.
-
-Placeholders: `{{reference-id}}`, `{{message-excerpt}}`, `{{data-principal-name}}`,
-`{{actor-name}}`, `{{category-label}}`, `{{priority-label}}`, `{{status-label}}`,
-`{{sla-label}}`, `{{action-url}}`, `{{recipient-role-label}}`, `{{headline-html}}`,
-`{{footer-text}}`, `{{action-badge-html}}`, `{{logo-url}}`.
-
-A template is written once, on first provisioning, and never rewritten — a Console edit is
-permanent. The bundled default comes from
-`<IS_HOME>/repository/conf/email/email-dpdp-config.xml` (edit it for new tenants, no rebuild
-needed), but only affects tenants provisioned after the edit. The file is read once and cached
-for the server's lifetime — **restart the server after editing it**, or new tenants keep
-getting the old default until you do.
-
-## 5. Submit and track a grievance in the portal
-
-**Portal:** Sign in as a user with `dpdp-consent-user`, open **My Complaints**,
-and select **Submit New Complaint**.
-
-1. Choose a category and describe the issue without unnecessary personal data.
-2. Optionally add one or more supported files within the configured limits.
-3. Submit the complaint and retain its generated reference ID.
-4. Open the case to see its status, statutory due date, public activity, and
-   public attachments.
-5. Use the reply composer to send a public follow-up. If the case is waiting
-   for information, the portal sends the transition to
-   `AWAITING_INTERNAL_REVIEW` with the reply.
-
-The self-service create request is:
+The examples use these variables:
 
 ```bash
-curl -X POST \
-  "${BASE_URL}/api/dpdp/complaints/v1/me/complaints" \
-  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+export API_BASE="https://localhost:9443/api/dpdp/complaints/v1"
+export USER_TOKEN="<data-principal-access-token>"
+export DPO_TOKEN="<dpo-or-integration-access-token>"
+```
+
+## 2. Create a complaint
+
+List the categories, each with the priority a new complaint in it receives:
+
+```bash
+curl "${API_BASE}/me/complaints/categories" \
+  -H "Authorization: Bearer ${USER_TOKEN}"
+```
+
+The categories are `DATA_BREACH`, `UNAUTHORIZED_DATA_SHARING`, `CONSENT_WITHDRAWN_DATA_STILL_USED`, `PURPOSE_VIOLATION`, `DATA_ERASURE_NOT_COMPLETED`, `DATA_CORRECTION_NOT_COMPLETED`, `CONSENT_LIFECYCLE_ISSUE`, `DATA_ACCESS_DENIED`, `EXCESSIVE_DATA_COLLECTION`, and `OTHER`.
+
+Create the complaint with the Data Principal's own token:
+
+```bash
+curl -X POST "${API_BASE}/me/complaints" \
+  -H "Authorization: Bearer ${USER_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
-    "subjectCategory": "DATA_ACCESS_DENIED",
-    "description": "I cannot obtain the information associated with my consent."
+    "subjectCategory": "CONSENT_WITHDRAWN_DATA_STILL_USED",
+    "description": "I revoked my consent for marketing emails, but I still receive them."
   }'
 ```
 
-The server derives `userId` from the token and returns `201 Created` with the
-complaint ID, reference ID, category, priority, status, description,
-timestamps, and statutory due date. Upload evidence afterward with multipart
-form data; self-service uploads are always public:
+The response is `201 Created`, with the complaint ID, reference ID, priority, status (`OPEN`), and statutory due date.
+
+## 3. Add attachments
+
+Upload evidence as multipart form data. Each file must be a PDF, DOCX, PNG, or JPEG within the configured size limit, and one request can carry up to `attachment_max_files_per_upload` files (5 by default). The Consent Portal sends one file per upload.
+
+Self-service uploads are always public:
 
 ```bash
-curl -X POST \
-  "${BASE_URL}/api/dpdp/complaints/v1/me/complaints/<complaint-id>/attachments" \
-  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-  -F "file=@incident-screenshot.png;type=image/png" \
-  -F "file=@supporting-report.pdf;type=application/pdf"
+curl -X POST "${API_BASE}/me/complaints/<complaint-id>/attachments" \
+  -H "Authorization: Bearer ${USER_TOKEN}" \
+  -F "file=@incident-screenshot.png;type=image/png"
 ```
 
-Use `GET /me/complaints/<complaint-id>/timeline` to retrieve the public
-activity and the attachments associated with each timeline entry. Internal
-officer notes are never returned on this surface.
-
-## 6. Handle a grievance in Complaint Management
-
-**Portal:** Sign in as a DPO or administrator and open **Complaint Management**.
-
-1. Find the case by reference ID, Data Principal, status, or priority.
-2. Open it to inspect the description, attachments, and complete activity
-   timeline.
-3. Send a public reply when the Data Principal should see the message.
-4. Add an **Internal Note** for officer-only information.
-5. Use the status menu to choose a permitted next state.
-6. Resolve the case after the review is complete, then confirm that the public
-   view contains no internal note.
-
-The officer endpoint can add a public reply and transition the case in one
-request:
+On the management surface, the `isPublic` part is required and must be sent as `text/plain`. Without that content type, the value can't be read and the upload is stored as internal:
 
 ```bash
-curl -X POST \
-  "${BASE_URL}/api/dpdp/complaints/v1/complaints/<complaint-id>/comments" \
-  -H "Authorization: Bearer ${OFFICER_ACCESS_TOKEN}" \
+curl -X POST "${API_BASE}/complaints/<complaint-id>/attachments" \
+  -H "Authorization: Bearer ${DPO_TOKEN}" \
+  -F "file=@investigation-notes.pdf;type=application/pdf" \
+  -F "isPublic=false;type=text/plain"
+```
+
+## 4. Reply, add internal notes, and change status
+
+A DPO can post a public reply and change the status in one request:
+
+```bash
+curl -X POST "${API_BASE}/complaints/<complaint-id>/comments" \
+  -H "Authorization: Bearer ${DPO_TOKEN}" \
   -H "Content-Type: application/json" \
   -d '{
     "message": "We are reviewing your request.",
@@ -165,63 +89,32 @@ curl -X POST \
   }'
 ```
 
-Set `isPublic` to `false` for an internal note. Management attachments may be
-marked public or internal with the multipart `isPublic` field. Only public
-entries and attachments are visible to the Data Principal.
+- Set `"isPublic": false` for an internal note. Internal notes and internal attachments never appear on the `me` surface.
+- Moving a complaint to `RESOLVED` requires a message describing the outcome. `POST /complaints/<complaint-id>/status` changes the status without a comment, and takes `toStatus` and a required `note`.
+- Every transition is checked against the permitted transitions listed in [How status transitions work](learn/complaint.md#how-status-transitions-work). A transition that isn't permitted returns `409` (`CO-4090`).
 
-## 7. Follow the permitted status lifecycle
+The Data Principal replies through `POST /me/complaints/<complaint-id>/comments`, with a `message` and an optional `toStatus`. When the complaint is `WAITING_ON_CLIENT` or `RESOLVED`, the Consent Portal sends `"toStatus": "AWAITING_INTERNAL_REVIEW"` with the reply. This is how a resolved complaint is reopened. An application on the `me` surface should do the same.
 
-The service validates every requested transition:
+Use `GET /me/complaints/<complaint-id>/timeline` for the public activity and its attachments, and `GET /complaints/<complaint-id>/timeline` for the full activity, including internal notes.
 
-| Current status | Permitted next status |
-|---|---|
-| `OPEN` | `IN_PROGRESS`, `WAITING_ON_CLIENT` |
-| `IN_PROGRESS` | `WAITING_ON_CLIENT`, `RESOLVED` |
-| `WAITING_ON_CLIENT` | `AWAITING_INTERNAL_REVIEW` |
-| `AWAITING_INTERNAL_REVIEW` | `IN_PROGRESS`, `WAITING_ON_CLIENT`, `RESOLVED` |
-| `RESOLVED` | `AWAITING_INTERNAL_REVIEW` through a valid self-service API transition |
+## 5. Customize complaint notification emails
 
-The portal hides resolved cases from the officer queue by default, but a Data
-Principal can still post a public reply to a resolved case. The current portal
-reply action does not automatically reopen it; use the self-service status API
-explicitly when a reopening workflow is required.
+Complaint emails are off by default. To send them, set `email_notifications_enabled = true` and configure the email sender, as described in [Configure complaint email notifications](install-and-setup/configuring-the-accelerator.md#configure-complaint-email-notifications).
 
-For example, a Data Principal can request the valid reopening transition with:
+`ComplaintCreated`, `ComplaintCommentAdded`, and `ComplaintAcknowledged` are standard Identity Server notification templates. Edit them per tenant in the Console under **Email Templates**.
 
-```bash
-curl -X POST \
-  "${BASE_URL}/api/dpdp/complaints/v1/me/complaints/<complaint-id>/status" \
-  -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-  -H "Content-Type: application/json" \
-  -d '{"toStatus":"AWAITING_INTERNAL_REVIEW"}'
-```
+Placeholders: `{{reference-id}}`, `{{message-excerpt}}`, `{{data-principal-name}}`, `{{actor-name}}`, `{{category-label}}`, `{{priority-label}}`, `{{status-label}}`, `{{sla-label}}`, `{{action-url}}`, `{{recipient-role-label}}`, `{{headline-html}}`, `{{footer-text}}`, `{{action-badge-html}}`, `{{logo-url}}`.
 
-An attempt to skip a required transition returns the complaint error response
-with HTTP `409`.
+A template is written once, when the tenant is first provisioned, and never rewritten, so a Console edit is permanent. The bundled default comes from `<IS_HOME>/repository/conf/email/email-dpdp-config.xml`. Editing that file needs no rebuild, but only affects tenants provisioned afterward. The file is read once and cached, so **restart the server after editing it**.
 
-## 8. Protect tenant and personal data
-
-- Use a token issued for the same tenant as the URL.
-- Use `me` endpoints for user-driven actions so identity is resolved server-side.
-- Keep internal notes and internal attachments off the public surface.
-- Store the reference ID, not unnecessary personal data, in support workflows.
-- Treat uploaded files as personal data and protect them in transit and at rest.
-
-The management API returns the full timeline for authorized officers; the
-self-service timeline filters out internal entries. A caller who does not own a
-complaint receives no confirmation that another user's complaint ID exists on
-the self-service surface.
-
-## 9. Troubleshoot common problems
+## 6. Troubleshoot common problems
 
 | Symptom | Check |
 |---|---|
-| `403 Forbidden` | Check the operation's exact scope: `complaints:read:self` or `complaints:write:self` for self-service, and `complaints:read:any` or `complaints:write:any` for tenant-wide management. Sign in again after role assignment. |
+| `403 Forbidden` | The token lacks the operation's scope: `complaints:read:self` or `complaints:write:self` on `/me/*`, and `complaints:read:any` or `complaints:write:any` on `/complaints/*`. After assigning a role, sign in again or get a new token. |
 | `404 Not Found` on `/me` | The complaint belongs to another user, or the ID is incorrect. |
-| Attachment rejected | Confirm the MIME type, file size, and number of files against the configured limits. |
-| `409` on a status change | The requested target is not permitted from the current status. |
-| Internal note visible to a Data Principal | Verify that the note was posted through `/complaints/*` with `isPublic: false`, and that the reader is using the `/me/*` timeline. |
-
-For a complete end-to-end walkthrough, see [Try Out](try-out/complaint.md).
-For server-side deadline and upload settings, see
-[Configuration Guide](install-and-setup/configuring-the-accelerator.md#configure-complaint-management).
+| `400` when resolving | Moving to `RESOLVED` needs a `message` (comments) or a `note` (status endpoint). |
+| `409` on a status change | The target status isn't permitted from the current status. |
+| Attachment rejected | Check the file type, the file size, and the number of files in the request against the configured limits. |
+| A management upload is internal when it should be public | Send the `isPublic` part as `text/plain`, for example `-F 'isPublic=true;type=text/plain'`. |
+| No complaint emails | `email_notifications_enabled` is `false` by default, and the email sender must also be configured. |

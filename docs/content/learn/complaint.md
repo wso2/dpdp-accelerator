@@ -44,7 +44,7 @@ The portal creates a complaint record with a reference ID, such as `CMP-2026-000
 
 **Priya** can return to **My Complaints** to follow its progress and view updates.
 
-**Try it:** [Submit a complaint](../try-out/complaint.md#step-1-submit-the-complaint).
+**Try it:** [Submit a complaint](../try-out/complaint.md#step-1-submit-a-complaint-as-priya-data-principal).
 
 ### 2. Investigate the complaint
 
@@ -89,7 +89,7 @@ These notes help document technical findings and follow-up actions without expos
 
 *Ravi's view (DPO): public replies and internal notes together on the same complaint.*
 
-**Try it:** [Investigate and communicate](../try-out/complaint.md#step-2-handle-and-investigate-the-complaint).
+**Try it:** [Investigate and communicate](../try-out/complaint.md#step-2-investigate-and-communicate-as-ravi-data-protection-officer).
 
 ### 4. Resolve the complaint
 

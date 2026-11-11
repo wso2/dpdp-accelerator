@@ -116,8 +116,9 @@ email_notifications_enabled = false
 - `statutory_due_period_days` — The number of days a complaint can remain open
   before it is marked as overdue.
 - `attachment_max_size_bytes` — The maximum allowed size for each attachment.
-- `attachment_max_files_per_upload` — The maximum number of files that can be
-  attached to a complaint.
+- `attachment_max_files_per_upload` — The maximum number of files in a single
+  upload request to the API. The Consent Portal currently uploads one file at a
+  time.
 - `email_notifications_enabled` — Enables email notifications for complaints.
   This is false by default and should only be enabled after configuring email
   notifications.
@@ -250,8 +251,7 @@ name = "dpdpUserLifecycleEventHandler"
 subscriptions = ["POST_DELETE_USER", "POST_SET_USER_CLAIMS"]
 ```
 
-See the [Event Notification Guide](event-notification-guide.md#enabling-userdatachange--useraccountdelete)
-for details. The `consent.*` topics also require
+The `consent.*` topics also require
 [consent history](#configure-consent-history-and-status-audit-trail) to be
 enabled.
 
@@ -265,8 +265,8 @@ max_events_limit = 100
 request_hmac_validation_enabled = false
 ```
 
-- `default_return_immediately` — Controls whether a poll request returns
-  immediately by default or waits for new events.
+- `default_return_immediately` — Keep this `true`. Long polling isn't
+  supported, so a poll request with `"returnImmediately": false` is rejected.
 - `default_max_events` — The default number of events returned in a poll
   request.
 - `max_events_limit` — The maximum number of events that can be requested in a
@@ -282,8 +282,8 @@ request_hmac_validation_enabled = false
 thread_pool_size = 4
 base_backoff_seconds = 5
 max_retries = 5
-allow_http_callback_url = false
-allowed_callback_ports = "-1,443,8443"
+allow_http_callback_url = true
+allowed_callback_ports = "-1,80,443,8443"
 allow_private_network_callback_targets = false
 delivery_worker_batch_size = 50
 delivery_worker_poll_seconds = 5
@@ -303,8 +303,9 @@ worker_shutdown_timeout_seconds = 5
 - `max_retries` — The maximum number of retries for a failed delivery. A value
   of `5` results in up to 6 delivery attempts in total.
 - `allow_http_callback_url` — Allows callback URLs that use HTTP instead of
-  HTTPS. Keep this disabled in production.
-- `allowed_callback_ports` — The ports that can be used by callback URLs.
+  HTTPS. Enabled by default; set it to `false` in production.
+- `allowed_callback_ports` — The ports that can be used by callback URLs. `-1`
+  means a URL with no explicit port.
 - `allow_private_network_callback_targets` — Allows callback URLs that point
   to private or internal networks. Enable this only for controlled on-premises
   environments.
