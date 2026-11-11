@@ -14,6 +14,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager;
+import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDaoException;
 import org.wso2.dpdp.accelerator.event.notifications.dao.DeliveryDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.SubscriptionDAO;
 import org.wso2.dpdp.accelerator.event.notifications.dao.model.Subscription;
@@ -22,6 +23,8 @@ import org.wso2.dpdp.accelerator.event.notifications.service.SubscriptionService
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -386,6 +389,31 @@ public class DeliveryRecoveryServiceTest {
 
         verify(subscriptionService, times(35)).retryVerification(eq("org1"), any(String.class));
         assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.NO_MORE_WORK);
+    }
+
+    @Test
+    public void lockTimeoutSkipsTouchPendingWhileOtherFailureTouches() throws Exception {
+        Subscription lockedSub = subscription("sub-locked", "https://example.com/locked");
+        Subscription pgLockedSub = subscription("sub-pg-locked", "https://example.com/pg-locked");
+        Subscription failedSub = subscription("sub-failed", "https://example.com/failed");
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenReturn(Arrays.asList(lockedSub, pgLockedSub, failedSub));
+
+        doThrow(new EventNotificationDaoException("lock timed out", new SQLTimeoutException("Lock wait timeout")))
+                .when(subscriptionService).retryVerification("org1", "sub-locked");
+        doThrow(new EventNotificationDaoException("query canceled", new SQLException("canceled", "57014")))
+                .when(subscriptionService).retryVerification("org1", "sub-pg-locked");
+        doThrow(new RuntimeException("webhook 500"))
+                .when(subscriptionService).retryVerification("org1", "sub-failed");
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionDAO, never()).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-locked"), eq("org1"), eq("pending"), eq("pending"));
+        verify(subscriptionDAO, never()).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-pg-locked"), eq("org1"), eq("pending"), eq("pending"));
+        verify(subscriptionDAO, times(1)).updateSubscriptionStatus(any(Connection.class),
+                eq("sub-failed"), eq("org1"), eq("pending"), eq("pending"));
     }
 
     private void runPendingRecoveryTask() throws Exception {

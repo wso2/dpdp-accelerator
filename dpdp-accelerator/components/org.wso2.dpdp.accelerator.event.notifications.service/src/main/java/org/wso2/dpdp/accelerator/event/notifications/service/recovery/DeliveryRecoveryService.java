@@ -31,9 +31,13 @@ import org.wso2.dpdp.accelerator.event.notifications.service.SubscriptionService
 import org.wso2.dpdp.accelerator.event.notifications.service.constants.EventNotificationServiceConstants;
 import org.wso2.dpdp.accelerator.event.notifications.service.dispatch.WebhookDeliveryWorker;
 
+import java.sql.SQLException;
+import java.sql.SQLTimeoutException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -56,6 +60,12 @@ public class DeliveryRecoveryService {
         NO_MORE_WORK,
         NO_FRESH_ROWS,
         STOPPING
+    }
+
+    private enum RecoveryOutcome {
+        RECOVERED,
+        FAILED,
+        LOCK_TIMEOUT
     }
 
     private static final Log LOG = LogFactory.getLog(DeliveryRecoveryService.class);
@@ -287,7 +297,7 @@ public class DeliveryRecoveryService {
                         deadlineHit = true;
                         break;
                     }
-                    if (!recoverOne(sub)) {
+                    if (recoverOne(sub) == RecoveryOutcome.FAILED) {
                         touchPending(sub);
                     }
                     processedInTick++;
@@ -311,27 +321,51 @@ public class DeliveryRecoveryService {
             }
         }
 
-        private boolean recoverOne(Subscription sub) {
+        private RecoveryOutcome recoverOne(Subscription sub) {
             if (sub.getCallbackUrl() == null || sub.getCallbackUrl().trim().isEmpty()) {
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Pending subscription [" + LogSanitizer.sanitize(sub.getSubscriptionId())
                             + "] has blank callback URL; touching timestamp to avoid busy-spin.");
                 }
-                return false;
+                return RecoveryOutcome.FAILED;
             }
             try {
                 subscriptionService.retryVerification(sub.getOrgId(), sub.getSubscriptionId());
                 LOG.info("Recovered and re-verified pending subscription ["
                         + LogSanitizer.sanitize(sub.getSubscriptionId()) + "].");
-                return true;
+                return RecoveryOutcome.RECOVERED;
             } catch (Exception e) {
+                if (isLockTimeout(e)) {
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("Recovery retry verification for subscription ["
+                                + LogSanitizer.sanitize(sub.getSubscriptionId())
+                                + "] deferred without touching timestamp due to row lock timeout: "
+                                + LogSanitizer.sanitize(e.getMessage()));
+                    }
+                    return RecoveryOutcome.LOCK_TIMEOUT;
+                }
                 if (LOG.isDebugEnabled()) {
                     LOG.debug("Recovery retry verification for subscription ["
                             + LogSanitizer.sanitize(sub.getSubscriptionId()) + "] deferred: "
                             + LogSanitizer.sanitize(e.getMessage()));
                 }
-                return false;
+                return RecoveryOutcome.FAILED;
             }
+        }
+
+        private boolean isLockTimeout(Throwable error) {
+            Set<Throwable> visited = Collections.newSetFromMap(new IdentityHashMap<>());
+            Throwable current = error;
+            while (current != null && visited.add(current)) {
+                if (current instanceof SQLTimeoutException) {
+                    return true;
+                }
+                if (current instanceof SQLException && "57014".equals(((SQLException) current).getSQLState())) {
+                    return true;
+                }
+                current = current.getCause();
+            }
+            return false;
         }
 
         private void touchPending(Subscription sub) {
