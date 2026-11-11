@@ -74,7 +74,7 @@ describe('TopicTable', () => {
     expect(screen.getByText('USER')).toBeInTheDocument()
     expect(screen.queryByText('system-topic')).not.toBeInTheDocument()
     expect(screen.queryByText('user-topic')).not.toBeInTheDocument()
-    expect(screen.queryByText(i18n.t('common:topics.table.topicId'))).not.toBeInTheDocument()
+    expect(screen.queryByText('Topic ID')).not.toBeInTheDocument()
 
     const deleteButtons = screen.getAllByRole('button', { name: 'Delete topic' })
     expect(deleteButtons[0]).toBeDisabled()
