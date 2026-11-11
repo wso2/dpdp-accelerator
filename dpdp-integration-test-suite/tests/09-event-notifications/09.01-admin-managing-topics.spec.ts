@@ -155,9 +155,23 @@ test.describe('Admin managing Topics', () => {
         await topicsPage.deleteTopicByName(topic.name)
         await new TopicDeleteDialog(page).confirm()
 
+        // Confirm status filtering actually takes effect rather than matching the already-rendered row:
+        // Active hides the deleted topic, then Deleted awaits the filtered GET /topics response
+        // and brings the row back into view.
         await topicsPage.search(topic.name)
+        await topicsPage.filterByStatus('Active')
+        await expect(topicsPage.rowByName(topic.name)).toHaveCount(0)
+
+        const deletedFilterResponsePromise = page.waitForResponse((response) => {
+          if (response.request().method() !== 'GET') return false
+          const url = new URL(response.url())
+          return url.pathname.endsWith('/topics') && url.searchParams.get('status') === 'DELETED'
+        })
         await topicsPage.filterByStatus('Deleted')
+        const deletedFilterResponse = await deletedFilterResponsePromise
+        expect(deletedFilterResponse.ok()).toBe(true)
         await expect(topicsPage.rowByName(topic.name)).toBeVisible()
+        await expect(topicsPage.rowByName(topic.name)).toContainText('Deleted')
 
         // The audit row remains readable by id after deletion; consentAdminEventApi targets v1,
         // which keeps returning 'deregistered' for soft-deleted topics.

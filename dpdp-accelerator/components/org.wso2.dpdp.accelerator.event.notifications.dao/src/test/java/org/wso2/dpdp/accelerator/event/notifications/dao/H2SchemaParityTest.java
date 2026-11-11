@@ -377,68 +377,109 @@ public class H2SchemaParityTest {
     @Test
     public void migrationNormalizesLegacyDeregisteredTopicsIdempotently() throws Exception {
         try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_migration_test")) {
-            try (Statement statement = connection.createStatement()) {
-                // Simulate the pre-unified-deletion TOPIC DDL with an unnamed inline CHECK constraint.
-                statement.execute("CREATE TABLE TOPIC ("
-                        + "TOPIC_ID VARCHAR(64) NOT NULL, "
-                        + "ORG_ID VARCHAR(128) NOT NULL, "
-                        + "NAME VARCHAR(225) NOT NULL, "
-                        + "DESCRIPTION VARCHAR(255) DEFAULT NULL, "
-                        + "STATUS VARCHAR(32) DEFAULT 'active' NOT NULL CHECK (STATUS IN ('active', 'deregistered')), "
-                        + "INITIATED_BY VARCHAR(32) DEFAULT 'USER' NOT NULL, "
-                        + "CREATED_AT TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, "
-                        + "ACTIVE_NAME VARCHAR(225) GENERATED ALWAYS AS "
-                        + "(CASE WHEN STATUS = 'active' THEN LOWER(NAME) ELSE NULL END), "
-                        + "PRIMARY KEY (TOPIC_ID), "
-                        + "CONSTRAINT UQ_TOPIC_ORG_ID UNIQUE (ORG_ID, TOPIC_ID))");
-                statement.execute("CREATE UNIQUE INDEX UQ_TOPIC_ORG_ACTIVE_NAME ON TOPIC (ORG_ID, ACTIVE_NAME)");
-                statement.execute("CREATE TABLE EVENT ("
-                        + "EVENT_ID VARCHAR(64) NOT NULL, ORG_ID VARCHAR(128) NOT NULL, "
-                        + "GROUP_ID VARCHAR(128) NOT NULL, TOPIC_ID VARCHAR(64) NOT NULL, "
-                        + "PAYLOAD CLOB NOT NULL, PRIMARY KEY (EVENT_ID))");
-                statement.execute("CREATE TABLE SUBSCRIPTION ("
-                        + "SUBSCRIPTION_ID VARCHAR(64) NOT NULL, ORG_ID VARCHAR(128) NOT NULL, "
-                        + "PRIMARY KEY (SUBSCRIPTION_ID))");
-                statement.execute("CREATE TABLE WEBHOOK_DELIVERY ("
-                        + "DELIVERY_ID VARCHAR(64) NOT NULL, ORG_ID VARCHAR(128) NOT NULL, "
-                        + "SUBSCRIPTION_ID VARCHAR(64) NOT NULL, EVENT_ID VARCHAR(64) NOT NULL, "
-                        + "STATUS VARCHAR(32) DEFAULT 'pending' NOT NULL, PRIMARY KEY (DELIVERY_ID))");
-                statement.execute("CREATE TABLE WEBHOOK_DELIVERY_ACK ("
-                        + "ACK_ID VARCHAR(64) NOT NULL, DELIVERY_ID VARCHAR(64) NOT NULL, "
-                        + "ORG_ID VARCHAR(128) NOT NULL, COMPLETION_STATUS VARCHAR(32) NOT NULL, "
-                        + "COMPLETION_EVIDENCE VARCHAR(512) NOT NULL, PRIMARY KEY (ACK_ID))");
+            seedLegacyTopicMigrationTables(connection, false, false);
 
-                statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
-                        + "('t-active', 'org-1', 'orders', 'active'), "
-                        + "('t-legacy', 'org-1', 'retired', 'deregistered')");
-            }
+            // Simulate two consecutive configure.sh runs (base h2.sql followed by 1.1.0/h2.sql).
+            runBaseSchemaAndMigration(connection);
+            runBaseSchemaAndMigration(connection);
+
+            assertMigratedTopicInvariants(connection);
+        }
+    }
+
+    @Test
+    public void migrationRecoversWhenActiveNameAlreadyDropped() throws Exception {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_recovery_active_name")) {
+            seedLegacyTopicMigrationTables(connection, true, false);
+
+            runBaseSchemaAndMigration(connection);
+            runBaseSchemaAndMigration(connection);
+
+            assertMigratedTopicInvariants(connection);
+        }
+    }
+
+    @Test
+    public void migrationRecoversWhenStatusAlreadyDroppedLeavingStatusMig() throws Exception {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_recovery_status_mig_cfg")) {
+            seedLegacyTopicMigrationTables(connection, true, true);
+
+            runBaseSchemaAndMigration(connection);
+            runBaseSchemaAndMigration(connection);
+
+            assertMigratedTopicInvariants(connection);
+        }
+
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_recovery_status_mig_direct")) {
+            seedLegacyTopicMigrationTables(connection, true, true);
 
             try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
                 RunScript.execute(connection, migration);
             }
-            // Re-run to verify idempotency.
-            try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
-                RunScript.execute(connection, migration);
+            runBaseSchemaAndMigration(connection);
+
+            assertMigratedTopicInvariants(connection);
+        }
+    }
+
+    private static void runBaseSchemaAndMigration(Connection connection) throws Exception {
+        try (Reader schema = Files.newBufferedReader(findSchema(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, schema);
+        }
+        try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, migration);
+        }
+    }
+
+    private static void seedLegacyTopicMigrationTables(
+            Connection connection, boolean dropActiveName, boolean dropStatusLeavingStatusMig) throws Exception {
+        try (Reader schema = Files.newBufferedReader(findSchema(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, schema);
+        }
+        try (Statement statement = connection.createStatement()) {
+            // Convert TOPIC to the pre-unified-deletion 1.0.0 unnamed CHECK constraint.
+            statement.execute("ALTER TABLE TOPIC DROP CONSTRAINT CHK_TOPIC_STATUS");
+            statement.execute("ALTER TABLE TOPIC ADD CHECK (STATUS IN ('active', 'deregistered'))");
+
+            statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                    + "('t-active', 'org-1', 'orders', 'active'), "
+                    + "('t-legacy', 'org-1', 'retired', 'deregistered')");
+
+            if (dropActiveName) {
+                statement.execute("DROP INDEX UQ_TOPIC_ORG_ACTIVE_NAME");
+                statement.execute("ALTER TABLE TOPIC DROP COLUMN ACTIVE_NAME");
+            }
+            if (dropStatusLeavingStatusMig) {
+                statement.execute("ALTER TABLE TOPIC ADD COLUMN STATUS_MIG VARCHAR(32)");
+                statement.execute("UPDATE TOPIC SET STATUS_MIG = "
+                        + "CASE WHEN LOWER(STATUS) = 'deregistered' THEN 'deleted' ELSE STATUS END");
+                statement.execute("ALTER TABLE TOPIC DROP COLUMN STATUS");
+            }
+        }
+    }
+
+    private static void assertMigratedTopicInvariants(Connection connection) throws Exception {
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet rs = statement.executeQuery(
+                    "SELECT TOPIC_ID, STATUS FROM TOPIC ORDER BY TOPIC_ID")) {
+                assertTrue(rs.next());
+                org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-active");
+                org.testng.Assert.assertEquals(rs.getString("STATUS"), "active");
+                assertTrue(rs.next());
+                org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-legacy");
+                org.testng.Assert.assertEquals(rs.getString("STATUS"), "deleted");
             }
 
-            try (Statement statement = connection.createStatement()) {
-                try (ResultSet rs = statement.executeQuery(
-                        "SELECT TOPIC_ID, STATUS FROM TOPIC ORDER BY TOPIC_ID")) {
-                    assertTrue(rs.next());
-                    org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-active");
-                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "active");
-                    assertTrue(rs.next());
-                    org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-legacy");
-                    org.testng.Assert.assertEquals(rs.getString("STATUS"), "deleted");
-                }
-
-                // Legacy status value must now be rejected, while re-using the deleted topic's name is allowed.
-                expectThrows(SQLException.class, () -> statement.executeUpdate(
-                        "INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
-                                + "('t-bad', 'org-1', 'other', 'deregistered')"));
-                statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
-                        + "('t-reused', 'org-1', 'RETIRED', 'active')");
-            }
+            // Legacy status value must now be rejected, while re-using the deleted topic's name is allowed.
+            expectThrows(SQLException.class, () -> statement.executeUpdate(
+                    "INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                            + "('t-bad', 'org-1', 'other', 'deregistered')"));
+            // Active duplicate name must still be rejected by UQ_TOPIC_ORG_ACTIVE_NAME.
+            expectThrows(SQLException.class, () -> statement.executeUpdate(
+                    "INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                            + "('t-dup', 'org-1', 'ORDERS', 'active')"));
+            statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                    + "('t-reused', 'org-1', 'RETIRED', 'active')");
         }
     }
 }
