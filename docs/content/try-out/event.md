@@ -82,7 +82,7 @@ $env:ACCESS_TOKEN = "<carepulse-client-credentials-token>"
 These values are for the super tenant. For a specific tenant, use `https://localhost:9443/t/<tenant-domain>` as the base URL and the tenant domain as the group ID, and get every token from that same tenant.
 
 :::note Local testing with a self-signed certificate
-Add `-k` to the `curl` commands (`-SkipCertificateCheck` to `Invoke-RestMethod` on Windows) if your local Identity Server uses the default self-signed certificate. Never use them in production — configure a trusted CA certificate, or pass it with `--cacert`.
+Add `-k` to the `curl` commands if your local Identity Server uses the default self-signed certificate. On Windows, add `-SkipCertificateCheck` to `Invoke-RestMethod`; this needs PowerShell 7 or later, so with Windows PowerShell 5.1, trust the server's certificate instead. Never skip certificate checks in production — configure a trusted CA certificate, or pass it with `--cacert`.
 :::
 
 ## Notify a processor when a consent is revoked
@@ -211,7 +211,7 @@ The shared secret is also used for the signed event's `payloadHash`, and to sign
 No public server to run the listener on? Try one of these:
 
 - **An ngrok tunnel.** Set up [ngrok](https://ngrok.com/docs/start), run `ngrok http 8443` in a second terminal, then add `/dpdp/events` to the `https://` forwarding address it prints. That's your callback URL for Step 3. Your test events travel through ngrok, so stick to sample data, and don't use a tunnel for a real receiver.
-- **Your machine's network IP**, if Identity Server can't reach the internet. Start the listener with `HOST` set to that IP, and use `http://<ip>:8443/dpdp/events` as the callback URL. Identity Server turns away private network addresses by default, so also set `allow_private_network_callback_targets = true` under `[dpdp_accelerator.event_notifications.webhook]` in `deployment.toml` and restart it. Keep that setting `false` in production.
+- **Your machine's network IP**, if Identity Server can't reach the internet. Start the listener with `HOST` set to that IP, and use `http://<ip>:8443/dpdp/events` as the callback URL. Identity Server turns away private network addresses by default, so also set `allow_private_network_callback_targets = true` under `[dpdp_accelerator.event_notifications.webhook]` in `deployment.toml` and restart it. If you've set `allow_http_callback_url = false` in the same section, set it back to `true` for this test, because the callback uses HTTP. Keep `allow_private_network_callback_targets` set to `false` in production.
 
 </details>
 
