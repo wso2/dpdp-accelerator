@@ -26,7 +26,7 @@ export class TopicDeleteDialog {
 
   constructor(page: Page) {
     this.root = page.getByRole('dialog')
-    this.confirmButton = this.root.getByRole('button', { name: 'Deregister Topic' })
+    this.confirmButton = this.root.getByRole('button', { name: 'Delete Topic' })
     this.cancelButton = this.root.getByRole('button', { name: 'Cancel' })
   }
 

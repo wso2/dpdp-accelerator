@@ -585,7 +585,7 @@
     "loadFailed": "अधुनि वक़्ति मौज़ूअ लोड करणु में नाकामी।",
     "status": {
       "active": "सक्रिय",
-      "deregistered": "डीरजिस्टरु कयल"
+      "deleted": "मिटाएल"
     },
     "filters": {
       "searchPlaceholder": "मौज़ूअ जे नालो या बयान सां ॻोल्हियो",
@@ -597,7 +597,6 @@
     "table": {
       "ariaLabel": "मौजूअ जी इंतिज़ामिया जी टेबल",
       "name": "मौजूअ जो नालो",
-      "topicId": "मौजूअ ID",
       "description": "तफ़सील",
       "status": "हालत",
       "actions": "कारवाइयूं",
@@ -605,8 +604,8 @@
     },
     "actions": {
       "register": "मौज़ूअ ठाहियो",
-      "delete": "मउज़ूअ डीरजिस्टरु करियो",
-      "alreadyDeregistered": "इहो मौज़ूअ पहिरीं ई डी-रजिस्टर कयो वियो आहे"
+      "delete": "मौज़ूअ मिटाइयो",
+      "alreadyDeleted": "इहो मौज़ूअ पहिरीं ई मिटाए वियो आहे"
     },
     "dialog": {
       "registerTitle": "मौज़ूअ ठाहियो",
@@ -620,10 +619,10 @@
       "registerSubmit": "मौज़ूअ ठाहियो"
     },
     "deleteModal": {
-      "title": "डीरजिस्ट्रेशन जी तस्दीक़ करियो",
-      "message": "छा तव्हां खे यक़ीन आहे तव्हां मौज़ूअ \"{{name}}\" खे डीरजिस्टरु करणु था चाहियो?",
-      "note": "मउज़ूअ डीरजिस्टरु करणु सां इन मौज़ूअ ते नयूं सदस्यताऊं ऐं वाक़िअनि जो शाया थियणु रोकिजे थो।",
-      "confirm": "मउज़ूअ डीरजिस्टरु करियो"
+      "title": "मौज़ूअ मिटाइणु जी तस्दीक़ करियो",
+      "message": "छा तव्हां खे यक़ीन आहे तव्हां मौज़ूअ \"{{name}}\" खे मिटाइणु था चाहियो?",
+      "note": "मौज़ूअ मिटाइणु सां इन मौज़ूअ ते नयूं सदस्यताऊं ऐं वाक़िअनि जो शाया थियणु रोकिजे थो।",
+      "confirm": "मौज़ूअ मिटाइयो"
     }
   },
   "subscriptions": {
@@ -770,15 +769,11 @@
       "loadFailed": "सब्सक्रिप्शन जा तफ़सील लोड करणु में नाकामी।",
       "name": "Subscription Name",
       "configTitle": "सदस्यता जी तरतीब",
-      "configSubtitle": "आम मेटाडेटा, रूटिंग पैरामीटर, ऐं फ़िल्टरिंग जा क़ाइदा",
       "eventsTitle": "डिलीवरी जी तारीख ऐं अमल जी लॉग",
-      "eventsSubtitle": "इन सब्सक्राइबर खे हालिया इवेंन्ट जी डिलीवरी ऐं वरी कोशिश जी कोशिशूं موڪليون ويون।",
       "createdAt": "ठाहियल वक़्ति",
       "updatedAt": "आख़िरी अपडेट कयल",
       "sharedSecret": "साझा राज़",
-      "topicsSubtitle": "Active event topics registered for delivery on this subscription",
       "purposesTitle": "Subscribed Purposes",
-      "purposesSubtitle": "Consent purposes configured for event filtering",
       "allPurposesNotice": "This subscription receives events for all purposes.",
       "searchPurposes": "Search associated purposes",
       "noPurposes": "No matching purposes.",
@@ -861,15 +856,12 @@
       "title": "इवेंट जा तफ़सील",
       "loadFailed": "इवेंट जा तफ़सील लोड करणु में नाकामी।",
       "metadataTitle": "वाक़िए जो मेटाडेटा",
-      "metadataSubtitle": "शनाख़्त कंदड़, मौज़ूअ, ऐं मोकिलिणु जा वक़्ति जा निशान",
       "payloadTitle": "वाक़िए जो पेलोड",
       "historyTitle": "डिलीवरी जी कोशिश जी तारीख",
-      "historySubtitle": "वारिसेवार अमल जी कोशिशूं ऐं एच.टी.टी.पी. जवाब जी हैसियत",
       "noHistory": "डिलीवरी जी को बि कोशिश रिकॉर्ड न कई वेई।",
       "completionTitle": "मुकम्मल थियणु जो सबूत",
       "allPurposes": "सभुं मक़्सद",
       "deliveriesTitle": "हेठि वेंदड़ सब्सक्राइबर जी डिलीवरीयूं",
-      "deliveriesSubtitle": "इन वाक़िए लाइ ठाहियल सभुं डिलीवरी ऐं मुकम्मल थियणु जी हैसियतूं",
       "noDeliveries": "को बि डिलीवरी पैदा न थी",
       "noDeliveriesMessage": "इवेंन्ट जे थियणु वक़्ति इन मौज़ूअ सां को बि सरगर्म सदस्यताउं न मिलियूं।",
       "copyPayloadSuccess": "पे-लोड क्लिपबोर्ड ते कॉपी कयो वियो।",

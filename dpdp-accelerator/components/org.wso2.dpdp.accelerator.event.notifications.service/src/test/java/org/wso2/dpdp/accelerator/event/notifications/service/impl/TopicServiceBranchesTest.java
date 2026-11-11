@@ -70,8 +70,8 @@ public class TopicServiceBranchesTest {
     }
 
     @Test(expectedExceptions = org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException.class)
-    public void deleteDeregisteredTopicIsRejected() {
-        Topic topic = new Topic("t", "org", "topic", null, "deregistered", Initiator.USER.getValue());
+    public void deleteDeletedTopicIsRejected() {
+        Topic topic = new Topic("t", "org", "topic", null, "deleted", Initiator.USER.getValue());
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
         service.deleteTopic("org", "t");
     }
@@ -80,8 +80,25 @@ public class TopicServiceBranchesTest {
     public void deleteFalseUpdateIsRejected() {
         Topic topic = new Topic("t", "org", "topic", null, "active", Initiator.USER.getValue());
         when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
-        when(dao.deregisterTopicAtomic(any(Connection.class), eq("t"), eq("org"))).thenReturn(false);
+        when(dao.deleteTopicAtomic(any(Connection.class), eq("t"), eq("org"))).thenReturn(false);
         service.deleteTopic("org", "t");
+    }
+
+    @Test
+    public void deleteTranslatesDaoFailureToServiceException() {
+        Topic topic = new Topic("t", "org", "topic", null, "active", Initiator.USER.getValue());
+        when(dao.getTopicById(any(Connection.class), eq("t"), eq("org"))).thenReturn(Optional.of(topic));
+        when(dao.deleteTopicAtomic(any(Connection.class), eq("t"), eq("org")))
+                .thenThrow(new org.wso2.dpdp.accelerator.event.notifications.common.exception.dao
+                        .EventNotificationDaoException("raw sql error"));
+        org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException ex =
+                org.testng.Assert.expectThrows(
+                        org.wso2.dpdp.accelerator.event.notifications.common.exception.service
+                                .EventNotificationServiceException.class,
+                        () -> service.deleteTopic("org", "t"));
+        org.testng.Assert.assertEquals(ex.getCode(), "EN-5000");
+        org.testng.Assert.assertEquals(ex.getStatusCode(), 500);
+        org.testng.Assert.assertEquals(ex.getDescription(), "Failed to delete topic.");
     }
 
     @Test

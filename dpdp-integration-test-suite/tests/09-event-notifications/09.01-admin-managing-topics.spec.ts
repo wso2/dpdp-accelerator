@@ -16,12 +16,34 @@
  * under the License.
  */
 
+import type { Page } from '@playwright/test'
 import { loginAsConsentAdmin, test, expect } from '../../fixtures/auth.fixtures'
 import { TopicDeleteDialog } from '../../pages/TopicDeleteDialog'
 import { TopicRegisterDialog } from '../../pages/TopicRegisterDialog'
 import { TopicsPage } from '../../pages/TopicsPage'
 import { seedActiveTopicViaApi } from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
+
+/** Filters Topics by status and waits for the filtered GET /topics request to succeed and finish loading. */
+async function filterByStatusAndAwaitLoad(
+  page: Page,
+  topicsPage: TopicsPage,
+  label: 'Active' | 'Deleted',
+  expectedStatusParam: 'ACTIVE' | 'DELETED',
+): Promise<void> {
+  const responsePromise = page.waitForResponse((response) => {
+    if (response.request().method() !== 'GET') return false
+    const url = new URL(response.url())
+    return url.pathname.endsWith('/topics') && url.searchParams.get('status') === expectedStatusParam
+  })
+  await topicsPage.filterByStatus(label)
+  const response = await responsePromise
+  expect(response.ok()).toBe(true)
+  // TopicTable unmounts <table> and renders loadFailedAlert on error; verify loading finished and the table is rendered.
+  await expect(page.getByRole('progressbar')).toHaveCount(0)
+  await expect(topicsPage.loadFailedAlert).toBeHidden()
+  await expect(topicsPage.table).toBeVisible()
+}
 
 /**
  * Registering and deregistering Event Notification topics through the portal UI
@@ -141,25 +163,33 @@ test.describe('Admin managing Topics', () => {
     })
   })
 
-  test.describe('Deregistering Topics', () => {
-    test('09.01.05 - Deregisters a user-created topic with no active subscriptions', async ({
+  test.describe('Deleting Topics', () => {
+    test('09.01.05 - Deletes a user-created topic with no active subscriptions', async ({
       browser,
       consentAdminEventApi,
     }) => {
-      const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'deregister-me')
+      const topic = await seedActiveTopicViaApi(consentAdminEventApi, 'delete-me')
       const page = await loginAsConsentAdmin(browser)
       try {
         const topicsPage = new TopicsPage(page)
         await topicsPage.goto()
         await topicsPage.search(topic.name)
-        await topicsPage.deregisterTopicByName(topic.name)
+        await topicsPage.deleteTopicByName(topic.name)
         await new TopicDeleteDialog(page).confirm()
 
+        // Confirm status filtering actually takes effect rather than matching the already-rendered row:
+        // Active awaits the filtered GET /topics response, verifies the table loaded without error,
+        // and hides the deleted topic; Deleted then awaits its response and brings the row back into view.
         await topicsPage.search(topic.name)
-        await topicsPage.filterByStatus('Deregistered')
-        await expect(topicsPage.rowByName(topic.name)).toBeVisible()
+        await filterByStatusAndAwaitLoad(page, topicsPage, 'Active', 'ACTIVE')
+        await expect(topicsPage.rowByName(topic.name)).toHaveCount(0)
 
-        // The audit row remains readable by id after deregistration.
+        await filterByStatusAndAwaitLoad(page, topicsPage, 'Deleted', 'DELETED')
+        await expect(topicsPage.rowByName(topic.name)).toBeVisible()
+        await expect(topicsPage.rowByName(topic.name)).toContainText('Deleted')
+
+        // The audit row remains readable by id after deletion; consentAdminEventApi targets v1,
+        // which keeps returning 'deregistered' for soft-deleted topics.
         const getResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DEREGISTERED' })
         const { items } = (await getResponse.json()) as { items: { topicId: string; status: string }[] }
         expect(items.some((t) => t.topicId === topic.topicId && t.status.toUpperCase() === 'DEREGISTERED')).toBe(

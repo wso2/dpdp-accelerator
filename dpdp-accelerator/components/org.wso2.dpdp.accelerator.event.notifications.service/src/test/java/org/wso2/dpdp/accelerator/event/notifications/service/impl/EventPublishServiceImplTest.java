@@ -25,6 +25,7 @@ import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.common.config.DPDPConfigurationService;
 import org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager;
 import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDaoException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException;
@@ -719,7 +720,8 @@ public class EventPublishServiceImplTest {
     @Test
     public void publishEvent_topicNotActive_throws400() {
         when(topicDAO.getActiveTopicByOrgAndNameForUpdate(any(Connection.class), eq("org1"), eq("topic-a")))
-                .thenReturn(Optional.of(new Topic("topic-id-1", "org1", "topic-a", null, "deregistered")));
+                .thenReturn(Optional.of(new Topic("topic-id-1", "org1", "topic-a", null,
+                        TopicStatus.DELETED.getValue())));
 
         try {
             publishService.publishEvent("org1", "g1", "topic-a", null, Collections.emptyMap());
@@ -732,7 +734,7 @@ public class EventPublishServiceImplTest {
     }
 
     @Test
-    public void publishEvent_topicDeregisteredBeforeInsert_throws400() {
+    public void publishEvent_topicDeletedBeforeInsert_throws400() {
         when(topicDAO.getActiveTopicByOrgAndNameForUpdate(any(Connection.class), eq("org1"), eq("topic-a")))
                 .thenReturn(Optional.of(new Topic("topic-id-1", "org1", "topic-a", null, "active")));
         when(eventDAO.addEvent(any(Connection.class), any())).thenReturn(false);

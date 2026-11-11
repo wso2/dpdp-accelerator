@@ -263,23 +263,23 @@ public class TransactionIntegrationTest {
     }
 
     @Test
-    public void topicCanBeUpdatedAndDeregisteredWithoutSubscriptions() throws Exception {
+    public void topicCanBeUpdatedAndDeletedWithoutSubscriptions() throws Exception {
         TopicDAOImpl dao = new TopicDAOImpl();
         assertTrue(dao.addTopic(connection,
                 new Topic("topic-1", "org-1", "accounts", "", TopicStatus.ACTIVE.getValue())));
         assertTrue(dao.updateTopicStatus(connection, "topic-1", "org-1", TopicStatus.ACTIVE));
-        assertTrue(dao.deregisterTopicAtomic(connection, "topic-1", "org-1"));
+        assertTrue(dao.deleteTopicAtomic(connection, "topic-1", "org-1"));
         try (PreparedStatement ps = connection.prepareStatement("SELECT STATUS FROM TOPIC WHERE TOPIC_ID = ?")) {
             ps.setString(1, "topic-1");
             try (ResultSet rs = ps.executeQuery()) {
                 assertTrue(rs.next());
-                assertEquals(rs.getString(1), TopicStatus.DEREGISTERED.getValue());
+                assertEquals(rs.getString(1), TopicStatus.DELETED.getValue());
             }
         }
     }
 
     @Test
-    public void deregisteredTopicNameCanBeRecreatedWithANewIdRepeatedly() throws Exception {
+    public void deletedTopicNameCanBeRecreatedWithANewIdRepeatedly() throws Exception {
         TopicDAOImpl dao = new TopicDAOImpl();
         String previousTopicId = null;
 
@@ -289,9 +289,9 @@ public class TransactionIntegrationTest {
             assertTrue(dao.addTopic(connection,
                     new Topic(topicId, "org-1", cycle % 2 == 0 ? "ACCOUNTS" : "accounts", "",
                             TopicStatus.ACTIVE.getValue())));
-            assertTrue(dao.deregisterTopicAtomic(connection, topicId, "org-1"));
-            assertFalse(dao.deregisterTopicAtomic(connection, topicId, "org-1"),
-                    "A deregistered topic must not transition again");
+            assertTrue(dao.deleteTopicAtomic(connection, topicId, "org-1"));
+            assertFalse(dao.deleteTopicAtomic(connection, topicId, "org-1"),
+                    "A deleted topic must not transition again");
             previousTopicId = topicId;
         }
 
@@ -496,7 +496,7 @@ public class TransactionIntegrationTest {
             try {
                 Future<Boolean> deregistration = executor.submit(() -> {
                     attempted.countDown();
-                    boolean result = topicDAO.deregisterTopicAtomic(deregister, "topic-1", "org-1");
+                    boolean result = topicDAO.deleteTopicAtomic(deregister, "topic-1", "org-1");
                     deregister.commit();
                     return result;
                 });
@@ -587,7 +587,7 @@ public class TransactionIntegrationTest {
         TopicDAOImpl topicDAO = new TopicDAOImpl();
         assertTrue(topicDAO.addTopic(connection,
                 new Topic("topic-1", "org-1", "accounts", "", TopicStatus.ACTIVE.getValue())));
-        assertTrue(topicDAO.deregisterTopicAtomic(connection, "topic-1", "org-1"));
+        assertTrue(topicDAO.deleteTopicAtomic(connection, "topic-1", "org-1"));
 
         Event event = new Event("event-1", "org-1", "group-1", "topic-1", "{}",
                 new Timestamp(System.currentTimeMillis()));

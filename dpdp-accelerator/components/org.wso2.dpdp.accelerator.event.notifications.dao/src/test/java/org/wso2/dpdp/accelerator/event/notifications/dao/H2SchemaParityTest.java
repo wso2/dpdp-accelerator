@@ -45,7 +45,7 @@ public class H2SchemaParityTest {
     private static final String SCHEMA_PATH =
             "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/h2.sql";
     private static final String MIGRATION_PATH =
-            "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/h2.sql";
+            "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/1.1.0/h2.sql";
 
     @Test
     public void shippedSchemaEnforcesDeliveryIntegrityAndIndexes() throws Exception {
@@ -371,6 +371,68 @@ public class H2SchemaParityTest {
                     org.testng.Assert.assertEquals(rs.getInt(1), 1);
                 }
             }
+        }
+    }
+
+    @Test
+    public void migrationNormalizesLegacyDeregisteredTopicsIdempotently() throws Exception {
+        try (Connection connection = DriverManager.getConnection("jdbc:h2:mem:enf_topic_migration_test")) {
+            seedLegacyTopicMigrationTables(connection);
+
+            // Simulate two consecutive configure.sh runs (base h2.sql followed by 1.1.0/h2.sql).
+            runBaseSchemaAndMigration(connection);
+            runBaseSchemaAndMigration(connection);
+
+            assertMigratedTopicInvariants(connection);
+        }
+    }
+
+    private static void runBaseSchemaAndMigration(Connection connection) throws Exception {
+        try (Reader schema = Files.newBufferedReader(findSchema(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, schema);
+        }
+        try (Reader migration = Files.newBufferedReader(findMigration(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, migration);
+        }
+    }
+
+    private static void seedLegacyTopicMigrationTables(Connection connection) throws Exception {
+        try (Reader schema = Files.newBufferedReader(findSchema(), StandardCharsets.UTF_8)) {
+            RunScript.execute(connection, schema);
+        }
+        try (Statement statement = connection.createStatement()) {
+            // Convert TOPIC to the pre-unified-deletion 1.0.0 unnamed CHECK constraint.
+            statement.execute("ALTER TABLE TOPIC DROP CONSTRAINT CHK_TOPIC_STATUS");
+            statement.execute("ALTER TABLE TOPIC ADD CHECK (STATUS IN ('active', 'deregistered'))");
+
+            statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                    + "('t-active', 'org-1', 'orders', 'active'), "
+                    + "('t-legacy', 'org-1', 'retired', 'deregistered')");
+        }
+    }
+
+    private static void assertMigratedTopicInvariants(Connection connection) throws Exception {
+        try (Statement statement = connection.createStatement()) {
+            try (ResultSet rs = statement.executeQuery(
+                    "SELECT TOPIC_ID, STATUS FROM TOPIC ORDER BY TOPIC_ID")) {
+                assertTrue(rs.next());
+                org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-active");
+                org.testng.Assert.assertEquals(rs.getString("STATUS"), "active");
+                assertTrue(rs.next());
+                org.testng.Assert.assertEquals(rs.getString("TOPIC_ID"), "t-legacy");
+                org.testng.Assert.assertEquals(rs.getString("STATUS"), "deleted");
+            }
+
+            // Legacy status value must now be rejected, while re-using the deleted topic's name is allowed.
+            expectThrows(SQLException.class, () -> statement.executeUpdate(
+                    "INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                            + "('t-bad', 'org-1', 'other', 'deregistered')"));
+            // Active duplicate name must still be rejected by UQ_TOPIC_ORG_ACTIVE_NAME.
+            expectThrows(SQLException.class, () -> statement.executeUpdate(
+                    "INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                            + "('t-dup', 'org-1', 'ORDERS', 'active')"));
+            statement.executeUpdate("INSERT INTO TOPIC (TOPIC_ID, ORG_ID, NAME, STATUS) VALUES "
+                    + "('t-reused', 'org-1', 'RETIRED', 'active')");
         }
     }
 }

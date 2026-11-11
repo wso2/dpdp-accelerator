@@ -386,10 +386,18 @@ else
       fi
       echo "      Applying ${FEATURE_NAME}/${DB_SCRIPT_SUFFIX}.sql"
       apply_sql_file "${DB_DPDP}" "${FEATURE_SCRIPT}"
-      FEATURE_MIGRATION_SCRIPT="${FEATURE_DIR}migrations/${DB_SCRIPT_SUFFIX}.sql"
-      if [ -f "${FEATURE_MIGRATION_SCRIPT}" ]; then
-        echo "      Applying ${FEATURE_NAME}/migrations/${DB_SCRIPT_SUFFIX}.sql"
-        apply_sql_file "${DB_DPDP}" "${FEATURE_MIGRATION_SCRIPT}"
+      # Apply versioned migrations in version order; configure.sh runs these on every
+      # execution when APPLY_DPDP_DB_MIGRATION=true, so each script must be idempotent.
+      FEATURE_MIGRATIONS_DIR="${FEATURE_DIR}migrations"
+      if [ -d "${FEATURE_MIGRATIONS_DIR}" ]; then
+        MIGRATION_VERSIONS="$(find "${FEATURE_MIGRATIONS_DIR}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | LC_ALL=C sort -V)"
+        for MIGRATION_VERSION in ${MIGRATION_VERSIONS}; do
+          FEATURE_MIGRATION_SCRIPT="${FEATURE_MIGRATIONS_DIR}/${MIGRATION_VERSION}/${DB_SCRIPT_SUFFIX}.sql"
+          if [ -f "${FEATURE_MIGRATION_SCRIPT}" ]; then
+            echo "      Applying ${FEATURE_NAME}/migrations/${MIGRATION_VERSION}/${DB_SCRIPT_SUFFIX}.sql"
+            apply_sql_file "${DB_DPDP}" "${FEATURE_MIGRATION_SCRIPT}"
+          fi
+        done
       fi
     done
     echo "      Schema created."

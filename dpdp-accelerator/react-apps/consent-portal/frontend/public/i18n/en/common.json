@@ -585,7 +585,7 @@
     "loadFailed": "Unable to load topics right now.",
     "status": {
       "active": "Active",
-      "deregistered": "Deregistered"
+      "deleted": "Deleted"
     },
     "filters": {
       "searchPlaceholder": "Search by topic name or description",
@@ -597,7 +597,6 @@
     "table": {
       "ariaLabel": "Topics management table",
       "name": "Topic Name",
-      "topicId": "Topic ID",
       "description": "Description",
       "status": "Status",
       "actions": "Actions",
@@ -605,8 +604,8 @@
     },
     "actions": {
       "register": "Create Topic",
-      "delete": "Deregister topic",
-      "alreadyDeregistered": "This topic is already deregistered"
+      "delete": "Delete topic",
+      "alreadyDeleted": "This topic is already deleted"
     },
     "dialog": {
       "registerTitle": "Create Topic",
@@ -620,10 +619,10 @@
       "registerSubmit": "Create Topic"
     },
     "deleteModal": {
-      "title": "Confirm Deregistration",
-      "message": "Are you sure you want to deregister topic \"{{name}}\"?",
-      "note": "Deregistering a topic prevents new subscriptions and publication of events to this topic.",
-      "confirm": "Deregister Topic"
+      "title": "Confirm Topic Deletion",
+      "message": "Are you sure you want to delete topic \"{{name}}\"?",
+      "note": "Deleting a topic prevents new subscriptions and publication of events to this topic.",
+      "confirm": "Delete Topic"
     }
   },
   "subscriptions": {
@@ -770,15 +769,11 @@
       "loadFailed": "Unable to load subscription details.",
       "name": "Subscription Name",
       "configTitle": "Subscription Configuration",
-      "configSubtitle": "General metadata, routing parameters, and filtering rules",
       "eventsTitle": "Delivery History & Execution Log",
-      "eventsSubtitle": "Recent event deliveries and retry attempts dispatched to this subscriber",
       "createdAt": "Created At",
       "updatedAt": "Last Updated",
       "sharedSecret": "Shared Secret",
-      "topicsSubtitle": "Active event topics registered for delivery on this subscription",
       "purposesTitle": "Subscribed Purposes",
-      "purposesSubtitle": "Consent purposes configured for event filtering",
       "allPurposesNotice": "This subscription receives events for all purposes.",
       "searchPurposes": "Search associated purposes",
       "noPurposes": "No matching purposes.",
@@ -861,15 +856,12 @@
       "title": "Event details",
       "loadFailed": "Unable to load event details.",
       "metadataTitle": "Event Metadata",
-      "metadataSubtitle": "Identifiers, topics, and dispatch timestamps",
       "payloadTitle": "Event Payload",
       "historyTitle": "Delivery Attempt History",
-      "historySubtitle": "Chronological execution attempts and HTTP response status",
       "noHistory": "No delivery attempts recorded.",
       "completionTitle": "Completion Evidence",
       "allPurposes": "All Purposes",
       "deliveriesTitle": "Downstream Subscriber Deliveries",
-      "deliveriesSubtitle": "All deliveries and completion statuses generated for this event",
       "noDeliveries": "No Deliveries Generated",
       "noDeliveriesMessage": "No active subscriptions matched this topic when the event occurred.",
       "copyPayloadSuccess": "Payload copied to clipboard.",

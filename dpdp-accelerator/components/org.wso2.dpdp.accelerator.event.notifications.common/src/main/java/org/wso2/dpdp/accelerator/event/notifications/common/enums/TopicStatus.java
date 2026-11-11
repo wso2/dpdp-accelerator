@@ -27,7 +27,7 @@ import org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotif
  */
 public enum TopicStatus {
     ACTIVE("active"),
-    DEREGISTERED("deregistered");
+    DELETED("deleted");
 
     private final String value;
 

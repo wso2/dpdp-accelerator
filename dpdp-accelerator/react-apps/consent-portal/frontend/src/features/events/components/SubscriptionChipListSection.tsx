@@ -34,7 +34,6 @@ import { useState } from 'react'
 export interface SubscriptionChipListSectionProps {
   title: string
   count: number
-  subtitle?: string
   searchLabel: string
   noMatchesLabel: string
   items: string[]
@@ -48,7 +47,6 @@ export interface SubscriptionChipListSectionProps {
 export default function SubscriptionChipListSection({
   title,
   count,
-  subtitle,
   searchLabel,
   noMatchesLabel,
   items,
@@ -157,13 +155,6 @@ export default function SubscriptionChipListSection({
           },
         }}
         title={headerTitle}
-        subheader={
-          subtitle ? (
-            <Typography variant="body2" color="text.secondary">
-              {subtitle}
-            </Typography>
-          ) : undefined
-        }
         action={
           items.length > 0 ? (
             <TextField
@@ -197,7 +188,6 @@ export default function SubscriptionChipListSection({
 }
 
 SubscriptionChipListSection.defaultProps = {
-  subtitle: undefined,
   collapsible: false,
   initialExpanded: false,
   contentId: undefined,

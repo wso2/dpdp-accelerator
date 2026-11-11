@@ -326,57 +326,71 @@ public class TopicServiceImpl implements TopicService {
                     400);
         }
 
-        return DatabaseUtils.executeInTransaction(conn -> {
-            Optional<Topic> topicOpt = topicDAO.getTopicById(conn, topicIdStr.trim(), orgId.trim());
-            if (!topicOpt.isPresent() || !orgId.trim().equalsIgnoreCase(topicOpt.get().getOrgId())) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_TOPIC_NOT_FOUND,
-                        EventNotificationServiceConstants.ERROR_TITLE_TOPIC_NOT_FOUND,
-                        String.format(EventNotificationServiceConstants.TOPIC_NOT_FOUND_ERROR_MSG, topicIdStr.trim()),
-                        404);
-            }
+        String normalizedOrgId = orgId.trim();
+        String normalizedTopicId = topicIdStr.trim();
 
-            Topic topic = topicOpt.get();
-            if (Initiator.SYSTEM.getValue().equalsIgnoreCase(topic.getInitiatedBy())) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
-                        EventNotificationServiceConstants.ERROR_TITLE_OPERATION_FORBIDDEN,
-                        String.format(EventNotificationServiceConstants.SYSTEM_TOPIC_DELETE_FORBIDDEN_ERROR_MSG,
-                                topic.getName()),
-                        409);
-            }
+        try {
+            return DatabaseUtils.executeInTransaction(conn -> {
+                Optional<Topic> topicOpt = topicDAO.getTopicById(conn, normalizedTopicId, normalizedOrgId);
+                if (!topicOpt.isPresent() || !normalizedOrgId.equalsIgnoreCase(topicOpt.get().getOrgId())) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_TOPIC_NOT_FOUND,
+                            EventNotificationServiceConstants.ERROR_TITLE_TOPIC_NOT_FOUND,
+                            String.format(EventNotificationServiceConstants.TOPIC_NOT_FOUND_ERROR_MSG,
+                                    normalizedTopicId),
+                            404);
+                }
 
-            if (TopicStatus.DEREGISTERED.getValue().equalsIgnoreCase(topic.getStatus())) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_TOPIC_NOT_FOUND,
-                        EventNotificationServiceConstants.ERROR_TITLE_TOPIC_NOT_FOUND,
-                        String.format(EventNotificationServiceConstants.TOPIC_ALREADY_DEREGISTERED_ERROR_MSG,
-                                topicIdStr.trim()),
-                        404);
-            }
+                Topic topic = topicOpt.get();
+                if (Initiator.SYSTEM.getValue().equalsIgnoreCase(topic.getInitiatedBy())) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_INVALID_REQUEST,
+                            EventNotificationServiceConstants.ERROR_TITLE_OPERATION_FORBIDDEN,
+                            String.format(EventNotificationServiceConstants.SYSTEM_TOPIC_DELETE_FORBIDDEN_ERROR_MSG,
+                                    topic.getName()),
+                            409);
+                }
 
-            boolean updated;
-            try {
-                updated = topicDAO.deregisterTopicAtomic(conn, topic.getTopicId(), orgId.trim());
-            } catch (EventNotificationInvalidStateException e) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
-                        EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_EXISTS,
-                        String.format(EventNotificationServiceConstants.TOPIC_HAS_ACTIVE_SUBSCRIPTIONS_ERROR_MSG,
-                                topic.getName()),
-                        409);
-            }
-            if (!updated) {
-                throw new EventNotificationServiceException(
-                        EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
-                        EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
-                        EventNotificationServiceConstants.FAILED_TO_DEREGISTER_TOPIC_ERROR_MSG,
-                        500);
-            }
+                if (TopicStatus.fromValueOrDefault(topic.getStatus(), null) == TopicStatus.DELETED) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_TOPIC_NOT_FOUND,
+                            EventNotificationServiceConstants.ERROR_TITLE_TOPIC_NOT_FOUND,
+                            String.format(EventNotificationServiceConstants.TOPIC_ALREADY_DELETED_ERROR_MSG,
+                                    normalizedTopicId),
+                            404);
+                }
 
-            return new TopicDTO(topic.getTopicId(), topic.getName(), topic.getDescription(),
-                    TopicStatus.DEREGISTERED.getValue(), topic.getInitiatedBy());
-        });
+                boolean updated;
+                try {
+                    updated = topicDAO.deleteTopicAtomic(conn, topic.getTopicId(), normalizedOrgId);
+                } catch (EventNotificationInvalidStateException e) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_RESOURCE_EXISTS,
+                            EventNotificationServiceConstants.ERROR_TITLE_RESOURCE_EXISTS,
+                            String.format(EventNotificationServiceConstants.TOPIC_HAS_ACTIVE_SUBSCRIPTIONS_ERROR_MSG,
+                                    topic.getName()),
+                            409);
+                }
+                if (!updated) {
+                    throw new EventNotificationServiceException(
+                            EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
+                            EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
+                            EventNotificationServiceConstants.FAILED_TO_DELETE_TOPIC_ERROR_MSG,
+                            500);
+                }
+
+                return new TopicDTO(topic.getTopicId(), topic.getName(), topic.getDescription(),
+                        TopicStatus.DELETED.getValue(), topic.getInitiatedBy());
+            });
+        } catch (EventNotificationDaoException e) {
+            LOG.error("Failed to delete topic [" + LogSanitizer.sanitize(normalizedTopicId)
+                    + "] for organization [" + LogSanitizer.sanitize(normalizedOrgId) + "].", e);
+            throw new EventNotificationServiceException(
+                    EventNotificationServiceConstants.ERROR_CODE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.ERROR_TITLE_INTERNAL_ERROR,
+                    EventNotificationServiceConstants.FAILED_TO_DELETE_TOPIC_ERROR_MSG,
+                    500);
+        }
     }
 
     public Optional<TopicDTO> getTopic(String orgId, String topicIdStr) {

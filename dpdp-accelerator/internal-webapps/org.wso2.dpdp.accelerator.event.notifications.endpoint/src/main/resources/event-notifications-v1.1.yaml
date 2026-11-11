@@ -134,7 +134,7 @@ paths:
   /topics/{topicId}:
     delete:
       tags: [Topics]
-      summary: Deregister a user-created topic
+      summary: Delete a user-created topic
       operationId: deleteTopic
       security:
         - OAuth2: ["notifications:topics:write"]
@@ -142,14 +142,14 @@ paths:
         - $ref: "#/components/parameters/TopicId"
       responses:
         "200":
-          description: Deregistered topic
+          description: Deleted topic
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/TopicStatusUpdate"
               example:
                 topicId: 2ea5f59a-70db-4098-b0f8-3f3cfede76c7
-                status: deregistered
+                status: deleted
         "400":
           $ref: "#/components/responses/BadRequest"
         "401":
@@ -169,12 +169,12 @@ paths:
                   value:
                     code: EN-4090
                     message: In-flight deliveries exist
-                    description: The topic has active subscriptions and cannot be deregistered.
+                    description: The topic has active subscriptions and cannot be deleted.
                 systemTopic:
                   value:
                     code: EN-4001
                     message: Operation forbidden
-                    description: A system-defined topic cannot be deregistered.
+                    description: A system-defined topic cannot be deleted.
         "500":
           $ref: "#/components/responses/InternalError"
   /subscriptions:
@@ -1045,7 +1045,7 @@ components:
           tokenUrl: https://localhost:9443/oauth2/token
           scopes:
             notifications:topics:read: View event-notification topics
-            notifications:topics:write: Create and deregister topics
+            notifications:topics:write: Create and delete topics
             notifications:subscriptions:read: View subscriptions, delivery details, and delivery history
             notifications:subscriptions:write: Create, verify, and delete subscriptions, and retry deliveries
             notifications:events:read: View events and event deliveries
@@ -1240,7 +1240,7 @@ components:
           type: string
     TopicStatus:
       type: string
-      enum: [active, deregistered]
+      enum: [active, deleted]
     TopicCreateRequest:
       type: object
       required: [name]
@@ -1268,7 +1268,7 @@ components:
           enum: [system, user]
     TopicStatusUpdate:
       type: object
-      description: Result of a topic status change such as deregistration.
+      description: Result of a topic status change such as deletion.
       required: [topicId, status]
       properties:
         topicId:

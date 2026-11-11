@@ -25,6 +25,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.wso2.dpdp.accelerator.common.persistence.JDBCPersistenceManager;
 import org.wso2.dpdp.accelerator.event.notifications.common.enums.Initiator;
+import org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationDuplicateResourceException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.dao.EventNotificationInvalidStateException;
 import org.wso2.dpdp.accelerator.event.notifications.common.exception.service.EventNotificationServiceException;
@@ -137,18 +138,18 @@ public class TopicServiceImplTest {
     public void testDeleteTopicSuccess() {
         Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
         when(topicDAO.getTopicById(any(Connection.class), eq("t1"), eq("org1"))).thenReturn(Optional.of(topic));
-        when(topicDAO.deregisterTopicAtomic(any(Connection.class), eq("t1"), eq("org1"))).thenReturn(true);
+        when(topicDAO.deleteTopicAtomic(any(Connection.class), eq("t1"), eq("org1"))).thenReturn(true);
 
         TopicDTO result = topicService.deleteTopic("org1", "t1");
         assertNotNull(result);
-        assertEquals(result.getStatus(), "deregistered");
+        assertEquals(result.getStatus(), TopicStatus.DELETED.getValue());
     }
 
     @Test(expectedExceptions = EventNotificationServiceException.class)
     public void testDeleteTopicHasActiveSubscriptionsReturns409() {
         Topic topic = new Topic("t1", "org1", "user-consent", "desc", "active");
         when(topicDAO.getTopicById(any(Connection.class), eq("t1"), eq("org1"))).thenReturn(Optional.of(topic));
-        when(topicDAO.deregisterTopicAtomic(any(Connection.class), eq("t1"), eq("org1"))).thenThrow(
+        when(topicDAO.deleteTopicAtomic(any(Connection.class), eq("t1"), eq("org1"))).thenThrow(
                 new EventNotificationInvalidStateException(
                         org.wso2.dpdp.accelerator.event.notifications.common.constants.EventNotificationCommonConstants.ERROR_TOPIC_HAS_ACTIVE_SUBSCRIPTIONS));
 

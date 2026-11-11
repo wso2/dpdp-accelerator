@@ -109,7 +109,7 @@ public class V11EndpointTest {
 
     @Test
     public void topicDeleteReturnsOnlyIdAndStatus() {
-        TopicDTO dto = new TopicDTO("t1", "topic-name", "desc", "deregistered", "user");
+        TopicDTO dto = new TopicDTO("t1", "topic-name", "desc", "deleted", "user");
         when(topicHandler.deleteTopic("org-1", "t1")).thenReturn(dto);
 
         Response response = topicEndpoint.deleteTopic("t1");
@@ -117,8 +117,8 @@ public class V11EndpointTest {
         assertEquals(response.getStatus(), 200);
         TopicStatusUpdate body = (TopicStatusUpdate) response.getEntity();
         assertEquals(body.getTopicId(), "t1");
-        assertEquals(body.getStatus(), TopicStatus.DEREGISTERED);
-        assertEquals(toJson(body), "{\"topicId\":\"t1\",\"status\":\"deregistered\"}");
+        assertEquals(body.getStatus(), TopicStatus.DELETED);
+        assertEquals(toJson(body), "{\"topicId\":\"t1\",\"status\":\"deleted\"}");
     }
 
     @Test

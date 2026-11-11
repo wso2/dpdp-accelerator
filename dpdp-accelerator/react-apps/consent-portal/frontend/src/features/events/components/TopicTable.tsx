@@ -121,14 +121,14 @@ export default function TopicTable({
             ) : null}
             {rows.map((topic) => {
               const isActive = topic.status.toUpperCase() === 'ACTIVE'
-              const isDeregistered = topic.status.toUpperCase() === 'DEREGISTERED'
+              const isDeleted = topic.status.toUpperCase() === 'DELETED'
               const isSystemTopic = topic.initiatedBy?.toLowerCase() === 'system'
               const initiator = topic.initiatedBy?.toUpperCase() || 'USER'
               let deleteActionTitle = t('topics.actions.delete')
               if (isSystemTopic) {
                 deleteActionTitle = initiator
-              } else if (isDeregistered) {
-                deleteActionTitle = t('topics.actions.alreadyDeregistered')
+              } else if (isDeleted) {
+                deleteActionTitle = t('topics.actions.alreadyDeleted')
               }
 
               return (

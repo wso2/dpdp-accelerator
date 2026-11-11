@@ -180,12 +180,12 @@ public class ServiceDTOTest {
         dto.setTopicId("id2");
         dto.setName("name2");
         dto.setDescription("description2");
-        dto.setStatus("DEREGISTERED");
+        dto.setStatus("DELETED");
         dto.setInitiatedBy("SYSTEM");
         assertEquals(dto.getTopicId(), "id2");
         assertEquals(dto.getName(), "name2");
         assertEquals(dto.getDescription(), "description2");
-        assertEquals(dto.getStatus(), "DEREGISTERED");
+        assertEquals(dto.getStatus(), "DELETED");
         assertEquals(dto.getInitiatedBy(), "SYSTEM");
     }
 }

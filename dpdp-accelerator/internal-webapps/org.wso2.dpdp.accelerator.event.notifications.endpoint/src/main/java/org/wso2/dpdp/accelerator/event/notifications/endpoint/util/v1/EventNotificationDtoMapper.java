@@ -59,6 +59,10 @@ import java.util.function.Function;
 /** Explicit conversion between the V1 REST contract and service contracts. */
 public final class EventNotificationDtoMapper {
 
+    private static final String V1_DEREGISTERED_STATUS = TopicStatus.DEREGISTERED.toString();
+    private static final String INTERNAL_DELETED_STATUS =
+            org.wso2.dpdp.accelerator.event.notifications.common.enums.TopicStatus.DELETED.getValue();
+
     private EventNotificationDtoMapper() {
     }
 
@@ -125,10 +129,30 @@ public final class EventNotificationDtoMapper {
         target.setTopicId(source.getTopicId());
         target.setName(source.getName());
         target.setDescription(source.getDescription());
-        target.setStatus(source.getStatus() == null ? null : TopicStatus.fromValue(source.getStatus()));
+        target.setStatus(mapTopicStatus(source.getStatus()));
         target.setInitiatedBy(source.getInitiatedBy() == null ? null :
                 Topic.InitiatedByEnum.fromValue(source.getInitiatedBy()));
         return target;
+    }
+
+    public static String toInternalTopicStatusFilter(String status) {
+        if (status != null && V1_DEREGISTERED_STATUS.equalsIgnoreCase(status.trim())) {
+            return INTERNAL_DELETED_STATUS;
+        }
+        return status;
+    }
+
+    private static TopicStatus mapTopicStatus(String status) {
+        if (status == null) {
+            return null;
+        }
+        // Translate the internal 'deleted' status back to the v1 contract value 'deregistered'.
+        String normalized = status.trim();
+        if (INTERNAL_DELETED_STATUS.equalsIgnoreCase(normalized)
+                || V1_DEREGISTERED_STATUS.equalsIgnoreCase(normalized)) {
+            return TopicStatus.DEREGISTERED;
+        }
+        return TopicStatus.fromValue(status);
     }
 
     public static Subscription toApi(SubscriptionDTO source) {
