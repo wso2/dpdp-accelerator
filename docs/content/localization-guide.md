@@ -13,11 +13,13 @@ stated otherwise.
 The portal ships with English plus the 22 languages listed in the Eighth
 Schedule to the Constitution of India, per section 5(3) of the DPDP Act.
 Readers switch between them from the language selector in the portal header;
-nothing needs to be configured on the server for that to work.
+nothing needs to be configured on the server for that to work. The portal
+starts in English and remembers each reader's choice in a `dpdp.lang` cookie;
+it doesn't follow the browser's language setting.
 
 ## 1. Where the translation files live
 
-After running `merge.sh` (see `setup-guide.md`), each language's files are at:
+After running `merge.sh` (see the [Quickstart](quickstart.md)), each language's files are at:
 
 ```text
 <IS_HOME>/repository/deployment/server/webapps/consent-portal/i18n/<lang-code>/
@@ -53,13 +55,16 @@ Use this table to map the languages.
 | `te` | Telugu | తెలుగు |
 | `ur` | Urdu | اردو |
 
-This is the same list the portal's language switcher uses
-(`public/i18n/meta.json`)
-
 These are plain JSON files served directly by the Identity Server — editing
 one in place takes effect immediately, with no server restart. If a browser
-already has the page open, ask the reader to refresh so it picks up the
-change.
+already has the page open, or has cached the file, ask the reader to do a hard
+refresh so it picks up the change.
+
+:::warning Keep a copy of your edits
+Running `merge.sh` again, for example to upgrade or reinstall the accelerator,
+replaces the whole `consent-portal` webapp, including these files. Keep a copy
+of every file you edit and reapply it afterwards.
+:::
 
 ## 2. Correcting the portal's own UI text (`common.json`)
 
@@ -105,7 +110,7 @@ To add a translation for an Element or Purpose:
    ```json
    {
      "purposes": {
-       "marketing_via_email@v1": {
+       "marketing_via_email@1.0": {
          "description": "ईमेल के माध्यम से मार्केटिंग"
        }
      },
@@ -121,17 +126,16 @@ To add a translation for an Element or Purpose:
    The key must match the item's name **exactly**, character for character.
 
 3. For a Purpose whose wording differs between versions, key that version
-   specifically as `name@version` (for example `"marketing_via_email@v2"`)
+   specifically as `name@version`, using the version exactly as it was entered
+   when the Purpose was created (for example `"marketing_via_email@2.0"`),
    instead of just `name`. If a Purpose has no version-specific entry, its
    plain `name` entry (if any) applies to every version. Elements are never
    versioned, so this only applies under `purposes`.
 4. Save. No restart needed.
 
-**Until a language has an entry for a given item, that's expected** — readers
-in that language simply see the English wording the administrator entered
-when creating it, not an error or a blank field. There's no requirement to
-translate every item into every language before going live; treat this file
-as an ongoing translation backlog, not a deployment blocker.
+**Until a language has an entry for a given item**, readers in that language
+see the wording the administrator entered when creating it, not an error or a
+blank field. You don't need to translate every item before going live.
 
 ## 4. Adding a new language
 

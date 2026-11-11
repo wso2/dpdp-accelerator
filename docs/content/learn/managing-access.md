@@ -80,10 +80,10 @@ You normally do not need to work with these scope names when assigning the prede
 | Create, verify, or delete subscriptions | `notifications:subscriptions:write`       |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | View events and delivery history        | `notifications:events:read`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | Publish events                          | `notifications:events:write`              |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-| Poll event deliveries                   | `notifications:events:poll`               |  <span className="scope-no">✗</span>    |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-| Submit delivery-completion evidence     | `notifications:event-deliveries:complete` |  <span className="scope-no">✗</span>    |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
+| Poll event deliveries                   | `notifications:events:poll`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
+| Submit delivery-completion evidence     | `notifications:event-deliveries:complete` |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 
-The last two scopes are intended for applications that receive events. For example, you can create dedicated applications with only the permissions they require:
+The last two scopes are for systems that receive events. The `dpdp-consent-admin` role holds them, but the Consent Portal doesn't request them when an administrator signs in, so a portal token never carries them. Give each publishing or receiving system its own application with only the scopes it needs, for example:
 
 | Integration       | Scopes to assign                                                        |
 | :------------------- | :-------------------------------------------------------------------------- |
@@ -137,7 +137,18 @@ After creating the application, authorize the scopes required by the APIs you wa
 
 Only authorize the permissions the application actually needs. For example, an application that only publishes events should not be given complaint-management or consent-management permissions.
 
-Refer to the scope tables above to identify the scopes required for each operation.
+Refer to the scope tables above to identify the scopes required for each operation. Each scope belongs to one API resource in the Console:
+
+| API resource                                  | Scopes |
+| :-------------------------------------------- | :----- |
+| Consent Management V2 – Consents, Purposes, and Elements | `internal_consent_mgt_*` |
+| DPDP Consent History                          | `consent:status-history:view:self`, `consent:status-history:view:any`, `consent:history:view:self`, `consent:history:view:any` |
+| DPDP Complaint Management API                 | `complaints:read:self`, `complaints:write:self`, `complaints:read:any`, `complaints:write:any` |
+| DPDP Event Notification API topics            | `notifications:topics:read`, `notifications:topics:write` |
+| DPDP Event Notification API subscriptions     | `notifications:subscriptions:read`, `notifications:subscriptions:write` |
+| DPDP Event Notification API events            | `notifications:events:read`, `notifications:events:write` |
+| DPDP Event Notification API poll              | `notifications:events:poll` |
+| DPDP Event Notification API deliveries        | `notifications:event-deliveries:complete` |
 
 ### Step 3: Get an access token
 
@@ -186,8 +197,10 @@ If the request fails, check the HTTP status code:
 - **401 Unauthorized** — The access token is missing, invalid, or expired. Obtain a new access token and try again.
 - **403 Forbidden** — The access token is valid, but it does not contain the scope required by the API. Return to Step 2 and authorize the required scope for the application.
 
+A token keeps the scopes it was issued with. After you change an application's authorized scopes or a user's roles, obtain a new token.
+
 ## Next Steps
 
 - [Try Out: Consent](../try-out/consent.md) — see the scopes and tokens from this page used in a real API call.
 - [Consent](consent.md) — learn how consent is given, reviewed, and revoked.
-- [Role Guide](../role-guide.md) — the full reference for roles, scopes, and permissions.
+- [Configuring Users and Roles](../install-and-setup/configuring-users-and-roles.md) — create users and assign the built-in roles.

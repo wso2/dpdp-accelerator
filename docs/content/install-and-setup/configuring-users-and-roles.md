@@ -82,7 +82,7 @@ The accelerator provides three predefined roles designed to separate user, admin
 - **Role Assignment:** `dpdp-consent-admin` is not automatically assigned to `dpdp-consent-dpo`. If a user requires both administrative oversight and DPO complaint handling capabilities, assign both roles explicitly.
 :::
 
-For detailed information on permissions and OAuth scopes associated with each role, see the [Role Management Guide](../role-guide.md).
+For the scopes each role grants, and the API resource each scope belongs to, see [Managing Access](../learn/managing-access.md#scope-reference).
 
 ---
 
