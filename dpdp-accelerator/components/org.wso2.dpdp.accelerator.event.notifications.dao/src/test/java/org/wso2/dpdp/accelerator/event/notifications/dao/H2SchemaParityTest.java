@@ -45,7 +45,7 @@ public class H2SchemaParityTest {
     private static final String SCHEMA_PATH =
             "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/h2.sql";
     private static final String MIGRATION_PATH =
-            "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/h2.sql";
+            "accelerators/dpdp-is/carbon-home/dbscripts/dpdp-accelerator/event-notification/migrations/1.1.0/h2.sql";
 
     @Test
     public void shippedSchemaEnforcesDeliveryIntegrityAndIndexes() throws Exception {
