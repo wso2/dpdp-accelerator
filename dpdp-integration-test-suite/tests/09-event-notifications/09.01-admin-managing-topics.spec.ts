@@ -16,12 +16,34 @@
  * under the License.
  */
 
+import type { Page } from '@playwright/test'
 import { loginAsConsentAdmin, test, expect } from '../../fixtures/auth.fixtures'
 import { TopicDeleteDialog } from '../../pages/TopicDeleteDialog'
 import { TopicRegisterDialog } from '../../pages/TopicRegisterDialog'
 import { TopicsPage } from '../../pages/TopicsPage'
 import { seedActiveTopicViaApi } from '../../utils/eventNotificationSetup'
 import { uniqueMarker } from '../../utils/testData'
+
+/** Filters Topics by status and waits for the filtered GET /topics request to succeed and finish loading. */
+async function filterByStatusAndAwaitLoad(
+  page: Page,
+  topicsPage: TopicsPage,
+  label: 'Active' | 'Deleted',
+  expectedStatusParam: 'ACTIVE' | 'DELETED',
+): Promise<void> {
+  const responsePromise = page.waitForResponse((response) => {
+    if (response.request().method() !== 'GET') return false
+    const url = new URL(response.url())
+    return url.pathname.endsWith('/topics') && url.searchParams.get('status') === expectedStatusParam
+  })
+  await topicsPage.filterByStatus(label)
+  const response = await responsePromise
+  expect(response.ok()).toBe(true)
+  // TopicTable unmounts <table> and renders loadFailedAlert on error; verify loading finished and the table is rendered.
+  await expect(page.getByRole('progressbar')).toHaveCount(0)
+  await expect(topicsPage.loadFailedAlert).toBeHidden()
+  await expect(topicsPage.table).toBeVisible()
+}
 
 /**
  * Registering and deregistering Event Notification topics through the portal UI
@@ -156,20 +178,13 @@ test.describe('Admin managing Topics', () => {
         await new TopicDeleteDialog(page).confirm()
 
         // Confirm status filtering actually takes effect rather than matching the already-rendered row:
-        // Active hides the deleted topic, then Deleted awaits the filtered GET /topics response
-        // and brings the row back into view.
+        // Active awaits the filtered GET /topics response, verifies the table loaded without error,
+        // and hides the deleted topic; Deleted then awaits its response and brings the row back into view.
         await topicsPage.search(topic.name)
-        await topicsPage.filterByStatus('Active')
+        await filterByStatusAndAwaitLoad(page, topicsPage, 'Active', 'ACTIVE')
         await expect(topicsPage.rowByName(topic.name)).toHaveCount(0)
 
-        const deletedFilterResponsePromise = page.waitForResponse((response) => {
-          if (response.request().method() !== 'GET') return false
-          const url = new URL(response.url())
-          return url.pathname.endsWith('/topics') && url.searchParams.get('status') === 'DELETED'
-        })
-        await topicsPage.filterByStatus('Deleted')
-        const deletedFilterResponse = await deletedFilterResponsePromise
-        expect(deletedFilterResponse.ok()).toBe(true)
+        await filterByStatusAndAwaitLoad(page, topicsPage, 'Deleted', 'DELETED')
         await expect(topicsPage.rowByName(topic.name)).toBeVisible()
         await expect(topicsPage.rowByName(topic.name)).toContainText('Deleted')
 
