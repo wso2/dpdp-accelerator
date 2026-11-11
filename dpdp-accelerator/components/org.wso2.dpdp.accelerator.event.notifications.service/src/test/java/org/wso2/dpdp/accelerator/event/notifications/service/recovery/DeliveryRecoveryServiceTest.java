@@ -363,6 +363,31 @@ public class DeliveryRecoveryServiceTest {
         assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.TIME_BUDGET);
     }
 
+    @Test
+    public void drainLoopContinuesWhenProcessedSubsLeaveQueryAndBatchIsFull() throws Exception {
+        when(configurationService.getEventNotificationPendingSubscriptionRecoveryBatchSize()).thenReturn(10);
+        List<Subscription> allSubs = new ArrayList<>();
+        for (int i = 0; i < 35; i++) {
+            allSubs.add(subscription("sub-drain-" + i, "https://example.com/" + i));
+        }
+
+        when(subscriptionDAO.getPendingSubscriptionsForRecovery(any(Connection.class), any(Timestamp.class), anyInt()))
+                .thenAnswer(inv -> {
+                    int limit = inv.getArgument(2);
+                    return new ArrayList<>(allSubs.subList(0, Math.min(limit, allSubs.size())));
+                });
+        org.mockito.Mockito.doAnswer(inv -> {
+            String subId = inv.getArgument(1);
+            allSubs.removeIf(s -> subId.equals(s.getSubscriptionId()));
+            return null;
+        }).when(subscriptionService).retryVerification(eq("org1"), any(String.class));
+
+        runPendingRecoveryTask();
+
+        verify(subscriptionService, times(35)).retryVerification(eq("org1"), any(String.class));
+        assertEquals(recoveryService.getLastExitReason(), DeliveryRecoveryService.ExitReason.NO_MORE_WORK);
+    }
+
     private void runPendingRecoveryTask() throws Exception {
         Class<?> taskClass = Arrays.stream(DeliveryRecoveryService.class.getDeclaredClasses())
                 .filter(clazz -> clazz.getSimpleName().equals("PendingDeliveryRecoveryTask"))

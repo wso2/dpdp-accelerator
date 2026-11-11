@@ -300,7 +300,7 @@ public class DeliveryRecoveryService {
                     exitReason = stopping ? ExitReason.STOPPING : ExitReason.TIME_BUDGET;
                     break;
                 }
-                if (pendingSubs.size() < limit) {
+                if (pendingSubs.size() < limit && fresh.size() < batchSize) {
                     exitReason = ExitReason.NO_MORE_WORK;
                     break;
                 }

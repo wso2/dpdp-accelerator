@@ -308,7 +308,7 @@ public class WebhookDeliveryWorker implements Runnable {
                 exitReason = ExitReason.POOL_SATURATED;
                 break;
             }
-            if (pending.size() < fetchLimit) {
+            if (pending.size() < fetchLimit && fresh.size() < budget) {
                 exitReason = ExitReason.NO_MORE_WORK;
                 break;
             }

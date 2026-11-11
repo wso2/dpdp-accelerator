@@ -956,4 +956,36 @@ public class WebhookDeliveryWorkerTest {
                 assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.TIME_BUDGET);
                 verify(deliveryDAO, times(1)).getPendingWebhookDispatchContexts(any(Connection.class), anyInt());
         }
+
+        @Test
+        public void testDrainLoopContinuesWhenClaimedRowsShrinkPendingBelowFetchLimit() {
+                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
+
+                java.util.List<WebhookDeliveryDispatchContext> allPending = new java.util.ArrayList<>();
+                for (int i = 0; i < 35; i++) {
+                        allPending.add(context("claimed-drain-" + i, 0));
+                }
+
+                java.util.concurrent.atomic.AtomicReference<WebhookDeliveryWorker> workerRef =
+                                new java.util.concurrent.atomic.AtomicReference<>();
+                when(deliveryDAO.getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any()))
+                                .thenReturn(Collections.emptyList());
+                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
+                                .thenAnswer(inv -> {
+                                        WebhookDeliveryWorker w = workerRef.get();
+                                        allPending.removeIf(ctx -> w.isTracked(ctx.getDelivery().getDeliveryId()));
+                                        int limit = inv.getArgument(1);
+                                        return new java.util.ArrayList<>(
+                                                        allPending.subList(0, Math.min(limit, allPending.size())));
+                                });
+
+                WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
+                                configurationService);
+                workerRef.set(worker);
+                int[] counts = worker.runTick();
+
+                assertEquals(counts[0], 35,
+                                "All 35 deliveries should be submitted even when claimed rows leave pending below fetchLimit");
+                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.NO_MORE_WORK);
+        }
 }
