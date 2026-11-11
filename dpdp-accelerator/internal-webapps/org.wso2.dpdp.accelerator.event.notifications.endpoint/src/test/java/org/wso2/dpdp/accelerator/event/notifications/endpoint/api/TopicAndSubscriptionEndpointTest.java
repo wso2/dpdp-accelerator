@@ -47,6 +47,21 @@ public class TopicAndSubscriptionEndpointTest {
         assertJsonEquals(topicEndpoint.listTopics("active", "search", 20, 0, "name").getEntity(), page);
         assertEquals(topicEndpoint.deleteTopic("topic-1").getStatus(), 200);
         verify(topicHandler).deleteTopic("org-1", "topic-1");
+
+        TopicDTO deletedTopic = new TopicDTO("topic-2", "deleted-name", "desc", "deleted", "user");
+        when(topicHandler.deleteTopic("org-1", "topic-2")).thenReturn(deletedTopic);
+        when(topicHandler.listTopics("org-1", "deregistered", null, 20, 0, null))
+                .thenReturn(new PaginatedResult<>(Collections.singletonList(deletedTopic), 1));
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Topic deleteBody =
+                (org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.Topic)
+                        topicEndpoint.deleteTopic("topic-2").getEntity();
+        assertEquals(deleteBody.getStatus(),
+                org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicStatus.DEREGISTERED);
+        org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicPage listBody =
+                (org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicPage)
+                        topicEndpoint.listTopics("deregistered", null, 20, 0, null).getEntity();
+        assertEquals(listBody.getItems().get(0).getStatus(),
+                org.wso2.dpdp.accelerator.event.notifications.endpoint.v1.dto.TopicStatus.DEREGISTERED);
     }
 
     @Test

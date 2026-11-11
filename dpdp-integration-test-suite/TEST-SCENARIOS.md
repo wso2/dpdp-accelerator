@@ -516,7 +516,7 @@ Server-side rules the Topics UI cannot reach.
 | --- | --- | --- |
 | `09.06.01` | A topic with a live subscription cannot be deleted | 409 "has active subscriptions"; the topic stays Active. |
 | `09.06.02` | Deleting the same topic twice does not mutate it again |  |
-| `09.06.03` | Re-registering a previously deleted topic name creates a new topic | A new topic id; the old row stays Deleted. |
+| `09.06.03` | Re-registering a previously deleted topic name creates a new topic | A new topic id; the old row stays Deregistered (`v1`) / Deleted (`v1.1`). |
 | `09.06.04` | Any topic linked to a multi-topic subscription cannot be deleted until the subscription is deleted | 409 "has active subscriptions" on all associated topics until subscription row is deleted. |
 
 ### `09.07-subscription-lifecycle-api.spec.ts` · API-only

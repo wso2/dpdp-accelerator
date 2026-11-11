@@ -135,9 +135,10 @@ public final class EventNotificationDtoMapper {
         if (status == null) {
             return null;
         }
-        // Preserve compatibility with pre-migration DB rows that still carry 'deregistered'.
-        if ("deregistered".equalsIgnoreCase(status.trim())) {
-            return TopicStatus.DELETED;
+        // Translate the internal 'deleted' status back to the v1 contract value 'deregistered'.
+        String normalized = status.trim();
+        if ("deleted".equalsIgnoreCase(normalized) || "deregistered".equalsIgnoreCase(normalized)) {
+            return TopicStatus.DEREGISTERED;
         }
         return TopicStatus.fromValue(status);
     }

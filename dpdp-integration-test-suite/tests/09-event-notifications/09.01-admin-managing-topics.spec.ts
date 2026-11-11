@@ -159,10 +159,11 @@ test.describe('Admin managing Topics', () => {
         await topicsPage.filterByStatus('Deleted')
         await expect(topicsPage.rowByName(topic.name)).toBeVisible()
 
-        // The audit row remains readable by id after deletion.
-        const getResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DELETED' })
+        // The audit row remains readable by id after deletion; consentAdminEventApi targets v1,
+        // which keeps returning 'deregistered' for soft-deleted topics.
+        const getResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DEREGISTERED' })
         const { items } = (await getResponse.json()) as { items: { topicId: string; status: string }[] }
-        expect(items.some((t) => t.topicId === topic.topicId && t.status.toUpperCase() === 'DELETED')).toBe(
+        expect(items.some((t) => t.topicId === topic.topicId && t.status.toUpperCase() === 'DEREGISTERED')).toBe(
           true,
         )
       } finally {

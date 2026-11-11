@@ -25,6 +25,7 @@ import { seedActiveTopicViaApi, seedPollSubscriptionViaApi } from '../../utils/e
  * delete (08.01), but nothing in the UI can reach these rules.
  */
 for (const version of ['v1', 'v1.1'] as const) {
+  const deletedStatus = version === 'v1' ? 'DEREGISTERED' : 'DELETED'
   test.describe(`Topic lifecycle rules (${version})`, () => {
     test.use({ eventApiVersion: version })
 
@@ -51,11 +52,12 @@ for (const version of ['v1', 'v1.1'] as const) {
       const topic = await seedActiveTopicViaApi(consentAdminEventApi, `double-delete-${version}`)
       const first = await consentAdminEventApi.deleteTopic(topic.topicId)
       expect(first.status()).toBe(200)
+      expect(((await first.json()) as { status: string }).status.toUpperCase()).toBe(deletedStatus)
 
       const second = await consentAdminEventApi.deleteTopic(topic.topicId)
       expect(second.status()).toBe(404)
 
-      const listResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: 'DELETED' })
+      const listResponse = await consentAdminEventApi.listTopics({ search: topic.name, status: deletedStatus })
       const { items } = (await listResponse.json()) as { items: { topicId: string }[] }
       expect(items.filter((t) => t.topicId === topic.topicId)).toHaveLength(1)
     })
@@ -77,7 +79,7 @@ for (const version of ['v1', 'v1.1'] as const) {
       const { items } = (await listResponse.json()) as { items: { topicId: string; status: string }[] }
       const oldRow = items.find((t) => t.topicId === original.topicId)
       const newRow = items.find((t) => t.topicId === recreated.topicId)
-      expect(oldRow?.status.toUpperCase()).toBe('DELETED')
+      expect(oldRow?.status.toUpperCase()).toBe(deletedStatus)
       expect(newRow?.status.toUpperCase()).toBe('ACTIVE')
     })
 
