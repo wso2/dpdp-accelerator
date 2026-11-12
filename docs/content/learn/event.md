@@ -100,10 +100,11 @@ This approach helps **CarePulse** keep connected systems informed of important c
 
 ## Default topics
 
-The accelerator automatically publishes events on five built-in topics covering the consent and account lifecycle.
+The accelerator automatically publishes events on six built-in topics covering the consent and account lifecycle.
 
 | Topic | Published when |
 | --- | --- |
+| `consent.create` | A consent is created. |
 | `consent.update` | A consent's state changes, such as an approval or rejection. |
 | `consent.revoke` | A consent is revoked. |
 | `consent.expire` | A consent passes its expiry time. |
@@ -190,7 +191,7 @@ For webhook deliveries, there are two important things to understand:
 
 *Anika's view (Data Fiduciary Administrator): the event detail page, with the delivery to CloudEngage (Data Processor)'s subscription shown as Delivered.*
 
-- **Completion evidence:** After updating **Priya**'s marketing preferences, **CloudEngage** can submit a signed completion report. This doesn't change the delivery's status away from **Delivered** — instead, the completion is recorded alongside it as evidence that the required action was carried out.
+- **Completion evidence:** After updating **Priya**'s marketing preferences, **CloudEngage** can submit a signed completion report. Submitting a report with status `completed` transitions the delivery's status from **Delivered** to **Completed** with the completion evidence recorded alongside it; other completion statuses (`ack`, `disputed`, or `partial`) keep the delivery in **Delivered** with the report recorded as evidence.
 
 ![Delivery attempt history showing the Delivered status with Completion Evidence recorded below it](../../assets/images/learn/event-delivery-completion-evidence.png)
 

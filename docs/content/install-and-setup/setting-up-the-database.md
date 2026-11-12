@@ -92,6 +92,10 @@ For `WSO2IDENTITY_DB`, execute the consent migration script located at `<IS_HOME
 </TabItem>
 </Tabs>
 
+:::note Upgrading from 1.0.x
+If you are upgrading an existing `WSO2DPDP_DB` from `1.0.x` to `1.1.0`, run the idempotent event-notification migration script for your database engine in version order (`<IS_HOME>/dbscripts/dpdp-accelerator/event-notification/migrations/1.1.0/mysql.sql` or `postgresql.sql`). When `APPLY_DPDP_DB_MIGRATION=true` in `<ACCELERATOR_HOME>/repository/conf/configure.properties` (the default), `configure.sh` applies versioned migration scripts automatically.
+:::
+
 ---
 
 ## 3. Configure the datasources

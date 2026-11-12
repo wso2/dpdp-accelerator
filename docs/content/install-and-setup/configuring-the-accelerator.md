@@ -221,8 +221,8 @@ audience = "dpdp-event-notifications"
   existing active tenants at server startup (requires
   `system_topics_auto_create_enabled = true`). Promotes any active user-created
   topic that has a system topic's name into a system topic (so the accelerator
-  publishes lifecycle events to it and it can no longer be deregistered), leaves
-  deregistered user topics with the same name deregistered, and creates any
+  publishes lifecycle events to it and it can no longer be deleted), leaves
+  deleted user topics with the same name as `deleted`, and creates any
   missing system topics alongside them.
 - `payload_signing.enabled` — Signs each event so the receiving system can
   verify that it was sent by the accelerator. Keep this enabled.
@@ -288,10 +288,10 @@ request_hmac_validation_enabled = false
 
 ```toml
 [dpdp_accelerator.event_notifications.subscription]
-conflict_checks_enabled = false
+subscription_constraint_checks_enabled = false
 ```
 
-- `conflict_checks_enabled` — Controls whether the accelerator enforces subscription conflict constraints (mixed delivery mode and overlapping purpose filter checks). Defaults to `false`. When `false`, multiple subscriptions (e.g., multiple polling consumers or coexisting polling and webhook consumers) can subscribe to the same topic with overlapping filters, while active subscription name uniqueness within an organization is always preserved.
+- `subscription_constraint_checks_enabled` — Controls whether the accelerator enforces subscription conflict constraints (mixed delivery mode and overlapping purpose filter checks). Defaults to `false`. When `false`, multiple subscriptions (e.g., multiple polling consumers or coexisting polling and webhook consumers) can subscribe to the same topic with overlapping filters, while active subscription name uniqueness within an organization is always preserved.
 
 ### Configure webhook delivery
 

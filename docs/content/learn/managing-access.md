@@ -75,7 +75,7 @@ You normally do not need to work with these scope names when assigning the prede
 | Operation                                | Required scope                             | Admin | Data principal | DPO |
 | :------------------------------------------ | :-------------------------------------------- | :-----: | :----: | :---: |
 | View topics                             | `notifications:topics:read`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
-| Create or deregister topics             | `notifications:topics:write`              |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
+| Create or delete topics                 | `notifications:topics:write`              |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | View subscriptions and delivery history | `notifications:subscriptions:read`        |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | Create, verify, or delete subscriptions | `notifications:subscriptions:write`       |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
 | View events and delivery history        | `notifications:events:read`               |   <span className="scope-yes">✓</span>   |  <span className="scope-no">✗</span>   |  <span className="scope-no">✗</span>  |
