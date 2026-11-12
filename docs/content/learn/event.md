@@ -199,7 +199,7 @@ For webhook deliveries, there are two important things to understand:
 
 Completion can only be reported once a delivery has already reached **Delivered**, and only once per delivery. The completion report must also be signed using the subscription's shared secret so the accelerator can verify that it came from **CloudEngage**.
 
-For details on how to submit a completion report, see [Submit webhook delivery completion](../event-notification-guide.md#submit-webhook-delivery-completion) in the Event Notification Guide, or the `POST /deliveries/{deliveryId}/completion` operation in the [DPDP Event Notification API](https://github.com/wso2/dpdp-accelerator/blob/main/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/src/main/resources/event-notifications.yaml) specification.
+For details on how to submit a completion report, see [Submit webhook delivery completion](../event-notification-guide.md#submit-webhook-delivery-completion) in the Event Notification Guide, or the `POST /deliveries/{deliveryId}/completion` operation in the [DPDP Event Notification API (v1.1)](https://github.com/wso2/dpdp-accelerator/blob/main/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/src/main/resources/event-notifications-v1.1.yaml) specification.
 
 **In short:** Delivered means the notification was received. Completion evidence means the Data Processor has additionally reported that it successfully handled the event.
 

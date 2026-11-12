@@ -72,7 +72,23 @@ curl -X POST "${API_BASE}/topics" \
 
 `name` is required and must be unique in the tenant. A new topic is `active`. To list topics, call `GET /topics?status=active&limit=20&offset=0`. List responses return `items` and `total`.
 
-To delete a user topic, call `DELETE /topics/<topic-id>`. Its status becomes `deleted`. A topic can't be deleted while any subscription that references it is `active`, `pending`, or `stale`.
+To delete a user topic, call `DELETE /topics/<topic-id>`:
+
+```bash
+curl -X DELETE "${API_BASE}/topics/<topic-id>" \
+  -H "Authorization: Bearer ${ACCESS_TOKEN}"
+```
+
+A successful deletion returns `200 OK` with `TopicStatusUpdate` (`status: "deleted"`):
+
+```json
+{
+  "topicId": "2ea5f59a-70db-4098-b0f8-3f3cfede76c7",
+  "status": "deleted"
+}
+```
+
+A topic can't be deleted while any subscription that references it is `active`, `pending`, or `stale`.
 
 ## 3. Subscriptions
 
@@ -111,7 +127,15 @@ curl -X POST "${API_BASE}/subscriptions" \
   }'
 ```
 
-The subscription starts as `pending`, and becomes `active` once the callback answers the verification challenge (see [Respond to verification](#respond-to-verification)). If verification attempts run out, it becomes `stale`. After fixing the receiver, retry with `POST /subscriptions/<subscription-id>/verify`, or select **Re-verify webhook** in the portal.
+The subscription starts as `pending`, and becomes `active` once the callback answers the verification challenge (see [Respond to verification](#respond-to-verification)). If verification attempts run out, it becomes `stale`. After fixing the receiver, retry with `POST /subscriptions/<subscription-id>/verify`, or select **Re-verify webhook** in the portal. A successful verification returns `200 OK` with `SubscriptionStatusUpdate`:
+
+```json
+{
+  "subscriptionId": "70f63b63-7ec4-4e42-a956-fca89bfeb351",
+  "status": "active",
+  "updatedAt": 1787652970000
+}
+```
 
 The callback URL must use an allowed port (by default, none or 80, 443, or 8443) and can't point to a private network address unless `allow_private_network_callback_targets = true`. HTTP callback URLs are allowed by default (`allow_http_callback_url = true`); set it to `false` in production so only HTTPS is accepted. See [Configure webhook delivery](install-and-setup/configuring-the-accelerator.md#configure-webhook-delivery).
 
@@ -134,7 +158,15 @@ curl -X POST "${API_BASE}/subscriptions" \
 
 A poll subscription has no callback URL and is `active` immediately. Keep the returned `subscriptionId` and the shared secret; the receiver needs both to poll.
 
-To delete a subscription, call `DELETE /subscriptions/<subscription-id>`, or use the portal. Its status becomes `deleted`, and its event and delivery history are kept.
+To delete a subscription, call `DELETE /subscriptions/<subscription-id>`, or use the portal. A successful deletion returns `200 OK` with `SubscriptionStatusUpdate` (`status: "deleted"`), and its event and delivery history are kept:
+
+```json
+{
+  "subscriptionId": "70f63b63-7ec4-4e42-a956-fca89bfeb351",
+  "status": "deleted",
+  "updatedAt": 1787652970000
+}
+```
 
 ## 4. Publish an event
 
@@ -335,16 +367,20 @@ The response is `202 Accepted`. A delivery that isn't a `failed` webhook deliver
 
 ## 7. Inspect events and delivery history
 
-In the portal, open **Event Notifications → Events** to see each event's payload and its deliveries, or open a subscription to see its deliveries. The read APIs need `notifications:events:read` or `notifications:subscriptions:read`:
+In the portal, open **Event Notifications → Events** to see each event's payload and its deliveries, or open a subscription to see its deliveries. The read APIs require `notifications:events:read` or `notifications:subscriptions:read`:
 
-| Operation | Method and path |
-|---|---|
-| List events | `GET /events` |
-| Get an event | `GET /events/{eventId}` |
-| List deliveries for an event | `GET /events/{eventId}/deliveries` |
-| List deliveries for a subscription | `GET /subscriptions/{subscriptionId}/deliveries` |
-| Get delivery details and completion evidence | `GET /deliveries/{deliveryId}` |
-| Get a delivery's attempt history | `GET /deliveries/{deliveryId}/history` |
+| Operation | Method and path | Required scope |
+|---|---|---|
+| List events | `GET /events` | `notifications:events:read` |
+| Get an event | `GET /events/{eventId}` | `notifications:events:read` |
+| List deliveries for an event | `GET /events/{eventId}/deliveries` | `notifications:events:read` |
+| List deliveries for a subscription | `GET /subscriptions/{subscriptionId}/deliveries` | `notifications:subscriptions:read` |
+| Get delivery details and completion evidence | `GET /deliveries/{deliveryId}` | `notifications:subscriptions:read` |
+| Get a delivery's attempt history | `GET /deliveries/{deliveryId}/history` | `notifications:subscriptions:read` |
+
+:::note Scope required for delivery details and history in v1.1
+In `v1.1` (and in the Consent Portal's Event details modal), reading delivery details (`GET /deliveries/{deliveryId}`) and attempt history (`GET /deliveries/{deliveryId}/history`) requires `notifications:subscriptions:read`, while manual retry (`POST /deliveries/{deliveryId}/retry`) requires `notifications:subscriptions:write`. Grant custom roles both `notifications:events:read` and `notifications:subscriptions:read` if operators need to view events along with their delivery details and history.
+:::
 
 ## 8. Error codes
 

@@ -9,6 +9,7 @@ const sidebars = {
       label: 'Getting Started',
       items: [
         { type: 'doc', id: 'quickstart', label: 'Quickstart' },
+        { type: 'doc', id: 'about-this-release', label: 'About this Release' },
       ],
     },
     {
