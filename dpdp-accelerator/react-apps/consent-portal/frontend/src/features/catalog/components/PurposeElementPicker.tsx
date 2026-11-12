@@ -18,13 +18,15 @@
 
 import {
   Autocomplete,
-  Checkbox,
+  Box,
+  Divider,
   FormControlLabel,
   Stack,
+  Switch,
   TextField,
   Typography,
 } from '@wso2/oxygen-ui'
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { PurposeElementInput } from '../../../types/catalog'
 import { buildElementNameFilter } from '../api/catalogApi'
@@ -52,7 +54,7 @@ interface PurposeElementPickerProps {
 const ELEMENT_PICKER_PAGE_SIZE = 100
 const ELEMENT_SEARCH_DEBOUNCE_MS = 300
 
-/** Multi-select against the Elements catalog, with a per-selection Mandatory toggle. */
+/** Multi-select against the Elements catalog, with a per-selection Mandatory switch. */
 function PurposeElementPicker({
   selected,
   disabled,
@@ -133,33 +135,65 @@ function PurposeElementPicker({
       />
 
       {selected.length > 0 ? (
-        <Stack spacing={0.5}>
-          {selected.map((item) => (
-            <FormControlLabel
-              key={item.id}
-              control={
-                <Checkbox
-                  size="small"
-                  checked={item.mandatory}
-                  disabled={disabled}
-                  onChange={(event) =>
-                    onChange(
-                      selected.map((row) =>
-                        row.id === item.id ? { ...row, mandatory: event.target.checked } : row,
-                      ),
-                    )
-                  }
-                />
-              }
-              label={
-                <Typography variant="body2">
-                  {item.displayName ?? item.name} —{' '}
-                  {item.mandatory ? t('catalog.values.mandatory') : t('catalog.values.optional')}
-                </Typography>
-              }
-            />
-          ))}
-        </Stack>
+        <Box
+          sx={{
+            // Mirrors the theme's MuiOutlinedInput surface; a Paper would add the
+            // theme's shadow and blur and read as a separate card.
+            bgcolor: 'background.acrylic',
+            border: 1,
+            borderColor: 'divider',
+            borderRadius: '8px',
+          }}
+        >
+          {selected.map((item, index) => {
+            const label = item.displayName ?? item.name
+            return (
+              <Fragment key={item.id}>
+                {index > 0 ? <Divider /> : null}
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: 2,
+                    px: 2,
+                    py: 1,
+                  }}
+                >
+                  <Typography variant="body2" noWrap title={label} sx={{ minWidth: 0 }}>
+                    {label}
+                  </Typography>
+                  <FormControlLabel
+                    label={t('catalog.values.mandatory')}
+                    sx={{ mr: 0, flexShrink: 0 }}
+                    control={
+                      <Switch
+                        checked={item.mandatory}
+                        disabled={disabled}
+                        slotProps={{
+                          input: {
+                            'aria-label': t('catalog.purposes.form.elementRequirementLabel', {
+                              name: label,
+                            }),
+                          },
+                        }}
+                        onChange={(event) =>
+                          onChange(
+                            selected.map((row) =>
+                              row.id === item.id
+                                ? { ...row, mandatory: event.target.checked }
+                                : row,
+                            ),
+                          )
+                        }
+                      />
+                    }
+                  />
+                </Box>
+              </Fragment>
+            )
+          })}
+        </Box>
       ) : null}
     </Stack>
   )

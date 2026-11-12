@@ -65,7 +65,7 @@ export class PurposeFormDialog {
 
   /**
    * Selects whichever elements the picker lists first (one per entry in `mandatoryFlags`,
-   * in order) and toggles each one's Mandatory checkbox accordingly - use this when the test
+   * in order) and sets each one's Mandatory switch accordingly - use this when the test
    * doesn't care which specific elements end up on the purpose, only that some do. The picker's
    * unfiltered page is capped at 100 (see PurposeElementPicker.tsx), oldest first, so a freshly
    * created element is not guaranteed to be among them once the shared environment has
@@ -84,11 +84,11 @@ export class PurposeFormDialog {
       await option.click()
     }
     // The popup is already closed after the last selection (see above); nothing further to
-    // dismiss before the mandatory checkboxes below the field become clickable.
+    // dismiss before the Mandatory switches below the field become clickable.
     for (const [index, mandatory] of mandatoryFlags.entries()) {
       if (mandatory) {
-        // Checkbox order mirrors selection order.
-        await this.root.getByRole('checkbox').nth(index).check()
+        // Switch order mirrors selection order.
+        await this.mandatorySwitches().nth(index).check()
       }
     }
     return labels
@@ -108,9 +108,12 @@ export class PurposeFormDialog {
     await option.waitFor({ state: 'visible' })
     await option.click()
     if (mandatory) {
-      // The just-added selection's checkbox is always last, regardless of how many preceded it.
-      await this.root.getByRole('checkbox').last().check()
+      await this.root.getByRole('switch', { name: `Mandatory: ${label}`, exact: true }).check()
     }
+  }
+
+  private mandatorySwitches(): Locator {
+    return this.root.getByRole('switch', { name: /^Mandatory: / })
   }
 
   async addProperty(key: string, value: string): Promise<void> {
