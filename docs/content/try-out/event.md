@@ -20,13 +20,14 @@ Here are the system topics and what triggers each one:
 
 | System topic | Triggered when |
 |---|---|
+| `consent.create` | A consent is created |
 | `consent.update` | A consent is updated, or an authorizer approves or rejects it |
 | `consent.revoke` | A consent is revoked |
 | `consent.expire` | The expiry reconciler records a consent as expired |
 | `user.data.change` | A user's profile claims are updated |
 | `user.account.delete` | A user account is deleted |
 
-For the complete list of endpoints and schemas, see the [Event Notification API specification](https://github.com/wso2/dpdp-accelerator/blob/v1.0.0/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/src/main/resources/event-notifications.yaml).
+For the complete list of endpoints and schemas, see the [Event Notification API specification (v1.1)](https://github.com/wso2/dpdp-accelerator/blob/main/dpdp-accelerator/internal-webapps/org.wso2.dpdp.accelerator.event.notifications.endpoint/src/main/resources/event-notifications-v1.1.yaml).
 
 ## Before you begin
 
@@ -44,15 +45,14 @@ For the complete list of endpoints and schemas, see the [Event Notification API 
 
   Giving each application only the scopes it needs keeps the publisher and the receivers separate.
 
-Before running the API examples, set the base URL, the group ID, and the **CarePulse** application's access token. [Obtain a client-credentials token](../learn/managing-access.md#step-3-get-an-access-token) using the **CarePulse** application's credentials, with the scopes listed above. Each step that needs the **CloudEngage** or **MedExpress** token says so.
+Before running the API examples, set the base URL and the **CarePulse** application's access token. [Obtain a client-credentials token](../learn/managing-access.md#step-3-get-an-access-token) using the **CarePulse** application's credentials, with the scopes listed above. Each step that needs the **CloudEngage** or **MedExpress** token says so.
 
 <Tabs groupId="operating-systems">
 <TabItem value="linux" label="Linux" default>
 
 ```bash
 export BASE_URL="https://localhost:9443"
-export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1"
-export GROUP_ID="carbon.super"
+export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1.1"
 export ACCESS_TOKEN="<carepulse-client-credentials-token>"
 ```
 
@@ -61,8 +61,7 @@ export ACCESS_TOKEN="<carepulse-client-credentials-token>"
 
 ```bash
 export BASE_URL="https://localhost:9443"
-export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1"
-export GROUP_ID="carbon.super"
+export API_BASE="${BASE_URL}/api/dpdp/event-notifications/v1.1"
 export ACCESS_TOKEN="<carepulse-client-credentials-token>"
 ```
 
@@ -71,15 +70,14 @@ export ACCESS_TOKEN="<carepulse-client-credentials-token>"
 
 ```powershell
 $env:BASE_URL = "https://localhost:9443"
-$env:API_BASE = "$env:BASE_URL/api/dpdp/event-notifications/v1"
-$env:GROUP_ID = "carbon.super"
+$env:API_BASE = "$env:BASE_URL/api/dpdp/event-notifications/v1.1"
 $env:ACCESS_TOKEN = "<carepulse-client-credentials-token>"
 ```
 
 </TabItem>
 </Tabs>
 
-These values are for the super tenant. For a specific tenant, use `https://localhost:9443/t/<tenant-domain>` as the base URL and the tenant domain as the group ID, and get every token from that same tenant.
+These values are for the super tenant. For a specific tenant, use `https://localhost:9443/t/<tenant-domain>` as the base URL, and get every token from that same tenant.
 
 :::note Local testing with a self-signed certificate
 Add `-k` to the `curl` commands if your local Identity Server uses the default self-signed certificate. On Windows, add `-SkipCertificateCheck` to `Invoke-RestMethod`; this needs PowerShell 7 or later, so with Windows PowerShell 5.1, trust the server's certificate instead. Never skip certificate checks in production — configure a trusted CA certificate, or pass it with `--cacert`.
@@ -478,7 +476,6 @@ COMPLETION_SIGNATURE="sha256=$(printf 'v1\ncompletion\n%s\n%s' "${DELIVERY_ID}" 
 
 curl -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
   -H "Authorization: Bearer ${CLOUDENGAGE_TOKEN}" \
-  -H "group-id: ${GROUP_ID}" \
   -H "event-signature: ${COMPLETION_SIGNATURE}" \
   -H "Content-Type: application/json" \
   -d "${COMPLETION_BODY}"
@@ -497,7 +494,6 @@ COMPLETION_SIGNATURE="sha256=$(printf 'v1\ncompletion\n%s\n%s' "${DELIVERY_ID}" 
 
 curl -X POST "${API_BASE}/deliveries/${DELIVERY_ID}/completion" \
   -H "Authorization: Bearer ${CLOUDENGAGE_TOKEN}" \
-  -H "group-id: ${GROUP_ID}" \
   -H "event-signature: ${COMPLETION_SIGNATURE}" \
   -H "Content-Type: application/json" \
   -d "${COMPLETION_BODY}"
@@ -519,7 +515,6 @@ Invoke-RestMethod -Method Post `
   -Uri "$env:API_BASE/deliveries/$DeliveryId/completion" `
   -Headers @{
     Authorization     = "Bearer $env:CLOUDENGAGE_TOKEN"
-    "group-id"        = $env:GROUP_ID
     "event-signature" = $CompletionSignature
   } `
   -ContentType "application/json" `
@@ -529,7 +524,7 @@ Invoke-RestMethod -Method Post `
 </TabItem>
 </Tabs>
 
-A successful call returns `204 No Content`. Reopen the event in **Event Notifications → Events**: the delivery still shows **Delivered**, now with **Completion Evidence** recorded alongside it. Submitting a second completion for the same delivery returns `409 Conflict` (`EN-4090`). For the other completion statuses and error responses, see [Submit webhook delivery completion](../event-notification-guide.md#submit-webhook-delivery-completion).
+A successful call returns `204 No Content`. Reopen the event in **Event Notifications → Events**: because `completionStatus` was `completed`, the delivery transitions from **Delivered** to **Completed**, with **Completion Evidence** recorded alongside it (other statuses such as `ack`, `disputed`, or `partial` keep the delivery in **Delivered**). Submitting a second completion for the same delivery returns `409 Conflict` (`EN-4090`). For the other completion statuses and error responses, see [Submit webhook delivery completion](../event-notification-guide.md#submit-webhook-delivery-completion).
 
 ## Publish your own event and poll for it
 
@@ -620,7 +615,7 @@ $env:SHARED_SECRET = "medexpress-sample-secret-4f8a2c91"
 
 ### Step 3: Publish an event
 
-Now play **CarePulse**'s order system and publish the change with the **CarePulse** token. It must include the `notifications:events:write` scope. The `group-id` header has to match the subscription's group, which is the tenant domain (`carbon.super` for the super tenant). An event with any other group ID is stored, but reaches no subscriber.
+Now play **CarePulse**'s order system and publish the change with the **CarePulse** token. It must include the `notifications:events:write` scope.
 
 <Tabs groupId="operating-systems">
 <TabItem value="linux" label="Linux" default>
@@ -628,7 +623,6 @@ Now play **CarePulse**'s order system and publish the change with the **CarePuls
 ```bash
 curl -X POST "${API_BASE}/events" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-  -H "group-id: ${GROUP_ID}" \
   -H "Content-Type: application/json" \
   -d '{
     "topic": "delivery.preferences.update",
@@ -645,7 +639,6 @@ curl -X POST "${API_BASE}/events" \
 ```bash
 curl -X POST "${API_BASE}/events" \
   -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-  -H "group-id: ${GROUP_ID}" \
   -H "Content-Type: application/json" \
   -d '{
     "topic": "delivery.preferences.update",
@@ -673,7 +666,6 @@ $Body = @'
 Invoke-RestMethod -Method Post -Uri "$env:API_BASE/events" `
   -Headers @{
     Authorization = "Bearer $env:ACCESS_TOKEN"
-    "group-id"    = $env:GROUP_ID
   } `
   -ContentType "application/json" `
   -Body $Body | ConvertTo-Json -Depth 10
@@ -687,9 +679,8 @@ You'll get back the stored event and its `eventId`:
 ```json
 {
   "eventId": "f0b66a0d-edcb-4d94-94ee-70ce33b34f20",
-  "orgId": "carbon.super",
-  "groupId": "carbon.super",
   "topicId": "3064830b-7249-4fa6-9b83-59d7215af1c2",
+  "topic": "delivery.preferences.update",
   "payload": "{\"customerReference\":\"cust-0001\",\"change\":\"DELIVERY_WINDOW_UPDATED\"}",
   "occurredAt": 1791199075832,
   "createdAt": 1791199075832
@@ -712,7 +703,6 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${MEDEXPRESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -H "group-id: ${GROUP_ID}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -728,7 +718,6 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${MEDEXPRESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -H "group-id: ${GROUP_ID}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -745,7 +734,6 @@ $PollSignature = 'sha256=' + [BitConverter]::ToString($Hmac.ComputeHash([Text.En
 Invoke-RestMethod -Method Post -Uri "$env:API_BASE/events/poll" `
   -Headers @{
     Authorization     = "Bearer $env:MEDEXPRESS_TOKEN"
-    "group-id"        = $env:GROUP_ID
     "subscription-id" = $env:SUBSCRIPTION_ID
     "event-signature" = $PollSignature
   } `
@@ -793,7 +781,6 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${MEDEXPRESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -H "group-id: ${GROUP_ID}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -810,7 +797,6 @@ POLL_SIGNATURE="sha256=$(printf %s "${POLL_BODY}" | openssl dgst -sha256 -hmac "
 curl -X POST "${API_BASE}/events/poll" \
   -H "Authorization: Bearer ${MEDEXPRESS_TOKEN}" \
   -H "Content-Type: application/json" \
-  -H "group-id: ${GROUP_ID}" \
   -H "subscription-id: ${SUBSCRIPTION_ID}" \
   -H "event-signature: ${POLL_SIGNATURE}" \
   -d "${POLL_BODY}"
@@ -828,7 +814,6 @@ $PollSignature = 'sha256=' + [BitConverter]::ToString($Hmac.ComputeHash([Text.En
 Invoke-RestMethod -Method Post -Uri "$env:API_BASE/events/poll" `
   -Headers @{
     Authorization     = "Bearer $env:MEDEXPRESS_TOKEN"
-    "group-id"        = $env:GROUP_ID
     "subscription-id" = $env:SUBSCRIPTION_ID
     "event-signature" = $PollSignature
   } `
@@ -853,7 +838,7 @@ Back in the Consent Portal as **Anika**, open **Event Notifications → Events**
 
 ![Event details page with the custom event payload and an Acknowledged poll delivery](../../assets/images/try-out/event/13-poll-event-acknowledged.png)
 
-When you're done, tidy up by deleting the subscription and deregistering the topic in the portal.
+When you're done, tidy up by deleting the subscription and deleting the topic in the portal.
 
 Expected result: the published event is queued for the poll subscription, **MedExpress** picks it up on its first poll, and once it's acknowledged it no longer shows up in later polls. For the full request options, errors, and HMAC settings, see [Register a poll subscription](../event-notification-guide.md#register-a-poll-subscription) and [Poll event deliveries](../event-notification-guide.md#poll-event-deliveries).
 
