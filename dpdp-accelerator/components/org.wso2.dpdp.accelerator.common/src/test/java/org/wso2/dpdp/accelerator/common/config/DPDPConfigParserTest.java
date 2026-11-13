@@ -277,7 +277,7 @@ public class DPDPConfigParserTest {
         assertTrue(!service.isEventNotificationPrivateNetworkCallbackTargetsAllowed());
         assertEquals(service.getEventNotificationDeliveryWorkerBatchSize(), 50);
         assertEquals(service.getEventNotificationDeliveryWorkerPollSeconds(), 5);
-        assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 10);
+        assertEquals(service.getEventNotificationStuckInFlightThresholdSeconds(), 60);
         assertEquals(service.getEventNotificationMaxVerificationResponseBodyBytes(), 4096);
         assertEquals(service.getEventNotificationPendingSubscriptionRecoveryThresholdSeconds(), 60);
         assertEquals(service.getEventNotificationBackgroundWorkerInitialDelaySeconds(), 10);
