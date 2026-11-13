@@ -349,6 +349,22 @@ worker_shutdown_timeout_seconds = 5
 See the [Event Notification Guide](event-notification-guide.md) for more on
 any of these.
 
+## Multi-node deployment
+
+In an active-active cluster, each Identity Server node runs the accelerator's
+background jobs (the consent-expiry sweep and the webhook delivery worker) on
+its own local timer against the shared `WSO2DPDP_DB`—no leader election or
+extra clustering configuration is required.
+
+- **No duplicate processing** — Both jobs use atomic, row-level database claims
+  (`pending` → `in_flight` for webhooks; conditional tracker deletion for
+  expired consents), so only the first node to claim a row processes it.
+- **Per-instance sizing** — Worker settings in `deployment.toml` (such as
+  `delivery_worker_batch_size`, `delivery_worker_poll_seconds`, and
+  `thread_pool_size`) apply per node, so total cluster throughput scales
+  linearly (`N × value`). Size them against your shared database and
+  downstream webhook receiver capacity.
+
 ## Next Steps
 
 Once you've made the required configuration changes, start the server for
