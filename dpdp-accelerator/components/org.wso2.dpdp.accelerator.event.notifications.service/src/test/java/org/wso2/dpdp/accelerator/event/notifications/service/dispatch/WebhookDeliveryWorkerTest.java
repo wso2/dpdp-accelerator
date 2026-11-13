@@ -87,10 +87,6 @@ public class WebhookDeliveryWorkerTest {
                 when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(50);
                 when(configurationService.getEventNotificationDeliveryWorkerPollSeconds()).thenReturn(5);
                 when(configurationService.getEventNotificationStuckInFlightThresholdSeconds()).thenReturn(10);
-                // Default to effectively unlimited per-subscription cap so existing tests
-                // are not affected by the noisy-neighbour guard.
-                when(configurationService.getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription())
-                        .thenReturn(Integer.MAX_VALUE);
         }
 
         @org.testng.annotations.AfterMethod
@@ -895,36 +891,6 @@ public class WebhookDeliveryWorkerTest {
                 int[] secondCounts = worker.runTick();
                 assertEquals(secondCounts[0], 0);
                 assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.NO_MORE_WORK);
-        }
-
-        @Test
-        public void testNoisySubscriptionCappedStopsAtMaxBatchesWithoutUnboundedGrowth() {
-                when(configurationService.getEventNotificationDeliveryWorkerBatchSize()).thenReturn(10);
-                when(configurationService.getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription())
-                                .thenReturn(2);
-
-                java.util.List<WebhookDeliveryDispatchContext> noisyPending = new java.util.ArrayList<>();
-                for (int i = 0; i < 500; i++) {
-                        noisyPending.add(context("noisy-" + i, 0));
-                }
-
-                when(deliveryDAO.getStuckInFlightWebhookDispatchContexts(any(Connection.class), anyInt(), any()))
-                                .thenReturn(Collections.emptyList());
-                when(deliveryDAO.getPendingWebhookDispatchContexts(any(Connection.class), anyInt()))
-                                .thenAnswer(inv -> {
-                                        int limit = inv.getArgument(1);
-                                        return new java.util.ArrayList<>(
-                                                        noisyPending.subList(0, Math.min(limit, noisyPending.size())));
-                                });
-
-                WebhookDeliveryWorker worker = new WebhookDeliveryWorker(deliveryDAO, scheduler, httpClient,
-                                configurationService);
-                int[] counts = worker.runTick();
-
-                assertEquals(counts[0], 2, "Only 2 deliveries should be queued for the capped subscription");
-                assertEquals(worker.getLastExitReason(), WebhookDeliveryWorker.ExitReason.MAX_BATCHES);
-                verify(deliveryDAO, times(WebhookDeliveryWorker.MAX_BATCHES_PER_TICK))
-                                .getPendingWebhookDispatchContexts(any(Connection.class), anyInt());
         }
 
         @Test

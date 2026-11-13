@@ -71,8 +71,6 @@ public interface DPDPConfigurationService {
 
     int getEventNotificationBackgroundWorkerInitialDelaySeconds();
 
-    int getEventNotificationDeliveryWorkerMaxConcurrentPerSubscription();
-
     int getEventNotificationPendingSubscriptionRecoveryIntervalSeconds();
 
     int getEventNotificationPendingSubscriptionRecoveryBatchSize();

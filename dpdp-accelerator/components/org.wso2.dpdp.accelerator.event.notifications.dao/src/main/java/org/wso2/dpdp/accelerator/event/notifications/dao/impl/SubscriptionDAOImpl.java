@@ -171,10 +171,8 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 }
 
             }
-            // Constraint checks here under the topic row lock are mirrored by the fast-fail
-            // pre-check in
-            // SubscriptionServiceImpl.createMultiTopicSubscription; keep both gates in
-            // sync.
+            // Constraint checks here under the topic row lock are mirrored by the fast-fail pre-check in
+            // SubscriptionServiceImpl.createMultiTopicSubscription; keep both gates in sync.
             if (getConfiguration().isEventNotificationSubscriptionConstraintChecksEnabled()) {
                 try (PreparedStatement lockPs = conn.prepareStatement(
                         queries.getLockSubscriptionsForTopicsQuery(topicIds.size()))) {
@@ -262,8 +260,7 @@ public class SubscriptionDAOImpl implements SubscriptionDAO {
                 if (msg.contains("UQ_SUB_ORG_ACTIVE_NAME")) {
                     throw new EventNotificationDuplicateResourceException(
                             String.format(EventNotificationCommonConstants.ERROR_SUBSCRIPTION_NAME_ALREADY_EXISTS,
-                                    subscription.getName()),
-                            e);
+                                    subscription.getName()), e);
                 }
                 throw new EventNotificationDuplicateResourceException(
                         EventNotificationCommonConstants.ERROR_DUPLICATE_SUBSCRIPTION, e);
