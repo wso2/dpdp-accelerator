@@ -221,7 +221,7 @@ following the [Configuring Users and Roles](install-and-setup/configuring-users-
 | User | Role | What they can do in the portal |
 | --- | --- | --- |
 | Portal administrator | `dpdp-consent-admin` | Manage purposes and elements, view and revoke any user's consents, view consent history, and manage Event Notifications. Complaints are handled by the Data Protection Officer. Use this user to check the portal in the next step. |
-| Data Principal | `dpdp-consent-user` | Exercise their data protection rights: review the history of their consents, raise and track grievances, and delete their own account. |
+| Data Principal | `dpdp-consent-user` | Exercise their data protection rights: review the history of their consents, and raise and track grievances. |
 | Data Protection Officer | `dpdp-consent-dpo` | View and respond to every complaint in the organization, without access to consents or other administration. |
 
 ## Open the Consent Portal
