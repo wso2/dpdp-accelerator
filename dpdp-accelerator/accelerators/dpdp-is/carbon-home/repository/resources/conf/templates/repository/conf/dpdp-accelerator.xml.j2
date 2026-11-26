@@ -123,7 +123,7 @@
         {% if dpdp_accelerator.event_notifications.webhook.stuck_inflight_threshold_seconds is defined %}
         <StuckInFlightThresholdSeconds>{{dpdp_accelerator.event_notifications.webhook.stuck_inflight_threshold_seconds}}</StuckInFlightThresholdSeconds>
         {% else %}
-        <StuckInFlightThresholdSeconds>10</StuckInFlightThresholdSeconds>
+        <StuckInFlightThresholdSeconds>60</StuckInFlightThresholdSeconds>
         {% endif %}
         {% if dpdp_accelerator.event_notifications.webhook.max_verification_response_body_bytes is defined %}
         <MaxVerificationResponseBodyBytes>{{dpdp_accelerator.event_notifications.webhook.max_verification_response_body_bytes}}</MaxVerificationResponseBodyBytes>
