@@ -75,10 +75,10 @@ The accelerator provides three predefined roles designed to separate user, admin
 |---|---|---|
 | **`dpdp-consent-admin`** | System & Organization Administrators | Full oversight over consents, purpose/element catalog management, and event notification subscriptions. Complaint handling is not included; it belongs to `dpdp-consent-dpo`. |
 | **`dpdp-consent-dpo`** | Data Protection Officers (DPO) | Organization-wide complaint inspection, review, internal notes, and complaint resolution without administrative consent privileges. |
-| **`dpdp-consent-user`** | Data Principals / End Users | Self-service account deletion (`DELETE /scim2/Me`), personal complaint filing and tracking, and personal consent history audit views. |
+| **`dpdp-consent-user`** | Data Principals / End Users | Personal complaint filing and tracking, and personal consent history audit views. |
 
 :::tip
-- **Basic Consent Access:** End users can log into the Consent Portal, view their active consents, and authorize or revoke consents without any role assigned. Assign `dpdp-consent-user` when they need to file complaints, view audit history, or delete their accounts.
+- **Basic Consent Access:** End users can log into the Consent Portal, view their active consents, and authorize or revoke consents without any role assigned. Assign `dpdp-consent-user` when they need to file complaints or view audit history.
 - **Role Assignment:** `dpdp-consent-admin` is not automatically assigned to `dpdp-consent-dpo`. If a user requires both administrative oversight and DPO complaint handling capabilities, assign both roles explicitly.
 :::
 

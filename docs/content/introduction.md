@@ -139,7 +139,6 @@ Consent Portal plus supporting services.
 | Propagate lifecycle changes | Event Notification records consent and user lifecycle events and supports webhook or polling subscriptions for downstream consumers. |
 | Separate responsibilities | Tenant roles distinguish personal history and complaint self-service, complaint handling, and broader portal administration. Dedicated integration roles can be created with narrower scopes. |
 | Support accessible notices | The portal interface supports English and the languages listed in the Eighth Schedule to the Constitution; purpose and data-element descriptions can be localized separately. |
-| Support account lifecycle actions | An authorized user can request self-service account deletion, and a lifecycle event can notify configured receivers. |
 
 The accelerator also publishes lifecycle events for configured downstream
 systems, which can receive them through webhook or polling subscriptions.
